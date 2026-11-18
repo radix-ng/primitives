@@ -60,11 +60,11 @@ boundaries explicitly instead of converting all models to readonly inputs.
 “Source” identifies a local implementation fact. “Compare/verify/audit” is pending work. Priorities
 describe the target work, not a certificate or a reproduced defect count.
 
-| Area                | Current observation / required target comparison                                                                                                                                                 | Priority |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
-| Page ownership      | Source: page is model(defaultPage()) and defaultPage is an input. A field initializer runs before template bindings; compare supplied initial page/defaultPage and explicit zero/invalid values. | P1       |
-| Requests and bounds | No public Pagination entry exists in the pin. Define parent refusal, two-way acceptance, total/page-size changes and automatic bounds corrections separately.                                    | P1       |
-| Navigation surface  | Verify first/last/previous/next, ellipses, disabled state, native link/button semantics, focus and RTL against the Angular-specific contract.                                                    | P2       |
+| Area                | Current observation / required target comparison                                                                                                                                                                                                                                                                                         | Priority |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| Page ownership      | TestBed observed `[defaultPage]="3"` starting on page `1`. The model reads the initializer before Angular binds the input. For this Angular-specific API, an omitted `page` should seed `3` once. Compare an explicit valid page, out-of-range normalization and a parent declining `updatePage`. Assert current item, labels and focus. | P1       |
+| Requests and bounds | No public Pagination entry exists in the pin. Define parent refusal, two-way acceptance, total/page-size changes and automatic bounds corrections separately.                                                                                                                                                                            | P1       |
+| Navigation surface  | Verify first/last/previous/next, ellipses, disabled state, native link/button semantics, focus and RTL against the Angular-specific contract.                                                                                                                                                                                            | P2       |
 
 Also compare the actual emitted per-part attributes/CSS variables with both the pinned declaration
 files and runtime state mapping. Check native hosts, event reasons/details/default prevention,
@@ -78,9 +78,8 @@ are permitted; changed observable behavior needs evidence or an explicitly revie
 - No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
 - No conventional same-family SSR page was found; inspect shared SSR/hydration fixtures for applicable cases. No SSR/hydration result is claimed here.
 
-No runtime suite was executed for this initial matrix sweep. Complete focused state/DI units,
-native/layout browser cases and SSR/hydration checks before promoting rows; add a paired pinned
-fixture before certifying equivalent observable behavior. See the
+The [TestBed audit](../../../docs/engineering/parity-matrices.md#confirmed-state-gaps) checked initial Root page. Paired browser comparisons remain pending.
+See the
 [verification skill](../../../.agents/skills/radix-testing/SKILL.md),
 [matrix index](../../../docs/engineering/parity-matrices.md) and
 [upstream preparation guide](../../../docs/engineering/upstream-reference.md).

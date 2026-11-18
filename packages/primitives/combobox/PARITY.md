@@ -66,7 +66,7 @@ For strict controlled UI state, a request must not mutate the effective value be
 | [`RdxComboboxChip.value`](src/combobox-chip.ts)      | `input.required<AcceptableValue>()`  | Readonly supplied data/identity/configuration; no local model write.                                           |
 | [`RdxComboboxItem.value`](src/combobox-item.ts)      | `input.required<AcceptableValue>()`  | Readonly supplied data/identity/configuration; no local model write.                                           |
 | [`RdxComboboxRoot.value`](src/combobox-root.ts)      | `model<ComboboxValue \| null>(null)` | Editable form model where the actual Angular control contract requires it; coordinate CVA/native/Signal Forms. |
-| [`RdxComboboxRoot.inputValue`](src/combobox-root.ts) | `model<string>('')`                  | Editable form model where the actual Angular control contract requires it; coordinate CVA/native/Signal Forms. |
+| [`RdxComboboxRoot.inputValue`](src/combobox-root.ts) | `model<string>('')`                  | Editable query with its own input-change events and filtering policy.                                          |
 | [`RdxComboboxRoot.open`](src/combobox-root.ts)       | `model<boolean>(false)`              | Define parent-owned UI requests separately from accepted/effective state; no form-model exemption is implied.  |
 
 | Declared default / source                              | Declaration                               | Required comparison                                                                                                                                         |
@@ -86,14 +86,35 @@ describe the target work, not a certificate or a reproduced defect count.
 
 | Area                   | Current observation / required target comparison                                                                                                                                                                                                            | Priority |
 | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| Independent owners     | Source: selected value, inputValue and open are separate writable models. Retain editable form models where required; give open a defined parent-owned request contract and document draft/committed selection.                                             | P1       |
-| Default initialization | Source: defaultValue tests a null local value and defaultOpen tests false, rather than explicit input/form ownership. Compare bound null/false, initial CVA writes, late defaults and native reset baselines.                                               | P1       |
+| Independent owners     | Root implements the Angular form-value interface through `value`. `inputValue` tracks editable query text, and `open` controls the popup. Verify each independently when a form write, query edit or selection requests multiple changes.                   | P1       |
+| Default initialization | TestBed reproduced [selection and open precedence gaps](#selection-query-and-open-cases).                                                                                                                                                                   | P1       |
 | Data and interaction   | Compare selected objects/multiple values/chips, query filtering, actual DOM reorder, grouped/virtualized collections, native event traces, focus, popup retention and manual completion. Autocomplete shared-engine results cover only their tested subset. | P2       |
 
 Also compare the actual emitted per-part attributes/CSS variables with both the pinned declaration
 files and runtime state mapping. Check native hosts, event reasons/details/default prevention,
 accessibility relationships, keyboard/RTL and cleanup where applicable. Angular framework adapters
 are permitted; changed observable behavior needs evidence or an explicitly reviewed deviation.
+
+## Selection, query and open cases
+
+The 2026-11-18 TestBed observations concern [Root](src/combobox-root.ts). The pinned
+[Combobox Root](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/combobox/root/ComboboxRoot.tsx) delegates selected value, query text and popup
+state to [AriaCombobox](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/combobox/root/AriaCombobox.tsx).
+
+| Scenario                            | Radix NG observation                                                                                      | Reference expectation / comparison                                                                                                                                                                                               |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Explicit empty selection            | `[value]="null" [defaultValue]="'seed'"` resolves to `'seed'`.                                            | Preserve the bound empty selection. Test `[]` in multiple mode as its own case, then check visible selection, chips and submitted value.                                                                                         |
+| Late selection default              | With no initial selection or default, setting `defaultValue='late seed'` after initialization selects it. | An uncontrolled default seeds selection once. Change it before and after an accepted edit and check query, selected value and form effects.                                                                                      |
+| Explicit false or late open default | Either `[open]="false" [defaultOpen]="true"` or a late false-to-true default opens the Root.              | Both cases stay closed. For ignored or delayed open requests, observe the popup, highlights and `aria-activedescendant` separately from request outputs.                                                                         |
+| Form write versus query             | Source: `value` implements the form interface; `inputValue` is a separate writable signal.                | Write an external selection with a non-empty query, then edit the query and reject or accept a selection. Record displayed text, filtered items and submitted value. Exercise CVA and Signal Forms separately from native reset. |
+
+The [data API](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/combobox/index.ts) includes `Collection` and `createItems`, and the pin accepts
+grouped items and externally supplied `filteredItems`. The Angular Root accepts flat `items` and
+exposes a computed `filteredItems()`. Compare grouped/server-filtered options and virtualized
+keyboard/highlight behavior before settling on the Angular API shape. Existing [Combobox browser cases](../../../apps/visual-regression/tests/combobox.behavior.spec.ts)
+exercise tracked reorder, option identity, disabled metadata, input focus and
+`aria-activedescendant`. [Shared-engine units](__tests__/ordered-collection.spec.ts)
+exercise wrapper moves with retained options.
 
 ## Evidence inventory and next checks
 
@@ -102,9 +123,8 @@ are permitted; changed observable behavior needs evidence or an explicitly revie
 - No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
 - [SSR consumer page](../../../apps/radix-ssr-testing/src/app/components/combobox/page.ts) exists. Its presence does not prove initial-state, lifecycle or hydration equivalence; inspect actual assertions.
 
-No runtime suite was executed for this initial matrix sweep. Complete focused state/DI units,
-native/layout browser cases and SSR/hydration checks before promoting rows; add a paired pinned
-fixture before certifying equivalent observable behavior. See the
+The [TestBed audit](../../../docs/engineering/parity-matrices.md#confirmed-state-gaps) checked Root selection and open state. Paired browser comparisons remain pending.
+See the
 [verification skill](../../../.agents/skills/radix-testing/SKILL.md),
 [matrix index](../../../docs/engineering/parity-matrices.md) and
 [upstream preparation guide](../../../docs/engineering/upstream-reference.md).

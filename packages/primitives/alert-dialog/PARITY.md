@@ -44,29 +44,22 @@ distinguishes controlled UI requests, editable form models, readonly configurati
 and derived/render state. Local writes to required form models are legitimate Angular behavior.
 For strict controlled UI state, a request must not mutate the effective value before parent acceptance.
 
-No direct open/value/checked/pressed model was found in the exported decorated classes.
-This is **not** a claim of statelessness: composition, services, native DOM or internal signals can
-own state. The family-specific matrix below identifies the relevant boundary.
-
-No explicit default-prefixed signal input/model was found in these local declarations. Inherited
-defaults still require inspection. Readonly input/configuration defaults are not uncontrolled state
-seeds; do not add dummy defaultValue/valueChange APIs to satisfy a template.
-
-Always include allowed `false`, `0`, `''`, `[]` and `null` cases; initial parent/CVA/Signal Forms
-writes; default changes after initialization; ignored/delayed/replaced controlled requests; cancellation
-and native/form reset. Not every case applies to readonly or infrastructure entries: mark those
-boundaries explicitly instead of converting all models to readonly inputs.
+[Alert Dialog Root](src/alert-dialog-root.ts) exposes the composed Dialog inputs `open`,
+`defaultOpen`, `triggerId`, `defaultTriggerId` and `handle`, and the outputs `openChange`,
+`triggerIdChange`, `onOpenChange` and `onOpenChangeComplete`. Its exported `open` and
+`triggerId` reference the same Dialog model signals. The variant fixes the role, modality
+and outside-pointer dismissal policy.
 
 ## Family-specific comparison matrix
 
 “Source” identifies a local implementation fact. “Compare/verify/audit” is pending work. Priorities
 describe the target work, not a certificate or a reproduced defect count.
 
-| Area              | Current observation / required target comparison                                                                                                                              | Priority |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| Delegated state   | Source: Root composes Dialog and forwards open/defaultOpen/trigger identity; it has no independent state-default policy. Carry Dialog ownership work through this adapter.    | P1       |
-| Alert interaction | Compare mandatory alert-dialog role, modal isolation, cancel/confirm actions, outside dismissal and Escape against AlertDialog rather than assuming ordinary Dialog behavior. | P1       |
-| Composed lifetime | Compare native action buttons, focus return, nested dialogs, complete Portal views and retained/manual exits with the delegated Dialog implementation.                        | P2       |
+| Area              | Current observation / required target comparison                                                                                                                                                                                                                                                                                                                                      | Priority |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| Delegated state   | TestBed reproduced the Dialog default conflicts through `[rdxAlertDialogRoot]`. Controlled `false` with default `true` opens it, and a late `defaultOpen=true` opens an initially closed Root. Run the [Dialog cases](../dialog/PARITY.md#ownership-and-lifetime-cases) through the alert variant, including focus and background isolation when the parent declines an open request. | P1       |
+| Alert interaction | Compare mandatory alert-dialog role, modal isolation, cancel/confirm actions, outside dismissal and Escape against AlertDialog rather than assuming ordinary Dialog behavior.                                                                                                                                                                                                         | P1       |
+| Composed lifetime | Compare native action buttons, focus return, nested dialogs, complete Portal views and retained/manual exits with the delegated Dialog implementation.                                                                                                                                                                                                                                | P2       |
 
 Also compare the actual emitted per-part attributes/CSS variables with both the pinned declaration
 files and runtime state mapping. Check native hosts, event reasons/details/default prevention,
@@ -80,9 +73,8 @@ are permitted; changed observable behavior needs evidence or an explicitly revie
 - No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
 - No conventional same-family SSR page was found; inspect shared SSR/hydration fixtures for applicable cases. No SSR/hydration result is claimed here.
 
-No runtime suite was executed for this initial matrix sweep. Complete focused state/DI units,
-native/layout browser cases and SSR/hydration checks before promoting rows; add a paired pinned
-fixture before certifying equivalent observable behavior. See the
+The [TestBed audit](../../../docs/engineering/parity-matrices.md#confirmed-state-gaps) checked Root open state through the Dialog adapter. Paired browser comparisons remain pending.
+See the
 [verification skill](../../../.agents/skills/radix-testing/SKILL.md),
 [matrix index](../../../docs/engineering/parity-matrices.md) and
 [upstream preparation guide](../../../docs/engineering/upstream-reference.md).

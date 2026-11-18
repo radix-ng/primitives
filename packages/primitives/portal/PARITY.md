@@ -53,11 +53,11 @@ boundaries explicitly instead of converting all models to readonly inputs.
 “Source” identifies a local implementation fact. “Compare/verify/audit” is pending work. Priorities
 describe the target work, not a certificate or a reproduced defect count.
 
-| Area             | Current observation / required target comparison                                                                                                                              | Priority |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| View owner       | Source: host relocation and structural PortalPresence adapt Angular views. Render only the owning committed presence/lifetime; an ignored open request is not a mount.        | P1       |
-| Target semantics | Compare omitted/null/custom/ShadowRoot containers, moving live views, declaration order, nested ownership and destroyed/pending targets.                                      | P2       |
-| Hydration        | Compare owned physical ranges, deferred roots, IDs, focus/Tab handoff and cleanup; wrapper differences are framework adaptations, not evidence of complete behavioral parity. | P2       |
+| Area             | Current observation / required target comparison                                                                                                                                                                                                                                                                    | Priority |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| View owner       | Source: host relocation and structural PortalPresence adapt Angular views. Render only the owning committed presence/lifetime; an ignored open request is not a mount.                                                                                                                                              | P1       |
+| Target semantics | Compare omitted/null/custom/ShadowRoot containers, moving live views, declaration order, nested ownership and destroyed/pending targets.                                                                                                                                                                            | P2       |
+| Hydration        | The structural Portal moves live physical view ranges, including dehydrated and newly materialized roots. Existing Angular SSR/browser checks cover stable IDs, reversed hydration, event replay, destination changes and owner disposal during lazy import. Retain those invariants when changing popup ownership. | P2       |
 
 Also compare the actual emitted per-part attributes/CSS variables with both the pinned declaration
 files and runtime state mapping. Check native hosts, event reasons/details/default prevention,
@@ -69,11 +69,15 @@ are permitted; changed observable behavior needs evidence or an explicitly revie
 - [Local unit files](__tests__): **5 files discovered**; not a passing-test count.
 - No same-family named browser behavior file was found. Cross-family consumer or shared-mechanism checks may exist; locate them before claiming absence or coverage.
 - No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
-- No conventional same-family SSR page was found; inspect shared SSR/hydration fixtures for applicable cases. No SSR/hydration result is claimed here.
+- The [AOT hydration suite](../../../apps/radix-ssr-testing/hydration-audit/README.md)
+  exercises native node reuse, pre-bootstrap edits and focus across declaration-owned Portal
+  moves. The [existing audit](../../../docs/engineering/mechanisms/portal-hydration-audit.md#implementation-and-current-regressions)
+  records the three-engine Angular 22 results and the `@defer` cancellation limitation. Portal
+  cleans up its owned nodes; destroying a block while its lazy import is pending can leave Angular
+  unstable. [ADR 0085](../../../docs/adr/0085-hydration-owned-identity-and-view-ranges.md).
 
-No runtime suite was executed for this initial matrix sweep. Complete focused state/DI units,
-native/layout browser cases and SSR/hydration checks before promoting rows; add a paired pinned
-fixture before certifying equivalent observable behavior. See the
+The hydration results above describe the recorded Angular regression scenarios. Use paired
+scenarios to evaluate shared popup behavior against the pin. See the
 [verification skill](../../../.agents/skills/radix-testing/SKILL.md),
 [matrix index](../../../docs/engineering/parity-matrices.md) and
 [upstream preparation guide](../../../docs/engineering/upstream-reference.md).

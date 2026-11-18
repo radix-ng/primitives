@@ -61,16 +61,35 @@ boundaries explicitly instead of converting all models to readonly inputs.
 “Source” identifies a local implementation fact. “Compare/verify/audit” is pending work. Priorities
 describe the target work, not a certificate or a reproduced defect count.
 
-| Area                    | Current observation / required target comparison                                                                                                                         | Priority |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
-| Value versus text draft | Source: numeric/null value is a form model; typed text, formatting and scrub state need distinct ownership. Coordinate the CVA and model paths once per accepted edit.   | P1       |
-| Default reassignment    | Source: an effect re-reads defaultValue and writes model/CVA whenever defined. Compare conflicting initial inputs, zero/null/empty form values, late defaults and reset. | P1       |
-| Numeric interaction     | Compare locale parsing, min/max/step/clamping, committed-event timing, spin buttons, keyboard/wheel/scrub gestures, native submit and validation.                        | P2       |
+| Area                    | Current observation / required target comparison                                                                                                                       | Priority |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| Value versus text draft | Source: numeric/null value is a form model; typed text, formatting and scrub state need distinct ownership. Coordinate the CVA and model paths once per accepted edit. | P1       |
+| Default reassignment    | TestBed reproduced a bound FormControl being overwritten by the default. See [form precedence cases](#form-precedence-cases).                                          | P1       |
+| Numeric interaction     | Compare locale parsing, min/max/step/clamping, committed-event timing, spin buttons, keyboard/wheel/scrub gestures, native submit and validation.                      | P2       |
 
 Also compare the actual emitted per-part attributes/CSS variables with both the pinned declaration
 files and runtime state mapping. Check native hosts, event reasons/details/default prevention,
 accessibility relationships, keyboard/RTL and cleanup where applicable. Angular framework adapters
 are permitted; changed observable behavior needs evidence or an explicitly reviewed deviation.
+
+## Form precedence cases
+
+On 2026-11-18 a TestBed fixture bound `FormControl(0, { nonNullable: true })` and
+`[defaultValue]="11"` to [Root](src/number-field-root.ts). `currentValue()` reads the CVA
+state that renders the number string. The `value()` model is a separate observable surface.
+
+| Operation                     | FormControl / Root `value()` / displayed text | Target Angular behavior                                                                                                                                                                                           |
+| ----------------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Initial binding               | `11` / `11` / `"11"`                          | The form's initial `0` wins and initialization leaves the control value untouched. Repeat with `null` on a nullable control.                                                                                      |
+| `control.setValue(6)`         | `6` / `11` / `"6"`                            | The form, rendered value and documented effective-value readout report `6` without a user-change request.                                                                                                         |
+| Change `defaultValue` to `12` | `12` / `12` / `"12"`                          | The late default leaves the form and display at `6`. Separately verify a standalone initial default of `11` and a once-only native reset baseline.                                                                |
+| `control.reset(3)`            | `3` / `12` / `"3"`                            | The reset-supplied `3` is effective. Check CVA, Signal Forms reset and native form reset according to their separate [ownership rules](../../../docs/engineering/state-ownership.md#initialization-and-defaults). |
+
+The existing [uncontrolled-default unit](__tests__/number-field.spec.ts) supplies the default after
+the fixture's first change detection. Split it into a host with the default on first render and a
+late assignment case when changing the contract. Add a form conflict case with bound `0` before
+changing the CVA or public model. The pin's [NumberField Root](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/number-field/root/NumberFieldRoot.tsx)
+is the reference for standalone `value`/`defaultValue`. Angular form adapters have their own reset rules.
 
 ## Evidence inventory and next checks
 
@@ -79,9 +98,8 @@ are permitted; changed observable behavior needs evidence or an explicitly revie
 - No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
 - No conventional same-family SSR page was found; inspect shared SSR/hydration fixtures for applicable cases. No SSR/hydration result is claimed here.
 
-No runtime suite was executed for this initial matrix sweep. Complete focused state/DI units,
-native/layout browser cases and SSR/hydration checks before promoting rows; add a paired pinned
-fixture before certifying equivalent observable behavior. See the
+The [TestBed audit](../../../docs/engineering/parity-matrices.md#confirmed-state-gaps) checked CVA, exposed model and rendered numeric text. Paired browser comparisons remain pending.
+See the
 [verification skill](../../../.agents/skills/radix-testing/SKILL.md),
 [matrix index](../../../docs/engineering/parity-matrices.md) and
 [upstream preparation guide](../../../docs/engineering/upstream-reference.md).

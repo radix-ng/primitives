@@ -60,11 +60,11 @@ boundaries explicitly instead of converting all models to readonly inputs.
 “Source” identifies a local implementation fact. “Compare/verify/audit” is pending work. Priorities
 describe the target work, not a certificate or a reproduced defect count.
 
-| Area                   | Current observation / required target comparison                                                                                                                                     | Priority |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
-| Open/default ownership | Source: open is a model with a first-truthy defaultOpen latch. Compare explicit false, parent refusal, delayed acceptance and a late false-to-true default.                          | P1       |
-| Provider versus state  | Provider delay/close/hover defaults are configuration, distinct from initial open. Timed hover/focus requests, active trigger and lifecycle must follow the effective open contract. | P1       |
-| Tooltip behavior       | Compare provider grouping, multiple triggers/handles, native description IDs, disabled/interactive content, pointer grace, viewport/arrow, dismissal and SSR/hydration.              | P2       |
+| Area                   | Current observation / required target comparison                                                                                                                                                                                                                                                                               | Priority |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| Open/default ownership | TestBed observed `[open]="false" [defaultOpen]="true"` opening the Root. A late false-to-true default also opens an initially closed uncontrolled Root. The target keeps both closed. Use a timed hover or focus request to check that parent refusal keeps the popup and its description inactive, then accept after a delay. | P1       |
+| Provider versus state  | Provider delay/close/hover defaults are configuration, distinct from initial open. Timed hover/focus requests, active trigger and lifecycle must follow the effective open contract.                                                                                                                                           | P1       |
+| Tooltip behavior       | Compare provider grouping, multiple triggers/handles, native description IDs, disabled/interactive content, pointer grace, viewport/arrow, dismissal and SSR/hydration.                                                                                                                                                        | P2       |
 
 Also compare the actual emitted per-part attributes/CSS variables with both the pinned declaration
 files and runtime state mapping. Check native hosts, event reasons/details/default prevention,
@@ -78,9 +78,8 @@ are permitted; changed observable behavior needs evidence or an explicitly revie
 - No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
 - No conventional same-family SSR page was found; inspect shared SSR/hydration fixtures for applicable cases. No SSR/hydration result is claimed here.
 
-No runtime suite was executed for this initial matrix sweep. Complete focused state/DI units,
-native/layout browser cases and SSR/hydration checks before promoting rows; add a paired pinned
-fixture before certifying equivalent observable behavior. See the
+The [TestBed audit](../../../docs/engineering/parity-matrices.md#confirmed-state-gaps) checked Root open state. Paired browser comparisons remain pending.
+See the
 [verification skill](../../../.agents/skills/radix-testing/SKILL.md),
 [matrix index](../../../docs/engineering/parity-matrices.md) and
 [upstream preparation guide](../../../docs/engineering/upstream-reference.md).

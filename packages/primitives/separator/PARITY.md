@@ -53,11 +53,11 @@ boundaries explicitly instead of converting all models to readonly inputs.
 “Source” identifies a local implementation fact. “Compare/verify/audit” is pending work. Priorities
 describe the target work, not a certificate or a reproduced defect count.
 
-| Area                 | Current observation / required target comparison                                                         | Priority |
-| -------------------- | -------------------------------------------------------------------------------------------------------- | -------- |
-| Readonly semantics   | Orientation and decorative flags are configuration, not editable state or uncontrolled defaults.         | N/A      |
-| Native accessibility | Compare role/presentation, aria-orientation and authored native hosts in both orientations.              | P2       |
-| Reactive changes     | Verify orientation/decorative updates and inherited RTL/layout without inventing change-request outputs. | P2       |
+| Area                 | Current observation / required target comparison                                                                                                                                                                                                                                                                                              | Priority |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| Readonly semantics   | The two public surfaces expose orientation configuration. Angular's `linkedSignal` also accepts a composed orientation override from Stepper or Toolbar via `updateOrientation()`.                                                                                                                                                            | N/A      |
+| Native accessibility | [Angular](src/separator.directive.ts) and [Base UI](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/separator/Separator.tsx) both set `role=separator`, `aria-orientation` and `data-orientation`. Compare both orientations on the default div and on authored native hosts, including `hr`. | P2       |
+| Reactive changes     | Check direct orientation updates, Stepper orientation changes and Toolbar's inherited fallback, then verify the three host attributes continue to reflect the chosen orientation.                                                                                                                                                             | P2       |
 
 Also compare the actual emitted per-part attributes/CSS variables with both the pinned declaration
 files and runtime state mapping. Check native hosts, event reasons/details/default prevention,

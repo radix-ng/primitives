@@ -50,6 +50,11 @@ distinguishes controlled UI requests, editable form models, readonly configurati
 and derived/render state. Local writes to required form models are legitimate Angular behavior.
 For strict controlled UI state, a request must not mutate the effective value before parent acceptance.
 
+[Drawer Root](src/drawer-root.ts) forwards Dialog's `open`, `defaultOpen`, `triggerId`,
+`defaultTriggerId`, `handle`, `modal` and `disablePointerDismissal`, as well as its
+`openChange`, `triggerIdChange`, `onOpenChange` and `onOpenChangeComplete` outputs.
+The [Dialog ownership cases](../dialog/PARITY.md#ownership-and-lifetime-cases) apply to those forwarded bindings.
+
 | State field / source                            | Current declaration                       | Ownership review                                                                                              |
 | ----------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | [`RdxDrawerRoot.snapPoint`](src/drawer-root.ts) | `model<RdxDrawerSnapPoint \| null>(null)` | Define parent-owned UI requests separately from accepted/effective state; no form-model exemption is implied. |
@@ -68,11 +73,11 @@ boundaries explicitly instead of converting all models to readonly inputs.
 “Source” identifies a local implementation fact. “Compare/verify/audit” is pending work. Priorities
 describe the target work, not a certificate or a reproduced defect count.
 
-| Area                          | Current observation / required target comparison                                                                                                                                                                | Priority |
-| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| Delegated open and snap point | Source: Dialog is composed for open/defaultOpen; snapPoint is a separate model with defaultSnapPoint. Define controlled open, controlled snap and transient drag preview separately; these are not form values. | P1       |
-| Gesture acceptance            | Compare ignored/replaced snap requests, canceled close, drag release, velocity/direction thresholds, keyboard/native close and snap default changes.                                                            | P1       |
-| Mobile/lifetime               | Compare viewport/content/indent parts, scroll handoff, nested modal focus, virtual keyboard, multi-root exits and hydration. Dialog results do not certify Drawer gestures.                                     | P2       |
+| Area                          | Current observation / required target comparison                                                                                                                                                                                                                                                                                                                                                                                                                  | Priority |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| Delegated open and snap point | TestBed reproduced both [shared open-default gaps](../../../docs/engineering/parity-matrices.md#confirmed-state-gaps). With `[open]="true"`, `[snapPoint]="null"`, `[snapPoints]="[0.5, 1]"` and `[defaultSnapPoint]="0.5"`, Angular resolves to `0.5`. [Pinned Drawer Root](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/drawer/root/DrawerRoot.tsx) treats `null` as a supplied snap point and preserves it. | P1       |
+| Gesture acceptance            | Compare a drag preview with the accepted snap point when the parent ignores, replaces or delays the request. Verify animation, release, cancellation and close/reopen with a separate test for late snap defaults.                                                                                                                                                                                                                                                | P1       |
+| Mobile/lifetime               | Compare viewport/content/indent parts, scroll handoff, nested modal focus, virtual keyboard, multi-root exits and hydration. Dialog results do not certify Drawer gestures.                                                                                                                                                                                                                                                                                       | P2       |
 
 Also compare the actual emitted per-part attributes/CSS variables with both the pinned declaration
 files and runtime state mapping. Check native hosts, event reasons/details/default prevention,
@@ -86,9 +91,8 @@ are permitted; changed observable behavior needs evidence or an explicitly revie
 - No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
 - No conventional same-family SSR page was found; inspect shared SSR/hydration fixtures for applicable cases. No SSR/hydration result is claimed here.
 
-No runtime suite was executed for this initial matrix sweep. Complete focused state/DI units,
-native/layout browser cases and SSR/hydration checks before promoting rows; add a paired pinned
-fixture before certifying equivalent observable behavior. See the
+The [TestBed audit](../../../docs/engineering/parity-matrices.md#confirmed-state-gaps) checked effective open and snap point. Paired browser comparisons remain pending.
+See the
 [verification skill](../../../.agents/skills/radix-testing/SKILL.md),
 [matrix index](../../../docs/engineering/parity-matrices.md) and
 [upstream preparation guide](../../../docs/engineering/upstream-reference.md).

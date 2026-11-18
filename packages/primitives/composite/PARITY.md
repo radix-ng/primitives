@@ -68,7 +68,11 @@ are permitted; changed observable behavior needs evidence or an explicitly revie
 
 ## Evidence inventory and next checks
 
-- [Local unit files](__tests__): **1 file discovered**; not a passing-test count.
+- [Composite units](__tests__/composite.spec.ts) exercise retained instances through DOM and
+  tracked `@for` moves and verify ordered metadata. [Core registry units](../core/__tests__/use-element-registry.spec.ts)
+  cover replacement ownership, metadata changes, wrapper moves, reconnection and disposal.
+  The registry is shared with Combobox/Autocomplete. Roving tabindex and
+  `aria-activedescendant` remain distinct. [ADR 0086](../../../docs/adr/0086-shared-element-registry.md).
 - Named browser regression files: [composite.behavior.spec.ts](../../../apps/visual-regression/tests/composite.behavior.spec.ts). Scenario scope and freshness still need review; none was run by this inventory.
 - No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
 - No conventional same-family SSR page was found; inspect shared SSR/hydration fixtures for applicable cases. No SSR/hydration result is claimed here.

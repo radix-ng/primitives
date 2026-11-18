@@ -55,11 +55,11 @@ boundaries explicitly instead of converting all models to readonly inputs.
 “Source” identifies a local implementation fact. “Compare/verify/audit” is pending work. Priorities
 describe the target work, not a certificate or a reproduced defect count.
 
-| Area                   | Current observation / required target comparison                                                                                                                                                       | Priority |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
-| Open/default ownership | Source: open is a writable model and a latch seeds the first truthy defaultOpen. Compare explicit false and a late false-to-true default; target one silent uncontrolled snapshot.                     | P1       |
-| Panel ownership        | Audit standalone Panel view ownership separately from Accordion structural ownership. Compare actual child init/destroy, retained state, manual/native detachment, interruptible exit and beforematch. | P1       |
-| Panel surface          | Compare explicit Panel IDs, local keepMounted/hiddenUntilFound overrides, search reveal cancellation, size variables, initial motion and SSR/hydration.                                                | P2       |
+| Area                   | Current observation / required target comparison                                                                                                                                                                                                                                                                                                                                                                                               | Priority |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| Open/default ownership | TestBed observed `[open]="false" [defaultOpen]="true"` opening the Root, as did a late false-to-true default on a closed uncontrolled Root. [Pinned Collapsible Root](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/collapsible/root/CollapsibleRoot.tsx) resolves the supplied `open` and seeds its uncontrolled default once. Assert that both cases stay closed, with no open completion. | P1       |
+| Panel ownership        | The [standalone Panel](src/collapsible-panel.directive.ts) detaches its host through the renderer while its Angular view survives. [Accordion supplies a structural owner](../../../docs/adr/0087-accordion-whole-panel-presence.md). Run standalone child init/destroy counters through initially closed, closed after exit, retained and `hiddenUntilFound` cases. Compare observable DOM and child state separately.                        | P1       |
+| Panel surface          | Compare explicit Panel IDs, local keepMounted/hiddenUntilFound overrides, search reveal cancellation, size variables, initial motion and SSR/hydration.                                                                                                                                                                                                                                                                                        | P2       |
 
 Also compare the actual emitted per-part attributes/CSS variables with both the pinned declaration
 files and runtime state mapping. Check native hosts, event reasons/details/default prevention,
@@ -73,9 +73,8 @@ are permitted; changed observable behavior needs evidence or an explicitly revie
 - No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
 - [SSR consumer page](../../../apps/radix-ssr-testing/src/app/components/collapsible/page.ts) exists. Its presence does not prove initial-state, lifecycle or hydration equivalence; inspect actual assertions.
 
-No runtime suite was executed for this initial matrix sweep. Complete focused state/DI units,
-native/layout browser cases and SSR/hydration checks before promoting rows; add a paired pinned
-fixture before certifying equivalent observable behavior. See the
+The [TestBed audit](../../../docs/engineering/parity-matrices.md#confirmed-state-gaps) checked Root open state. Paired browser comparisons remain pending.
+See the
 [verification skill](../../../.agents/skills/radix-testing/SKILL.md),
 [matrix index](../../../docs/engineering/parity-matrices.md) and
 [upstream preparation guide](../../../docs/engineering/upstream-reference.md).

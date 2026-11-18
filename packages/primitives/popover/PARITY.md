@@ -35,6 +35,22 @@ removed or hidden content: a visible field's native blur must not refocus the po
 reason reported by the next outside click. Three secondary-press cases compare these phases and
 the actual native focus without new difference exceptions.
 
+## Open and trigger ownership
+
+The 2026-11-18 [TestBed audit](../../../docs/engineering/parity-matrices.md#confirmed-state-gaps) found two ownership gaps in
+[Root](src/popover-root.ts) outside the paired results above. The reference uses
+[one-time popup initialization](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/utils/popups/popupRoot.tsx) and
+[controlled selectors](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/utils/popups/store.ts).
+
+| Scenario                       | TestBed observation                                                                                                                               | Target comparison                                                                                                                                                   |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Explicit false or late default | `[open]="false" [defaultOpen]="true"` opens the Root. So does changing `defaultOpen` from false to true on an initially closed uncontrolled Root. | Both cases stay closed. An initially supplied uncontrolled `defaultOpen=true` opens once.                                                                           |
+| Parent leaves its input false  | Trigger click emits `onOpenChange(true)` and `openChange(true)`, and Root opens while the bound state remains false.                              | Record request, DOM visibility, positioning, focus and completion independently. Compare ignore, delayed acceptance and cancellation alongside accepted `[(open)]`. |
+
+With two triggers, check that `triggerId="b"` takes precedence over `defaultTriggerId="a"`.
+Check active anchor and focus return on accepted transitions, and compare explicit `null` against
+the reference's fallback separately. Browser comparisons for these ownership cases are pending.
+
 ## Close lifecycle increment
 
 Ten additional scenarios compare natural CSS exits with and without retained DOM, a deferred close,

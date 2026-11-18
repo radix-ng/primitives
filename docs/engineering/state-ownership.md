@@ -16,9 +16,9 @@ branches, aliases, shadow values or duplicate mechanisms solely for the previous
 | Native DOM state            | Keep the browser authoritative where the API does not explicitly control the value. Distinguish native notifications from accepted programmatic writes.                                                       | Scroll position, native input selection, browser form behavior.                                       |
 | Derived/render state        | Follow actual committed owner state and DOM lifetime, rather than the requested next state. Do not publish an independently writable mirror without a separate contract.                                      | Mounted/transition status, collection indices, geometry, highlighted/preview state, ID registrations. |
 
-One Root can contain several kinds. Combobox/Select can retain a form-value model while `open` uses a
-parent-owned request contract. Auxiliary placeholders, drafts and navigation highlights need their
-own explicitly documented owner; the form value does not automatically own them.
+One Root can contain several kinds. Combobox and Select can retain a form-value model while the
+parent owns controlled `open`. In Combobox, `value` is the Signal Forms field. `inputValue` has its own
+editable query contract, including the behavior when a selection replaces the text.
 
 Angular permits local writes to model inputs. Its installed 22.0.2 `FormValueControl` requires
 `value: ModelSignal<T>`; checkbox controls require `checked` and must not define a `value` member.
@@ -47,8 +47,15 @@ do not pretend that one model supplies both contracts or add a second mirrored s
 5. Initializing a default or receiving an external value must not impersonate a user request, mark
    a form dirty or synthesize interaction callbacks. Actual lifecycle-completion notifications are
    a separate contract and follow the effective state.
-6. Native/form reset uses the initial authoritative baseline, rather than a newly read default or
-   whichever local value happens to exist when reset occurs. Define reset notifications separately.
+6. A primitive that owns native reset through the browser input bridge captures its baseline after
+   resolving initial ownership. Later default changes must leave that baseline intact. Angular forms
+   keep their reset contracts. With no reset argument, a Reactive Forms control returns to its
+   `defaultValue`, which is `null` by default and the initial value with `nonNullable`. An explicit
+   reset value takes precedence. Signal Forms `reset()` clears interaction state and can take an
+   optional new value.
+   [Browser input bridge](../adr/0025-separate-angular-forms-from-browser-input-bridge.md),
+   [Reactive Forms reset](https://angular.dev/api/forms/FormControl#reset),
+   [Signal Forms reset](https://angular.dev/guide/forms/signals/field-state-management#resetting-forms-after-submission).
 
 These rules concern **state defaults**. Reactive provider configuration, locale/direction inheritance,
 positioning defaults and readonly formatting inputs are not uncontrolled state seeds. Audit those
@@ -76,12 +83,23 @@ Automatic consistency changes, data removal and native/form reset are not necess
 Document their reason, cancellation and notification rules instead of silently treating them as the
 same event. Compare them with the pinned reference where a counterpart exists.
 
+Record how each field treats a change in binding presence during the same instance's lifetime.
+The pinned `useControlled` captures its mode on the first render. The popup store resolves
+effective `open` through `openProp ?? open` and active trigger through
+`triggerIdProp ?? activeTriggerId`. Test omission, explicit `null` for trigger identity and adding
+or removing the binding where the public contract supports it.
+[Pinned controlled hook](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/utils/src/useControlled.ts),
+[pinned popup selectors](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/utils/popups/store.ts).
+
 ## Shared implementation boundary
 
-Use the established patterns from [Tabs ownership](../adr/0081-tabs-controlled-selection-ownership.md)
-and [Menu/Autocomplete initialization](../adr/0071-menu-initial-model-defaults.md) as evidence, not as
-an obligation to preserve every existing API. Breaking changes can remove binding-presence workarounds
-when a clearer readonly input contract provides presence directly.
+Use the Tabs pattern for parent-owned UI requests. Menu and Autocomplete demonstrate one-time
+initialization with writable models, including model outputs on default writes where their API
+preserves that behavior. Their defaults tests cover initialization. To verify strict ownership,
+test a parent that ignores a request through a one-way binding. Breaking changes allow the readonly
+input to express presence directly where that contract fits.
+[Tabs ownership](../adr/0081-tabs-controlled-selection-ownership.md),
+[Menu and Autocomplete initialization](../adr/0071-menu-initial-model-defaults.md).
 
 Angular input/output declarations must remain statically visible to its compiler. A shared helper may
 coordinate already declared signals, request callbacks or initialization; it must not hide `input()`

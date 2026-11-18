@@ -53,11 +53,11 @@ boundaries explicitly instead of converting all models to readonly inputs.
 “Source” identifies a local implementation fact. “Compare/verify/audit” is pending work. Priorities
 describe the target work, not a certificate or a reproduced defect count.
 
-| Area               | Current observation / required target comparison                                                                                                                                   | Priority |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| Committed lifetime | Source: supplied present and explicit participants feed the shared render lifecycle. Presence owns a view boundary rather than the business open/selected value.                   | P1       |
-| Motion ownership   | Compare finite/infinite/canceled/replaced motion, dynamic participants, rapid reopen, root removal and once-only completion. Keep one owned lifecycle rather than another machine. | P1       |
-| Angular views      | Verify actual child destruction versus retained native DOM, multi-root templates, deferred/hydrated ranges and explicit participant scope.                                         | P2       |
+| Area               | Current observation / required target comparison                                                                                                                                                                                                                                 | Priority |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| Committed lifetime | Standalone Presence consumes `present` via the shared signal-owned `useRenderLifecycle`. Popup portals borrow the Root lifecycle and registered semantic participants. [ADR 0084](../../../docs/adr/0084-signal-render-lifecycle.md) defines the migration from PresenceMachine. | P1       |
+| Motion ownership   | Compare finite/infinite/canceled/replaced motion, dynamic participants, rapid reopen, root removal and once-only completion. Keep one owned lifecycle rather than another machine.                                                                                               | P1       |
+| Angular views      | The managed view range covers live and dehydrated roots. Apply the [Portal hydration invariants](../portal/PARITY.md#evidence-inventory-and-next-checks) when comparing destruction, retained children and dynamic or deferred roots.                                            | P2       |
 
 Also compare the actual emitted per-part attributes/CSS variables with both the pinned declaration
 files and runtime state mapping. Check native hosts, event reasons/details/default prevention,
@@ -66,10 +66,13 @@ are permitted; changed observable behavior needs evidence or an explicitly revie
 
 ## Evidence inventory and next checks
 
-- No direct family unit-test directory/files were found in this inventory; shared consumer tests may still apply.
+- [Shared render lifecycle units](../core/__tests__/render-lifecycle.spec.ts) cover holds,
+  interrupted exits and release. [Portal Presence units](../portal/__tests__/portal-presence.spec.ts)
+  exercise structural views and scope cleanup.
 - Named browser regression files: [presence-waapi.behavior.spec.ts](../../../apps/visual-regression/tests/presence-waapi.behavior.spec.ts). Scenario scope and freshness still need review; none was run by this inventory.
 - No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
-- No conventional same-family SSR page was found; inspect shared SSR/hydration fixtures for applicable cases. No SSR/hydration result is claimed here.
+- [The shared AOT hydration suite](../../../apps/radix-ssr-testing/hydration-audit/README.md) exercises
+  structural Presence in Tabs and retained versus recreated children in Accordion.
 
 No runtime suite was executed for this initial matrix sweep. Complete focused state/DI units,
 native/layout browser cases and SSR/hydration checks before promoting rows; add a paired pinned
