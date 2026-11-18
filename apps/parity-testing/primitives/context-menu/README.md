@@ -88,3 +88,27 @@ Linux/arm64 passes **27 switching comparisons**: three cases (including independ
 three engines and three repetitions, one worker and original timeouts in Playwright 1.60.0 Noble.
 Linux observations are in `dist/ci-43858922362/linux-context-menu/results/`. Two new unit regressions
 fail before the change; the affected lifecycle/consumer units pass **647 tests**.
+
+## Completed sessions after Escape
+
+CI [44286579304](https://github.com/radix-ng/primitives/actions/runs/44286579304/job/134741094822)
+failed `repeat-open` in Linux WebKit. The driver treated popup DOM removal as a completed close and
+immediately reopened at another point. Angular could still cancel its pending close-completion
+frame, recording `[true, true]`, while the reference had completed that close and recorded
+`[true, false, true]`. Native requests, gestures, point anchors and settled open state agreed.
+The original artifact is retained in `dist/ci-44286579304/context-menu/results/`.
+
+The unchanged scenario reproduced twice in eight macOS WebKit runs and once in eight Linux/arm64
+WebKit runs. This case compares two completed sessions, so it now observes the actual
+`[true, false]` completion array and records a fully closed checkpoint before the second native
+right-click. Repositioned and final closed checkpoints explicitly require `[true, false, true]`
+and `[true, false, true, false]`. All callback arrays remain compared exactly; no runtime, native
+input, timeout or expected-difference policy changes. Same-gesture interruption keeps its separate
+clock-bounded switching scenarios.
+
+Verification on macOS passes 36 comparisons: `repeat-open`, sibling switching, canceled-close retry
+and independent-Root switching, repeated three times in all engines. The complete Linux/arm64 suite
+passes 166 comparisons with 17 existing capability skips, using Playwright 1.60.0 Noble, Node 24.22.1,
+two workers and original timeouts. Linux serves the same AOT-built browser fixtures through a static
+server. Focused Context Menu units pass 21 tests; lint, formatting and contributor checks pass.
+Before/after reports are retained under `dist/ci-44286579304/context-menu/` and the normal suite output.

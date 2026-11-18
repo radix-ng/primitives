@@ -198,11 +198,24 @@ export const scenarios = cases.map((name) => ({
             if (name === 'repeat-open') {
                 await d.page.keyboard.press('Escape');
                 await expect(popup).toHaveCount(0);
+                // This case compares two completed sessions. DOM removal can precede the
+                // close-completion frame; reopening then would cancel that pending close.
+                await expect
+                    .poll(() => d.page.evaluate(() => window.contextMenuParity.completions.context))
+                    .toEqual([true, false]);
+                await d.checkpoint('first session closed', {
+                    open: [],
+                    mounted: [],
+                    completions: { context: [true, false], 'context-sub': [] }
+                });
                 await d.page.mouse.click(areaBox.x + 60, areaBox.y + 30, { button: 'right' });
                 await expect
                     .poll(async () => Math.round((await popup.boundingBox())!.x))
                     .toBe(Math.round(areaBox.x + 64));
-                await d.checkpoint('repositioned', { open: ['context'] });
+                await d.checkpoint('repositioned', {
+                    open: ['context'],
+                    completions: { context: [true, false, true], 'context-sub': [] }
+                });
             }
         }
         if (name === 'select') await d.page.getByTestId('context-alpha').press('Enter');
@@ -219,7 +232,10 @@ export const scenarios = cases.map((name) => ({
         await d.checkpoint('closed', {
             open: [],
             mounted: name === 'keep-mounted' ? ['context'] : [],
-            selected: name === 'select' ? ['context-alpha'] : []
+            selected: name === 'select' ? ['context-alpha'] : [],
+            ...(name === 'repeat-open'
+                ? { completions: { context: [true, false, true, false], 'context-sub': [] } }
+                : {})
         });
     }
 }));

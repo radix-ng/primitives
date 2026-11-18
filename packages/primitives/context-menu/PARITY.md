@@ -9,7 +9,7 @@ This is incremental evidence, not complete API or accessibility certification.
 | Native right-click opening and virtual point anchor            | Independent pinned suite, three engines  | Covered for a native button context area             |
 | Selection, outside/Escape dismissal and retained portals       | Pinned suite                             | Covered                                              |
 | Canceled open/close and whole-root disabling                   | Pinned suite                             | Covered                                              |
-| Reopen at another point                                        | Pinned suite                             | Covered                                              |
+| Reopen at another point                                        | Pinned suite                             | Covered; completed close precedes the next session   |
 | Right-button drag/release                                      | Pinned suite                             | Covered; native macOS/Linux selection policy         |
 | Previous-focus return                                          | Pinned suite                             | Covered; context area does not become a Menu trigger |
 | Native keyboard/touch opening, slop and cancellation           | Capability-gated pinned suite            | Covered within stated browser capabilities           |
@@ -107,3 +107,18 @@ press even when the shared dismissal guard recognizes the element as owned popup
 
 The 48 new comparisons introduce no exceptions. Menu state uses a self-scoped DI boundary; shared
 floating ancestry remains intact. See [ADR 0047](../../../docs/adr/0047-independent-context-menu-roots.md).
+
+## Completed-session comparison boundary
+
+CI [44286579304](https://github.com/radix-ng/primitives/actions/runs/44286579304/job/134741094822)
+exposed a `repeat-open` driver race: popup DOM removal preceded automatic close completion. The next
+right-click could interrupt Angular's pending completion while the reference had already finished
+its close. This is the completed-session path; the separate native switching cases intentionally
+compare interrupted sessions under a bounded gesture frame.
+
+The driver now waits for the actual `[true, false]` completion array, records closed DOM/focus,
+then reopens at the original second point. It explicitly requires `[true, false, true]` after
+repositioning and `[true, false, true, false]` after final closing. The source, native gestures,
+existing timeouts and exact exception/completion policies stay intact. See the
+[suite regression evidence](../../../apps/parity-testing/primitives/context-menu/README.md#completed-sessions-after-escape)
+for before/after repetitions and Linux validation.
