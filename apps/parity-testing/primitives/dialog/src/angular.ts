@@ -1,6 +1,7 @@
 import { Component, provideZonelessChangeDetection, signal, viewChild } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { dialogImports, RdxDialogOpenChange, RdxDialogRoot } from '@radix-ng/primitives/dialog';
+import '../../../../radix-storybook/.storybook/tailwind.css';
 import { classes, config, installProbe } from './contract';
 import './fixture.css';
 
@@ -22,6 +23,8 @@ import './fixture.css';
                 [defaultOpen]="defaultOpen()"
                 [triggerId]="triggerId()"
                 [defaultTriggerId]="settings.defaultTriggerId ?? null"
+                [modal]="settings.modal ?? true"
+                [disablePointerDismissal]="settings.disablePointerDismissal ?? false"
                 (onOpenChange)="change($event)"
                 (openChange)="accept($event)"
                 (onOpenChangeComplete)="trace.probe.completions.push($event)"
@@ -34,7 +37,9 @@ import './fixture.css';
                     </button>
                 }
                 <ng-template [keepMounted]="settings.keepMounted ?? false" rdxDialogPortal>
-                    <div [class]="styles.backdrop" rdxDialogBackdrop data-testid="backdrop"></div>
+                    @if (settings.backdrop ?? settings.modal === undefined) {
+                        <div [class]="styles.backdrop" rdxDialogBackdrop data-testid="backdrop"></div>
+                    }
                     <div
                         [class]="styles.popup"
                         [attr.data-motion]="settings.animate ? '' : null"
@@ -48,6 +53,10 @@ import './fixture.css';
                     </div>
                 </ng-template>
             </div>
+            @if (settings.modal !== undefined) {
+                <input [class]="styles.input" data-testid="outside-field" aria-label="Outside field" />
+                <div class="size-16" data-testid="outside-surface"></div>
+            }
         </main>
     `
 })

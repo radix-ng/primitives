@@ -44,9 +44,8 @@ const DIALOG_INTERNAL_BACKDROP_ATTR = 'data-rdx-dialog-internal-backdrop';
  * - **Lifecycle split (resolved 2026-06-16):** `enabled` is `open || transitionStatus === 'ending'`, so
  *   the trap / return-focus machinery survives the exit animation, while the manager's marker + isolation
  *   passes additionally key off `open` and release at close-start (Base UI `markOthers` gating).
- * - **`trap-focus` split:** the manager traps focus for `modal === true` and `'trap-focus'`, but applies
- *   real `inert` isolation only for `modal === true`, matching Base UI's public contract that
- *   `modal="trap-focus"` leaves outside pointer interaction enabled.
+ * - **`trap-focus` split:** both modal modes cycle Tab inside the popup. For `'trap-focus'`,
+ *   outside elements are hidden from assistive technologies while remaining pointer-interactive.
  * - **`returnFocus` orchestration (resolved 2026-06-16):** the manager now owns the return-focus *target*
  *   via the focus scope's `returnFocus` config seam (the scope owns the *timing* — its queued post-unmount
  *   frame). The guarded default returns to the interaction trigger, or previous focus for a
@@ -65,8 +64,9 @@ const DIALOG_INTERNAL_BACKDROP_ATTR = 'data-rdx-dialog-internal-backdrop';
             return {
                 // Trap for a modal or trap-focus dialog (Base UI `modal={modal !== false}`).
                 modal: () => rootContext.modal() === true || rootContext.modal() === 'trap-focus',
-                // Full modal blocks outside pointer interaction; `trap-focus` only traps focus.
+                containFocus: () => rootContext.modal() === true,
                 inert: () => rootContext.modal() === true,
+                ariaHidden: () => rootContext.modal() === 'trap-focus',
                 // Active for the whole MOUNTED lifetime — including an explicit
                 // `preventUnmountOnClose()` cycle after the exit transition — matching Base UI's
                 // `FloatingFocusManager disabled={!mounted}` (NOT `open`) for scope/return-focus.
@@ -155,12 +155,20 @@ export class RdxDialogPopup {
 
         // Dismissal (Base UI Dialog outside-press policy): Escape always closes; an outside press closes
         // only the **topmost** dialog (a parent with an open nested dialog never self-closes) and only when
-        // pointer dismissal is enabled. A fully modal dialog uses the internal backdrop and intentional
-        // outside-press timing (click, not pointerdown). Focus-out is owned by the focus manager (below).
+        // pointer dismissal is enabled. An owned backdrop waits for a completed press. Without a
+        // backdrop, non-modal mouse presses are intentional and trap-focus releases on pointerdown.
         new RdxDismiss(this.floatingContext, () => this.registration?.node() ?? null, {
             escapeKey: () => true,
-            outsidePress: () => this.isTopmost() && !this.rootContext.disablePointerDismissal(),
-            outsidePressEvent: () => (this.rootContext.modal() === true ? 'intentional' : 'sloppy'),
+            outsidePress: (event) =>
+                this.isTopmost() &&
+                !this.rootContext.disablePointerDismissal() &&
+                (!('button' in event) || event.button === 0),
+            outsidePressEvent: () => {
+                const modal = this.rootContext.modal();
+                // Dialog's registered floating elements are Popup and any authored or internal backdrops.
+                if (modal === true || this.floatingContext.floatingElements.size > 1) return 'intentional';
+                return { mouse: modal === 'trap-focus' ? 'sloppy' : 'intentional', touch: 'sloppy' };
+            },
             focusOutside: () => false,
             onEscapeKeyDown: (event) => this.escapeKeyDown.emit(event),
             onPointerDownOutside: (event) => {

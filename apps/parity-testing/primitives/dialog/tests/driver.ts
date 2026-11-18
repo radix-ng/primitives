@@ -36,6 +36,14 @@ export class DialogDriver {
         return this.page.getByTestId(id);
     }
 
+    async pointerAt(testId: string) {
+        const box = await this.page.getByTestId(testId).boundingBox();
+        if (!box) throw new Error(`Missing layout for ${testId}`);
+        const point = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+        await this.page.mouse.move(point.x, point.y);
+        return point;
+    }
+
     async open(id = 'primary') {
         await this.trigger(id).press('Enter');
         await this.opened();

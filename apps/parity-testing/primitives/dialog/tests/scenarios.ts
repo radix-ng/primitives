@@ -19,6 +19,9 @@ const primaryOpen = {
 
 type Scenario = { name: CaseName; run: (driver: DialogDriver) => Promise<void> };
 
+const triggerOpen = { open: true, reason: 'trigger-press', trigger: 'primary', canceled: false };
+const outsideClose = { open: false, reason: 'outside-press', trigger: 'primary', canceled: false };
+
 const ownership: Scenario[] = [
     {
         name: 'initial-open',
@@ -102,22 +105,18 @@ const ownership: Scenario[] = [
                 await d.checkpoint('forward Option+Tab wraps', { ...primaryOpen, focus: 'field' });
             }
 
-            const outside = d.page.getByTestId('outside');
-            const box = await outside.boundingBox();
-            if (!box) throw new Error('Missing background button layout');
-            await d.page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+            await d.pointerAt('outside');
+            await d.page.mouse.down();
+            await d.page.mouse.up();
             await d.closed();
             await d.checkpoint('outside press dismisses without activating the background', {
                 ...closed,
                 activations: 0,
                 backgroundIsolated: false,
                 scrollLocked: false,
-                changes: [
-                    { open: true, reason: 'trigger-press', trigger: 'primary', canceled: false },
-                    { open: false, reason: 'outside-press', trigger: 'primary', canceled: false }
-                ]
+                changes: [triggerOpen, outsideClose]
             });
-            await outside.click();
+            await d.page.getByTestId('outside').click();
             await d.checkpoint('background is available again', { ...closed, activations: 1 });
         }
     },
@@ -151,6 +150,161 @@ const ownership: Scenario[] = [
             await d.page.keyboard.press('Escape');
             await d.closed();
             await d.checkpoint('close with replacement trigger', closed);
+        }
+    }
+];
+
+const nonModalOpen = { ...primaryOpen, backdrop: false, scrollLocked: false, backgroundIsolated: false };
+const trapFocusOpen = { ...nonModalOpen, backgroundIsolated: true };
+const focusOut = { open: false, reason: 'focus-out', trigger: 'primary', canceled: false };
+const escape = { open: false, reason: 'escape-key', trigger: 'primary', canceled: false };
+
+const modalModes: Scenario[] = [
+    {
+        name: 'non-modal-tab-out',
+        async run(d) {
+            await d.open();
+            await d.page.keyboard.press('Tab');
+            await d.checkpoint('Tab reaches Close', { ...nonModalOpen, focus: 'close' });
+            await d.page.keyboard.press('Tab');
+            await d.closed();
+            await d.checkpoint('Tab leaves at the trigger position', {
+                ...closed,
+                focus: 'outside-field',
+                changes: [triggerOpen, focusOut],
+                completions: [true, false]
+            });
+        }
+    },
+    {
+        name: 'non-modal-pointer',
+        async run(d) {
+            await d.open();
+            await d.pointerAt('outside-surface');
+            await d.page.mouse.down();
+            await d.checkpoint('press starts with open content', { ...nonModalOpen, changes: [triggerOpen] });
+            await d.page.mouse.up();
+            await d.closed();
+            await d.checkpoint('completed primary press dismisses', {
+                ...closed,
+                changes: [triggerOpen, outsideClose]
+            });
+        }
+    },
+    {
+        name: 'non-modal-pointer-focus',
+        async run(d) {
+            await d.open();
+            await d.pointerAt('outside-field');
+            await d.page.mouse.down();
+            await d.closed();
+            await d.checkpoint('pointer focus leaves and dismisses before release', {
+                ...closed,
+                focus: 'outside-field',
+                changes: [triggerOpen, focusOut],
+                completions: [true, false]
+            });
+            await d.page.mouse.up();
+            await d.checkpoint('release keeps the new focus', {
+                ...closed,
+                focus: 'outside-field',
+                changes: [triggerOpen, focusOut]
+            });
+        }
+    },
+    {
+        name: 'non-modal-dismissal-disabled',
+        async run(d) {
+            await d.open();
+            await d.page.getByTestId('outside-field').focus();
+            await d.checkpoint('focus can leave without closing', { ...nonModalOpen, focus: 'outside-field' });
+            await d.page.getByTestId('outside').click();
+            await d.checkpoint('background activation leaves open', {
+                ...nonModalOpen,
+                activations: 1,
+                changes: [triggerOpen]
+            });
+            await d.field.press('Escape');
+            await d.closed();
+            await d.checkpoint('Escape still dismisses', { ...closed, changes: [triggerOpen, escape] });
+        }
+    },
+    {
+        name: 'trap-focus-pointer',
+        async run(d) {
+            await d.open();
+            await d.page.keyboard.press('Tab');
+            await d.checkpoint('Tab reaches Close', { ...trapFocusOpen, focus: 'close' });
+            await d.page.keyboard.press('Tab');
+            await d.checkpoint('Tab wraps without scroll lock', { ...trapFocusOpen, focus: 'field' });
+            await d.pointerAt('outside');
+            await d.page.mouse.down();
+            await d.closed();
+            await d.checkpoint('pointer down releases the trap before click', {
+                ...closed,
+                backgroundIsolated: false,
+                activations: 0,
+                changes: [triggerOpen, outsideClose]
+            });
+            await d.page.mouse.up();
+            await d.checkpoint('same press activates the background', { ...closed, activations: 1 });
+
+            // WebKit can open a native context menu, so leave the secondary press until last.
+            await d.open();
+            await d.pointerAt('outside-surface');
+            await d.page.mouse.down({ button: 'right' });
+            await d.page.mouse.up({ button: 'right' });
+            await d.checkpoint('secondary press does not release the trap', {
+                ...trapFocusOpen,
+                changes: [triggerOpen, outsideClose, triggerOpen]
+            });
+        }
+    },
+    {
+        name: 'trap-focus-dismissal-disabled',
+        async run(d) {
+            await d.open();
+            await d.page.getByTestId('outside-field').click();
+            await d.checkpoint('pointer can focus outside without closing', {
+                ...trapFocusOpen,
+                focus: 'outside-field',
+                changes: [triggerOpen]
+            });
+            await d.page.getByTestId('outside').click();
+            await d.checkpoint('background activation leaves the trap open', {
+                ...trapFocusOpen,
+                changes: [triggerOpen],
+                activations: 1
+            });
+            await d.field.press('Escape');
+            await d.closed();
+            await d.checkpoint('Escape releases the trap', { ...closed, changes: [triggerOpen, escape] });
+        }
+    },
+    {
+        name: 'trap-focus-authored-backdrop',
+        async run(d) {
+            await d.open();
+            const position = await d.pointerAt('outside');
+            expect(
+                await d.page.evaluate(
+                    ({ x, y }) => document.elementFromPoint(x, y)?.getAttribute('data-testid'),
+                    position
+                )
+            ).toBe('backdrop');
+            await d.page.mouse.down();
+            await d.checkpoint('author backdrop waits for a completed press', {
+                ...trapFocusOpen,
+                backdrop: true,
+                changes: [triggerOpen]
+            });
+            await d.page.mouse.up();
+            await d.closed();
+            await d.checkpoint('backdrop intercepts activation and dismisses', {
+                ...closed,
+                activations: 0,
+                changes: [triggerOpen, outsideClose]
+            });
         }
     }
 ];
@@ -241,4 +395,4 @@ const motion: Scenario[] = [
     }
 ];
 
-export const scenarios = [...ownership, ...retention, ...motion];
+export const scenarios = [...ownership, ...modalModes, ...retention, ...motion];

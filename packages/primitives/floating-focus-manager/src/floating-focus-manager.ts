@@ -147,7 +147,11 @@ export interface RdxFloatingFocusManagerConfig {
     /** Authored tabindex policy when restoring a suspended portal snapshot. */
     restoreTabIndex?: (element: HTMLElement, saved: string | null) => string | null;
     modal?: () => boolean;
+    /** Repair focus that leaves the popup. Modal keyboard cycling can operate on its own. */
+    containFocus?: () => boolean;
     inert?: () => boolean;
+    /** Hide the background from assistive technologies while preserving outside interaction. */
+    ariaHidden?: () => boolean;
     enabled?: () => boolean;
     closeOnFocusOut?: () => boolean;
     initialFocus?: () => RdxInitialFocus;
@@ -187,16 +191,13 @@ function coerceOptionalBoolean(value: BooleanInput | undefined): boolean | undef
 }
 
 /**
- * Provides a {@link RdxFocusScopeConfig} whose `trapped` is a **writable** signal, so the enclosing
- * {@link RdxFloatingFocusManager} can drive it from its `modal`/`enabled` policy after construction. The
+ * Provides a {@link RdxFocusScopeConfig} with writable trap and loop signals, so the enclosing
+ * {@link RdxFloatingFocusManager} can drive them after construction. The
  * factory has **no** dependency on the manager instance, so it cannot deadlock the host-directive
  * construction order (the manager later injects this same config and writes the signal).
  */
 function provideManagedFocusScopeConfig(): Provider {
-    return provideRdxFocusScopeConfig((): RdxFocusScopeConfig => {
-        const modal = signal(false);
-        return { trapped: modal, loop: modal, enabled: signal(false) };
-    });
+    return provideRdxFocusScopeConfig(() => ({ trapped: signal(false), loop: signal(false), enabled: signal(false) }));
 }
 
 /**
@@ -333,13 +334,14 @@ export class RdxFloatingFocusManager {
         return type === '' ? this._interactionType() : type;
     });
 
+    private readonly loopFocus = computed(() => this.effectiveEnabled() && this.effectiveModal());
     /** The effective trap state the composed `RdxFocusScope` reads via its config token. */
-    readonly trapped = computed(() => this.effectiveEnabled() && this.effectiveModal());
+    readonly trapped = computed(() => this.loopFocus() && (this.config?.containFocus?.() ?? true));
 
-    // The config this directive provides — its `trapped` signal is writable so we can drive it, and we
-    // attach a `returnFocus` resolver the composed focus scope calls at unmount (ADR 0017 `returnFocus`).
+    // The manager drives the scope and attaches its return-focus resolver (ADR 0017).
     private readonly focusScopeConfig = inject(RdxFocusScopeConfigToken) as RdxFocusScopeConfig & {
         trapped: WritableSignal<boolean>;
+        loop: WritableSignal<boolean>;
         enabled: WritableSignal<boolean>;
         returnFocus?: () => HTMLElement | boolean | undefined;
     };
@@ -360,6 +362,7 @@ export class RdxFloatingFocusManager {
     constructor() {
         afterRenderEffect(() => {
             this.focusScopeConfig.trapped.set(this.trapped());
+            this.focusScopeConfig.loop.set(this.loopFocus());
             this.focusScopeConfig.enabled.set(this.effectiveEnabled() && this.scopeReady());
         });
 
@@ -397,20 +400,19 @@ export class RdxFloatingFocusManager {
             onCleanup(clearMarker);
         });
 
-        // Pointer/AT isolation pass — apply the real `inert` attribute to outside elements only when the
-        // composing primitive asks for outside interaction to be blocked. This is intentionally separate from
-        // focus trapping: Base UI `modal="trap-focus"` traps focus but leaves outside pointer interaction
-        // enabled.
+        // Independently isolate the background with inert or hide it from assistive technologies.
         let releaseIsolation: (() => void) | undefined;
         const clearIsolation = () => {
             releaseIsolation?.();
             releaseIsolation = undefined;
         };
         afterRenderEffect((onCleanup) => {
-            if (!this.effectiveEnabled() || !this.isFloatingOpen() || !this.effectiveInert()) {
+            const inert = this.effectiveInert();
+            const ariaHidden = this.config?.ariaHidden?.() ?? false;
+            if (!this.effectiveEnabled() || !this.isFloatingOpen() || (!inert && !ariaHidden)) {
                 return;
             }
-            releaseIsolation = markOthers(this.avoidElements(true), { inert: true, mark: false });
+            releaseIsolation = markOthers(this.avoidElements(true), { inert, ariaHidden, mark: false });
             onCleanup(clearIsolation);
         });
         const releaseClosedResources = () => {

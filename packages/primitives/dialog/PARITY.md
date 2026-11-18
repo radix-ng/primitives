@@ -93,7 +93,7 @@ and [store selectors](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda2
 
 - [Dialog unit tests](__tests__/dialog.spec.ts) cover initial defaults, parent refusal, delayed acceptance, two-way binding and cancellation.
 - [Dialog browser tests](../../../apps/visual-regression/tests/dialog.behavior.spec.ts) include a deferred open/close request with focus, Portal and scroll-lock observations.
-- The [pinned Dialog suite](../../../apps/parity-testing/primitives/dialog/README.md) compares 15 scenarios across Chromium, Firefox and WebKit. It covers open ownership, trigger registration, modal background behavior and close lifetime.
+- The [pinned Dialog suite](../../../apps/parity-testing/primitives/dialog/README.md) compares 22 scenarios across Chromium, Firefox and WebKit. It covers open ownership, trigger registration, modal modes and close lifetime.
 - The [AOT hydration suite](../../../apps/radix-ssr-testing/hydration-audit/README.md) covers initially open Dialog in `eager-dialog`.
 
 The directive reference exposes effective `open()` as readonly. Set a bound value to drive a
@@ -177,5 +177,29 @@ The modal comparison checks focus cycling, background isolation, scroll lock and
 Angular uses `inert` for background isolation as described in
 [ADR 0017](../../../docs/adr/0017-floating-focus-manager.md). The pinned React runtime uses
 `aria-hidden`. The suite records both attributes and compares the observable keyboard and pointer
-behavior. Non-modal and `trap-focus` modes, nested dismissal, detached handles, custom focus targets
-and Portal destination changes remain pending paired checks.
+behavior.
+
+## Non-modal and trap-focus modes
+
+Seven [pinned scenarios](../../../apps/parity-testing/primitives/dialog/tests/scenarios.ts) exercise
+native Tab departure, pointer focus, interaction timing, authored Backdrop and dismissal opt-out.
+
+| Mode                      | Checked behavior                                                                                                                                                                                                                                                                                               |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `modal=false`             | Tab moves focus to the next control after the logical trigger position and dismisses with `focus-out`. Pressing a focusable outside control also dismisses with `focus-out` and preserves the new focus. A primary press on a non-focusable outside surface dismisses on click.                                |
+| `modal="trap-focus"`      | Tab wraps, `aria-hidden` isolates the background for assistive technologies and scrolling stays unlocked. Without Backdrop, a primary outside pointerdown releases isolation before the same gesture activates the background. A secondary press leaves the dialog open. An authored Backdrop waits for click. |
+| `disablePointerDismissal` | Outside focus can move and the page can receive clicks with the dialog still open. Escape dismisses in both modes.                                                                                                                                                                                             |
+
+The pinned implementation uses `FloatingFocusManager` with `modal={modal !== false}` and a pointer
+policy that depends on Backdrop presence and input type.
+[Base UI root interaction](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/dialog/root/useDialogRoot.ts)
+· [Base UI popup](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/dialog/popup/DialogPopup.tsx)
+
+Angular also dismisses a non-modal dialog after an application calls `focus()` on an unrelated
+element. The pinned React Portal suppresses this bare focus-out through its React-tree check. Angular
+keeps its DOM-based dismissal contract and leaves focus at the requested destination.
+[Dialog browser regression](../../../apps/visual-regression/tests/dialog.behavior.spec.ts)
+· [Base UI focus-out handler](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/utils/popups/focus/FloatingFocusManager.tsx)
+
+Nested dismissal, detached handles, custom focus targets, touch gestures and Portal destination
+changes remain pending paired checks.

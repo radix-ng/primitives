@@ -9,6 +9,9 @@ interface Settings {
     keepMounted?: boolean;
     hold?: boolean;
     animate?: boolean;
+    modal?: false | 'trap-focus';
+    disablePointerDismissal?: boolean;
+    backdrop?: boolean;
 }
 
 export const configurations = {
@@ -18,6 +21,13 @@ export const configurations = {
     'controlled-deferred': { open: false, defer: true },
     'cancel-open': { cancelOpen: true },
     'modal-background': {},
+    'non-modal-tab-out': { modal: false },
+    'non-modal-pointer': { modal: false },
+    'non-modal-pointer-focus': { modal: false },
+    'non-modal-dismissal-disabled': { modal: false, disablePointerDismissal: true },
+    'trap-focus-pointer': { modal: 'trap-focus' },
+    'trap-focus-dismissal-disabled': { modal: 'trap-focus', disablePointerDismissal: true },
+    'trap-focus-authored-backdrop': { modal: 'trap-focus', backdrop: true },
     'trigger-default-fallback': {
         defaultOpen: true,
         triggerId: 'secondary',

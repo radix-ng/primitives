@@ -1,6 +1,7 @@
 import { Dialog } from '@base-ui/react/dialog';
 import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import '../../../../radix-storybook/.storybook/tailwind.css';
 import { classes, config, installProbe } from './contract';
 import './fixture.css';
 
@@ -43,6 +44,8 @@ function ReactDialog() {
                 defaultOpen={defaultOpen}
                 triggerId={triggerId}
                 defaultTriggerId={settings.defaultTriggerId}
+                modal={settings.modal}
+                disablePointerDismissal={settings.disablePointerDismissal}
                 onOpenChange={(next, details) => {
                     if (next && cancelNextOpen.current) {
                         cancelNextOpen.current = false;
@@ -68,7 +71,9 @@ function ReactDialog() {
                     </Dialog.Trigger>
                 )}
                 <Dialog.Portal keepMounted={settings.keepMounted}>
-                    <Dialog.Backdrop className={classes.backdrop} data-testid="backdrop" />
+                    {(settings.backdrop ?? settings.modal === undefined) && (
+                        <Dialog.Backdrop className={classes.backdrop} data-testid="backdrop" />
+                    )}
                     <Dialog.Popup
                         className={classes.popup}
                         data-motion={settings.animate ? '' : undefined}
@@ -83,6 +88,12 @@ function ReactDialog() {
                     </Dialog.Popup>
                 </Dialog.Portal>
             </Dialog.Root>
+            {settings.modal !== undefined && (
+                <>
+                    <input className={classes.input} data-testid="outside-field" aria-label="Outside field" />
+                    <div className="size-16" data-testid="outside-surface" />
+                </>
+            )}
         </main>
     );
 }
