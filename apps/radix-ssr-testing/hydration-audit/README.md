@@ -29,3 +29,11 @@ hydration regressions, separate from the pinned React comparisons.
 node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=reverse-accordion-presence
 node apps/radix-ssr-testing/hydration-audit/audit.mjs --skip-build --case=eager-accordion-retained
 ```
+
+The `detached-dialog-close-before-trigger-hydration` case closes the eager Dialog Root via its
+handle before an external Trigger hydrates. It checks server button identity, stable IDs, the ARIA
+update on hydration and a single open request from the next click.
+
+```bash
+node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=detached-dialog-close-before-trigger-hydration
+```

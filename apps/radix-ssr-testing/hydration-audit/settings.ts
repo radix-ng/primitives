@@ -9,6 +9,7 @@ export const cases = {
     'eager-menu': { kind: 'menu', placement: 'eager' },
     'eager-select': { kind: 'select', placement: 'eager' },
     'eager-dialog': { kind: 'dialog', placement: 'eager' },
+    'detached-dialog-close-before-trigger-hydration': { kind: 'dialog', placement: 'detached-trigger' },
     'closed-popover': { kind: 'popover', placement: 'closed' },
     'outer-defer-inline': { kind: 'inline', placement: 'outside' },
     'outer-defer-attribute': { kind: 'attribute', placement: 'outside' },
@@ -63,6 +64,7 @@ export interface Settings {
     placement:
         | 'eager'
         | 'closed'
+        | 'detached-trigger'
         | 'outside'
         | 'lazy'
         | 'inside'

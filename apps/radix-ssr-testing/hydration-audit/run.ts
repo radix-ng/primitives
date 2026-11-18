@@ -22,12 +22,28 @@ async function snapshot(page: Page) {
         const ids = [...document.querySelectorAll<HTMLElement>('[id]')]
             .map((element) => element.id)
             .filter((id) => id.startsWith('audit-field-') || id.startsWith('authored-field-') || id.startsWith('rdx-'));
+        const detachedTrigger = document.querySelector('[data-detached-dialog-trigger]');
+        const detachedPopup = document.querySelector('[data-detached-dialog-popup]');
         return {
             ready: window.portalHydrationAudit?.ready ?? false,
             stable: window.portalHydrationAudit?.stable,
             errors: window.portalHydrationAudit?.errors ?? [],
             constructed: window.portalHydrationAudit?.constructed ?? [],
             duplicateIds: ids.filter((id, index) => ids.indexOf(id) !== index),
+            detachedDialog: detachedTrigger
+                ? {
+                      open: document.querySelector('audit-detached-dialog')?.getAttribute('data-dialog-open'),
+                      changes: document.querySelector('audit-detached-dialog')?.getAttribute('data-dialog-changes'),
+                      id: detachedTrigger.id,
+                      reusedTrigger: detachedTrigger === window.auditServerNodes?.['detached-trigger'],
+                      hydrated: detachedTrigger.hasAttribute('data-client'),
+                      expanded: detachedTrigger.getAttribute('aria-expanded'),
+                      controls: detachedTrigger.getAttribute('aria-controls'),
+                      popupOpen: detachedTrigger.hasAttribute('data-popup-open'),
+                      popupId: detachedPopup?.id,
+                      reusedPopup: !!detachedPopup && detachedPopup === window.auditServerNodes?.['detached-popup']
+                  }
+                : undefined,
             relationships: [...document.querySelectorAll<HTMLElement>('[aria-controls], [aria-labelledby]')].flatMap(
                 (element) =>
                     ['aria-controls', 'aria-labelledby'].flatMap((attribute) => {
@@ -98,6 +114,74 @@ interface Observation {
     scriptRequests: string[];
     document?: string;
     frameworkLimits?: string[];
+}
+
+async function checkDetachedDialogHydration(
+    page: Page,
+    observation: Observation,
+    record: (label: string) => Promise<Snapshot>,
+    release: () => void
+) {
+    const checks = observation.checks;
+    const trigger = page.locator('[data-detached-dialog-trigger]');
+    const popup = page.locator('[data-detached-dialog-popup]');
+    const before = (await record('detached Trigger before bootstrap')).detachedDialog;
+    checks.serverSnapshot =
+        !!before?.reusedTrigger &&
+        !before.hydrated &&
+        before.expanded === 'true' &&
+        before.popupOpen &&
+        !!before.popupId &&
+        before.controls === before.popupId;
+
+    release();
+    await page.waitForFunction(() => window.portalHydrationAudit?.ready, undefined, { timeout: 5000 });
+    const boot = (await record('Root hydrated while detached Trigger remains dehydrated')).detachedDialog;
+    checks.initialOpen = boot?.open === 'true' && boot.changes === '';
+    checks.eagerPopupHydratedInPlace = !!boot?.reusedPopup && boot.popupId === before?.popupId;
+
+    await popup.locator('[data-close-detached-dialog]').press('Enter', { timeout: 5000 });
+    await popup.waitFor({ state: 'detached', timeout: 5000 });
+    const closed = (await record('Root closed via handle before Trigger hydrates')).detachedDialog;
+    checks.closedBeforeTriggerHydration = closed?.open === 'false' && closed.changes === 'false:imperative-action';
+    checks.serverTriggerUnchangedWhileDehydrated = [boot, closed].every(
+        (view) =>
+            !!view?.reusedTrigger &&
+            !view.hydrated &&
+            view.id === before?.id &&
+            view.expanded === before?.expanded &&
+            view.controls === before?.controls &&
+            view.popupOpen === before?.popupOpen
+    );
+
+    await page.locator('[data-hydrate-first]').click({ timeout: 5000 });
+    await page.locator('[data-detached-dialog-trigger][data-client]').waitFor({ timeout: 5000 });
+    await page.waitForFunction(() => window.portalHydrationAudit?.stable, undefined, { timeout: 5000 });
+    const hydrated = (await record('detached Trigger hydrated after Root close')).detachedDialog;
+    checks.closedTriggerHydratedInPlace =
+        !!hydrated?.reusedTrigger &&
+        hydrated.hydrated &&
+        hydrated.id === before?.id &&
+        hydrated.expanded === 'false' &&
+        hydrated.controls === null &&
+        !hydrated.popupOpen;
+    checks.noOpenDuringHydration =
+        hydrated?.open === 'false' && !hydrated.popupId && hydrated.changes === closed?.changes;
+
+    await trigger.click({ timeout: 5000 });
+    await popup.waitFor({ state: 'visible', timeout: 5000 });
+    const opened = await record('one native click opens the hydrated Dialog');
+    const view = opened.detachedDialog;
+    checks.openedOnce = view?.open === 'true' && view.changes === 'false:imperative-action,true:trigger-press';
+    checks.triggerControlsReopenedPopup =
+        !!view?.reusedTrigger &&
+        view.id === before?.id &&
+        view.expanded === 'true' &&
+        view.popupOpen &&
+        !!view.popupId &&
+        view.controls === view.popupId &&
+        view.popupId === before?.popupId &&
+        opened.duplicateIds.length === 0;
 }
 
 const browserType = { chromium, firefox, webkit }[project as 'chromium' | 'firefox' | 'webkit'];
@@ -176,7 +260,15 @@ try {
                     window.auditServerNodes[element.dataset.probe!] = element;
                     window.auditServerNodes[element.dataset.probe! + ':input'] = element.querySelector('input')!;
                 }
+                const detachedTrigger = document.querySelector('[data-detached-dialog-trigger]');
+                if (detachedTrigger) window.auditServerNodes['detached-trigger'] = detachedTrigger;
+                const detachedPopup = document.querySelector('[data-detached-dialog-popup]');
+                if (detachedPopup) window.auditServerNodes['detached-popup'] = detachedPopup;
             });
+            if (settings.placement === 'detached-trigger') {
+                await checkDetachedDialogHydration(page, observation, record, release);
+                continue;
+            }
             const editedBefore = await page.locator('[data-probe="first"] input').isVisible();
             if (editedBefore) await page.locator('[data-probe="first"] input').fill('typed before hydration');
             const before = await record('server DOM before bootstrap');
@@ -422,11 +514,11 @@ try {
             observation.errors = [...new Set(observation.errors)];
             observation.checks.noErrors = observation.errors.length === 0;
             await page.close();
+            const failures = Object.entries(observation.checks)
+                .filter(([, success]) => !success)
+                .map(([check]) => check);
+            console.log(`${project} ${name}: ${failures.length ? failures.join(', ') : 'all observed checks passed'}`);
         }
-        const failures = Object.entries(observation.checks)
-            .filter(([, success]) => !success)
-            .map(([check]) => check);
-        console.log(`${project} ${name}: ${failures.length ? failures.join(', ') : 'all observed checks passed'}`);
     }
 } finally {
     await browser.close();

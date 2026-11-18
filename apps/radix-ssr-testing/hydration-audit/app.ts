@@ -21,6 +21,8 @@ import {
 } from '@radix-ng/primitives/accordion';
 import { injectId } from '@radix-ng/primitives/core';
 import {
+    createRdxDialogHandle,
+    type RdxDialogOpenChange,
     RdxDialogPopup,
     RdxDialogPortal,
     RdxDialogRoot,
@@ -292,8 +294,54 @@ export class PortalView {
 }
 
 @Component({
+    selector: 'audit-detached-dialog',
+    imports: [RdxDialogRoot, RdxDialogPortal, RdxDialogPopup, RdxDialogTitle, RdxDialogTrigger],
+    host: {
+        '[attr.data-dialog-open]': 'handle.isOpen()',
+        '[attr.data-dialog-changes]': 'changes().join(",")'
+    },
+    template: `
+        <div
+            [handle]="handle"
+            (onOpenChange)="recordChange($event)"
+            defaultOpen
+            defaultTriggerId="audit-detached-trigger"
+            rdxDialogRoot
+        >
+            <ng-template rdxDialogPortal>
+                <div rdxDialogPopup data-detached-dialog-popup>
+                    <h2 rdxDialogTitle>Detached hydration dialog</h2>
+                    <button (click)="handle.close()" type="button" data-close-detached-dialog>Close via handle</button>
+                </div>
+            </ng-template>
+        </div>
+        @defer (hydrate when state.first()) {
+            <button
+                id="audit-detached-trigger"
+                [handle]="handle"
+                [attr.data-client]="browser ? '' : undefined"
+                rdxDialogTrigger
+                data-detached-dialog-trigger
+            >
+                Open detached dialog
+            </button>
+        }
+    `
+})
+export class DetachedDialogView {
+    readonly state = inject(AuditState);
+    readonly browser = isPlatformBrowser(inject(PLATFORM_ID));
+    readonly handle = createRdxDialogHandle();
+    readonly changes = signal<string[]>([]);
+
+    recordChange(change: RdxDialogOpenChange): void {
+        this.changes.update((changes) => [...changes, `${change.open}:${change.reason}`]);
+    }
+}
+
+@Component({
     selector: 'portal-hydration-audit',
-    imports: [RdxPortal, AuditPortal, PortalView, HydrationProbe, LazyPortalView],
+    imports: [RdxPortal, AuditPortal, PortalView, HydrationProbe, LazyPortalView, DetachedDialogView],
     providers: [provideRdxPresenceContext(() => ({ present: inject(AuditState).present }))],
     template: `
         <nav [attr.data-extra]="state.extra()" aria-label="Hydration audit controls">
@@ -308,6 +356,9 @@ export class PortalView {
             </button>
         </nav>
         @switch (state.settings.placement) {
+            @case ('detached-trigger') {
+                <audit-detached-dialog />
+            }
             @case ('pending-lazy-dispose') {
                 @if (state.visible()) {
                     <ng-template [container]="state.destination()" auditPortal>

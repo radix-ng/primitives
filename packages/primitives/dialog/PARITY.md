@@ -253,6 +253,31 @@ data for `openWithPayload(value)`. The suite records the payload at this checkpo
 difference.
 [Payload checkpoint](../../../apps/parity-testing/primitives/dialog/expected-differences.json)
 
+### Detached Trigger hydration
+
+The AOT case `detached-dialog-close-before-trigger-hydration` renders an initially open Dialog
+and an external Trigger in a separate incremental `@defer` block. Once the eager Root is live,
+`handle.close()` removes the Popup while the Trigger still has its original server attributes.
+Hydrating the Trigger reuses its button and ID and applies the current closed state. It removes
+`aria-controls` and `data-popup-open`, sets `aria-expanded="false"` and emits no request.
+One subsequent native click requests open once with `trigger-press` and restores
+`aria-controls` to the same Popup ID.
+
+Angular renders the initially open Popup on the server, so the Trigger's server snapshot reflects
+that open Popup and its ID. Between close and Trigger hydration, the Trigger still references
+the removed Popup. The pinned React test renders the Trigger from a closed fallback snapshot.
+Both implementations retain their server snapshot until Trigger hydration and resolve to the
+current closed state afterwards.
+[Angular AOT regression](../../../apps/radix-ssr-testing/hydration-audit/run.ts)
+· [Pinned React hydration regression](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/dialog/root/DialogRoot.detached-triggers.test.tsx#L339)
+
+The Dialog case uses the documented native `div` Root and passes in Chromium, Firefox and
+WebKit. The `ng-container` variant exposed a hydration node mismatch in Angular 22.0.2.
+A Chromium control without Radix reproduced it when a directive used `ViewContainerRef` to
+attach a template component to an `ng-container` with an authored child before an
+incrementally hydrated sibling. The control hydrated in place with either a plain `ng-container`
+or a native host with the same directive.
+
 ## Initial and final focus
 
 Popup exposes both bindings through `RdxFloatingFocusManager`. Angular accepts native elements and
@@ -294,5 +319,5 @@ Seven tap cases run in Chromium and WebKit. Five native gesture cases use Chromi
 touch contexts and WebKit pan, cancellation and multi-contact automation are recorded as capability
 skips. Physical-device gesture and soft-keyboard behavior remain outside these emulated checks.
 
-Detached hydration and overlapping Dialog Roots, mixed Dialog variants and Portal destination
-changes remain pending paired checks.
+Overlapping Dialog Roots, mixed Dialog variants and Portal destination changes remain pending
+paired checks.
