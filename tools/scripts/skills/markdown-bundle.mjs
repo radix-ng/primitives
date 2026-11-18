@@ -15,13 +15,17 @@ const sections = (body) => {
 function splitExamples(doc) {
     const section = sections(doc.body).find(({ title }) => title === 'Examples');
     if (!section) return [];
+    const setup = sections(doc.body).find(({ title }) => title === 'Setup and shared files');
+    const sharedFiles = setup ? doc.body.slice(setup.start, setup.end).trim() : '';
     const headings = markdownHeadings(doc.body).filter(
         ({ depth, start }) => depth === 3 && start > section.start && start < section.end
     );
     return headings.map((heading, index) => ({
         ...heading,
         file: `examples/${doc.slug}--${exampleSlug(heading.title)}.md`,
-        block: doc.body.slice(heading.end, headings[index + 1]?.start ?? section.end).trim()
+        block: [doc.body.slice(heading.end, headings[index + 1]?.start ?? section.end).trim(), sharedFiles]
+            .filter(Boolean)
+            .join('\n\n')
     }));
 }
 

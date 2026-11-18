@@ -1,12 +1,13 @@
 import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, model } from '@angular/core';
 import { LucideCheck as Check, LucideDynamicIcon } from '@lucide/angular';
-import { RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
+import {
+    RdxCheckboxButtonDirective,
+    RdxCheckboxIndicatorDirective,
+    RdxCheckboxInputDirective,
+    RdxCheckboxRootDirective
+} from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { demoCheckbox } from '../../storybook/styles';
-import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
-import { RdxCheckboxInputDirective } from '../src/checkbox-input';
-import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -23,8 +24,18 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
     template: `
         <div class="flex items-center gap-3">
             <div [checked]="checked()" (onCheckedChange)="checked.set($event.checked)" rdxCheckboxRoot>
-                <button id="r1" [class]="c.button" rdxCheckboxButton>
-                    <svg [class]="c.indicator" [lucideIcon]="Check" keepMounted rdxCheckboxIndicator size="16" />
+                <button
+                    class="demo-checkbox-button demo-focus flex size-6 items-center justify-center disabled:opacity-50 aria-disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                    id="r1"
+                    rdxCheckboxButton
+                >
+                    <svg
+                        class="text-primary flex items-center"
+                        [lucideIcon]="Check"
+                        keepMounted
+                        rdxCheckboxIndicator
+                        size="16"
+                    />
                 </button>
                 <input rdxCheckboxInput />
             </div>
@@ -41,5 +52,4 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 export class CheckboxKeepMountedExample {
     readonly checked = model<boolean>(false);
     protected readonly Check = Check;
-    protected readonly c = demoCheckbox;
 }

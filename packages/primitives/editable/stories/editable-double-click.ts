@@ -7,7 +7,6 @@ import {
     RdxEditableRoot,
     RdxEditableSubmitTrigger
 } from '@radix-ng/primitives/editable';
-import { cn, demoButton, demoEditable } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -22,8 +21,8 @@ import { cn, demoButton, demoEditable } from '../../storybook/styles';
     ],
     template: `
         <div
+            class="flex w-[260px] flex-col gap-3"
             #root="rdxEditableRoot"
-            [class]="e.root"
             rdxEditableRoot
             value="Double-click to edit"
             placeholder="Enter text…"
@@ -31,23 +30,27 @@ import { cn, demoButton, demoEditable } from '../../storybook/styles';
             submitMode="both"
         >
             <div rdxEditableArea>
-                <span #preview="rdxEditablePreview" [class]="e.preview" rdxEditablePreview>
+                <span
+                    class="demo-editable-preview data-[placeholder-shown]:text-muted-foreground demo-focus inline-block min-h-9 w-full px-3 py-1.5"
+                    #preview="rdxEditablePreview"
+                    rdxEditablePreview
+                >
                     {{ root.value() || preview.placeholder() }}
                 </span>
-                <input [class]="e.input" rdxEditableInput aria-label="Inline value" />
+                <input class="demo-input h-9 w-full px-3" rdxEditableInput aria-label="Inline value" />
             </div>
 
             @if (root.isEditing()) {
-                <div [class]="e.controls">
-                    <button [class]="cn(b.base, b.primary, b.size.sm)" rdxEditableSubmitTrigger>Save</button>
-                    <button [class]="cn(b.base, b.ghost, b.size.sm)" rdxEditableCancelTrigger>Cancel</button>
+                <div class="flex gap-2">
+                    <button class="demo-button demo-button-primary h-8 px-3 text-xs" rdxEditableSubmitTrigger>
+                        Save
+                    </button>
+                    <button class="demo-button demo-button-ghost h-8 px-3 text-xs" rdxEditableCancelTrigger>
+                        Cancel
+                    </button>
                 </div>
             }
         </div>
     `
 })
-export class EditableDoubleClickExample {
-    protected readonly cn = cn;
-    protected readonly e = demoEditable;
-    protected readonly b = demoButton;
-}
+export class EditableDoubleClickExample {}

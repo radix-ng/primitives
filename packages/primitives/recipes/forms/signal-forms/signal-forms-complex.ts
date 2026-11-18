@@ -7,13 +7,7 @@ import {
     RdxCheckboxIndicatorDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
-import {
-    RdxFieldControl,
-    RdxFieldDescription,
-    RdxFieldError,
-    RdxFieldLabel,
-    RdxFieldRoot
-} from '@radix-ng/primitives/field';
+import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormRoot } from '@radix-ng/primitives/form';
 import {
     RdxRadioGroupDirective,
@@ -35,27 +29,6 @@ import {
 } from '@radix-ng/primitives/select';
 import { RdxSignalField } from '@radix-ng/primitives/signal-forms';
 import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
-import {
-    recipeCheckbox,
-    recipeDescription,
-    recipeError,
-    recipeField,
-    recipeFieldContent,
-    recipeFieldRow,
-    recipeForm,
-    recipeInput,
-    recipeLabel,
-    recipeRadio,
-    recipeSelectIndicator,
-    recipeSelectItem,
-    recipeSelectList,
-    recipeSelectPopup,
-    recipeSelectTrigger,
-    recipeSubmit,
-    recipeSwitch,
-    recipeSwitchThumb,
-    recipeTextarea
-} from '../forms-recipes.shared';
 
 type Issue = {
     title: string;
@@ -102,7 +75,6 @@ const LABELS = [
         RdxFieldRoot,
         RdxFieldLabel,
         RdxFieldControl,
-        RdxFieldDescription,
         RdxFieldError,
         RdxSelectRoot,
         RdxSelectTrigger,
@@ -128,37 +100,52 @@ const LABELS = [
         LucideChevronDown
     ],
     template: `
-        <form [class]="form0" (onFormSubmit)="onSubmit()" rdxFormRoot>
+        <form class="flex w-100 flex-col gap-5" (onFormSubmit)="onSubmit()" rdxFormRoot>
             <!-- Text input -->
-            <div [class]="field" name="title" rdxFieldRoot>
-                <label [class]="label" rdxFieldLabel>Title</label>
+            <div class="flex flex-col gap-1.5" name="title" rdxFieldRoot>
+                <label class="demo-label data-[disabled]:opacity-50" rdxFieldLabel>Title</label>
                 <input
-                    [class]="input"
+                    class="demo-input data-[invalid]:border-destructive data-[invalid]:ring-destructive/30 h-9 w-full px-3"
                     [formField]="issueForm.title"
                     rdxFieldControl
                     rdxSignalField
                     placeholder="Short summary"
                     autocomplete="off"
                 />
-                <p #titleError="rdxFieldError" [class]="error" rdxFieldError>{{ titleError.messages().join(' ') }}</p>
+                <p class="text-destructive text-sm" #titleError="rdxFieldError" rdxFieldError>
+                    {{ titleError.messages().join(' ') }}
+                </p>
             </div>
 
             <!-- Select -->
-            <div [class]="field" name="area" rdxFieldRoot>
-                <label [class]="label" rdxFieldLabel>Area</label>
+            <div class="flex flex-col gap-1.5" name="area" rdxFieldRoot>
+                <label class="demo-label data-[disabled]:opacity-50" rdxFieldLabel>Area</label>
                 <div [formField]="issueForm.area" rdxSelectRoot rdxSignalField>
-                    <button [class]="selectTrigger" rdxSelectTrigger>
+                    <button
+                        class="demo-select-trigger data-[placeholder]:text-muted-foreground data-[invalid]:border-destructive data-[invalid]:aria-invalid:ring-destructive/30 demo-focus inline-flex min-h-9 w-full items-center justify-between gap-2 px-3 py-1.5 disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                        rdxSelectTrigger
+                    >
                         <span #areaValue="rdxSelectedValue" rdxSelectValue placeholder="Select an area…">
                             {{ areaValue.slotText() }}
                         </span>
                         <svg class="size-4 shrink-0" lucideChevronDown size="16" aria-hidden="true"></svg>
                     </button>
                     <div class="z-[100]" *rdxSelectPortal [sideOffset]="6" rdxSelectPositioner>
-                        <div [class]="selectPopup" rdxSelectPopup>
-                            <div [class]="selectList" rdxSelectList>
+                        <div
+                            class="demo-select-popup min-w-[var(--anchor-width,10rem)] will-change-[opacity,transform]"
+                            rdxSelectPopup
+                        >
+                            <div class="p-1" rdxSelectList>
                                 @for (option of areas; track option.value) {
-                                    <div [class]="selectItem" [value]="option.value" rdxSelectItem>
-                                        <span [class]="selectIndicator" rdxSelectItemIndicator>
+                                    <div
+                                        class="demo-select-item data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground data-[disabled]:text-muted-foreground relative flex min-h-7 items-center gap-2 ps-6 pe-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                        [value]="option.value"
+                                        rdxSelectItem
+                                    >
+                                        <span
+                                            class="absolute start-0 inline-flex w-6 items-center justify-center"
+                                            rdxSelectItemIndicator
+                                        >
                                             <svg class="size-4 shrink-0" lucideCheck size="16" aria-hidden="true"></svg>
                                         </span>
                                         <span rdxSelectItemText>{{ option.label }}</span>
@@ -168,37 +155,46 @@ const LABELS = [
                         </div>
                     </div>
                 </div>
-                <p #areaError="rdxFieldError" [class]="error" rdxFieldError>{{ areaError.messages().join(' ') }}</p>
+                <p class="text-destructive text-sm" #areaError="rdxFieldError" rdxFieldError>
+                    {{ areaError.messages().join(' ') }}
+                </p>
             </div>
 
             <!-- Radio group -->
-            <div [class]="field" name="priority" rdxFieldRoot>
-                <span [class]="label">Priority</span>
+            <div class="flex flex-col gap-1.5" name="priority" rdxFieldRoot>
+                <span class="demo-label data-[disabled]:opacity-50">Priority</span>
                 <div
-                    [class]="radio.group"
+                    class="flex flex-col gap-2.5"
                     [formField]="issueForm.priority"
                     rdxRadioRoot
                     rdxSignalField
                     aria-label="Priority"
                 >
                     @for (option of priorities; track option.value) {
-                        <label [class]="radio.row">
-                            <span [class]="radio.item" [value]="option.value" rdxRadioItem>
-                                <span [class]="radio.indicator" rdxRadioIndicator></span>
+                        <label class="flex items-center gap-3">
+                            <span
+                                class="demo-radio-item demo-focus flex size-6 items-center justify-center disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                                [value]="option.value"
+                                rdxRadioItem
+                            >
+                                <span
+                                    class="after:bg-primary flex size-full items-center justify-center after:block after:size-2.5 after:rounded-full data-[state=unchecked]:hidden"
+                                    rdxRadioIndicator
+                                ></span>
                                 <input rdxRadioItemInput />
                             </span>
-                            <span [class]="radio.label">{{ option.label }}</span>
+                            <span class="demo-label">{{ option.label }}</span>
                         </label>
                     }
                 </div>
-                <p #priorityError="rdxFieldError" [class]="error" rdxFieldError>
+                <p class="text-destructive text-sm" #priorityError="rdxFieldError" rdxFieldError>
                     {{ priorityError.messages().join(' ') }}
                 </p>
             </div>
 
             <!-- Checkbox group -->
-            <div [class]="field" name="labels" rdxFieldRoot>
-                <span [class]="label">Labels</span>
+            <div class="flex flex-col gap-1.5" name="labels" rdxFieldRoot>
+                <span class="demo-label data-[disabled]:opacity-50">Labels</span>
                 <div
                     class="flex flex-col gap-2.5"
                     [formField]="issueForm.labels"
@@ -210,72 +206,73 @@ const LABELS = [
                     @for (option of labelOptions; track option.value) {
                         <label class="flex items-center gap-3">
                             <div [name]="option.value" rdxCheckboxRoot>
-                                <button [class]="checkbox.button" [attr.aria-label]="option.label" rdxCheckboxButton>
-                                    <svg [class]="checkbox.indicator" rdxCheckboxIndicator size="16" lucideCheck></svg>
+                                <button
+                                    class="demo-checkbox-button demo-focus flex size-6 items-center justify-center disabled:opacity-50 aria-disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                                    [attr.aria-label]="option.label"
+                                    rdxCheckboxButton
+                                >
+                                    <svg
+                                        class="text-primary flex items-center"
+                                        rdxCheckboxIndicator
+                                        size="16"
+                                        lucideCheck
+                                    ></svg>
                                 </button>
                             </div>
-                            <span [class]="radio.label">{{ option.label }}</span>
+                            <span class="demo-label">{{ option.label }}</span>
                         </label>
                     }
                 </div>
-                <p #labelsError="rdxFieldError" [class]="error" rdxFieldError>{{ labelsError.messages().join(' ') }}</p>
+                <p class="text-destructive text-sm" #labelsError="rdxFieldError" rdxFieldError>
+                    {{ labelsError.messages().join(' ') }}
+                </p>
             </div>
 
             <!-- Switch -->
-            <div [class]="fieldRow" name="notify" rdxFieldRoot>
-                <div [class]="fieldContent">
-                    <span [class]="label">Email updates</span>
-                    <p [class]="description">Get notified when this issue changes status.</p>
+            <div class="flex items-start justify-between gap-4" name="notify" rdxFieldRoot>
+                <div class="flex flex-col gap-1.5">
+                    <span class="demo-label data-[disabled]:opacity-50">Email updates</span>
+                    <p class="text-muted-foreground text-sm">Get notified when this issue changes status.</p>
                 </div>
-                <button [class]="switchClass" [formField]="issueForm.notify" aria-label="Email updates" rdxSwitchRoot>
-                    <span [class]="switchThumb" rdxSwitchThumb></span>
+                <button
+                    class="demo-switch demo-focus data-[checked]:bg-primary relative inline-flex h-6 w-11 shrink-0 items-center p-0 disabled:cursor-not-allowed disabled:opacity-50"
+                    [formField]="issueForm.notify"
+                    aria-label="Email updates"
+                    rdxSwitchRoot
+                >
+                    <span
+                        class="demo-switch-thumb pointer-events-none block size-5 translate-x-0.5 transition-transform data-[checked]:translate-x-[22px]"
+                        rdxSwitchThumb
+                    ></span>
                 </button>
             </div>
 
             <!-- Textarea -->
-            <div [class]="field" name="details" rdxFieldRoot>
-                <label [class]="label" rdxFieldLabel>Details</label>
+            <div class="flex flex-col gap-1.5" name="details" rdxFieldRoot>
+                <label class="demo-label data-[disabled]:opacity-50" rdxFieldLabel>Details</label>
                 <textarea
-                    [class]="textarea"
+                    class="demo-input data-[invalid]:border-destructive data-[invalid]:ring-destructive/30 min-h-24 w-full px-3 py-2"
                     [formField]="issueForm.details"
                     rdxFieldControl
                     rdxSignalField
                     placeholder="Steps to reproduce, expected vs. actual…"
                 ></textarea>
-                <p #detailsError="rdxFieldError" [class]="error" rdxFieldError>
+                <p class="text-destructive text-sm" #detailsError="rdxFieldError" rdxFieldError>
                     {{ detailsError.messages().join(' ') }}
                 </p>
             </div>
 
-            <button [class]="submit" type="submit">Create issue</button>
+            <button class="demo-button demo-button-primary h-9 px-4" type="submit">Create issue</button>
 
             @if (result()) {
-                <p [class]="description">Created issue "{{ result()!.title }}" ({{ result()!.area }})</p>
+                <p class="text-muted-foreground text-sm">
+                    Created issue "{{ result()!.title }}" ({{ result()!.area }})
+                </p>
             }
         </form>
     `
 })
 export class SignalFormsComplex {
-    protected readonly form0 = recipeForm;
-    protected readonly field = recipeField;
-    protected readonly fieldRow = recipeFieldRow;
-    protected readonly fieldContent = recipeFieldContent;
-    protected readonly label = recipeLabel;
-    protected readonly input = recipeInput;
-    protected readonly textarea = recipeTextarea;
-    protected readonly description = recipeDescription;
-    protected readonly error = recipeError;
-    protected readonly submit = recipeSubmit;
-    protected readonly selectTrigger = recipeSelectTrigger;
-    protected readonly selectPopup = recipeSelectPopup;
-    protected readonly selectList = recipeSelectList;
-    protected readonly selectItem = recipeSelectItem;
-    protected readonly selectIndicator = recipeSelectIndicator;
-    protected readonly switchClass = recipeSwitch;
-    protected readonly switchThumb = recipeSwitchThumb;
-    protected readonly radio = recipeRadio;
-    protected readonly checkbox = recipeCheckbox;
-
     protected readonly areas = AREAS;
     protected readonly priorities = PRIORITIES;
     protected readonly labelOptions = LABELS;

@@ -9,7 +9,7 @@ import {
     type RdxMenuOpenChange,
     type RdxMenuRadioGroupValueChangeEvent
 } from '@radix-ng/primitives/menu';
-import '../../../../radix-storybook/.storybook/tailwind.css';
+import '../../../../radix-storybook/.storybook/main.css';
 import { exitClass, heldExitClass } from '../../../shared/lifecycle';
 import { changeCollection, menuEntries, submenuEntries } from '../../../shared/menu-collection';
 import { rootRemovalFinalFocus } from '../../../shared/root-removal';

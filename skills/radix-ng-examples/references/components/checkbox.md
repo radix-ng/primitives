@@ -43,6 +43,7 @@ also need native constraint validation or mirrored native input/change events.
 
 ## Examples
 
+- [Default](../examples/checkbox--default.md)
 - [Labeling](../examples/checkbox--labeling.md)
 - [Change events](../examples/checkbox--change-events.md)
 - [Indeterminate](../examples/checkbox--indeterminate.md)

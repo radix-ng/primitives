@@ -9,7 +9,7 @@ import {
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
-import '../../../../radix-storybook/.storybook/tailwind.css';
+import '../../../../radix-storybook/.storybook/main.css';
 import { AngularActivationAccordion } from './activation.angular';
 import { installProbe, settings } from './contract';
 import { AngularIdentityAccordion } from './identity.angular';

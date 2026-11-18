@@ -1,6 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
 import { provideRdxPresenceContext, RdxPresenceTarget } from '@radix-ng/primitives/presence';
-import { cn, demoButton } from '../../storybook/styles';
 import { PresenceDemo } from './presence';
 
 @Component({
@@ -9,10 +8,14 @@ import { PresenceDemo } from './presence';
     providers: [provideRdxPresenceContext(() => ({ present: inject(PresenceDynamicTargets).open }))],
     template: `
         <div class="flex flex-col items-center gap-4">
-            <button [class]="buttonClass" (click)="open.set(!open())" type="button">
+            <button class="demo-button demo-button-outline h-9 px-4" (click)="open.set(!open())" type="button">
                 {{ open() ? 'Unmount' : 'Mount' }}
             </button>
-            <button [class]="buttonClass" (click)="showChild.set(!showChild())" type="button">
+            <button
+                class="demo-button demo-button-outline h-9 px-4"
+                (click)="showChild.set(!showChild())"
+                type="button"
+            >
                 {{ showChild() ? 'Remove animated child' : 'Add animated child' }}
             </button>
             <div class="flex h-28 items-center">
@@ -23,7 +26,7 @@ import { PresenceDemo } from './presence';
                     >
                         @if (showChild()) {
                             <span
-                                class="dynamic-presence-child group-data-[closed]:animate-ping group-data-[closed]:[animation-duration:2s] group-data-[closed]:[animation-iteration-count:1]"
+                                class="dynamic-presence-child group-data-[closed]:animate-ping group-data-[closed]:[animation-duration:var(--duration-demo-presence-dynamic)] group-data-[closed]:[animation-iteration-count:1]"
                                 rdxPresenceTarget
                             >
                                 Dynamic animation target
@@ -38,5 +41,4 @@ import { PresenceDemo } from './presence';
 export class PresenceDynamicTargets {
     readonly open = signal(false);
     readonly showChild = signal(true);
-    readonly buttonClass = cn(demoButton.base, demoButton.outline, demoButton.size.md);
 }

@@ -11,7 +11,18 @@ import {
     viewChild
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { createRdxDialogHandle, dialogImports, RdxDialogRoot } from '@radix-ng/primitives/dialog';
+import {
+    createRdxDialogHandle,
+    RdxDialogBackdrop,
+    RdxDialogClose,
+    RdxDialogDescription,
+    RdxDialogPopup,
+    RdxDialogPortal,
+    RdxDialogPortalMisuseGuard,
+    RdxDialogRoot,
+    RdxDialogTitle,
+    RdxDialogTrigger
+} from '@radix-ng/primitives/dialog';
 import { RdxFormRoot } from '@radix-ng/primitives/form';
 import { RdxSignalForm } from '@radix-ng/primitives/signal-forms';
 import { AgentInput } from '../agent-runtime/agent-input';
@@ -20,21 +31,33 @@ import { AgentSelect } from '../agent-runtime/agent-select';
 import { registerDialog } from '../agent-runtime/control-adapters';
 import { ProjectDemo } from '../agent-runtime/project-demo';
 import { ActionName, AgentRuntimeApi, ControlKind } from '../agent-runtime/types';
-import { cn, demoButton, demoDialog } from '../shared/styles';
 
 @Component({
     selector: 'app-agents',
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [ProjectDemo],
-    imports: [JsonPipe, RouterLink, AgentInput, AgentSelect, ...dialogImports, RdxFormRoot, RdxSignalForm],
+    imports: [
+        JsonPipe,
+        RouterLink,
+        AgentInput,
+        AgentSelect,
+        RdxDialogRoot,
+        RdxDialogTrigger,
+        RdxDialogPortal,
+        RdxDialogPortalMisuseGuard,
+        RdxDialogBackdrop,
+        RdxDialogPopup,
+        RdxDialogTitle,
+        RdxDialogDescription,
+        RdxDialogClose,
+        RdxFormRoot,
+        RdxSignalForm
+    ],
     templateUrl: './agents.html'
 })
 export default class AgentsPage {
     readonly runtime = inject(AgentRuntime);
     readonly demo = inject(ProjectDemo);
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly d = demoDialog;
     protected readonly dialog = createRdxDialogHandle();
     protected readonly lastResult = signal<unknown>(null);
     protected readonly formState = computed(() => ({

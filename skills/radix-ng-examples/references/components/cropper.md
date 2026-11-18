@@ -40,6 +40,7 @@ Import all parts and piece them together.
 
 ## Examples
 
+- [Default](../examples/cropper--default.md)
 - [Disabled](../examples/cropper--disabled.md)
 - [With crop data](../examples/cropper--with-crop-data.md)
 

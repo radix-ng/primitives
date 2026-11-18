@@ -2,12 +2,13 @@ import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LucideCheck } from '@lucide/angular';
-import { RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
+import {
+    RdxCheckboxButtonDirective,
+    RdxCheckboxIndicatorDirective,
+    RdxCheckboxInputDirective,
+    RdxCheckboxRootDirective
+} from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { cn, demoButton, demoCheckbox } from '../../storybook/styles';
-import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
-import { RdxCheckboxInputDirective } from '../src/checkbox-input';
-import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -16,8 +17,12 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
         <section [formGroup]="personality">
             <div class="flex items-center gap-3 pb-3">
                 <div rdxCheckboxRoot formControlName="fun">
-                    <button id="r1" [class]="c.button" rdxCheckboxButton>
-                        <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
+                    <button
+                        class="demo-checkbox-button demo-focus flex size-6 items-center justify-center disabled:opacity-50 aria-disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                        id="r1"
+                        rdxCheckboxButton
+                    >
+                        <svg class="text-primary flex items-center" rdxCheckboxIndicator size="16" lucideCheck />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -26,8 +31,12 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
             <div class="flex items-center gap-3 pb-3">
                 <div rdxCheckboxRoot formControlName="serious">
-                    <button id="r2" [class]="c.button" rdxCheckboxButton>
-                        <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
+                    <button
+                        class="demo-checkbox-button demo-focus flex size-6 items-center justify-center disabled:opacity-50 aria-disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                        id="r2"
+                        rdxCheckboxButton
+                    >
+                        <svg class="text-primary flex items-center" rdxCheckboxIndicator size="16" lucideCheck />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -38,8 +47,12 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
             <div class="flex items-center gap-3 pb-3">
                 <div rdxCheckboxRoot formControlName="smart" form="smart">
-                    <button id="r3" [class]="c.button" rdxCheckboxButton>
-                        <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
+                    <button
+                        class="demo-checkbox-button demo-focus flex size-6 items-center justify-center disabled:opacity-50 aria-disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                        id="r3"
+                        rdxCheckboxButton
+                    >
+                        <svg class="text-primary flex items-center" rdxCheckboxIndicator size="16" lucideCheck />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -52,7 +65,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
             {{ personality.value | json }}
         </section>
 
-        <button [class]="cn(b.base, b.primary, b.size.md)" (click)="toggleDisable()" type="button">
+        <button class="demo-button demo-button-primary h-9 px-4" (click)="toggleDisable()" type="button">
             Toggle disabled state
         </button>
     `,
@@ -69,10 +82,6 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
     ]
 })
 export class CheckboxReactiveFormsExampleComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly c = demoCheckbox;
-
     private readonly formBuilder = inject(FormBuilder);
 
     personality = this.formBuilder.group({

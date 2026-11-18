@@ -1,18 +1,32 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { createRdxPreviewCardHandle, previewCardImports } from '@radix-ng/primitives/preview-card';
-import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
+import {
+    createRdxPreviewCardHandle,
+    RdxPreviewCardArrow,
+    RdxPreviewCardPopup,
+    RdxPreviewCardPortal,
+    RdxPreviewCardPositioner,
+    RdxPreviewCardRoot,
+    RdxPreviewCardTrigger
+} from '@radix-ng/primitives/preview-card';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-preview-card-detached',
-    imports: [...previewCardImports],
+    imports: [
+        RdxPreviewCardRoot,
+        RdxPreviewCardTrigger,
+        RdxPreviewCardPortal,
+        RdxPreviewCardPositioner,
+        RdxPreviewCardPopup,
+        RdxPreviewCardArrow
+    ],
     template: `
         <div class="grid gap-4">
             <p class="text-muted-foreground max-w-lg text-sm leading-6">
                 Detached triggers can live outside the root:
                 <a
+                    class="text-primary demo-focus font-medium underline underline-offset-4"
                     id="typography"
-                    [class]="link"
                     [handle]="previewCard"
                     href="#"
                     payload="Typography preview"
@@ -22,8 +36,8 @@ import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
                 </a>
                 and
                 <a
+                    class="text-primary demo-focus font-medium underline underline-offset-4"
                     id="design"
-                    [class]="link"
                     [handle]="previewCard"
                     href="#"
                     payload="Design preview"
@@ -35,9 +49,9 @@ import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
             </p>
 
             <ng-container #root="rdxPreviewCardRoot" [handle]="previewCard" rdxPreviewCardRoot>
-                <div *rdxPreviewCardPortal [class]="p.positioner" sideOffset="8" rdxPreviewCardPositioner>
-                    <div [class]="p.popup" rdxPreviewCardPopup>
-                        <span [class]="p.arrow" rdxPreviewCardArrow></span>
+                <div class="z-50" *rdxPreviewCardPortal sideOffset="8" rdxPreviewCardPositioner>
+                    <div class="demo-surface relative w-80 p-4" rdxPreviewCardPopup>
+                        <span class="text-card demo-arrow my-px" rdxPreviewCardArrow></span>
                         <div class="grid gap-2">
                             <div class="bg-muted h-24 rounded-md"></div>
                             <p class="text-muted-foreground text-sm">{{ root.payload() }}</p>
@@ -50,6 +64,4 @@ import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
 })
 export class RdxPreviewCardDetachedComponent {
     protected readonly previewCard = createRdxPreviewCardHandle<string>();
-    protected readonly p = demoPopover;
-    protected readonly link = cn('font-medium text-primary underline underline-offset-4', demoFocusRing);
 }

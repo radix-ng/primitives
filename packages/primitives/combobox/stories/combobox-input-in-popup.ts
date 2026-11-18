@@ -1,7 +1,20 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
-import { demoCombobox } from '../../storybook/styles';
-import { _importsCombobox } from '../index';
+import {
+    RdxComboboxAnchor,
+    RdxComboboxEmpty,
+    RdxComboboxInput,
+    RdxComboboxItem,
+    RdxComboboxItemIndicator,
+    RdxComboboxLabel,
+    RdxComboboxList,
+    RdxComboboxPopup,
+    RdxComboboxPortal,
+    RdxComboboxPositioner,
+    RdxComboboxRoot,
+    RdxComboboxTrigger,
+    RdxComboboxValue
+} from '@radix-ng/primitives/combobox';
 
 /**
  * A select-like pattern where the trigger shows the current value and the **search input lives inside
@@ -11,32 +24,67 @@ import { _importsCombobox } from '../index';
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-input-in-popup',
-    imports: [_importsCombobox, LucideChevronDown, LucideCheck],
+    imports: [
+        RdxComboboxRoot,
+        RdxComboboxAnchor,
+        RdxComboboxLabel,
+        RdxComboboxInput,
+        RdxComboboxValue,
+        RdxComboboxTrigger,
+        RdxComboboxPortal,
+        RdxComboboxPositioner,
+        RdxComboboxPopup,
+        RdxComboboxList,
+        RdxComboboxItem,
+        RdxComboboxItemIndicator,
+        RdxComboboxEmpty,
+        LucideChevronDown,
+        LucideCheck
+    ],
     template: `
         <div class="flex flex-col items-start gap-1" [(value)]="value" rdxComboboxRoot>
             <span class="text-foreground text-sm font-medium" rdxComboboxLabel>Fruit</span>
-            <button [class]="c.selectTrigger" rdxComboboxTrigger rdxComboboxAnchor>
+            <button
+                class="demo-combobox-select-trigger data-[placeholder]:text-muted-foreground inline-flex h-9 w-64 items-center justify-between gap-2 px-3"
+                rdxComboboxTrigger
+                rdxComboboxAnchor
+            >
                 <span #selectedValue="rdxComboboxValue" rdxComboboxValue placeholder="Select a fruit">
                     {{ selectedValue.slotText() }}
                 </span>
                 <svg lucideChevronDown size="16"></svg>
             </button>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup + ' p-0'" rdxComboboxPopup>
-                    <div [class]="c.searchHeader">
-                        <input [class]="c.popupInput" rdxComboboxInput placeholder="Search…" aria-label="Fruit" />
+            <div class="z-50 w-64 data-[closed]:pointer-events-none" *rdxComboboxPortal rdxComboboxPositioner>
+                <div
+                    class="demo-combobox-popup mt-2 max-h-60 overflow-y-auto p-0 p-1 data-[closed]:hidden"
+                    rdxComboboxPopup
+                >
+                    <div class="border-border border-b p-1">
+                        <input
+                            class="demo-combobox-popup-input placeholder:text-muted-foreground h-8 w-full px-2"
+                            rdxComboboxInput
+                            placeholder="Search…"
+                            aria-label="Fruit"
+                        />
                     </div>
-                    <div [class]="c.list + ' p-1'" rdxComboboxList aria-label="Fruits">
+                    <div class="flex flex-col p-1" rdxComboboxList aria-label="Fruits">
                         @for (fruit of fruits; track fruit) {
-                            <div [class]="c.item" [value]="fruit" rdxComboboxItem>
-                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                            <div
+                                class="demo-menu-item data-[highlighted]:bg-muted relative flex items-center py-1.5 pr-2 pl-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[selected]:font-medium"
+                                [value]="fruit"
+                                rdxComboboxItem
+                            >
+                                <span
+                                    class="absolute left-2 flex size-3.5 items-center justify-center"
+                                    rdxComboboxItemIndicator
+                                >
                                     <svg lucideCheck size="14"></svg>
                                 </span>
                                 {{ fruit }}
                             </div>
                         }
-                        <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
+                        <div class="demo-combobox-empty data-[empty]:py-6" rdxComboboxEmpty>No fruit found.</div>
                     </div>
                 </div>
             </div>
@@ -44,7 +92,6 @@ import { _importsCombobox } from '../index';
     `
 })
 export class ComboboxInputInPopup {
-    protected readonly c = demoCombobox;
     readonly value = signal<string | null>(null);
     readonly fruits = ['Apple', 'Banana', 'Blueberry', 'Grape', 'Orange', 'Pineapple', 'Strawberry'];
 }

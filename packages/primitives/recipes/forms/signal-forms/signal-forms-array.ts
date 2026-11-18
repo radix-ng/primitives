@@ -4,18 +4,6 @@ import { LucidePlus, LucideX } from '@lucide/angular';
 import { RdxFieldControl, RdxFieldError, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormRoot } from '@radix-ng/primitives/form';
 import { RdxSignalField } from '@radix-ng/primitives/signal-forms';
-import {
-    cn,
-    recipeDescription,
-    recipeError,
-    recipeField,
-    recipeForm,
-    recipeGhostButton,
-    recipeInput,
-    recipeLabel,
-    recipeReset,
-    recipeSubmit
-} from '../forms-recipes.shared';
 
 type Contacts = { emails: { address: string }[] };
 
@@ -43,17 +31,19 @@ const MAX_EMAILS = 5;
         LucideX
     ],
     template: `
-        <form [class]="form0" (onFormSubmit)="onSubmit()" rdxFormRoot>
+        <form class="flex w-100 flex-col gap-5" (onFormSubmit)="onSubmit()" rdxFormRoot>
             <div class="flex flex-col gap-1">
-                <span [class]="label">Email addresses</span>
-                <p [class]="description">Add up to {{ max }} email addresses where we can contact you.</p>
+                <span class="demo-label data-[disabled]:opacity-50">Email addresses</span>
+                <p class="text-muted-foreground text-sm">
+                    Add up to {{ max }} email addresses where we can contact you.
+                </p>
             </div>
 
             @for (entry of model().emails; track index; let index = $index) {
-                <div [class]="field" [name]="fieldName(index)" rdxFieldRoot>
+                <div class="flex flex-col gap-1.5" [name]="fieldName(index)" rdxFieldRoot>
                     <div class="flex items-center gap-2">
                         <input
-                            [class]="input"
+                            class="demo-input data-[invalid]:border-destructive data-[invalid]:ring-destructive/30 h-9 w-full px-3"
                             [formField]="contactsForm.emails[index].address"
                             rdxFieldControl
                             rdxSignalField
@@ -63,7 +53,7 @@ const MAX_EMAILS = 5;
                         />
                         @if (model().emails.length > 1) {
                             <button
-                                [class]="ghost"
+                                class="demo-button demo-button-ghost size-9 p-0"
                                 [attr.aria-label]="'Remove email ' + (index + 1)"
                                 (click)="removeEmail(index)"
                                 type="button"
@@ -72,35 +62,31 @@ const MAX_EMAILS = 5;
                             </button>
                         }
                     </div>
-                    <p #emailError="rdxFieldError" [class]="error" rdxFieldError>
+                    <p class="text-destructive text-sm" #emailError="rdxFieldError" rdxFieldError>
                         {{ emailError.messages().join(' ') }}
                     </p>
                 </div>
             }
 
-            <button [class]="addButton" [disabled]="model().emails.length >= max" (click)="addEmail()" type="button">
+            <button
+                class="demo-button demo-button-outline h-9 gap-2 self-start px-4"
+                [disabled]="model().emails.length >= max"
+                (click)="addEmail()"
+                type="button"
+            >
                 <svg lucidePlus size="16"></svg>
                 Add email address
             </button>
 
-            <button [class]="submit" type="submit">Save contacts</button>
+            <button class="demo-button demo-button-primary h-9 px-4" type="submit">Save contacts</button>
 
             @if (result()) {
-                <p [class]="description">Saved {{ result()!.emails.length }} address(es).</p>
+                <p class="text-muted-foreground text-sm">Saved {{ result()!.emails.length }} address(es).</p>
             }
         </form>
     `
 })
 export class SignalFormsArray {
-    protected readonly form0 = recipeForm;
-    protected readonly field = recipeField;
-    protected readonly label = recipeLabel;
-    protected readonly input = recipeInput;
-    protected readonly description = recipeDescription;
-    protected readonly error = recipeError;
-    protected readonly submit = recipeSubmit;
-    protected readonly ghost = recipeGhostButton;
-    protected readonly addButton = cn(recipeReset, 'self-start gap-2');
     protected readonly max = MAX_EMAILS;
 
     protected readonly result = signal<Contacts | null>(null);

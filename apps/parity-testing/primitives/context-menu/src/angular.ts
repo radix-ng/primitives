@@ -4,7 +4,7 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { RdxContextMenuModule } from '@radix-ng/primitives/context-menu';
 import { RdxDirectionProvider } from '@radix-ng/primitives/direction-provider';
 import { RdxMenuModule, type RdxMenuOpenChange } from '@radix-ng/primitives/menu';
-import '../../../../radix-storybook/.storybook/tailwind.css';
+import '../../../../radix-storybook/.storybook/main.css';
 import { createMenuPopupTemplate, menuClasses } from '../../../shared/menu-fixture';
 import { rootRemovalExitClass, rootRemovalFinalFocus } from '../../../shared/root-removal';
 import { cancelComposition } from './composition';

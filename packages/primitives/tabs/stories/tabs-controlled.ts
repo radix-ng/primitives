@@ -7,7 +7,6 @@ import {
     type RdxTabsValue,
     type RdxTabsValueChangeEvent
 } from '@radix-ng/primitives/tabs';
-import { cn, demoButton } from '../../storybook/styles';
 
 @Component({
     selector: 'tabs-controlled-example',
@@ -20,8 +19,20 @@ import { cn, demoButton } from '../../storybook/styles';
             </label>
             <div class="grid gap-3" [(value)]="value" (onValueChange)="request($event)" rdxTabsRoot>
                 <div class="flex gap-2" aria-label="Controlled sections" rdxTabsList>
-                    <button [class]="tabClass" value="account" rdxTabsTab>Account</button>
-                    <button [class]="tabClass" value="security" rdxTabsTab>Security</button>
+                    <button
+                        class="demo-button demo-button-ghost data-active:bg-primary data-active:text-primary-foreground h-8 px-3 text-xs"
+                        value="account"
+                        rdxTabsTab
+                    >
+                        Account
+                    </button>
+                    <button
+                        class="demo-button demo-button-ghost data-active:bg-primary data-active:text-primary-foreground h-8 px-3 text-xs"
+                        value="security"
+                        rdxTabsTab
+                    >
+                        Security
+                    </button>
                 </div>
                 <div class="border-border rounded border p-4" value="account" rdxTabsPanel>Manage your account.</div>
                 <div class="border-border rounded border p-4" value="security" rdxTabsPanel>
@@ -45,12 +56,6 @@ export class TabsControlledExample {
         const value = this.value();
         return typeof value === 'string' ? value : 'No selection';
     });
-    readonly tabClass = cn(
-        demoButton.base,
-        demoButton.ghost,
-        demoButton.size.sm,
-        'data-active:bg-primary data-active:text-primary-foreground'
-    );
     request({ eventDetails }: RdxTabsValueChangeEvent) {
         this.requests.update((count) => count + 1);
         if (this.blocked()) eventDetails.cancel();

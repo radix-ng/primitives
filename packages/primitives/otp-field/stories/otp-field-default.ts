@@ -1,17 +1,16 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { demoOtpField as otpFieldStyles } from '../../storybook/styles';
-import { RdxOtpFieldModule } from '../index';
+import { RdxOtpFieldInput, RdxOtpFieldRoot } from '@radix-ng/primitives/otp-field';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-otp-field-default-example',
-    imports: [RdxOtpFieldModule],
+    imports: [RdxOtpFieldRoot, RdxOtpFieldInput],
     template: `
-        <div [class]="s.field">
-            <label [class]="s.label" for="verification-code">Verification code</label>
+        <div class="grid gap-1.5">
+            <label class="demo-label mb-2 block" for="verification-code">Verification code</label>
             <div
+                class="flex items-center gap-2"
                 id="verification-code"
-                [class]="s.root"
                 [length]="6"
                 [autoComplete]="'one-time-code'"
                 [inputMode]="'numeric'"
@@ -19,17 +18,33 @@ import { RdxOtpFieldModule } from '../index';
                 aria-label="Verification code"
                 rdxOtpFieldRoot
             >
-                <input [class]="s.slot" rdxOtpFieldInput />
-                <input [class]="s.slot" rdxOtpFieldInput />
-                <input [class]="s.slot" rdxOtpFieldInput />
-                <input [class]="s.slot" rdxOtpFieldInput />
-                <input [class]="s.slot" rdxOtpFieldInput />
-                <input [class]="s.slot" rdxOtpFieldInput />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
             </div>
-            <p [class]="s.description">Enter the six-digit code sent to your device.</p>
+            <p class="text-muted-foreground mt-2 text-sm">Enter the six-digit code sent to your device.</p>
         </div>
     `
 })
-export class OtpFieldDefaultExample {
-    protected readonly s = otpFieldStyles;
-}
+export class OtpFieldDefaultExample {}

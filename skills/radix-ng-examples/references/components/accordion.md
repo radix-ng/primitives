@@ -47,6 +47,7 @@ import {
 
 ## Examples
 
+- [Default](../examples/accordion--default.md)
 - [Disabled](../examples/accordion--disabled.md)
 - [Multiple](../examples/accordion--multiple.md)
 - [Collapsible](../examples/accordion--collapsible.md)

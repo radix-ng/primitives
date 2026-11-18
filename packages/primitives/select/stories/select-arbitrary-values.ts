@@ -3,7 +3,6 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { form, FormField } from '@angular/forms/signals';
 import { RdxFieldLabel, RdxFieldRoot, RdxNgControlField } from '@radix-ng/primitives/field';
 import { RdxSignalField } from '@radix-ng/primitives/signal-forms';
-import { cn, demoButton } from '../../storybook/styles';
 import { SelectTypedControl } from './select-typed-control';
 
 @Component({
@@ -81,8 +80,8 @@ import { SelectTypedControl } from './select-typed-control';
                 </div>
             </div>
             <div class="flex gap-2">
-                <button [class]="buttonClass" type="submit">Submit</button>
-                <button [class]="buttonClass" type="reset">Reset</button>
+                <button class="demo-button demo-button-outline h-8 px-3 text-xs" type="submit">Submit</button>
+                <button class="demo-button demo-button-outline h-8 px-3 text-xs" type="reset">Reset</button>
             </div>
             <output
                 class="text-muted-foreground max-w-xl font-mono text-xs break-all"
@@ -93,7 +92,6 @@ import { SelectTypedControl } from './select-typed-control';
     `
 })
 export class SelectArbitraryValues {
-    protected readonly buttonClass = cn(demoButton.base, demoButton.outline, demoButton.size.sm);
     readonly booleans = [true, false];
     readonly enabled = new FormControl(false, { nonNullable: true });
     readonly dates = [new Date('2026-01-01T00:00:00Z'), new Date('2026-02-01T00:00:00Z')];

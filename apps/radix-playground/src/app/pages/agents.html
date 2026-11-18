@@ -20,7 +20,7 @@
                     [(open)]="demo.visibilityOpen"
                 />
                 <div class="flex flex-wrap gap-2">
-                    <button type="submit" [class]="cn(b.base, b.primary, b.size.sm)">Save project</button>
+                    <button type="submit" class="demo-button demo-button-primary h-8 px-3 text-xs">Save project</button>
                     <ng-container
                         rdxDialogRoot
                         [handle]="dialog"
@@ -31,7 +31,7 @@
                             #dialogTrigger
                             id="agent-project-settings-trigger"
                             rdxDialogTrigger
-                            [class]="cn(b.base, b.outline, b.size.sm)"
+                            class="demo-button demo-button-outline h-8 px-3 text-xs"
                             [disabled]="demo.dialogDisabled()"
                             [handle]="dialog"
                         >
@@ -41,11 +41,15 @@
                             <div
                                 data-testid="agent-backdrop"
                                 rdxDialogBackdrop
-                                [class]="cn(d.backdrop, d.backdropAnimated)"
+                                class="bg-foreground/50 data-[open]:animate-dialog-overlay-in data-[closed]:animate-dialog-overlay-out fixed inset-0 z-50"
                             ></div>
-                            <div #dialogPopup rdxDialogPopup [class]="cn(d.popup, d.popupAnimated)">
-                                <h2 rdxDialogTitle [class]="d.title">Project settings</h2>
-                                <p rdxDialogDescription [class]="d.description">
+                            <div
+                                #dialogPopup
+                                rdxDialogPopup
+                                class="demo-surface data-[open]:animate-dialog-popup-in data-[closed]:animate-dialog-popup-out fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 p-6 transition-[transform,scale] focus:outline-none data-[nested-dialog-open]:scale-[0.96]"
+                            >
+                                <h2 rdxDialogTitle class="demo-dialog-title">Project settings</h2>
+                                <p rdxDialogDescription class="text-muted-foreground mt-1.5 text-sm">
                                     Review the environment and add a change note.
                                 </p>
                                 <div data-testid="agent-dialog-fields" class="my-6 grid gap-5">
@@ -71,15 +75,17 @@
                                         Cancel dialog changes
                                     </label>
                                 </div>
-                                <div [class]="d.footer">
+                                <div class="mt-6 flex justify-end gap-2">
                                     <button
                                         type="button"
-                                        [class]="cn(b.base, b.outline, b.size.sm)"
+                                        class="demo-button demo-button-outline h-8 px-3 text-xs"
                                         (click)="run('dialog', 'Project settings', 'close')"
                                     >
                                         Close via runtime
                                     </button>
-                                    <button rdxDialogClose [class]="cn(b.base, b.primary, b.size.sm)">Done</button>
+                                    <button rdxDialogClose class="demo-button demo-button-primary h-8 px-3 text-xs">
+                                        Done
+                                    </button>
                                 </div>
                                 <a
                                     routerLink="/playground"
@@ -165,13 +171,15 @@
                 </label>
             </fieldset>
             <div class="flex flex-wrap gap-2">
-                <button type="button" [class]="cn(b.base, b.outline, b.size.sm)" (click)="inspect()">Snapshot</button>
-                <button type="button" [class]="cn(b.base, b.outline, b.size.sm)" (click)="findInput()">
+                <button type="button" class="demo-button demo-button-outline h-8 px-3 text-xs" (click)="inspect()">
+                    Snapshot
+                </button>
+                <button type="button" class="demo-button demo-button-outline h-8 px-3 text-xs" (click)="findInput()">
                     Find project name
                 </button>
                 <button
                     type="button"
-                    [class]="cn(b.base, b.outline, b.size.sm)"
+                    class="demo-button demo-button-outline h-8 px-3 text-xs"
                     [disabled]="runtime.pending()"
                     (click)="run('input', 'Project name', 'set-value', 'Agent project')"
                 >
@@ -179,7 +187,7 @@
                 </button>
                 <button
                     type="button"
-                    [class]="cn(b.base, b.outline, b.size.sm)"
+                    class="demo-button demo-button-outline h-8 px-3 text-xs"
                     [disabled]="runtime.pending()"
                     (click)="run('select', 'Visibility', 'select-option', 'public')"
                 >
@@ -187,7 +195,7 @@
                 </button>
                 <button
                     type="button"
-                    [class]="cn(b.base, b.outline, b.size.sm)"
+                    class="demo-button demo-button-outline h-8 px-3 text-xs"
                     [disabled]="runtime.pending()"
                     (click)="run('dialog', 'Project settings', 'open')"
                 >
@@ -195,12 +203,12 @@
                 </button>
                 <button
                     type="button"
-                    [class]="cn(b.base, b.outline, b.size.sm)"
+                    class="demo-button demo-button-outline h-8 px-3 text-xs"
                     (click)="run('input', 'Project name', 'open')"
                 >
                     Unsupported action
                 </button>
-                <button type="button" [class]="cn(b.base, b.outline, b.size.sm)" (click)="unknown()">
+                <button type="button" class="demo-button demo-button-outline h-8 px-3 text-xs" (click)="unknown()">
                     Unknown instance
                 </button>
             </div>
@@ -254,7 +262,11 @@
     <section aria-labelledby="agent-journal-heading" class="border-border bg-background rounded-xl border p-6">
         <div class="flex items-center justify-between gap-3">
             <h2 id="agent-journal-heading" class="text-lg font-semibold">Action journal</h2>
-            <button type="button" [class]="cn(b.base, b.outline, b.size.sm)" (click)="runtime.clearJournal()">
+            <button
+                type="button"
+                class="demo-button demo-button-outline h-8 px-3 text-xs"
+                (click)="runtime.clearJournal()"
+            >
                 Clear journal
             </button>
         </div>

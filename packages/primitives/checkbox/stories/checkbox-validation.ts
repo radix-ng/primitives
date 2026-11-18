@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LucideCheck } from '@lucide/angular';
+import {
+    RdxCheckboxButtonDirective,
+    RdxCheckboxIndicatorDirective,
+    RdxCheckboxInputDirective,
+    RdxCheckboxRootDirective
+} from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { cn, demoButton, demoCheckbox } from '../../storybook/styles';
-import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
-import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
-import { RdxCheckboxInputDirective } from '../src/checkbox-input';
-import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 /**
  * Reactive forms with validation: `Validators.requiredTrue` forces the box to be
@@ -28,8 +29,12 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
         <form class="flex flex-col gap-3" [formGroup]="form" (ngSubmit)="onSubmit()">
             <div class="flex items-center gap-3">
                 <div rdxCheckboxRoot formControlName="terms">
-                    <button id="terms" [class]="c.button" rdxCheckboxButton>
-                        <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
+                    <button
+                        class="demo-checkbox-button demo-focus flex size-6 items-center justify-center disabled:opacity-50 aria-disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                        id="terms"
+                        rdxCheckboxButton
+                    >
+                        <svg class="text-primary flex items-center" rdxCheckboxIndicator size="16" lucideCheck />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -42,7 +47,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
                 <p class="text-destructive text-sm">You must accept the terms to continue.</p>
             }
 
-            <button [class]="cn(b.base, b.primary, b.size.md, 'self-start')" type="submit">Submit</button>
+            <button class="demo-button demo-button-primary h-9 self-start px-4" type="submit">Submit</button>
 
             @if (submitted()) {
                 <p class="text-muted-foreground text-sm">Submitted ✓</p>
@@ -51,10 +56,6 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
     `
 })
 export class CheckboxValidationExample {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly c = demoCheckbox;
-
     private readonly formBuilder = inject(FormBuilder);
 
     readonly form = this.formBuilder.group({

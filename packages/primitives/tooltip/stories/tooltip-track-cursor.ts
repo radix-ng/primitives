@@ -1,11 +1,16 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { tooltipImports } from '@radix-ng/primitives/tooltip';
-import { demoTooltip } from '../../storybook/styles';
+import {
+    RdxTooltip,
+    RdxTooltipPopup,
+    RdxTooltipPortal,
+    RdxTooltipPositioner,
+    RdxTooltipTrigger
+} from '@radix-ng/primitives/tooltip';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-tooltip-track-cursor',
-    imports: [...tooltipImports],
+    imports: [RdxTooltip, RdxTooltipPopup, RdxTooltipPortal, RdxTooltipPositioner, RdxTooltipTrigger],
     template: `
         <ng-container rdxTooltip trackCursorAxis="both">
             <button
@@ -16,12 +21,10 @@ import { demoTooltip } from '../../storybook/styles';
                 Move the cursor over me
             </button>
 
-            <div *rdxTooltipPortal [class]="t.positioner" sideOffset="12" rdxTooltipPositioner>
-                <div [class]="t.popup" rdxTooltipPopup>Following the cursor</div>
+            <div class="z-50" *rdxTooltipPortal sideOffset="12" rdxTooltipPositioner>
+                <div class="demo-tooltip-popup relative max-w-72 px-3 py-1.5" rdxTooltipPopup>Following the cursor</div>
             </div>
         </ng-container>
     `
 })
-export class RdxTooltipTrackCursorComponent {
-    protected readonly t = demoTooltip;
-}
+export class RdxTooltipTrackCursorComponent {}

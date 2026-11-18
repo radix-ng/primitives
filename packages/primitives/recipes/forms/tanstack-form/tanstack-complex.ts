@@ -6,13 +6,7 @@ import {
     RdxCheckboxIndicatorDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
-import {
-    RdxFieldControl,
-    RdxFieldDescription,
-    RdxFieldError,
-    RdxFieldLabel,
-    RdxFieldRoot
-} from '@radix-ng/primitives/field';
+import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import {
     RdxRadioGroupDirective,
     RdxRadioIndicatorDirective,
@@ -34,29 +28,6 @@ import {
 import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 import { injectForm, TanStackField } from '@tanstack/angular-form';
 import { z } from 'zod';
-import {
-    cn,
-    recipeCheckbox,
-    recipeDescription,
-    recipeError,
-    recipeField,
-    recipeFieldContent,
-    recipeFieldRow,
-    recipeForm,
-    recipeInput,
-    recipeLabel,
-    recipeRadio,
-    recipeReset,
-    recipeSelectIndicator,
-    recipeSelectItem,
-    recipeSelectList,
-    recipeSelectPopup,
-    recipeSelectTrigger,
-    recipeSubmit,
-    recipeSwitch,
-    recipeSwitchThumb,
-    recipeTextarea
-} from '../forms-recipes.shared';
 
 type FieldRef = { api: { state: { meta: { isTouched: boolean; isValid: boolean; errors: unknown[] } } } };
 
@@ -100,7 +71,6 @@ const formSchema = z.object({
         RdxFieldRoot,
         RdxFieldLabel,
         RdxFieldControl,
-        RdxFieldDescription,
         RdxFieldError,
         RdxSelectRoot,
         RdxSelectTrigger,
@@ -126,13 +96,19 @@ const formSchema = z.object({
         LucideChevronDown
     ],
     template: `
-        <form [class]="form0" (submit)="$event.preventDefault(); issueForm.handleSubmit()" novalidate>
+        <form class="flex w-100 flex-col gap-5" (submit)="$event.preventDefault(); issueForm.handleSubmit()" novalidate>
             <!-- Text input -->
             <ng-container #title="field" [tanstackField]="issueForm" [validators]="v.title" name="title">
-                <div [class]="field" [invalid]="isInvalid(title)" [touched]="isTouched(title)" rdxFieldRoot required>
-                    <label [class]="label" rdxFieldLabel>Title</label>
+                <div
+                    class="flex flex-col gap-1.5"
+                    [invalid]="isInvalid(title)"
+                    [touched]="isTouched(title)"
+                    rdxFieldRoot
+                    required
+                >
+                    <label class="demo-label data-[disabled]:opacity-50" rdxFieldLabel>Title</label>
                     <input
-                        [class]="input"
+                        class="demo-input data-[invalid]:border-destructive data-[invalid]:ring-destructive/30 h-9 w-full px-3"
                         [value]="title.api.state.value"
                         (input)="title.api.handleChange($any($event.target).value)"
                         (blur)="title.api.handleBlur()"
@@ -140,31 +116,51 @@ const formSchema = z.object({
                         placeholder="Short summary"
                         autocomplete="off"
                     />
-                    <p [class]="error" rdxFieldError>{{ messages(title) }}</p>
+                    <p class="text-destructive text-sm" rdxFieldError>{{ messages(title) }}</p>
                 </div>
             </ng-container>
 
             <!-- Select -->
             <ng-container #area="field" [tanstackField]="issueForm" [validators]="v.area" name="area">
-                <div [class]="field" [invalid]="isInvalid(area)" [touched]="isTouched(area)" rdxFieldRoot required>
-                    <label [class]="label" rdxFieldLabel>Area</label>
+                <div
+                    class="flex flex-col gap-1.5"
+                    [invalid]="isInvalid(area)"
+                    [touched]="isTouched(area)"
+                    rdxFieldRoot
+                    required
+                >
+                    <label class="demo-label data-[disabled]:opacity-50" rdxFieldLabel>Area</label>
                     <div
                         [value]="area.api.state.value"
                         (onValueChange)="area.api.handleChange($any($event.value))"
                         rdxSelectRoot
                     >
-                        <button [class]="selectTrigger" (blur)="area.api.handleBlur()" rdxSelectTrigger>
+                        <button
+                            class="demo-select-trigger data-[placeholder]:text-muted-foreground data-[invalid]:border-destructive data-[invalid]:aria-invalid:ring-destructive/30 demo-focus inline-flex min-h-9 w-full items-center justify-between gap-2 px-3 py-1.5 disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                            (blur)="area.api.handleBlur()"
+                            rdxSelectTrigger
+                        >
                             <span #areaValue="rdxSelectedValue" rdxSelectValue placeholder="Select an area…">
                                 {{ areaValue.slotText() }}
                             </span>
                             <svg class="size-4 shrink-0" lucideChevronDown size="16" aria-hidden="true"></svg>
                         </button>
                         <div class="z-[100]" *rdxSelectPortal [sideOffset]="6" rdxSelectPositioner>
-                            <div [class]="selectPopup" rdxSelectPopup>
-                                <div [class]="selectList" rdxSelectList>
+                            <div
+                                class="demo-select-popup min-w-[var(--anchor-width,10rem)] will-change-[opacity,transform]"
+                                rdxSelectPopup
+                            >
+                                <div class="p-1" rdxSelectList>
                                     @for (option of areas; track option.value) {
-                                        <div [class]="selectItem" [value]="option.value" rdxSelectItem>
-                                            <span [class]="selectIndicator" rdxSelectItemIndicator>
+                                        <div
+                                            class="demo-select-item data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground data-[disabled]:text-muted-foreground relative flex min-h-7 items-center gap-2 ps-6 pe-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                            [value]="option.value"
+                                            rdxSelectItem
+                                        >
+                                            <span
+                                                class="absolute start-0 inline-flex w-6 items-center justify-center"
+                                                rdxSelectItemIndicator
+                                            >
                                                 <svg
                                                     class="size-4 shrink-0"
                                                     lucideCheck
@@ -179,45 +175,57 @@ const formSchema = z.object({
                             </div>
                         </div>
                     </div>
-                    <p [class]="error" rdxFieldError>{{ messages(area) }}</p>
+                    <p class="text-destructive text-sm" rdxFieldError>{{ messages(area) }}</p>
                 </div>
             </ng-container>
 
             <!-- Radio group -->
             <ng-container #priority="field" [tanstackField]="issueForm" [validators]="v.priority" name="priority">
                 <div
-                    [class]="field"
+                    class="flex flex-col gap-1.5"
                     [invalid]="isInvalid(priority)"
                     [touched]="isTouched(priority)"
                     rdxFieldRoot
                     required
                 >
-                    <span [class]="label">Priority</span>
+                    <span class="demo-label data-[disabled]:opacity-50">Priority</span>
                     <div
-                        [class]="radio.group"
+                        class="flex flex-col gap-2.5"
                         [value]="priority.api.state.value"
                         (onValueChange)="priority.api.handleChange($any($event.value))"
                         aria-label="Priority"
                         rdxRadioRoot
                     >
                         @for (option of priorities; track option.value) {
-                            <label [class]="radio.row">
-                                <span [class]="radio.item" [value]="option.value" rdxRadioItem>
-                                    <span [class]="radio.indicator" rdxRadioIndicator></span>
+                            <label class="flex items-center gap-3">
+                                <span
+                                    class="demo-radio-item demo-focus flex size-6 items-center justify-center disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                                    [value]="option.value"
+                                    rdxRadioItem
+                                >
+                                    <span
+                                        class="after:bg-primary flex size-full items-center justify-center after:block after:size-2.5 after:rounded-full data-[state=unchecked]:hidden"
+                                        rdxRadioIndicator
+                                    ></span>
                                     <input rdxRadioItemInput />
                                 </span>
-                                <span [class]="radio.label">{{ option.label }}</span>
+                                <span class="demo-label">{{ option.label }}</span>
                             </label>
                         }
                     </div>
-                    <p [class]="error" rdxFieldError>{{ messages(priority) }}</p>
+                    <p class="text-destructive text-sm" rdxFieldError>{{ messages(priority) }}</p>
                 </div>
             </ng-container>
 
             <!-- Checkbox group -->
             <ng-container #labels="field" [tanstackField]="issueForm" [validators]="v.labels" name="labels">
-                <div [class]="field" [invalid]="isInvalid(labels)" [touched]="isTouched(labels)" rdxFieldRoot>
-                    <span [class]="label">Labels</span>
+                <div
+                    class="flex flex-col gap-1.5"
+                    [invalid]="isInvalid(labels)"
+                    [touched]="isTouched(labels)"
+                    rdxFieldRoot
+                >
+                    <span class="demo-label data-[disabled]:opacity-50">Labels</span>
                     <div
                         class="flex flex-col gap-2.5"
                         [value]="labels.api.state.value"
@@ -230,41 +238,44 @@ const formSchema = z.object({
                             <label class="flex items-center gap-3">
                                 <div [name]="option.value" rdxCheckboxRoot>
                                     <button
-                                        [class]="checkbox.button"
+                                        class="demo-checkbox-button demo-focus flex size-6 items-center justify-center disabled:opacity-50 aria-disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
                                         [attr.aria-label]="option.label"
                                         rdxCheckboxButton
                                     >
                                         <svg
-                                            [class]="checkbox.indicator"
+                                            class="text-primary flex items-center"
                                             rdxCheckboxIndicator
                                             size="16"
                                             lucideCheck
                                         ></svg>
                                     </button>
                                 </div>
-                                <span [class]="radio.label">{{ option.label }}</span>
+                                <span class="demo-label">{{ option.label }}</span>
                             </label>
                         }
                     </div>
-                    <p [class]="error" rdxFieldError>{{ messages(labels) }}</p>
+                    <p class="text-destructive text-sm" rdxFieldError>{{ messages(labels) }}</p>
                 </div>
             </ng-container>
 
             <!-- Switch -->
             <ng-container #notify="field" [tanstackField]="issueForm" name="notify">
-                <div [class]="fieldRow" rdxFieldRoot>
-                    <div [class]="fieldContent">
-                        <span [class]="label">Email updates</span>
-                        <p [class]="description">Get notified when this issue changes status.</p>
+                <div class="flex items-start justify-between gap-4" rdxFieldRoot>
+                    <div class="flex flex-col gap-1.5">
+                        <span class="demo-label data-[disabled]:opacity-50">Email updates</span>
+                        <p class="text-muted-foreground text-sm">Get notified when this issue changes status.</p>
                     </div>
                     <button
-                        [class]="switchClass"
+                        class="demo-switch demo-focus data-[checked]:bg-primary relative inline-flex h-6 w-11 shrink-0 items-center p-0 disabled:cursor-not-allowed disabled:opacity-50"
                         [checked]="notify.api.state.value"
                         (onCheckedChange)="notify.api.handleChange($any($event.checked))"
                         aria-label="Email updates"
                         rdxSwitchRoot
                     >
-                        <span [class]="switchThumb" rdxSwitchThumb></span>
+                        <span
+                            class="demo-switch-thumb pointer-events-none block size-5 translate-x-0.5 transition-transform data-[checked]:translate-x-[22px]"
+                            rdxSwitchThumb
+                        ></span>
                     </button>
                 </div>
             </ng-container>
@@ -272,58 +283,45 @@ const formSchema = z.object({
             <!-- Textarea -->
             <ng-container #details="field" [tanstackField]="issueForm" [validators]="v.details" name="details">
                 <div
-                    [class]="field"
+                    class="flex flex-col gap-1.5"
                     [invalid]="isInvalid(details)"
                     [touched]="isTouched(details)"
                     rdxFieldRoot
                     required
                 >
-                    <label [class]="label" rdxFieldLabel>Details</label>
+                    <label class="demo-label data-[disabled]:opacity-50" rdxFieldLabel>Details</label>
                     <textarea
-                        [class]="textarea"
+                        class="demo-input data-[invalid]:border-destructive data-[invalid]:ring-destructive/30 min-h-24 w-full px-3 py-2"
                         [value]="details.api.state.value"
                         (input)="details.api.handleChange($any($event.target).value)"
                         (blur)="details.api.handleBlur()"
                         rdxFieldControl
                         placeholder="Steps to reproduce, expected vs. actual…"
                     ></textarea>
-                    <p [class]="error" rdxFieldError>{{ messages(details) }}</p>
+                    <p class="text-destructive text-sm" rdxFieldError>{{ messages(details) }}</p>
                 </div>
             </ng-container>
 
             <div class="flex gap-3">
-                <button [class]="submit" type="submit">Create issue</button>
-                <button [class]="reset" (click)="issueForm.reset()" type="button">Reset</button>
+                <button class="demo-button demo-button-primary h-9 px-4" type="submit">Create issue</button>
+                <button
+                    class="demo-button demo-button-outline h-9 self-start px-4"
+                    (click)="issueForm.reset()"
+                    type="button"
+                >
+                    Reset
+                </button>
             </div>
 
             @if (result()) {
-                <p [class]="description">Created issue "{{ result()!.title }}" ({{ result()!.area }})</p>
+                <p class="text-muted-foreground text-sm">
+                    Created issue "{{ result()!.title }}" ({{ result()!.area }})
+                </p>
             }
         </form>
     `
 })
 export class TanstackComplex {
-    protected readonly form0 = recipeForm;
-    protected readonly field = recipeField;
-    protected readonly fieldRow = recipeFieldRow;
-    protected readonly fieldContent = recipeFieldContent;
-    protected readonly label = recipeLabel;
-    protected readonly input = recipeInput;
-    protected readonly textarea = recipeTextarea;
-    protected readonly description = recipeDescription;
-    protected readonly error = recipeError;
-    protected readonly submit = recipeSubmit;
-    protected readonly reset = cn(recipeReset, 'self-start');
-    protected readonly selectTrigger = recipeSelectTrigger;
-    protected readonly selectPopup = recipeSelectPopup;
-    protected readonly selectList = recipeSelectList;
-    protected readonly selectItem = recipeSelectItem;
-    protected readonly selectIndicator = recipeSelectIndicator;
-    protected readonly switchClass = recipeSwitch;
-    protected readonly switchThumb = recipeSwitchThumb;
-    protected readonly radio = recipeRadio;
-    protected readonly checkbox = recipeCheckbox;
-
     protected readonly areas = AREAS;
     protected readonly priorities = PRIORITIES;
     protected readonly labelOptions = LABELS;

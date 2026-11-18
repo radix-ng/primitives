@@ -8,9 +8,7 @@ import {
     RdxFieldRoot
 } from '@radix-ng/primitives/field';
 import { RdxFormRoot } from '@radix-ng/primitives/form';
-import { cn, demoButton, demoInput } from '../../storybook/styles';
-import { RdxSignalField } from '../src/signal-field';
-import { RdxSignalForm } from '../src/signal-form';
+import { RdxSignalField, RdxSignalForm } from '@radix-ng/primitives/signal-forms';
 
 const takenEmail = 'taken@radix-ng.com';
 
@@ -31,19 +29,29 @@ const takenEmail = 'taken@radix-ng.com';
     template: `
         <form class="flex w-80 flex-col gap-3" [rdxSignalForm]="accountForm" rdxFormRoot rdxSignalSubmit>
             <div class="flex flex-col gap-2" rdxFieldRoot>
-                <label [class]="labelClass" rdxFieldLabel>Email</label>
+                <label class="text-foreground text-sm font-medium data-[disabled]:opacity-50" rdxFieldLabel>
+                    Email
+                </label>
                 <input
-                    [class]="inputClass"
+                    class="demo-input data-[invalid]:border-destructive data-[invalid]:ring-destructive/20 h-9 w-full px-3"
                     [formField]="accountForm.email"
                     rdxFieldControl
                     rdxSignalField
                     type="email"
                 />
-                <p [class]="descriptionClass" rdxFieldDescription>Use {{ takenEmail }} to preview a server error.</p>
-                <p #err="rdxFieldError" [class]="errorClass" rdxFieldError>{{ err.messages().join(' ') }}</p>
+                <p class="text-muted-foreground text-sm" rdxFieldDescription>
+                    Use {{ takenEmail }} to preview a server error.
+                </p>
+                <p class="text-destructive text-sm" #err="rdxFieldError" rdxFieldError>
+                    {{ err.messages().join(' ') }}
+                </p>
             </div>
 
-            <button [class]="buttonClass" [disabled]="accountForm().submitting()" type="submit">
+            <button
+                class="demo-button demo-button-primary h-9 self-start px-4 disabled:cursor-wait disabled:opacity-60"
+                [disabled]="accountForm().submitting()"
+                type="submit"
+            >
                 {{ accountForm().submitting() ? 'Creating account…' : 'Create account' }}
             </button>
 
@@ -55,19 +63,6 @@ const takenEmail = 'taken@radix-ng.com';
 })
 export class SignalFormsSubmissionExample {
     protected readonly takenEmail = takenEmail;
-    protected readonly inputClass = cn(
-        demoInput,
-        'data-[invalid]:border-destructive data-[invalid]:ring-destructive/20'
-    );
-    protected readonly buttonClass = cn(
-        demoButton.base,
-        demoButton.primary,
-        demoButton.size.md,
-        'self-start disabled:cursor-wait disabled:opacity-60'
-    );
-    protected readonly labelClass = 'text-foreground text-sm font-medium data-[disabled]:opacity-50';
-    protected readonly descriptionClass = 'text-muted-foreground text-sm';
-    protected readonly errorClass = 'text-destructive text-sm';
 
     protected readonly submittedEmail = signal<string | null>(null);
     readonly model = signal({ email: '' });

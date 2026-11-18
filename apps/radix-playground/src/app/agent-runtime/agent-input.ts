@@ -11,7 +11,6 @@ import {
 import { FieldTree, FormField } from '@angular/forms/signals';
 import { injectId } from '@radix-ng/primitives/core';
 import { RdxInputDirective } from '@radix-ng/primitives/input';
-import { demoInput } from '../shared/styles';
 import { AgentRuntime } from './agent-runtime';
 import { registerInput } from './control-adapters';
 import { ProjectDemo } from './project-demo';
@@ -23,9 +22,9 @@ import { ProjectDemo } from './project-demo';
     template: `
         <label class="text-foreground mb-2 block text-sm font-medium" [for]="inputId">{{ label() }}</label>
         <input
+            class="demo-input h-9 w-full px-3"
             #element
             [id]="inputId"
-            [class]="styles"
             [formField]="field()"
             (onValueChange)="demo.inputChange(label(), $event)"
             rdxInput
@@ -36,7 +35,6 @@ export class AgentInput {
     readonly field = input.required<FieldTree<string>>();
     readonly label = input.required<string>();
     readonly available = input(true);
-    protected readonly styles = demoInput;
     protected readonly inputId = injectId('agent-input-');
     protected readonly demo = inject(ProjectDemo);
     private readonly primitive = viewChild.required(RdxInputDirective);

@@ -8,12 +8,13 @@ An animated labelled progress bar with formatted value text.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
-import { cn } from '../../storybook/styles';
-import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
-import { RdxProgressLabelDirective } from '../src/progress-label.directive';
-import { RdxProgressRootDirective } from '../src/progress-root.directive';
-import { RdxProgressTrackDirective } from '../src/progress-track.directive';
-import { RdxProgressValueDirective } from '../src/progress-value.directive';
+import {
+    RdxProgressIndicatorDirective,
+    RdxProgressLabelDirective,
+    RdxProgressRootDirective,
+    RdxProgressTrackDirective,
+    RdxProgressValueDirective
+} from '@radix-ng/primitives/progress';
 
 const progressSteps = [12, 28, 44, 60, 76, 92, 100] as const;
 
@@ -46,11 +47,13 @@ export class ProgressLinearComponent {
     protected readonly progress = signal<(typeof progressSteps)[number]>(progressSteps[0]);
 
     protected readonly indicatorClass = computed(() =>
-        cn(
+        [
             'h-full rounded-full bg-primary transition-all duration-700 ease-out',
             this.widthClass(),
             this.progress() === 100 && 'bg-primary/80'
-        )
+        ]
+            .filter(Boolean)
+            .join(' ')
     );
 
     private readonly widthClass = computed(() => {

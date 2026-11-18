@@ -25,7 +25,7 @@ import { PresenceDemo } from './presence';
                         [attr.data-state]="open() ? 'open' : 'closed'"
                     >
                         <div
-                            class="waapi-child text-card-foreground text-sm group-data-[state=closed]:animate-ping group-data-[state=closed]:[animation-duration:300ms] group-data-[state=closed]:[animation-iteration-count:1]"
+                            class="waapi-child text-card-foreground text-sm group-data-[state=closed]:animate-ping group-data-[state=closed]:[animation-duration:var(--duration-demo-presence-animation)] group-data-[state=closed]:[animation-iteration-count:1]"
                             rdxPresenceTarget
                         >
                             explicit descendant exit

@@ -1,13 +1,17 @@
 import { LucideCheck } from '@lucide/angular';
-import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
+import {
+    RdxCheckboxButtonDirective,
+    RdxCheckboxIndicatorDirective,
+    RdxCheckboxInputDirective,
+    RdxCheckboxRootDirective
+} from '@radix-ng/primitives/checkbox';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { expect } from 'storybook/test';
 import { RdxLabelDirective } from '../../label';
-import { demoCheckbox } from '../../storybook/styles';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
-import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
-import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
-import { RdxCheckboxInputDirective } from '../src/checkbox-input';
-import { RdxCheckboxRootDirective } from '../src/checkbox-root';
+import { CheckboxDefaultStory } from './checkbox-default-example';
+import defaultPortableSource from './checkbox-default-example?raw';
+
 import { CheckboxReactiveFormsExampleComponent } from './checkbox-forms';
 import { CheckboxGroupExample } from './checkbox-group';
 import { CheckboxIndeterminate } from './checkbox-indeterminate';
@@ -42,6 +46,7 @@ export default {
     decorators: [
         moduleMetadata({
             imports: [
+                CheckboxDefaultStory,
                 RdxLabelDirective,
                 RdxCheckboxRootDirective,
                 RdxCheckboxButtonDirective,
@@ -64,25 +69,16 @@ export default {
 type Story = StoryObj;
 
 export const Default: Story = {
+    parameters: source(defaultPortableSource),
     args: {
         readonly: false,
         disabled: false
     },
 
     render: (args) => ({
-        props: { ...args, c: demoCheckbox },
+        props: { ...args },
         template: html`
-            <div class="flex items-center gap-3">
-                <div rdxCheckboxRoot ${argsToTemplate(args)} [checked]="true">
-                    <button id="checkbox-1" [class]="c.button" rdxCheckboxButton>
-                        <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
-                    </button>
-                    <input rdxCheckboxInput />
-                </div>
-                <label class="text-foreground flex items-center text-sm font-medium" rdxLabel htmlFor="checkbox-1">
-                    Accept terms and conditions.
-                </label>
-            </div>
+            <rdx-checkbox-default-example [readOnly]="readonly" [disabled]="disabled" />
         `
     }),
     play: async ({ canvas }) => {

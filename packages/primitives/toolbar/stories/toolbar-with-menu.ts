@@ -1,19 +1,32 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
-import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { toolbarImports } from '@radix-ng/primitives/toolbar';
-import { demoMenu } from '../../storybook/styles';
+import {
+    RdxMenuItem,
+    RdxMenuPopup,
+    RdxMenuPositioner,
+    RdxMenuRoot,
+    RdxMenuSeparator,
+    RdxMenuTrigger
+} from '@radix-ng/primitives/menu';
+import { RdxToolbarButton, RdxToolbarRoot, RdxToolbarSeparator } from '@radix-ng/primitives/toolbar';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toolbar-with-menu',
-    imports: [...toolbarImports, RdxMenuModule, LucideChevronDown],
+    imports: [
+        RdxToolbarRoot,
+        RdxToolbarButton,
+        RdxToolbarSeparator,
+        RdxMenuRoot,
+        RdxMenuTrigger,
+        RdxMenuPositioner,
+        RdxMenuPopup,
+        RdxMenuItem,
+        RdxMenuSeparator,
+        LucideChevronDown
+    ],
     template: `
-        <div
-            class="border-border bg-background flex items-center gap-1 rounded-lg border p-1 shadow-sm"
-            rdxToolbarRoot
-            aria-label="Toolbar with menu"
-        >
+        <div class="demo-toolbar-root flex items-center gap-1 p-1" rdxToolbarRoot aria-label="Toolbar with menu">
             <button
                 class="${'text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-8 items-center justify-center rounded-md px-2.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2'}"
                 rdxToolbarButton
@@ -31,7 +44,7 @@ import { demoMenu } from '../../storybook/styles';
 
             <ng-container #menu="rdxMenuRoot" rdxMenuRoot>
                 <button
-                    class="text-foreground hover:bg-muted focus-visible:ring-ring data-[popup-open]:bg-muted inline-flex h-8 items-center justify-center gap-1 rounded-md px-2.5 text-sm font-medium transition-colors outline-none focus-visible:ring-2"
+                    class="demo-toolbar-button focus-visible:ring-ring data-[popup-open]:bg-muted inline-flex h-8 items-center justify-center gap-1 px-2.5 focus-visible:ring-2"
                     rdxToolbarButton
                     rdxMenuTrigger
                 >
@@ -40,12 +53,30 @@ import { demoMenu } from '../../storybook/styles';
                 </button>
 
                 @if (menu.open()) {
-                    <div [class]="m.positioner" sideOffset="6" rdxMenuPositioner>
-                        <div [class]="m.popup" rdxMenuPopup>
-                            <button [class]="m.item" rdxMenuItem>Undo</button>
-                            <button [class]="m.item" rdxMenuItem>Redo</button>
-                            <div [class]="m.separator" rdxMenuSeparator></div>
-                            <button [class]="m.item" rdxMenuItem>Clear formatting</button>
+                    <div class="z-50 data-[closed]:pointer-events-none" sideOffset="6" rdxMenuPositioner>
+                        <div
+                            class="demo-menu-popup min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                            rdxMenuPopup
+                        >
+                            <button
+                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                rdxMenuItem
+                            >
+                                Undo
+                            </button>
+                            <button
+                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                rdxMenuItem
+                            >
+                                Redo
+                            </button>
+                            <div class="bg-border -mx-1 my-1 h-px" rdxMenuSeparator></div>
+                            <button
+                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                rdxMenuItem
+                            >
+                                Clear formatting
+                            </button>
                         </div>
                     </div>
                 }
@@ -53,6 +84,4 @@ import { demoMenu } from '../../storybook/styles';
         </div>
     `
 })
-export class ToolbarWithMenuExample {
-    protected readonly m = demoMenu;
-}
+export class ToolbarWithMenuExample {}

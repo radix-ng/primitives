@@ -1,17 +1,41 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { drawerImports } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer, demoInput } from '../../storybook/styles';
+import {
+    RdxDrawerBackdrop,
+    RdxDrawerClose,
+    RdxDrawerDescription,
+    RdxDrawerPopup,
+    RdxDrawerPortal,
+    RdxDrawerRoot,
+    RdxDrawerTitle,
+    RdxDrawerTrigger,
+    RdxDrawerViewport,
+    RdxDrawerVirtualKeyboardProvider
+} from '@radix-ng/primitives/drawer';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-virtual-keyboard',
-    imports: [...drawerImports],
+    imports: [
+        RdxDrawerRoot,
+        RdxDrawerTrigger,
+        RdxDrawerPortal,
+        RdxDrawerBackdrop,
+        RdxDrawerViewport,
+        RdxDrawerVirtualKeyboardProvider,
+        RdxDrawerPopup,
+        RdxDrawerTitle,
+        RdxDrawerDescription,
+        RdxDrawerClose
+    ],
     template: `
         <div rdxDrawerRoot>
-            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDrawerTrigger>Edit delivery</button>
+            <button class="demo-button demo-button-primary h-9 px-4" rdxDrawerTrigger>Edit delivery</button>
 
             <ng-template rdxDrawerPortal>
-                <div [class]="cn(d.backdrop, d.overlayAnimated)" rdxDrawerBackdrop></div>
+                <div
+                    class="bg-foreground/50 fixed inset-0 z-50 transition-opacity duration-200 data-[closed]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0"
+                    rdxDrawerBackdrop
+                ></div>
 
                 <div
                     class="fixed inset-0 z-50 flex items-end justify-center px-4 pb-[calc(env(safe-area-inset-bottom,0px)+var(--drawer-keyboard-inset,0px))] transition-[padding-bottom] duration-200"
@@ -19,7 +43,7 @@ import { cn, demoButton, demoDrawer, demoInput } from '../../storybook/styles';
                     rdxDrawerVirtualKeyboardProvider
                 >
                     <div
-                        class="border-border bg-card text-card-foreground max-h-[min(82vh,calc(100vh-var(--drawer-keyboard-inset,0px)-2rem))] w-full max-w-lg [transform:translateY(var(--drawer-swipe-movement-y))] overflow-hidden rounded-t-xl border px-0 pt-3 shadow-lg outline-none [transition:transform_450ms_cubic-bezier(0.32,0.72,0,1),max-height_200ms_ease] data-[ending-style]:[transform:translateY(100%)] data-[starting-style]:[transform:translateY(100%)] data-[swiping]:select-none data-[swiping]:[transition:none]"
+                        class="border-border bg-card text-card-foreground max-h-[min(82vh,calc(100vh-var(--drawer-keyboard-inset,0px)-2rem))] w-full max-w-lg [transform:translateY(var(--drawer-swipe-movement-y))] overflow-hidden rounded-t-xl border px-0 pt-3 shadow-lg outline-none [transition:var(--transition-demo-drawer-keyboard)] data-[ending-style]:[transform:translateY(100%)] data-[starting-style]:[transform:translateY(100%)] data-[swiping]:select-none data-[swiping]:[transition:none]"
                         rdxDrawerPopup
                     >
                         <div class="bg-muted mx-auto mb-4 h-1 w-10 rounded-full"></div>
@@ -28,8 +52,8 @@ import { cn, demoButton, demoDrawer, demoInput } from '../../storybook/styles';
                             class="max-h-[inherit] [scroll-padding-bottom:calc(var(--drawer-keyboard-inset,0px)+4rem)] overflow-y-auto px-6 pb-6"
                         >
                             <div class="mb-5">
-                                <h2 [class]="d.title" rdxDrawerTitle>Delivery details</h2>
-                                <p [class]="d.description" rdxDrawerDescription>
+                                <h2 class="demo-dialog-title" rdxDrawerTitle>Delivery details</h2>
+                                <p class="text-muted-foreground mt-1.5 text-sm" rdxDrawerDescription>
                                     Confirm the address and contact fields before placing the order.
                                 </p>
                             </div>
@@ -37,22 +61,22 @@ import { cn, demoButton, demoDrawer, demoInput } from '../../storybook/styles';
                             <div class="grid gap-4">
                                 <label class="grid gap-1.5">
                                     <span class="text-foreground text-sm font-medium">Name</span>
-                                    <input [class]="i.base" value="Ada Lovelace" />
+                                    <input class="demo-input h-9 w-full px-3" value="Ada Lovelace" />
                                 </label>
 
                                 <label class="grid gap-1.5">
                                     <span class="text-foreground text-sm font-medium">Phone</span>
-                                    <input [class]="i.base" inputmode="tel" value="+1 415 555 0142" />
+                                    <input class="demo-input h-9 w-full px-3" inputmode="tel" value="+1 415 555 0142" />
                                 </label>
 
                                 <label class="grid gap-1.5">
                                     <span class="text-foreground text-sm font-medium">Street address</span>
-                                    <input [class]="i.base" value="12 Market Street" />
+                                    <input class="demo-input h-9 w-full px-3" value="12 Market Street" />
                                 </label>
 
                                 <label class="grid gap-1.5">
                                     <span class="text-foreground text-sm font-medium">Apartment</span>
-                                    <input [class]="i.base" placeholder="Optional" />
+                                    <input class="demo-input h-9 w-full px-3" placeholder="Optional" />
                                 </label>
 
                                 <label class="grid gap-1.5">
@@ -66,10 +90,18 @@ Leave at reception if nobody answers.</textarea
                             </div>
 
                             <div class="bg-card sticky bottom-0 mt-6 flex justify-end gap-2 border-t py-4">
-                                <button [class]="cn(b.base, b.outline, b.size.sm)" type="button" rdxDrawerClose>
+                                <button
+                                    class="demo-button demo-button-outline h-8 px-3 text-xs"
+                                    type="button"
+                                    rdxDrawerClose
+                                >
                                     Cancel
                                 </button>
-                                <button [class]="cn(b.base, b.primary, b.size.sm)" type="button" rdxDrawerClose>
+                                <button
+                                    class="demo-button demo-button-primary h-8 px-3 text-xs"
+                                    type="button"
+                                    rdxDrawerClose
+                                >
                                     Save
                                 </button>
                             </div>
@@ -80,9 +112,4 @@ Leave at reception if nobody answers.</textarea
         </div>
     `
 })
-export class RdxDrawerVirtualKeyboardComponent {
-    protected readonly b = demoButton;
-    protected readonly d = demoDrawer;
-    protected readonly i = demoInput;
-    protected readonly cn = cn;
-}
+export class RdxDrawerVirtualKeyboardComponent {}

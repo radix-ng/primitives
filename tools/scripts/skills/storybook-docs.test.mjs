@@ -47,11 +47,37 @@ test('Popover Default exports a portable component and its shared stylesheet as 
         'utf8'
     ).trim();
     const [, defaultCode] = example.match(/```typescript\n([\s\S]*?)\n```/);
-    const [, stylesheet] = example.match(/```css\n([\s\S]*?)\n```/);
+    const stylesheet = [...example.matchAll(/```css\n([\s\S]*?)\n```/g)]
+        .map((match) => match[1])
+        .find((code) => code.includes('.demo-surface'));
     assert.equal(stylesheet, sharedStyles);
     assert.match(defaultCode, /class="demo-surface [^"]*w-80 p-4"/);
     assert.match(defaultCode, /data-\[starting-style\]:animate-popover-popup-in/);
     assert.match(defaultCode, /data-\[ending-style\]:animate-popover-popup-out/);
     assert.doesNotMatch(defaultCode, /from ['"]\.|\.\.\.popoverImports|@layer components/);
     assert.doesNotMatch(example, /<Source\b/);
+});
+
+test('migrated example shards retain setup, the rendered CSS and local wrapper sources', () => {
+    const { files } = createMarkdownBundle(docs, { versionLine: 'Test version' });
+    const css = readFileSync(
+        new URL('../../../apps/radix-storybook/.storybook/demo-styles.css', import.meta.url),
+        'utf8'
+    ).trim();
+    for (const name of [
+        'button--default',
+        'input--default',
+        'accordion--default',
+        'select--typed-application-wrapper',
+        'menu--default',
+        'drawer--default'
+    ]) {
+        const source = files.get(`examples/${name}.md`);
+        assert.ok(source, name);
+        assert.ok(source.includes(css), `${name} includes the rendered stylesheet`);
+        assert.match(source, /Setup and shared files/);
+        assert.match(source, /@tailwindcss\/postcss/);
+        assert.doesNotMatch(source, /from ['"][^'"]*storybook\/styles|<Source\b/);
+    }
+    assert.match(files.get('examples/select--typed-application-wrapper.md'), /export class SelectTypedControl/);
 });

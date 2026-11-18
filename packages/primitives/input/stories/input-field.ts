@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
-import { demoInput } from '../../storybook/styles';
-import { RdxInputDirective } from '../src/input.directive';
+import { RdxInputDirective } from '@radix-ng/primitives/input';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -10,12 +9,10 @@ import { RdxInputDirective } from '../src/input.directive';
     template: `
         <div class="flex w-80 flex-col gap-2" rdxFieldRoot required>
             <label class="text-foreground text-sm font-medium" rdxFieldLabel>Email</label>
-            <input [class]="inputClass" rdxInput type="email" placeholder="name@example.com" />
+            <input class="demo-input h-9 w-full px-3" rdxInput type="email" placeholder="name@example.com" />
             <p class="text-muted-foreground text-sm" rdxFieldDescription>Used for account notifications.</p>
             <p class="text-destructive text-sm" rdxFieldError>Enter a valid email address.</p>
         </div>
     `
 })
-export class InputFieldExample {
-    protected readonly inputClass = demoInput;
-}
+export class InputFieldExample {}

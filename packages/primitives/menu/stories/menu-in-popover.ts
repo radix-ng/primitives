@@ -1,13 +1,49 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideChevronRight } from '@lucide/angular';
 import { injectId } from '@radix-ng/primitives/core';
-import { menuImports, type RdxMenuOpenChange } from '@radix-ng/primitives/menu';
-import { popoverImports } from '@radix-ng/primitives/popover';
-import { cn, demoButton, demoInput, demoMenu, demoPopover } from '../../storybook/styles';
+import {
+    RdxMenuItem,
+    RdxMenuPopup,
+    RdxMenuPortal,
+    RdxMenuPositioner,
+    RdxMenuRoot,
+    RdxMenuSubTrigger,
+    RdxMenuTrigger,
+    type RdxMenuOpenChange
+} from '@radix-ng/primitives/menu';
+import {
+    RdxPopoverArrow,
+    RdxPopoverClose,
+    RdxPopoverDescription,
+    RdxPopoverPopup,
+    RdxPopoverPortal,
+    RdxPopoverPositioner,
+    RdxPopoverRoot,
+    RdxPopoverTitle,
+    RdxPopoverTrigger
+} from '@radix-ng/primitives/popover';
 
 @Component({
     selector: 'rdx-menu-in-popover',
-    imports: [...menuImports, ...popoverImports, LucideChevronRight],
+    imports: [
+        RdxMenuRoot,
+        RdxMenuTrigger,
+        RdxMenuSubTrigger,
+        RdxMenuPortal,
+        RdxMenuPositioner,
+        RdxMenuPopup,
+        RdxMenuItem,
+        RdxPopoverRoot,
+        RdxPopoverTrigger,
+        RdxPopoverPortal,
+        RdxPopoverPositioner,
+        RdxPopoverPopup,
+        RdxPopoverArrow,
+        RdxPopoverTitle,
+        RdxPopoverDescription,
+        RdxPopoverClose,
+        LucideChevronRight
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <section class="grid gap-4">
@@ -26,40 +62,56 @@ import { cn, demoButton, demoInput, demoMenu, demoPopover } from '../../storyboo
                 </label>
             </div>
             <ng-container [modal]="modal() ? true : 'trap-focus'" rdxPopoverRoot>
-                <button [class]="cn(b.base, b.outline, b.size.md, 'w-fit')" rdxPopoverTrigger>Workspace tools</button>
+                <button class="demo-button demo-button-outline h-9 w-fit px-4" rdxPopoverTrigger>
+                    Workspace tools
+                </button>
                 <ng-template rdxPopoverPortal>
-                    <div [class]="p.positioner" align="start" sideOffset="8" rdxPopoverPositioner>
-                        <div [class]="p.popup" rdxPopoverPopup>
-                            <span [class]="p.arrow" rdxPopoverArrow></span>
-                            <h2 [class]="p.title" rdxPopoverTitle>Workspace commands</h2>
-                            <p [class]="p.description" rdxPopoverDescription>
+                    <div class="z-50" align="start" sideOffset="8" rdxPopoverPositioner>
+                        <div class="demo-surface relative w-80 p-4" rdxPopoverPopup>
+                            <span class="text-card demo-arrow my-px" rdxPopoverArrow></span>
+                            <h2 class="demo-popover-title" rdxPopoverTitle>Workspace commands</h2>
+                            <p class="text-muted-foreground mt-1 text-sm" rdxPopoverDescription>
                                 Escape closes the deepest layer. Modal popover also dismisses one layer per outside
                                 press.
                             </p>
                             <div class="my-4 grid gap-3">
                                 <label class="text-sm font-medium" [for]="nameId">Workspace name</label>
-                                <input [id]="nameId" [class]="input" value="Design system" />
+                                <input class="demo-input h-9 w-full px-3" [id]="nameId" value="Design system" />
                                 <ng-container
                                     #menu="rdxMenuRoot"
                                     (onOpenChange)="change($event)"
                                     (onOpenChangeComplete)="complete($event)"
                                     rdxMenuRoot
                                 >
-                                    <button [class]="cn(b.base, b.outline, b.size.sm, 'w-fit')" rdxMenuTrigger>
+                                    <button
+                                        class="demo-button demo-button-outline h-8 w-fit px-3 text-xs"
+                                        rdxMenuTrigger
+                                    >
                                         Actions
                                     </button>
                                     <ng-template [keepMounted]="keep()" rdxMenuPortal>
-                                        <div [class]="m.positioner" align="start" sideOffset="4" rdxMenuPositioner>
-                                            <div [class]="cn(m.popup, m.popupAnimated, 'w-56')" rdxMenuPopup>
+                                        <div
+                                            class="z-50 data-[closed]:pointer-events-none"
+                                            align="start"
+                                            sideOffset="4"
+                                            rdxMenuPositioner
+                                        >
+                                            <div
+                                                class="demo-menu-popup data-[open]:animate-popover-popup-in data-[closed]:animate-popover-popup-out w-56 min-w-[8rem] origin-[var(--transform-origin)] p-1 data-[closed]:pointer-events-none data-[closed]:block! data-[closed]:hidden"
+                                                rdxMenuPopup
+                                            >
                                                 <button
-                                                    [class]="m.item"
+                                                    class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
                                                     (onSelect)="selected.set('Rename')"
                                                     rdxMenuItem
                                                 >
                                                     Rename
                                                 </button>
                                                 <ng-container rdxMenuRoot>
-                                                    <button [class]="m.item" rdxMenuSubTrigger>
+                                                    <button
+                                                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                        rdxMenuSubTrigger
+                                                    >
                                                         Share
                                                         <svg
                                                             class="ms-auto"
@@ -70,15 +122,18 @@ import { cn, demoButton, demoInput, demoMenu, demoPopover } from '../../storyboo
                                                     </button>
                                                     <ng-template [keepMounted]="keep()" rdxMenuPortal>
                                                         <div
-                                                            [class]="m.positioner"
+                                                            class="z-50 data-[closed]:pointer-events-none"
                                                             side="right"
                                                             align="start"
                                                             sideOffset="4"
                                                             rdxMenuPositioner
                                                         >
-                                                            <div [class]="m.popup + ' w-48'" rdxMenuPopup>
+                                                            <div
+                                                                class="demo-menu-popup w-48 min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                                                                rdxMenuPopup
+                                                            >
                                                                 <button
-                                                                    [class]="m.item"
+                                                                    class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
                                                                     (onSelect)="selected.set('Copy link')"
                                                                     rdxMenuItem
                                                                 >
@@ -89,7 +144,7 @@ import { cn, demoButton, demoInput, demoMenu, demoPopover } from '../../storyboo
                                                     </ng-template>
                                                 </ng-container>
                                                 <button
-                                                    [class]="m.item"
+                                                    class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
                                                     (onSelect)="selected.set('Archive')"
                                                     rdxMenuItem
                                                 >
@@ -100,7 +155,7 @@ import { cn, demoButton, demoInput, demoMenu, demoPopover } from '../../storyboo
                                     </ng-template>
                                     @if (defer()) {
                                         <button
-                                            [class]="cn(b.base, b.ghost, b.size.sm, 'w-fit')"
+                                            class="demo-button demo-button-ghost h-8 w-fit px-3 text-xs"
                                             (click)="menu.unmount()"
                                             type="button"
                                         >
@@ -113,7 +168,9 @@ import { cn, demoButton, demoInput, demoMenu, demoPopover } from '../../storyboo
                                     Menu completed: {{ completed().join(' → ') || 'none' }}
                                 </output>
                             </div>
-                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxPopoverClose>Close workspace</button>
+                            <button class="demo-button demo-button-outline h-8 px-3 text-xs" rdxPopoverClose>
+                                Close workspace
+                            </button>
                         </div>
                     </div>
                 </ng-template>
@@ -122,11 +179,17 @@ import { cn, demoButton, demoInput, demoMenu, demoPopover } from '../../storyboo
     `
 })
 export class RdxMenuInPopoverComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly p = demoPopover;
-    protected readonly m = demoMenu;
-    protected readonly input = demoInput;
+    protected readonly p = {
+        positioner: 'z-50',
+        popup: 'demo-surface relative w-80 p-4',
+        popupAnimated:
+            'data-[open]:animate-popover-popup-in data-[starting-style]:animate-popover-popup-in data-[ending-style]:animate-popover-popup-out',
+        backdrop: 'fixed inset-0 bg-foreground/10',
+        arrow: 'text-card demo-arrow my-px',
+        title: 'demo-popover-title',
+        description: 'mt-1 text-sm text-muted-foreground',
+        close: 'demo-button demo-button-ghost absolute top-2 right-2 size-7 p-0'
+    };
     protected readonly nameId = injectId('rdx-menu-workspace-name-');
     protected readonly modal = signal(false);
     protected readonly keep = signal(false);

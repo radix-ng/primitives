@@ -1,30 +1,57 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
-import { demoNavigationMenu } from '../../storybook/styles';
+import {
+    RdxNavigationMenuItem,
+    RdxNavigationMenuLink,
+    RdxNavigationMenuList,
+    RdxNavigationMenuRoot
+} from '@radix-ng/primitives/navigation-menu';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-links',
-    imports: [...navigationMenuImports],
+    imports: [RdxNavigationMenuRoot, RdxNavigationMenuList, RdxNavigationMenuItem, RdxNavigationMenuLink],
     template: `
-        <nav [class]="m.root" rdxNavigationMenuRoot>
-            <ul [class]="m.list" rdxNavigationMenuList>
+        <nav class="relative flex justify-center" rdxNavigationMenuRoot>
+            <ul class="demo-surface flex list-none items-center gap-1 p-1" rdxNavigationMenuList>
                 <li rdxNavigationMenuItem>
-                    <a [class]="m.link" rdxNavigationMenuLink active href="#">Home</a>
+                    <a
+                        class="demo-navigation-menu-trigger demo-label demo-focus flex h-9 items-center px-3 no-underline"
+                        rdxNavigationMenuLink
+                        active
+                        href="#"
+                    >
+                        Home
+                    </a>
                 </li>
                 <li rdxNavigationMenuItem>
-                    <a [class]="m.link" rdxNavigationMenuLink href="#">Docs</a>
+                    <a
+                        class="demo-navigation-menu-trigger demo-label demo-focus flex h-9 items-center px-3 no-underline"
+                        rdxNavigationMenuLink
+                        href="#"
+                    >
+                        Docs
+                    </a>
                 </li>
                 <li rdxNavigationMenuItem>
-                    <a [class]="m.link" rdxNavigationMenuLink href="#">Pricing</a>
+                    <a
+                        class="demo-navigation-menu-trigger demo-label demo-focus flex h-9 items-center px-3 no-underline"
+                        rdxNavigationMenuLink
+                        href="#"
+                    >
+                        Pricing
+                    </a>
                 </li>
                 <li rdxNavigationMenuItem>
-                    <a [class]="m.link" rdxNavigationMenuLink href="#">Blog</a>
+                    <a
+                        class="demo-navigation-menu-trigger demo-label demo-focus flex h-9 items-center px-3 no-underline"
+                        rdxNavigationMenuLink
+                        href="#"
+                    >
+                        Blog
+                    </a>
                 </li>
             </ul>
         </nav>
     `
 })
-export class RdxNavigationMenuLinksComponent {
-    protected readonly m = demoNavigationMenu;
-}
+export class RdxNavigationMenuLinksComponent {}

@@ -1,7 +1,19 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown, LucideX } from '@lucide/angular';
-import { cn, demoCombobox } from '../../storybook/styles';
-import { _importsCombobox } from '../index';
+import {
+    RdxComboboxClear,
+    RdxComboboxEmpty,
+    RdxComboboxInput,
+    RdxComboboxItem,
+    RdxComboboxItemIndicator,
+    RdxComboboxList,
+    RdxComboboxPopup,
+    RdxComboboxPortal,
+    RdxComboboxPositioner,
+    RdxComboboxRoot,
+    RdxComboboxStatus,
+    RdxComboboxTrigger
+} from '@radix-ng/primitives/combobox';
 
 interface DirectoryUser {
     id: string;
@@ -20,7 +32,23 @@ interface DirectoryUser {
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-async',
-    imports: [_importsCombobox, LucideChevronDown, LucideCheck, LucideX],
+    imports: [
+        RdxComboboxRoot,
+        RdxComboboxInput,
+        RdxComboboxTrigger,
+        RdxComboboxClear,
+        RdxComboboxPortal,
+        RdxComboboxPositioner,
+        RdxComboboxPopup,
+        RdxComboboxList,
+        RdxComboboxItem,
+        RdxComboboxItemIndicator,
+        RdxComboboxEmpty,
+        RdxComboboxStatus,
+        LucideChevronDown,
+        LucideCheck,
+        LucideX
+    ],
     template: `
         <div
             [(value)]="value"
@@ -35,21 +63,40 @@ interface DirectoryUser {
         >
             <div class="flex flex-col gap-1">
                 <label class="text-foreground text-sm font-medium" for="async-reviewer">Assign reviewer</label>
-                <div [class]="c.control">
-                    <input id="async-reviewer" [class]="input" rdxComboboxInput placeholder="e.g. Michael" />
+                <div
+                    class="demo-combobox-control focus-within:ring-ring focus-within:ring-offset-background relative inline-flex h-9 w-64 items-center focus-within:ring-2 focus-within:ring-offset-2 data-[disabled]:opacity-50"
+                >
+                    <input
+                        class="demo-combobox-input placeholder:text-muted-foreground h-full w-full pr-9 pr-16 pl-3"
+                        id="async-reviewer"
+                        rdxComboboxInput
+                        placeholder="e.g. Michael"
+                    />
                     @if (value()) {
-                        <button [class]="c.clear" rdxComboboxClear aria-label="Clear selection">
+                        <button
+                            class="demo-combobox-trigger absolute top-1/2 right-8 inline-flex size-7 -translate-y-1/2 items-center justify-center"
+                            rdxComboboxClear
+                            aria-label="Clear selection"
+                        >
                             <svg lucideX size="14"></svg>
                         </button>
                     }
-                    <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                    <button
+                        class="demo-combobox-trigger absolute top-1/2 right-1 inline-flex size-7 -translate-y-1/2 items-center justify-center disabled:pointer-events-none"
+                        rdxComboboxTrigger
+                        aria-label="Open"
+                    >
                         <svg lucideChevronDown size="16"></svg>
                     </button>
                 </div>
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" [attr.aria-busy]="loading() ? 'true' : null" rdxComboboxPopup>
+            <div class="z-50 w-64 data-[closed]:pointer-events-none" *rdxComboboxPortal rdxComboboxPositioner>
+                <div
+                    class="demo-combobox-popup mt-2 max-h-60 overflow-y-auto p-1 data-[closed]:hidden"
+                    [attr.aria-busy]="loading() ? 'true' : null"
+                    rdxComboboxPopup
+                >
                     <div rdxComboboxStatus>
                         @if (loading()) {
                             <div class="text-muted-foreground flex items-center gap-2 px-2 py-1.5 text-sm">
@@ -65,12 +112,17 @@ interface DirectoryUser {
                     </div>
 
                     @if (emptyMessage(); as message) {
-                        <div [class]="c.empty" rdxComboboxEmpty>{{ message }}</div>
+                        <div class="demo-combobox-empty data-[empty]:py-6" rdxComboboxEmpty>{{ message }}</div>
                     }
 
-                    <div [class]="c.list" rdxComboboxList aria-label="People">
+                    <div class="flex flex-col" rdxComboboxList aria-label="People">
                         @for (user of items(); track user.id) {
-                            <div [class]="item" [value]="user" [textValue]="user.name" rdxComboboxItem>
+                            <div
+                                class="data-[highlighted]:bg-muted relative grid cursor-default grid-cols-[1rem_1fr] items-start gap-2 rounded-sm px-2 py-2 text-sm outline-none select-none"
+                                [value]="user"
+                                [textValue]="user.name"
+                                rdxComboboxItem
+                            >
                                 <span
                                     class="col-start-1 mt-0.5 flex size-3.5 items-center justify-center"
                                     rdxComboboxItemIndicator
@@ -93,13 +145,6 @@ interface DirectoryUser {
     `
 })
 export class ComboboxAsync {
-    protected readonly c = demoCombobox;
-    protected readonly input = cn(demoCombobox.input, 'pr-16');
-    protected readonly item = cn(
-        'relative grid cursor-default select-none grid-cols-[1rem_1fr] items-start gap-2 rounded-sm px-2 py-2 text-sm outline-none',
-        'data-[highlighted]:bg-muted'
-    );
-
     readonly value = signal<DirectoryUser | null>(null);
 
     /** Latest server results for the current query. */
@@ -142,7 +187,8 @@ export class ComboboxAsync {
         return 'Try a different search term.';
     });
 
-    protected readonly labelOf = (user: DirectoryUser) => user.name;
+    protected readonly labelOf = (user: unknown) =>
+        user && typeof user === 'object' && 'name' in user ? String(user.name) : '';
 
     // Selecting a value writes its label back into the input, which re-emits `onInputValueChange`;
     // skip that single echo so it doesn't kick off a search for the just-selected name.

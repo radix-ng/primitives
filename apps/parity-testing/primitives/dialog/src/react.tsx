@@ -1,7 +1,7 @@
 import { Dialog } from '@base-ui/react/dialog';
 import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import '../../../../radix-storybook/.storybook/tailwind.css';
+import '../../../../radix-storybook/.storybook/main.css';
 import { chooseFocus, classes, config, installProbe, type NestedLayer } from './contract';
 import { ReactDetachedDialog } from './detached.react';
 import './fixture.css';

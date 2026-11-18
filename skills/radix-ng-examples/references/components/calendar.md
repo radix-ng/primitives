@@ -53,6 +53,7 @@ Import all parts and piece them together.
 
 ## Examples
 
+- [Default](../examples/calendar--default.md)
 - [Calendar with Locale and Calendar System Selection](../examples/calendar--calendar-with-locale-and-calendar-system-selection.md)
 - [Multiple selection](../examples/calendar--multiple-selection.md)
 - [Week numbers](../examples/calendar--week-numbers.md)

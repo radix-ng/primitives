@@ -2,7 +2,7 @@ import { DirectionProvider } from '@base-ui/react/direction-provider';
 import { Menu } from '@base-ui/react/menu';
 import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import '../../../../radix-storybook/.storybook/tailwind.css';
+import '../../../../radix-storybook/.storybook/main.css';
 import { exitClass, heldExitClass } from '../../../shared/lifecycle';
 import { changeCollection, menuEntries, submenuEntries } from '../../../shared/menu-collection';
 import { rootRemovalFinalFocus } from '../../../shared/root-removal';

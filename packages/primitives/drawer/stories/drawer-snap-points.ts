@@ -1,6 +1,17 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { drawerImports, RdxDrawerSnapPoint } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
+import {
+    RdxDrawerBackdrop,
+    RdxDrawerClose,
+    RdxDrawerContent,
+    RdxDrawerDescription,
+    RdxDrawerPopup,
+    RdxDrawerPortal,
+    RdxDrawerRoot,
+    RdxDrawerSnapPoint,
+    RdxDrawerTitle,
+    RdxDrawerTrigger,
+    RdxDrawerViewport
+} from '@radix-ng/primitives/drawer';
 
 const TOP_MARGIN_REM = 1;
 const VISIBLE_SNAP_POINTS_REM = [30];
@@ -12,27 +23,31 @@ function toViewportSnapPoint(heightRem: number): RdxDrawerSnapPoint {
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-snap-points',
-    imports: [...drawerImports],
+    imports: [
+        RdxDrawerRoot,
+        RdxDrawerTrigger,
+        RdxDrawerPortal,
+        RdxDrawerBackdrop,
+        RdxDrawerViewport,
+        RdxDrawerPopup,
+        RdxDrawerContent,
+        RdxDrawerTitle,
+        RdxDrawerDescription,
+        RdxDrawerClose
+    ],
     template: `
         <div [snapPoints]="snapPoints" rdxDrawerRoot>
-            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerTrigger>Open snap drawer</button>
+            <button class="demo-button demo-button-outline h-8 px-3 text-xs" rdxDrawerTrigger>Open snap drawer</button>
 
             <ng-template rdxDrawerPortal>
                 <div
-                    [class]="
-                        cn(
-                            'bg-foreground/20 fixed inset-0 min-h-dvh opacity-[calc(1-var(--drawer-swipe-progress))]',
-                            'transition-opacity duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)]',
-                            d.overlayAnimated,
-                            'data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0'
-                        )
-                    "
+                    class="bg-foreground/20 ease-demo-drawer-swipe fixed inset-0 min-h-dvh opacity-[calc(1-var(--drawer-swipe-progress))] transition-opacity duration-(--duration-demo-drawer-swipe) data-[closed]:opacity-0 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0"
                     rdxDrawerBackdrop
                 ></div>
 
                 <div class="fixed inset-0 flex touch-none items-end justify-center" rdxDrawerViewport>
                     <div
-                        class="border-border bg-card text-card-foreground relative flex h-[calc(100dvh-var(--top-margin))] min-h-0 w-full [transform:translateY(var(--drawer-swipe-movement-y))] touch-none flex-col overflow-visible border-t shadow-lg outline-none [--bleed:3rem] [--top-margin:1rem] [transition:transform_450ms_cubic-bezier(0.32,0.72,0,1),box-shadow_450ms_cubic-bezier(0.32,0.72,0,1)] after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-[var(--bleed)] after:bg-[inherit] after:content-[''] data-[ending-style]:[transform:translateY(calc(100%+2px))] data-[starting-style]:[transform:translateY(calc(100%+2px))] data-[swiping]:select-none data-[swiping]:[transition:none]"
+                        class="border-border bg-card text-card-foreground relative flex h-[calc(100dvh-var(--top-margin))] min-h-0 w-full [transform:translateY(var(--drawer-swipe-movement-y))] touch-none flex-col overflow-visible border-t shadow-lg outline-none [--bleed:3rem] [--top-margin:1rem] [transition:var(--transition-demo-drawer-snap)] after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-[var(--bleed)] after:bg-[inherit] after:content-[''] data-[ending-style]:[transform:translateY(calc(100%+2px))] data-[starting-style]:[transform:translateY(calc(100%+2px))] data-[swiping]:select-none data-[swiping]:[transition:none]"
                         rdxDrawerPopup
                     >
                         <div class="border-border shrink-0 touch-none border-b px-6 pt-3.5 pb-4">
@@ -56,7 +71,9 @@ function toViewportSnapPoint(heightRem: number): RdxDrawerSnapPoint {
                                 </div>
 
                                 <div class="flex items-center justify-end gap-3">
-                                    <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>Close</button>
+                                    <button class="demo-button demo-button-outline h-8 px-3 text-xs" rdxDrawerClose>
+                                        Close
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -67,9 +84,6 @@ function toViewportSnapPoint(heightRem: number): RdxDrawerSnapPoint {
     `
 })
 export class RdxDrawerSnapPointsComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly d = demoDrawer;
     protected readonly snapPoints: RdxDrawerSnapPoint[] = [...VISIBLE_SNAP_POINTS_REM.map(toViewportSnapPoint), 1];
     protected readonly items = Array.from({ length: 20 }, (_, index) => index);
 }

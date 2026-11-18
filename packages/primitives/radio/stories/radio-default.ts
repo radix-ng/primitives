@@ -6,34 +6,54 @@ import {
     RdxRadioItemDirective,
     RdxRadioItemInputDirective
 } from '@radix-ng/primitives/radio';
-import { demoRadio } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'radio-default-example',
     template: `
         <form>
-            <div [class]="r.group" rdxRadioRoot name="density" aria-label="View density">
-                <label [class]="r.row" rdxLabel>
-                    <span [class]="r.item" rdxRadioItem value="default">
-                        <span [class]="r.indicator" rdxRadioIndicator></span>
+            <div class="flex flex-col gap-2.5" rdxRadioRoot name="density" aria-label="View density">
+                <label class="flex items-center gap-3" rdxLabel>
+                    <span
+                        class="demo-radio-item demo-focus flex size-6 items-center justify-center disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                        rdxRadioItem
+                        value="default"
+                    >
+                        <span
+                            class="after:bg-primary flex size-full items-center justify-center after:block after:size-2.5 after:rounded-full data-[state=unchecked]:hidden"
+                            rdxRadioIndicator
+                        ></span>
                         <input rdxRadioItemInput />
                     </span>
-                    <span [class]="r.label">Default</span>
+                    <span class="demo-label">Default</span>
                 </label>
-                <label [class]="r.row" rdxLabel>
-                    <span [class]="r.item" rdxRadioItem value="comfortable">
-                        <span [class]="r.indicator" rdxRadioIndicator></span>
+                <label class="flex items-center gap-3" rdxLabel>
+                    <span
+                        class="demo-radio-item demo-focus flex size-6 items-center justify-center disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                        rdxRadioItem
+                        value="comfortable"
+                    >
+                        <span
+                            class="after:bg-primary flex size-full items-center justify-center after:block after:size-2.5 after:rounded-full data-[state=unchecked]:hidden"
+                            rdxRadioIndicator
+                        ></span>
                         <input rdxRadioItemInput />
                     </span>
-                    <span [class]="r.label">Comfortable</span>
+                    <span class="demo-label">Comfortable</span>
                 </label>
-                <label [class]="r.row" rdxLabel>
-                    <span [class]="r.item" rdxRadioItem value="compact">
-                        <span [class]="r.indicator" rdxRadioIndicator></span>
+                <label class="flex items-center gap-3" rdxLabel>
+                    <span
+                        class="demo-radio-item demo-focus flex size-6 items-center justify-center disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                        rdxRadioItem
+                        value="compact"
+                    >
+                        <span
+                            class="after:bg-primary flex size-full items-center justify-center after:block after:size-2.5 after:rounded-full data-[state=unchecked]:hidden"
+                            rdxRadioIndicator
+                        ></span>
                         <input rdxRadioItemInput />
                     </span>
-                    <span [class]="r.label">Compact</span>
+                    <span class="demo-label">Compact</span>
                 </label>
             </div>
         </form>
@@ -46,6 +66,4 @@ import { demoRadio } from '../../storybook/styles';
         RdxRadioGroupDirective
     ]
 })
-export class RadioDefaultComponent {
-    protected readonly r = demoRadio;
-}
+export class RadioDefaultComponent {}

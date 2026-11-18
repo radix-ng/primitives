@@ -1,7 +1,18 @@
 import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
+import {
+    AutocompleteItemHighlightedDetails,
+    RdxAutocompleteEmpty,
+    RdxAutocompleteInput,
+    RdxAutocompleteInputGroup,
+    RdxAutocompleteItem,
+    RdxAutocompleteList,
+    RdxAutocompletePopup,
+    RdxAutocompletePortal,
+    RdxAutocompletePositioner,
+    RdxAutocompleteRoot
+} from '@radix-ng/primitives/autocomplete';
+
 import { injectVirtualizer } from '@tanstack/angular-virtual';
-import { cn, demoCombobox } from '../../storybook/styles';
-import { _importsAutocomplete, AutocompleteItemHighlightedDetails, RdxAutocompleteRoot } from '../index';
 
 /**
  * Externally virtualized list of 10,000 items. The autocomplete owns filtering and index navigation
@@ -12,7 +23,17 @@ import { _importsAutocomplete, AutocompleteItemHighlightedDetails, RdxAutocomple
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-virtualized-example',
-    imports: [_importsAutocomplete],
+    imports: [
+        RdxAutocompleteRoot,
+        RdxAutocompleteInputGroup,
+        RdxAutocompleteInput,
+        RdxAutocompletePortal,
+        RdxAutocompletePositioner,
+        RdxAutocompletePopup,
+        RdxAutocompleteList,
+        RdxAutocompleteItem,
+        RdxAutocompleteEmpty
+    ],
     template: `
         <div
             #ac="rdxAutocompleteRoot"
@@ -22,19 +43,30 @@ import { _importsAutocomplete, AutocompleteItemHighlightedDetails, RdxAutocomple
             virtualized
             rdxAutocompleteRoot
         >
-            <div [class]="c.control" rdxAutocompleteInputGroup>
-                <input [class]="c.input" rdxAutocompleteInput placeholder="Search 10,000 items…" aria-label="Item" />
+            <div
+                class="demo-combobox-control focus-within:ring-ring focus-within:ring-offset-background relative inline-flex h-9 w-64 items-center focus-within:ring-2 focus-within:ring-offset-2 data-[disabled]:opacity-50"
+                rdxAutocompleteInputGroup
+            >
+                <input
+                    class="demo-combobox-input placeholder:text-muted-foreground h-full w-full pr-9 pl-3"
+                    rdxAutocompleteInput
+                    placeholder="Search 10,000 items…"
+                    aria-label="Item"
+                />
             </div>
 
-            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
-                <div [class]="popup" rdxAutocompletePopup>
-                    <div [class]="c.empty" rdxAutocompleteEmpty>No items found.</div>
-                    <div [class]="c.list" rdxAutocompleteList aria-label="Items">
-                        <div #scroll [class]="scroller">
-                            <div [class]="spacer" [style.height.px]="virtualizer.getTotalSize()">
+            <div class="z-50 w-64 data-[closed]:pointer-events-none" *rdxAutocompletePortal rdxAutocompletePositioner>
+                <div
+                    class="border-border bg-popover text-popover-foreground z-50 mt-2 rounded-md border shadow-md data-[closed]:hidden"
+                    rdxAutocompletePopup
+                >
+                    <div class="demo-combobox-empty data-[empty]:py-6" rdxAutocompleteEmpty>No items found.</div>
+                    <div class="flex flex-col" rdxAutocompleteList aria-label="Items">
+                        <div class="max-h-60 overflow-auto overscroll-contain p-1" #scroll>
+                            <div class="relative w-full" [style.height.px]="virtualizer.getTotalSize()">
                                 @for (row of virtualizer.getVirtualItems(); track row.key) {
                                     <div
-                                        [class]="item"
+                                        class="data-[highlighted]:bg-muted absolute top-0 left-0 flex w-full cursor-default items-center rounded-sm px-2 text-sm outline-none select-none data-[selected]:font-medium"
                                         [value]="ac.filteredItems()[row.index]"
                                         [index]="row.index"
                                         [style.height.px]="row.size"
@@ -53,18 +85,6 @@ import { _importsAutocomplete, AutocompleteItemHighlightedDetails, RdxAutocomple
     `
 })
 export class AutocompleteVirtualizedExample {
-    protected readonly c = demoCombobox;
-    protected readonly popup = cn(
-        'z-50 mt-2 rounded-md border border-border bg-popover text-popover-foreground shadow-md',
-        'data-[closed]:hidden'
-    );
-    protected readonly scroller = 'max-h-60 overflow-auto overscroll-contain p-1';
-    protected readonly spacer = 'relative w-full';
-    protected readonly item = cn(
-        'absolute left-0 top-0 flex w-full cursor-default select-none items-center rounded-sm px-2 text-sm outline-none',
-        'data-[highlighted]:bg-muted data-[selected]:font-medium'
-    );
-
     readonly value = signal('');
 
     /** 10,000 string items — labels double as filter text, so no `itemToStringValue` is needed here. */

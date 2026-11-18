@@ -1,7 +1,22 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { LucideCheck, LucideX } from '@lucide/angular';
-import { cn, demoCombobox } from '../../storybook/styles';
-import { _importsCombobox } from '../index';
+import {
+    type ComboboxValue,
+    RdxComboboxAnchor,
+    RdxComboboxChip,
+    RdxComboboxChipRemove,
+    RdxComboboxChips,
+    RdxComboboxEmpty,
+    RdxComboboxInput,
+    RdxComboboxItem,
+    RdxComboboxItemIndicator,
+    RdxComboboxList,
+    RdxComboboxPopup,
+    RdxComboboxPortal,
+    RdxComboboxPositioner,
+    RdxComboboxRoot,
+    RdxComboboxStatus
+} from '@radix-ng/primitives/combobox';
 
 interface DirectoryUser {
     id: string;
@@ -20,7 +35,24 @@ interface DirectoryUser {
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-async-multiple',
-    imports: [_importsCombobox, LucideCheck, LucideX],
+    imports: [
+        RdxComboboxRoot,
+        RdxComboboxAnchor,
+        RdxComboboxInput,
+        RdxComboboxPortal,
+        RdxComboboxPositioner,
+        RdxComboboxPopup,
+        RdxComboboxList,
+        RdxComboboxItem,
+        RdxComboboxItemIndicator,
+        RdxComboboxEmpty,
+        RdxComboboxStatus,
+        RdxComboboxChips,
+        RdxComboboxChip,
+        RdxComboboxChipRemove,
+        LucideCheck,
+        LucideX
+    ],
     template: `
         <div
             [(value)]="value"
@@ -35,13 +67,24 @@ interface DirectoryUser {
         >
             <div class="flex flex-col gap-1">
                 <label class="text-foreground text-sm font-medium" for="async-reviewers">Assign reviewers</label>
-                <div [class]="control" rdxComboboxAnchor>
+                <div
+                    class="demo-combobox-control focus-within:ring-ring focus-within:ring-offset-background relative inline-flex h-9 h-auto min-h-9 w-64 flex-wrap items-center gap-1 py-1 pl-1 focus-within:ring-2 focus-within:ring-offset-2 data-[disabled]:opacity-50"
+                    rdxComboboxAnchor
+                >
                     @if (value().length) {
-                        <div [class]="c.chips" rdxComboboxChips>
+                        <div class="contents" rdxComboboxChips>
                             @for (user of value(); track user.id) {
-                                <span [class]="c.chip" [value]="user" rdxComboboxChip>
+                                <span
+                                    class="demo-combobox-chip inline-flex items-center gap-1 px-1.5 py-0.5"
+                                    [value]="user"
+                                    rdxComboboxChip
+                                >
                                     {{ user.name }}
-                                    <button [class]="c.chipRemove" rdxComboboxChipRemove aria-label="Remove">
+                                    <button
+                                        class="hover:bg-border inline-flex size-3.5 items-center justify-center rounded-full"
+                                        rdxComboboxChipRemove
+                                        aria-label="Remove"
+                                    >
                                         <svg lucideX size="12"></svg>
                                     </button>
                                 </span>
@@ -49,16 +92,20 @@ interface DirectoryUser {
                         </div>
                     }
                     <input
+                        class="demo-combobox-input-inline placeholder:text-muted-foreground min-w-24 flex-1"
                         id="async-reviewers"
-                        [class]="c.inputInline"
                         [placeholder]="value().length ? '' : 'e.g. Michael'"
                         rdxComboboxInput
                     />
                 </div>
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" [attr.aria-busy]="loading() ? 'true' : null" rdxComboboxPopup>
+            <div class="z-50 w-64 data-[closed]:pointer-events-none" *rdxComboboxPortal rdxComboboxPositioner>
+                <div
+                    class="demo-combobox-popup mt-2 max-h-60 overflow-y-auto p-1 data-[closed]:hidden"
+                    [attr.aria-busy]="loading() ? 'true' : null"
+                    rdxComboboxPopup
+                >
                     <div rdxComboboxStatus>
                         @if (loading()) {
                             <div class="text-muted-foreground flex items-center gap-2 px-2 py-1.5 text-sm">
@@ -74,12 +121,17 @@ interface DirectoryUser {
                     </div>
 
                     @if (emptyMessage(); as message) {
-                        <div [class]="c.empty" rdxComboboxEmpty>{{ message }}</div>
+                        <div class="demo-combobox-empty data-[empty]:py-6" rdxComboboxEmpty>{{ message }}</div>
                     }
 
-                    <div [class]="c.list" rdxComboboxList aria-label="People">
+                    <div class="flex flex-col" rdxComboboxList aria-label="People">
                         @for (user of items(); track user.id) {
-                            <div [class]="item" [value]="user" [textValue]="user.name" rdxComboboxItem>
+                            <div
+                                class="data-[highlighted]:bg-muted relative grid cursor-default grid-cols-[1rem_1fr] items-start gap-2 rounded-sm px-2 py-2 text-sm outline-none select-none"
+                                [value]="user"
+                                [textValue]="user.name"
+                                rdxComboboxItem
+                            >
                                 <span
                                     class="col-start-1 mt-0.5 flex size-3.5 items-center justify-center"
                                     rdxComboboxItemIndicator
@@ -102,13 +154,6 @@ interface DirectoryUser {
     `
 })
 export class ComboboxAsyncMultiple {
-    protected readonly c = demoCombobox;
-    protected readonly control = cn(demoCombobox.control, 'h-auto min-h-9 flex-wrap items-center gap-1 py-1 pl-1');
-    protected readonly item = cn(
-        'relative grid cursor-default select-none grid-cols-[1rem_1fr] items-start gap-2 rounded-sm px-2 py-2 text-sm outline-none',
-        'data-[highlighted]:bg-muted'
-    );
-
     /** Selected people (rendered as chips). */
     readonly value = signal<DirectoryUser[]>([]);
 
@@ -163,7 +208,8 @@ export class ComboboxAsyncMultiple {
         return 'Try a different search term.';
     });
 
-    protected readonly labelOf = (user: DirectoryUser) => user.name;
+    protected readonly labelOf = (user: unknown) =>
+        user && typeof user === 'object' && 'name' in user ? String(user.name) : '';
 
     // A pick writes '' back into the input, re-emitting `onInputValueChange` synchronously. Skip that
     // echo (Base UI's `reason === 'item-press'`) so the current results stay visible for more picks.
@@ -172,10 +218,10 @@ export class ComboboxAsyncMultiple {
     private requestToken = 0;
     private handle: ReturnType<typeof setTimeout> | undefined;
 
-    onValueChange(next: DirectoryUser[]): void {
+    onValueChange(next: ComboboxValue): void {
         this.searchValue.set('');
         this.error.set(null);
-        if (next.length === 0) {
+        if (!Array.isArray(next) || next.length === 0) {
             this.searchResults.set([]);
             this.blockStartStatus.set(false);
         } else {

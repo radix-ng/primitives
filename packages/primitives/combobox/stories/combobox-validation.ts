@@ -1,8 +1,18 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
-import { cn, demoButton, demoCombobox } from '../../storybook/styles';
-import { _importsCombobox } from '../index';
+import {
+    RdxComboboxEmpty,
+    RdxComboboxInput,
+    RdxComboboxItem,
+    RdxComboboxItemIndicator,
+    RdxComboboxList,
+    RdxComboboxPopup,
+    RdxComboboxPortal,
+    RdxComboboxPositioner,
+    RdxComboboxRoot,
+    RdxComboboxTrigger
+} from '@radix-ng/primitives/combobox';
 
 /**
  * Reactive forms with validation. The control's validity is bound to the combobox `[invalid]` input,
@@ -12,30 +22,66 @@ import { _importsCombobox } from '../index';
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-validation',
-    imports: [_importsCombobox, ReactiveFormsModule, LucideChevronDown, LucideCheck],
+    imports: [
+        RdxComboboxRoot,
+        RdxComboboxInput,
+        RdxComboboxTrigger,
+        RdxComboboxPortal,
+        RdxComboboxPositioner,
+        RdxComboboxPopup,
+        RdxComboboxList,
+        RdxComboboxItem,
+        RdxComboboxItemIndicator,
+        RdxComboboxEmpty,
+        ReactiveFormsModule,
+        LucideChevronDown,
+        LucideCheck
+    ],
     template: `
         <form class="flex flex-col gap-3" (ngSubmit)="onSubmit()">
             <div [formControl]="fruit" [invalid]="showError()" rdxComboboxRoot>
-                <div [class]="cn(c.control, showError() && 'border-destructive focus-within:ring-destructive')">
-                    <input [class]="c.input" rdxComboboxInput placeholder="Pick a fruit…" aria-label="Fruit" />
-                    <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                <div
+                    class="demo-combobox-control focus-within:ring-ring focus-within:ring-offset-background relative inline-flex h-9 w-64 items-center focus-within:ring-2 focus-within:ring-offset-2 data-[disabled]:opacity-50"
+                    [class]="showError() ? 'border-destructive focus-within:ring-destructive' : ''"
+                >
+                    <input
+                        class="demo-combobox-input placeholder:text-muted-foreground h-full w-full pr-9 pl-3"
+                        rdxComboboxInput
+                        placeholder="Pick a fruit…"
+                        aria-label="Fruit"
+                    />
+                    <button
+                        class="demo-combobox-trigger absolute top-1/2 right-1 inline-flex size-7 -translate-y-1/2 items-center justify-center disabled:pointer-events-none"
+                        rdxComboboxTrigger
+                        aria-label="Open"
+                    >
                         <svg lucideChevronDown size="16"></svg>
                     </button>
                 </div>
 
-                <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                    <div [class]="c.popup" rdxComboboxPopup>
-                        <div [class]="c.list" rdxComboboxList aria-label="Fruits">
+                <div class="z-50 w-64 data-[closed]:pointer-events-none" *rdxComboboxPortal rdxComboboxPositioner>
+                    <div
+                        class="demo-combobox-popup mt-2 max-h-60 overflow-y-auto p-1 data-[closed]:hidden"
+                        rdxComboboxPopup
+                    >
+                        <div class="flex flex-col" rdxComboboxList aria-label="Fruits">
                             @for (f of fruits; track f) {
-                                <div [class]="c.item" [value]="f" rdxComboboxItem>
-                                    <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                <div
+                                    class="demo-menu-item data-[highlighted]:bg-muted relative flex items-center py-1.5 pr-2 pl-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[selected]:font-medium"
+                                    [value]="f"
+                                    rdxComboboxItem
+                                >
+                                    <span
+                                        class="absolute left-2 flex size-3.5 items-center justify-center"
+                                        rdxComboboxItemIndicator
+                                    >
                                         <svg lucideCheck size="14"></svg>
                                     </span>
                                     {{ f }}
                                 </div>
                             }
                         </div>
-                        <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
+                        <div class="demo-combobox-empty data-[empty]:py-6" rdxComboboxEmpty>No fruit found.</div>
                     </div>
                 </div>
             </div>
@@ -44,7 +90,7 @@ import { _importsCombobox } from '../index';
                 <p class="text-destructive text-sm">Please pick a fruit.</p>
             }
 
-            <button [class]="cn(b.base, b.primary, b.size.md, 'self-start')" type="submit">Submit</button>
+            <button class="demo-button demo-button-primary h-9 self-start px-4" type="submit">Submit</button>
 
             @if (submitted()) {
                 <p class="text-muted-foreground text-sm">Submitted ✓</p>
@@ -53,10 +99,6 @@ import { _importsCombobox } from '../index';
     `
 })
 export class ComboboxValidation {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly c = demoCombobox;
-
     readonly fruit = new FormControl<string | null>(null, { validators: Validators.required });
     readonly fruits = ['Apple', 'Banana', 'Blueberry', 'Grape', 'Orange'];
     readonly submitted = signal(false);

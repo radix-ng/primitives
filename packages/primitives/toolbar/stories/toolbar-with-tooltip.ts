@@ -1,8 +1,14 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideBold, LucideItalic } from '@lucide/angular';
-import { toolbarImports } from '@radix-ng/primitives/toolbar';
-import { tooltipImports } from '@radix-ng/primitives/tooltip';
-import { demoTooltip } from '../../storybook/styles';
+import { RdxToolbarButton, RdxToolbarRoot } from '@radix-ng/primitives/toolbar';
+import {
+    RdxTooltip,
+    RdxTooltipArrow,
+    RdxTooltipPopup,
+    RdxTooltipPortal,
+    RdxTooltipPositioner,
+    RdxTooltipTrigger
+} from '@radix-ng/primitives/tooltip';
 
 const itemClass =
     'text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center rounded-md outline-none transition-colors focus-visible:ring-2';
@@ -10,20 +16,27 @@ const itemClass =
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toolbar-with-tooltip',
-    imports: [...toolbarImports, ...tooltipImports, LucideBold, LucideItalic],
+    imports: [
+        RdxToolbarRoot,
+        RdxToolbarButton,
+        RdxTooltip,
+        RdxTooltipArrow,
+        RdxTooltipPopup,
+        RdxTooltipPortal,
+        RdxTooltipPositioner,
+        RdxTooltipTrigger,
+        LucideBold,
+        LucideItalic
+    ],
     template: `
-        <div
-            class="border-border bg-background flex items-center gap-1 rounded-lg border p-1 shadow-sm"
-            rdxToolbarRoot
-            aria-label="Toolbar with tooltips"
-        >
+        <div class="demo-toolbar-root flex items-center gap-1 p-1" rdxToolbarRoot aria-label="Toolbar with tooltips">
             <ng-container rdxTooltip>
                 <button class="${itemClass}" aria-label="Bold" rdxToolbarButton rdxTooltipTrigger>
                     <svg lucideBold size="16"></svg>
                 </button>
-                <div *rdxTooltipPortal [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
-                    <div [class]="t.popup" rdxTooltipPopup>Bold</div>
-                    <span [class]="t.arrow" rdxTooltipArrow></span>
+                <div class="z-50" *rdxTooltipPortal sideOffset="8" rdxTooltipPositioner>
+                    <div class="demo-tooltip-popup relative max-w-72 px-3 py-1.5" rdxTooltipPopup>Bold</div>
+                    <span class="text-popover demo-arrow my-px" rdxTooltipArrow></span>
                 </div>
             </ng-container>
 
@@ -31,14 +44,12 @@ const itemClass =
                 <button class="${itemClass}" aria-label="Italic" rdxToolbarButton rdxTooltipTrigger>
                     <svg lucideItalic size="16"></svg>
                 </button>
-                <div *rdxTooltipPortal [class]="t.positioner" sideOffset="8" rdxTooltipPositioner>
-                    <div [class]="t.popup" rdxTooltipPopup>Italic</div>
-                    <span [class]="t.arrow" rdxTooltipArrow></span>
+                <div class="z-50" *rdxTooltipPortal sideOffset="8" rdxTooltipPositioner>
+                    <div class="demo-tooltip-popup relative max-w-72 px-3 py-1.5" rdxTooltipPopup>Italic</div>
+                    <span class="text-popover demo-arrow my-px" rdxTooltipArrow></span>
                 </div>
             </ng-container>
         </div>
     `
 })
-export class ToolbarWithTooltipExample {
-    protected readonly t = demoTooltip;
-}
+export class ToolbarWithTooltipExample {}

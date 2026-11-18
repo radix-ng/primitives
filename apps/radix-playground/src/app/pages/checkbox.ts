@@ -8,7 +8,6 @@ import {
 } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { DemoPage } from '../shared/demo-page';
-import { demoCheckbox } from '../shared/styles';
 
 @Component({
     selector: 'app-checkbox',
@@ -29,8 +28,12 @@ import { demoCheckbox } from '../shared/styles';
         >
             <div class="flex items-center gap-3">
                 <div [checked]="true" rdxCheckboxRoot>
-                    <button id="checkbox-1" [class]="c.button" rdxCheckboxButton>
-                        <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck></svg>
+                    <button
+                        class="demo-checkbox-button demo-focus flex size-6 items-center justify-center disabled:opacity-50 aria-disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                        id="checkbox-1"
+                        rdxCheckboxButton
+                    >
+                        <svg class="text-primary flex items-center" rdxCheckboxIndicator size="16" lucideCheck></svg>
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -41,6 +44,4 @@ import { demoCheckbox } from '../shared/styles';
         </demo-page>
     `
 })
-export default class CheckboxPage {
-    protected readonly c = demoCheckbox;
-}
+export default class CheckboxPage {}

@@ -1,7 +1,18 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
-import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
-import { cn, demoNavigationMenu } from '../../storybook/styles';
+import {
+    RdxNavigationMenuContent,
+    RdxNavigationMenuIcon,
+    RdxNavigationMenuItem,
+    RdxNavigationMenuLink,
+    RdxNavigationMenuList,
+    RdxNavigationMenuPopup,
+    RdxNavigationMenuPortal,
+    RdxNavigationMenuPositioner,
+    RdxNavigationMenuRoot,
+    RdxNavigationMenuTrigger,
+    RdxNavigationMenuViewport
+} from '@radix-ng/primitives/navigation-menu';
 
 /**
  * Large menus: when the content exceeds the available space, constrain the content with a
@@ -11,24 +22,48 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-large',
-    imports: [...navigationMenuImports, LucideChevronDown],
+    imports: [
+        RdxNavigationMenuRoot,
+        RdxNavigationMenuList,
+        RdxNavigationMenuItem,
+        RdxNavigationMenuTrigger,
+        RdxNavigationMenuIcon,
+        RdxNavigationMenuContent,
+        RdxNavigationMenuLink,
+        RdxNavigationMenuPortal,
+        RdxNavigationMenuPositioner,
+        RdxNavigationMenuPopup,
+        RdxNavigationMenuViewport,
+        LucideChevronDown
+    ],
     template: `
-        <nav [class]="m.root" rdxNavigationMenuRoot>
-            <ul [class]="m.list" rdxNavigationMenuList>
+        <nav class="relative flex justify-center" rdxNavigationMenuRoot>
+            <ul class="demo-surface flex list-none items-center gap-1 p-1" rdxNavigationMenuList>
                 <li rdxNavigationMenuItem value="components">
-                    <button [class]="m.trigger" rdxNavigationMenuTrigger>
+                    <button
+                        class="demo-navigation-menu-trigger demo-label data-[popup-open]:bg-muted demo-focus flex h-9 items-center gap-1 px-3 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                        rdxNavigationMenuTrigger
+                    >
                         Components
-                        <svg [class]="m.icon" rdxNavigationMenuIcon lucideChevronDown></svg>
+                        <svg
+                            class="size-3.5 shrink-0 transition-transform duration-200 data-[popup-open]:rotate-180"
+                            rdxNavigationMenuIcon
+                            lucideChevronDown
+                        ></svg>
                     </button>
 
                     <ng-container *rdxNavigationMenuContent>
-                        <div [class]="cn(m.content, 'w-[340px] max-w-[calc(100vw-2rem)]')">
+                        <div class="w-[340px] max-w-[calc(100vw-2rem)] p-4">
                             <ul class="grid max-h-80 gap-1 overflow-y-auto overscroll-contain p-1">
                                 @for (item of components; track item.title) {
                                     <li>
-                                        <a [class]="m.cardLink" rdxNavigationMenuLink href="#">
-                                            <div [class]="m.cardHeading">{{ item.title }}</div>
-                                            <p [class]="m.cardText">{{ item.text }}</p>
+                                        <a
+                                            class="demo-navigation-menu-card-link demo-focus block p-3 no-underline"
+                                            rdxNavigationMenuLink
+                                            href="#"
+                                        >
+                                            <div class="demo-label mb-1">{{ item.title }}</div>
+                                            <p class="demo-navigation-menu-card-text">{{ item.text }}</p>
                                         </a>
                                     </li>
                                 }
@@ -38,18 +73,26 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 </li>
             </ul>
 
-            <div *rdxNavigationMenuPortal [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
-                <div [class]="m.popup" rdxNavigationMenuPopup>
-                    <div [class]="m.viewport" rdxNavigationMenuViewport></div>
+            <div
+                class="z-50 data-[closed]:pointer-events-none"
+                *rdxNavigationMenuPortal
+                sideOffset="8"
+                rdxNavigationMenuPositioner
+            >
+                <div
+                    class="demo-surface data-[open]:animate-navigation-menu-popup-in data-[starting-style]:animate-navigation-menu-popup-in data-[ending-style]:animate-navigation-menu-popup-out relative origin-[var(--transform-origin)] p-0"
+                    rdxNavigationMenuPopup
+                >
+                    <div
+                        class="[&>[data-current]]:animate-navigation-menu-content-in [&>[data-previous]]:animate-navigation-menu-content-out relative block h-[var(--popup-height,auto)] w-[var(--popup-width,max-content)] overflow-hidden transition-[width,height] duration-200 [&>[data-previous]]:absolute [&>[data-previous]]:inset-0"
+                        rdxNavigationMenuViewport
+                    ></div>
                 </div>
             </div>
         </nav>
     `
 })
 export class RdxNavigationMenuLargeComponent {
-    protected readonly cn = cn;
-    protected readonly m = demoNavigationMenu;
-
     protected readonly components = [
         { title: 'Accordion', text: 'Vertically stacked, collapsible panels.' },
         { title: 'Alert Dialog', text: 'A modal dialog that interrupts the user.' },

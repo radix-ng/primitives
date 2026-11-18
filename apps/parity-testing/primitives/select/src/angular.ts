@@ -1,17 +1,62 @@
 import '@angular/compiler';
 import { afterNextRender, Component, provideZonelessChangeDetection, signal, viewChild } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { dialogImports } from '@radix-ng/primitives/dialog';
-import { RdxDirectionProvider } from '@radix-ng/primitives/direction-provider';
-import { popoverImports } from '@radix-ng/primitives/popover';
 import {
-    _importsSelect,
+    RdxDialogBackdrop,
+    RdxDialogClose,
+    RdxDialogDescription,
+    RdxDialogPopup,
+    RdxDialogPortal,
+    RdxDialogPortalMisuseGuard,
+    RdxDialogRoot,
+    RdxDialogTitle,
+    RdxDialogTrigger,
+    RdxDialogViewport
+} from '@radix-ng/primitives/dialog';
+import {
+    RdxPopoverArrow,
+    RdxPopoverBackdrop,
+    RdxPopoverClose,
+    RdxPopoverDescription,
+    RdxPopoverPopup,
+    RdxPopoverPortal,
+    RdxPopoverPortalMisuseGuard,
+    RdxPopoverPositioner,
+    RdxPopoverRoot,
+    RdxPopoverTitle,
+    RdxPopoverTrigger,
+    RdxPopoverViewport
+} from '@radix-ng/primitives/popover';
+import {
+    RdxSelectArrow,
+    RdxSelectBackdrop,
+    RdxSelectGroup,
+    RdxSelectGroupLabel,
+    RdxSelectIcon,
+    RdxSelectItem,
+    RdxSelectItemAlignedPosition,
+    RdxSelectItemAlignedPositionContent,
+    RdxSelectItemIndicator,
+    RdxSelectItemText,
+    RdxSelectLabel,
+    RdxSelectList,
     RdxSelectOpenChangeEvent,
+    RdxSelectPopup,
+    RdxSelectPortal,
+    RdxSelectPortalMisuseGuard,
+    RdxSelectPositioner,
     RdxSelectRoot,
+    RdxSelectScrollDownButton,
+    RdxSelectScrollUpButton,
+    RdxSelectSeparator,
+    RdxSelectTrigger,
+    RdxSelectValue,
     RdxSelectValueChangeEvent
 } from '@radix-ng/primitives/select';
-import { demoSelect } from '../../../../../packages/primitives/storybook/styles';
-import '../../../../radix-storybook/.storybook/tailwind.css';
+
+import { RdxDirectionProvider } from '@radix-ng/primitives/direction-provider';
+
+import '../../../../radix-storybook/.storybook/main.css';
 import {
     changeOptions,
     fixtureConfig,
@@ -36,7 +81,31 @@ document.documentElement.dir = config.dir;
         '[class]': 'config.geometry?.shellClass',
         'data-testid': 'scroller'
     },
-    imports: [_importsSelect, RdxDirectionProvider],
+    imports: [
+        RdxSelectRoot,
+        RdxSelectPortal,
+        RdxSelectPortalMisuseGuard,
+        RdxSelectTrigger,
+        RdxSelectValue,
+        RdxSelectPopup,
+        RdxSelectArrow,
+        RdxSelectList,
+        RdxSelectLabel,
+        RdxSelectItemIndicator,
+        RdxSelectItem,
+        RdxSelectItemText,
+        RdxSelectGroupLabel,
+        RdxSelectGroup,
+        RdxSelectPositioner,
+        RdxSelectItemAlignedPosition,
+        RdxSelectItemAlignedPositionContent,
+        RdxSelectScrollUpButton,
+        RdxSelectScrollDownButton,
+        RdxSelectIcon,
+        RdxSelectSeparator,
+        RdxSelectBackdrop,
+        RdxDirectionProvider
+    ],
     template: `
         <form
             [class]="(config.geometry?.formClass ?? 'grid w-64 gap-3') + liveFormClass(live())"
@@ -71,7 +140,11 @@ document.documentElement.dir = config.dir;
                 rdxSelectRoot
             >
                 <div rdxSelectLabel>Fruit</div>
-                <button [class]="s.trigger" data-testid="trigger" rdxSelectTrigger>
+                <button
+                    class="demo-select-trigger data-[placeholder]:text-muted-foreground data-[invalid]:border-destructive data-[invalid]:aria-invalid:ring-destructive/30 demo-focus inline-flex min-h-9 items-center justify-between gap-2 px-3 py-1.5 disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                    data-testid="trigger"
+                    rdxSelectTrigger
+                >
                     <span #display="rdxSelectedValue" data-testid="value" rdxSelectValue placeholder="Choose a fruit">
                         {{ display.slotText() }}
                     </span>
@@ -83,7 +156,7 @@ document.documentElement.dir = config.dir;
                 >
                     @if (config.aligned) {
                         <div
-                            [class]="s.positioner + ' pointer-events-auto'"
+                            class="pointer-events-auto z-[100]"
                             [disableAnchorTracking]="config.geometry?.disableAnchorTracking"
                             align="start"
                             sideOffset="5"
@@ -97,18 +170,20 @@ document.documentElement.dir = config.dir;
                                 rdxSelectPopup
                             >
                                 <div
+                                    class="demo-select-popup min-w-[var(--anchor-width,10rem)] will-change-[opacity,transform]"
                                     [class]="
-                                        s.popup +
-                                        liveHeightClass(live()) +
-                                        (config.geometry
-                                            ? ' min-h-0 flex-1 overflow-hidden' + config.geometry.heightClass
-                                            : '')
+                                        [
+                                            liveHeightClass(live()),
+                                            config.geometry
+                                                ? 'min-h-0 flex-1 overflow-hidden' + config.geometry.heightClass
+                                                : ''
+                                        ].join(' ')
                                     "
                                     rdxSelectItemAlignedPositionContent
                                 >
                                     @if (config.geometry?.arrows) {
                                         <div
-                                            [class]="s.scrollButton + ' absolute inset-x-0 top-0 z-10'"
+                                            class="demo-select-scroll-button absolute inset-x-0 top-0 z-10 flex h-7 items-center justify-center"
                                             data-testid="scroll-up"
                                             rdxSelectScrollUpButton
                                         >
@@ -118,7 +193,8 @@ document.documentElement.dir = config.dir;
                                     <div [class]="listClass" data-testid="list" rdxSelectList>
                                         @for (option of options(); track option.key) {
                                             <div
-                                                [class]="s.item + liveItemClass(live())"
+                                                class="demo-select-item data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground data-[disabled]:text-muted-foreground relative flex min-h-7 items-center gap-2 ps-6 pe-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                                [class]="liveItemClass(live())"
                                                 [value]="option.value"
                                                 [disabled]="option.disabled"
                                                 [attr.data-option-key]="option.key"
@@ -132,7 +208,7 @@ document.documentElement.dir = config.dir;
                                     </div>
                                     @if (config.geometry?.arrows) {
                                         <div
-                                            [class]="s.scrollButton + ' absolute inset-x-0 bottom-0 z-10'"
+                                            class="demo-select-scroll-button absolute inset-x-0 bottom-0 z-10 flex h-7 items-center justify-center"
                                             data-testid="scroll-down"
                                             rdxSelectScrollDownButton
                                         >
@@ -143,12 +219,16 @@ document.documentElement.dir = config.dir;
                             </div>
                         </div>
                     } @else if (config.name === 'anchor-default') {
-                        <div [class]="s.positioner" sideOffset="5" data-testid="positioner" rdxSelectPositioner>
-                            <div [class]="s.popup + ' w-48 min-w-48!'" data-testid="popup" rdxSelectPopup>
+                        <div class="z-[100]" sideOffset="5" data-testid="positioner" rdxSelectPositioner>
+                            <div
+                                class="demo-select-popup w-48 min-w-48! min-w-[var(--anchor-width,10rem)] will-change-[opacity,transform]"
+                                data-testid="popup"
+                                rdxSelectPopup
+                            >
                                 <div [class]="listClass" data-testid="list" rdxSelectList>
                                     @for (option of options(); track option.key) {
                                         <div
-                                            [class]="s.item"
+                                            class="demo-select-item data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground data-[disabled]:text-muted-foreground relative flex min-h-7 items-center gap-2 ps-6 pe-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                                             [value]="option.value"
                                             [disabled]="option.disabled"
                                             [attr.data-option-key]="option.key"
@@ -164,7 +244,7 @@ document.documentElement.dir = config.dir;
                         </div>
                     } @else {
                         <div
-                            [class]="s.positioner"
+                            class="z-[100]"
                             [disableAnchorTracking]="config.geometry?.disableAnchorTracking"
                             sideOffset="5"
                             align="start"
@@ -173,7 +253,10 @@ document.documentElement.dir = config.dir;
                         >
                             <div
                                 [class]="
-                                    (config.dir === 'rtl' ? s.popup + ' w-48 min-w-48!' : s.popup) +
+                                    (config.dir === 'rtl'
+                                        ? 'demo-select-popup min-w-[var(--anchor-width,10rem)] will-change-[opacity,transform]' +
+                                          ' w-48 min-w-48!'
+                                        : 'demo-select-popup min-w-[var(--anchor-width,10rem)] will-change-[opacity,transform]') +
                                     liveHeightClass(live()) +
                                     (config.geometry ? anchoredHeightClass : '')
                                 "
@@ -184,7 +267,8 @@ document.documentElement.dir = config.dir;
                                 <div [class]="listClass" data-testid="list" rdxSelectList>
                                     @for (option of options(); track option.key) {
                                         <div
-                                            [class]="s.item + liveItemClass(live())"
+                                            class="demo-select-item data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground data-[disabled]:text-muted-foreground relative flex min-h-7 items-center gap-2 ps-6 pe-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                            [class]="liveItemClass(live())"
                                             [value]="option.value"
                                             [disabled]="option.disabled"
                                             [attr.data-option-key]="option.key"
@@ -233,10 +317,9 @@ document.documentElement.dir = config.dir;
 })
 class AngularSelectFixture {
     readonly anchoredHeightClass = anchoredHeightClass;
-    readonly s = demoSelect;
     readonly config = config;
     readonly listClass =
-        demoSelect.list +
+        'p-1' +
         (config.name === 'touch-scroll'
             ? ' max-h-48 overflow-y-auto'
             : config.geometry
@@ -309,7 +392,31 @@ class AngularSelectFixture {
 
 @Component({
     selector: 'parity-select',
-    imports: [AngularSelectFixture, dialogImports, popoverImports],
+    imports: [
+        AngularSelectFixture,
+        RdxDialogRoot,
+        RdxDialogTrigger,
+        RdxDialogPortal,
+        RdxDialogPortalMisuseGuard,
+        RdxDialogBackdrop,
+        RdxDialogViewport,
+        RdxDialogPopup,
+        RdxDialogTitle,
+        RdxDialogDescription,
+        RdxDialogClose,
+        RdxPopoverRoot,
+        RdxPopoverTrigger,
+        RdxPopoverPortal,
+        RdxPopoverPortalMisuseGuard,
+        RdxPopoverBackdrop,
+        RdxPopoverPositioner,
+        RdxPopoverPopup,
+        RdxPopoverArrow,
+        RdxPopoverTitle,
+        RdxPopoverDescription,
+        RdxPopoverClose,
+        RdxPopoverViewport
+    ],
     template: `
         @switch (config.nested?.kind) {
             @case ('dialog') {

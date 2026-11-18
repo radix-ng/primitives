@@ -1,85 +1,189 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck } from '@lucide/angular';
-import { RdxContextMenuModule } from '@radix-ng/primitives/context-menu';
-import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { cn, demoMenu } from '../../storybook/styles';
+import { RdxContextMenuRoot, RdxContextMenuTrigger } from '@radix-ng/primitives/context-menu';
+import {
+    RdxMenuCheckboxItem,
+    RdxMenuCheckboxItemIndicator,
+    RdxMenuGroupLabel,
+    RdxMenuItem,
+    RdxMenuPopup,
+    RdxMenuPortal,
+    RdxMenuPositioner,
+    RdxMenuRadioGroup,
+    RdxMenuRadioItem,
+    RdxMenuRadioItemIndicator,
+    RdxMenuRoot,
+    RdxMenuSeparator,
+    RdxMenuSubTrigger
+} from '@radix-ng/primitives/menu';
 
 @Component({
     selector: 'rdx-context-menu-default',
-    imports: [RdxContextMenuModule, RdxMenuModule, LucideCheck],
+    imports: [
+        RdxContextMenuRoot,
+        RdxContextMenuTrigger,
+        RdxMenuRoot,
+        RdxMenuSubTrigger,
+        RdxMenuPortal,
+        RdxMenuPositioner,
+        RdxMenuPopup,
+        RdxMenuItem,
+        RdxMenuGroupLabel,
+        RdxMenuSeparator,
+        RdxMenuCheckboxItem,
+        RdxMenuCheckboxItemIndicator,
+        RdxMenuRadioGroup,
+        RdxMenuRadioItem,
+        RdxMenuRadioItemIndicator,
+        LucideCheck
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <ng-container #root="rdxContextMenuRoot" rdxContextMenuRoot>
-            <div [class]="cn(m.contextArea, 'h-[150px] w-[300px] max-w-full')" tabindex="0" rdxContextMenuTrigger>
+            <div
+                class="demo-menu-context-area data-[popup-open]:bg-muted flex h-[150px] w-[300px] max-w-full items-center justify-center p-4 data-[popup-open]:border-solid"
+                tabindex="0"
+                rdxContextMenuTrigger
+            >
                 Right click here
             </div>
 
-            <div *rdxMenuPortal [class]="m.positioner" rdxMenuPositioner>
-                <div [class]="cn(m.popup, 'min-w-56!')" rdxMenuPopup>
-                    <button [class]="m.item" rdxMenuItem>
+            <div class="z-50 data-[closed]:pointer-events-none" *rdxMenuPortal rdxMenuPositioner>
+                <div
+                    class="demo-menu-popup min-w-56! min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                    rdxMenuPopup
+                >
+                    <button
+                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                        rdxMenuItem
+                    >
                         Back
-                        <span [class]="shortcut">⌘ [</span>
+                        <span class="text-muted-foreground ml-auto pl-4 text-xs">⌘ [</span>
                     </button>
-                    <button [class]="m.item" [disabled]="true" rdxMenuItem>
+                    <button
+                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                        [disabled]="true"
+                        rdxMenuItem
+                    >
                         Forward
-                        <span [class]="shortcut">⌘ ]</span>
+                        <span class="text-muted-foreground ml-auto pl-4 text-xs">⌘ ]</span>
                     </button>
-                    <button [class]="m.item" rdxMenuItem>
+                    <button
+                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                        rdxMenuItem
+                    >
                         Reload
-                        <span [class]="shortcut">⌘ R</span>
+                        <span class="text-muted-foreground ml-auto pl-4 text-xs">⌘ R</span>
                     </button>
 
                     <!-- More Tools submenu -->
                     <ng-container #moreSub="rdxMenuRoot" rdxMenuRoot>
-                        <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center justify-between gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            rdxMenuSubTrigger
+                        >
                             More Tools
                             <span class="text-muted-foreground text-xs">›</span>
                         </button>
                         <div
+                            class="z-50 data-[closed]:pointer-events-none"
                             *rdxMenuPortal
-                            [class]="m.positioner"
                             side="right"
                             align="start"
                             sideOffset="4"
                             rdxMenuPositioner
                         >
-                            <div [class]="m.popup" rdxMenuPopup>
-                                <button [class]="m.item" rdxMenuItem>Save Page As…</button>
-                                <button [class]="m.item" rdxMenuItem>Create Shortcut…</button>
-                                <button [class]="m.item" rdxMenuItem>Name Window…</button>
+                            <div
+                                class="demo-menu-popup min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                                rdxMenuPopup
+                            >
+                                <button
+                                    class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                    rdxMenuItem
+                                >
+                                    Save Page As…
+                                </button>
+                                <button
+                                    class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                    rdxMenuItem
+                                >
+                                    Create Shortcut…
+                                </button>
+                                <button
+                                    class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                    rdxMenuItem
+                                >
+                                    Name Window…
+                                </button>
                             </div>
                         </div>
                     </ng-container>
 
-                    <div [class]="m.separator" rdxMenuSeparator></div>
+                    <div class="bg-border -mx-1 my-1 h-px" rdxMenuSeparator></div>
 
-                    <button [(checked)]="showBookmarks" [class]="m.selectableItem" type="button" rdxMenuCheckboxItem>
-                        <span [class]="m.itemIndicator" aria-hidden="true" rdxMenuCheckboxItemIndicator>
+                    <button
+                        class="demo-menu-selectable-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center py-1.5 ps-8 pe-2 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                        [(checked)]="showBookmarks"
+                        type="button"
+                        rdxMenuCheckboxItem
+                    >
+                        <span
+                            class="pointer-events-none absolute start-2 top-1/2 flex size-3.5 -translate-y-1/2 items-center justify-center"
+                            aria-hidden="true"
+                            rdxMenuCheckboxItemIndicator
+                        >
                             <svg [size]="12" lucideCheck></svg>
                         </span>
                         Show Bookmarks
-                        <span [class]="shortcut">⌘ B</span>
+                        <span class="text-muted-foreground ml-auto pl-4 text-xs">⌘ B</span>
                     </button>
-                    <button [(checked)]="showFullUrls" [class]="m.selectableItem" type="button" rdxMenuCheckboxItem>
-                        <span [class]="m.itemIndicator" aria-hidden="true" rdxMenuCheckboxItemIndicator>
+                    <button
+                        class="demo-menu-selectable-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center py-1.5 ps-8 pe-2 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                        [(checked)]="showFullUrls"
+                        type="button"
+                        rdxMenuCheckboxItem
+                    >
+                        <span
+                            class="pointer-events-none absolute start-2 top-1/2 flex size-3.5 -translate-y-1/2 items-center justify-center"
+                            aria-hidden="true"
+                            rdxMenuCheckboxItemIndicator
+                        >
                             <svg [size]="12" lucideCheck></svg>
                         </span>
                         Show Full URLs
                     </button>
 
-                    <div [class]="m.separator" rdxMenuSeparator></div>
+                    <div class="bg-border -mx-1 my-1 h-px" rdxMenuSeparator></div>
 
                     <div [(value)]="person" rdxMenuRadioGroup>
-                        <div [class]="cn(m.groupLabel, 'ps-8')" rdxMenuGroupLabel>People</div>
-                        <button [class]="m.selectableItem" type="button" value="pedro" rdxMenuRadioItem>
-                            <span [class]="m.itemIndicator" aria-hidden="true" rdxMenuRadioItemIndicator>
-                                <span [class]="m.radioIndicator"></span>
+                        <div class="demo-menu-group-label px-2 py-1.5 ps-8" rdxMenuGroupLabel>People</div>
+                        <button
+                            class="demo-menu-selectable-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center py-1.5 ps-8 pe-2 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            type="button"
+                            value="pedro"
+                            rdxMenuRadioItem
+                        >
+                            <span
+                                class="pointer-events-none absolute start-2 top-1/2 flex size-3.5 -translate-y-1/2 items-center justify-center"
+                                aria-hidden="true"
+                                rdxMenuRadioItemIndicator
+                            >
+                                <span class="size-2 shrink-0 rounded-full bg-current"></span>
                             </span>
                             Pedro Duarte
                         </button>
-                        <button [class]="m.selectableItem" type="button" value="colm" rdxMenuRadioItem>
-                            <span [class]="m.itemIndicator" aria-hidden="true" rdxMenuRadioItemIndicator>
-                                <span [class]="m.radioIndicator"></span>
+                        <button
+                            class="demo-menu-selectable-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center py-1.5 ps-8 pe-2 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            type="button"
+                            value="colm"
+                            rdxMenuRadioItem
+                        >
+                            <span
+                                class="pointer-events-none absolute start-2 top-1/2 flex size-3.5 -translate-y-1/2 items-center justify-center"
+                                aria-hidden="true"
+                                rdxMenuRadioItemIndicator
+                            >
+                                <span class="size-2 shrink-0 rounded-full bg-current"></span>
                             </span>
                             Colm Tuite
                         </button>
@@ -90,10 +194,6 @@ import { cn, demoMenu } from '../../storybook/styles';
     `
 })
 export class RdxContextMenuDefaultComponent {
-    protected readonly cn = cn;
-    protected readonly m = demoMenu;
-    protected readonly shortcut = 'ml-auto pl-4 text-xs text-muted-foreground';
-
     showBookmarks = signal(true);
     showFullUrls = signal(false);
     person = signal<string | undefined>('pedro');

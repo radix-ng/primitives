@@ -1,6 +1,14 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoMenu } from '../../storybook/styles';
+import {
+    RdxMenuItem,
+    RdxMenuPopup,
+    RdxMenuPortal,
+    RdxMenuPositioner,
+    RdxMenuRoot,
+    RdxMenuSeparator,
+    RdxMenuSubTrigger,
+    RdxMenuTrigger
+} from '@radix-ng/primitives/menu';
 
 /**
  * RTL nested menu: submenus open to the *left* (`side="left"`), so the safe-polygon geometry must
@@ -8,79 +16,172 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
  */
 @Component({
     selector: 'rdx-menu-nested-rtl',
-    imports: [RdxMenuModule],
+    imports: [
+        RdxMenuRoot,
+        RdxMenuTrigger,
+        RdxMenuSubTrigger,
+        RdxMenuPortal,
+        RdxMenuPositioner,
+        RdxMenuPopup,
+        RdxMenuItem,
+        RdxMenuSeparator
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <div dir="rtl">
             <ng-container #root="rdxMenuRoot" dir="rtl" rdxMenuRoot>
-                <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>تحرير</button>
+                <button class="demo-button demo-button-outline h-9 px-4" rdxMenuTrigger>تحرير</button>
 
-                <div *rdxMenuPortal [class]="m.positioner" side="bottom" align="end" sideOffset="4" rdxMenuPositioner>
-                    <div [class]="m.popup" rdxMenuPopup>
-                        <button [class]="m.item" rdxMenuItem>تراجع</button>
-                        <button [class]="m.item" rdxMenuItem>إعادة</button>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
+                <div
+                    class="z-50 data-[closed]:pointer-events-none"
+                    *rdxMenuPortal
+                    side="bottom"
+                    align="end"
+                    sideOffset="4"
+                    rdxMenuPositioner
+                >
+                    <div
+                        class="demo-menu-popup min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                        rdxMenuPopup
+                    >
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            rdxMenuItem
+                        >
+                            تراجع
+                        </button>
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            rdxMenuItem
+                        >
+                            إعادة
+                        </button>
+                        <div class="bg-border -mx-1 my-1 h-px" rdxMenuSeparator></div>
 
                         <!-- Submenu opens to the left in RTL -->
                         <ng-container #findSub="rdxMenuRoot" rdxMenuRoot>
-                            <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
+                            <button
+                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center justify-between gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                rdxMenuSubTrigger
+                            >
                                 <span class="text-muted-foreground text-xs">‹</span>
                                 بحث
                             </button>
 
                             <div
+                                class="z-50 data-[closed]:pointer-events-none"
                                 *rdxMenuPortal
-                                [class]="m.positioner"
                                 side="left"
                                 align="start"
                                 sideOffset="4"
                                 rdxMenuPositioner
                             >
-                                <div [class]="m.popup" rdxMenuPopup>
-                                    <button [class]="m.item" rdxMenuItem>بحث في الويب…</button>
-                                    <button [class]="m.item" rdxMenuItem>بحث…</button>
-                                    <button [class]="m.item" rdxMenuItem>بحث واستبدال…</button>
-                                    <button [class]="m.item" rdxMenuItem>استخدام التحديد للبحث</button>
+                                <div
+                                    class="demo-menu-popup min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                                    rdxMenuPopup
+                                >
+                                    <button
+                                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                        rdxMenuItem
+                                    >
+                                        بحث في الويب…
+                                    </button>
+                                    <button
+                                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                        rdxMenuItem
+                                    >
+                                        بحث…
+                                    </button>
+                                    <button
+                                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                        rdxMenuItem
+                                    >
+                                        بحث واستبدال…
+                                    </button>
+                                    <button
+                                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                        rdxMenuItem
+                                    >
+                                        استخدام التحديد للبحث
+                                    </button>
                                 </div>
                             </div>
                         </ng-container>
 
                         <ng-container #spellSub="rdxMenuRoot" rdxMenuRoot>
-                            <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
+                            <button
+                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center justify-between gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                rdxMenuSubTrigger
+                            >
                                 <span class="text-muted-foreground text-xs">‹</span>
                                 التدقيق الإملائي والنحوي
                             </button>
 
                             <div
+                                class="z-50 data-[closed]:pointer-events-none"
                                 *rdxMenuPortal
-                                [class]="m.positioner"
                                 side="left"
                                 align="start"
                                 sideOffset="4"
                                 rdxMenuPositioner
                             >
-                                <div [class]="m.popup" rdxMenuPopup>
-                                    <button [class]="m.item" rdxMenuItem>عرض التدقيق الإملائي والنحوي</button>
-                                    <button [class]="m.item" rdxMenuItem>تدقيق المستند الآن</button>
-                                    <div [class]="m.separator" rdxMenuSeparator></div>
-                                    <button [class]="m.item" rdxMenuItem>التدقيق الإملائي أثناء الكتابة</button>
-                                    <button [class]="m.item" [disabled]="true" rdxMenuItem>التدقيق النحوي</button>
+                                <div
+                                    class="demo-menu-popup min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                                    rdxMenuPopup
+                                >
+                                    <button
+                                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                        rdxMenuItem
+                                    >
+                                        عرض التدقيق الإملائي والنحوي
+                                    </button>
+                                    <button
+                                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                        rdxMenuItem
+                                    >
+                                        تدقيق المستند الآن
+                                    </button>
+                                    <div class="bg-border -mx-1 my-1 h-px" rdxMenuSeparator></div>
+                                    <button
+                                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                        rdxMenuItem
+                                    >
+                                        التدقيق الإملائي أثناء الكتابة
+                                    </button>
+                                    <button
+                                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                        [disabled]="true"
+                                        rdxMenuItem
+                                    >
+                                        التدقيق النحوي
+                                    </button>
                                 </div>
                             </div>
                         </ng-container>
 
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" rdxMenuItem>قص</button>
-                        <button [class]="m.item" rdxMenuItem>نسخ</button>
-                        <button [class]="m.item" rdxMenuItem>لصق</button>
+                        <div class="bg-border -mx-1 my-1 h-px" rdxMenuSeparator></div>
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            rdxMenuItem
+                        >
+                            قص
+                        </button>
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            rdxMenuItem
+                        >
+                            نسخ
+                        </button>
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            rdxMenuItem
+                        >
+                            لصق
+                        </button>
                     </div>
                 </div>
             </ng-container>
         </div>
     `
 })
-export class RdxMenuNestedRtlComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly m = demoMenu;
-}
+export class RdxMenuNestedRtlComponent {}

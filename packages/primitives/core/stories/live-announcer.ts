@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RdxLiveAnnouncer } from '@radix-ng/primitives/core';
-import { cn, demoButton } from '../../storybook/styles';
 
 /**
  * Triggers screen-reader announcements through `RdxLiveAnnouncer`. The live region is visually
@@ -13,10 +12,10 @@ import { cn, demoButton } from '../../storybook/styles';
     template: `
         <div class="flex w-80 flex-col gap-4">
             <div class="flex gap-2">
-                <button [class]="cn(b.base, b.primary, b.size.md)" (click)="announce('polite')" type="button">
+                <button class="demo-button demo-button-primary h-9 px-4" (click)="announce('polite')" type="button">
                     Announce (polite)
                 </button>
-                <button [class]="cn(b.base, b.outline, b.size.md)" (click)="announce('assertive')" type="button">
+                <button class="demo-button demo-button-outline h-9 px-4" (click)="announce('assertive')" type="button">
                     Announce (assertive)
                 </button>
             </div>
@@ -45,9 +44,6 @@ export class LiveAnnouncerExample {
     private count = 0;
 
     readonly log = signal<{ id: number; message: string; politeness: 'polite' | 'assertive' }[]>([]);
-
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
 
     announce(politeness: 'polite' | 'assertive'): void {
         this.count += 1;

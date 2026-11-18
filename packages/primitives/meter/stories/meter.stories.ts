@@ -1,11 +1,17 @@
+import {
+    RdxMeterIndicatorDirective,
+    RdxMeterLabelDirective,
+    RdxMeterRootDirective,
+    RdxMeterTrackDirective,
+    RdxMeterValueDirective
+} from '@radix-ng/primitives/meter';
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { cn } from '../../storybook/styles';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
-import { RdxMeterIndicatorDirective } from '../src/meter-indicator.directive';
-import { RdxMeterLabelDirective } from '../src/meter-label.directive';
-import { RdxMeterRootDirective } from '../src/meter-root.directive';
-import { RdxMeterTrackDirective } from '../src/meter-track.directive';
-import { RdxMeterValueDirective } from '../src/meter-value.directive';
+import { MeterAriaValueTextStory } from './meter-aria-value-text-example';
+import ariaValueTextPortableSource from './meter-aria-value-text-example?raw';
+import { MeterCustomRangeStory } from './meter-custom-range-example';
+import customRangePortableSource from './meter-custom-range-example?raw';
+
 import { MeterStorageComponent } from './meter';
 import storageSource from './meter?raw';
 
@@ -17,6 +23,8 @@ export default {
     decorators: [
         moduleMetadata({
             imports: [
+                MeterCustomRangeStory,
+                MeterAriaValueTextStory,
                 RdxMeterRootDirective,
                 RdxMeterLabelDirective,
                 RdxMeterValueDirective,
@@ -31,15 +39,6 @@ export default {
 
 type Story = StoryObj;
 
-const meterClasses = {
-    root: 'flex w-80 flex-col gap-2',
-    header: 'flex items-center justify-between gap-4',
-    label: 'text-sm font-medium text-foreground',
-    value: 'text-sm tabular-nums text-muted-foreground',
-    track: 'h-3 overflow-hidden rounded-full bg-muted',
-    indicator: 'h-full rounded-full bg-primary transition-all duration-500 ease-out'
-};
-
 export const Default: Story = {
     parameters: source(storageSource),
     render: () => ({
@@ -50,58 +49,19 @@ export const Default: Story = {
 };
 
 export const CustomRange: Story = {
+    parameters: source(customRangePortableSource),
     render: () => ({
-        props: {
-            value: 72,
-            min: 50,
-            max: 100,
-            format: { style: 'unit', unit: 'liter', unitDisplay: 'short' } satisfies Intl.NumberFormatOptions,
-            getAriaValueText: (formattedValue: string) => `${formattedValue} in the tank`,
-            c: meterClasses,
-            cn
-        },
         template: html`
-            <div
-                [value]="value"
-                [min]="min"
-                [max]="max"
-                [format]="format"
-                [getAriaValueText]="getAriaValueText"
-                [class]="c.root"
-                rdxMeterRoot
-            >
-                <div [class]="c.header">
-                    <span [class]="c.label" rdxMeterLabel>Fuel level</span>
-                    <span [class]="c.value" rdxMeterValue></span>
-                </div>
-
-                <div [class]="c.track" rdxMeterTrack>
-                    <div [class]="cn(c.indicator, 'w-[44%]')" rdxMeterIndicator></div>
-                </div>
-            </div>
+            <rdx-meter-custom-range-example />
         `
     })
 };
 
 export const AriaValueText: Story = {
+    parameters: source(ariaValueTextPortableSource),
     render: () => ({
-        props: {
-            value: 88,
-            ariaValueText: 'Memory pressure is high',
-            c: meterClasses,
-            cn
-        },
         template: html`
-            <div [value]="value" [aria-valuetext]="ariaValueText" [class]="c.root" rdxMeterRoot>
-                <div [class]="c.header">
-                    <span [class]="c.label" rdxMeterLabel>Memory pressure</span>
-                    <span [class]="c.value" rdxMeterValue></span>
-                </div>
-
-                <div [class]="c.track" rdxMeterTrack>
-                    <div [class]="cn(c.indicator, 'w-[88%]', 'bg-destructive')" rdxMeterIndicator></div>
-                </div>
-            </div>
+            <rdx-meter-aria-value-text-example />
         `
     })
 };

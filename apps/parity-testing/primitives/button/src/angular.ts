@@ -2,7 +2,7 @@ import '@angular/compiler';
 import { Component, DestroyRef, inject, provideZonelessChangeDetection, signal } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { RdxButtonDirective } from '@radix-ng/primitives/button';
-import '../../../../radix-storybook/.storybook/tailwind.css';
+import '../../../../radix-storybook/.storybook/main.css';
 import { AngularAuthored } from './authored.angular';
 import { classes, config, installProbe, type ButtonType } from './contract';
 import { AngularInteraction } from './interaction.angular';

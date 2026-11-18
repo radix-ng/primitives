@@ -7,7 +7,6 @@ import {
     RdxTabsTab,
     type RdxTabsValueChangeEvent
 } from '@radix-ng/primitives/tabs';
-import { cn, demoButton } from '../../storybook/styles';
 
 @Component({
     selector: 'tabs-object-values-example',
@@ -16,7 +15,13 @@ import { cn, demoButton } from '../../storybook/styles';
         <div class="grid w-80 gap-3" [value]="selected()" (onValueChange)="change($event)" rdxTabsRoot>
             <div class="flex gap-2" aria-label="Workspace sections" rdxTabsList>
                 @for (section of sections; track section) {
-                    <button [class]="tabClass" [value]="section" rdxTabsTab>{{ section.label }}</button>
+                    <button
+                        class="demo-button demo-button-ghost data-active:bg-primary data-active:text-primary-foreground h-8 px-3 text-xs"
+                        [value]="section"
+                        rdxTabsTab
+                    >
+                        {{ section.label }}
+                    </button>
                 }
             </div>
             @for (section of sections; track section) {
@@ -34,12 +39,6 @@ export class TabsObjectValuesExample {
         { label: 'Security', description: 'Update your security preferences.' }
     ];
     readonly selected = signal(this.sections[0]);
-    readonly tabClass = cn(
-        demoButton.base,
-        demoButton.ghost,
-        demoButton.size.sm,
-        'data-active:bg-primary data-active:text-primary-foreground'
-    );
 
     change({ value }: RdxTabsValueChangeEvent) {
         const section = this.sections.find((section) => section === value);

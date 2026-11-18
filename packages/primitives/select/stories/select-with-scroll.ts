@@ -1,20 +1,21 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideCheck, LucideChevronDown, LucideChevronUp } from '@lucide/angular';
-import { demoSelect } from '../../storybook/styles';
-import { RdxSelectGroup } from '../src/select-group';
-import { RdxSelectGroupLabel } from '../src/select-group-label';
-import { RdxSelectItem } from '../src/select-item';
-import { RdxSelectItemIndicator } from '../src/select-item-indicator';
-import { RdxSelectItemText } from '../src/select-item-text';
-import { RdxSelectList } from '../src/select-list';
-import { RdxSelectPopup } from '../src/select-popup';
-import { RdxSelectPortal } from '../src/select-portal';
-import { RdxSelectPositioner } from '../src/select-positioner';
-import { RdxSelectRoot } from '../src/select-root';
-import { RdxSelectScrollDownButton } from '../src/select-scroll-down-button';
-import { RdxSelectScrollUpButton } from '../src/select-scroll-up-button';
-import { RdxSelectTrigger } from '../src/select-trigger';
-import { RdxSelectValue } from '../src/select-value';
+import {
+    RdxSelectGroup,
+    RdxSelectGroupLabel,
+    RdxSelectItem,
+    RdxSelectItemIndicator,
+    RdxSelectItemText,
+    RdxSelectList,
+    RdxSelectPopup,
+    RdxSelectPortal,
+    RdxSelectPositioner,
+    RdxSelectRoot,
+    RdxSelectScrollDownButton,
+    RdxSelectScrollUpButton,
+    RdxSelectTrigger,
+    RdxSelectValue
+} from '@radix-ng/primitives/select';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -40,45 +41,69 @@ import { RdxSelectValue } from '../src/select-value';
     ],
     template: `
         <ng-container rdxSelectRoot>
-            <button class="min-w-40" [class]="s.trigger" aria-label="Customise options" rdxSelectTrigger>
+            <button
+                class="demo-select-trigger data-[placeholder]:text-muted-foreground data-[invalid]:border-destructive data-[invalid]:aria-invalid:ring-destructive/30 demo-focus inline-flex min-h-9 min-w-40 items-center justify-between gap-2 px-3 py-1.5 disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                aria-label="Customise options"
+                rdxSelectTrigger
+            >
                 <span #selectedValue="rdxSelectedValue" rdxSelectValue placeholder="Select a fruit...">
                     {{ selectedValue.slotText() }}
                 </span>
-                <svg [class]="s.icon" lucideChevronDown size="16" aria-hidden="true" />
+                <svg class="size-4 shrink-0" lucideChevronDown size="16" aria-hidden="true" />
             </button>
 
-            <div *rdxSelectPortal [class]="s.positioner" [sideOffset]="5" align="start" rdxSelectPositioner>
-                <div class="max-h-[300px] overflow-hidden" [class]="s.popup" rdxSelectPopup>
-                    <div [class]="s.scrollButton" rdxSelectScrollUpButton>
-                        <svg [class]="s.icon" lucideChevronUp size="16" aria-hidden="true" />
+            <div class="z-[100]" *rdxSelectPortal [sideOffset]="5" align="start" rdxSelectPositioner>
+                <div
+                    class="demo-select-popup max-h-[300px] min-w-[var(--anchor-width,10rem)] overflow-hidden will-change-[opacity,transform]"
+                    rdxSelectPopup
+                >
+                    <div class="demo-select-scroll-button flex h-7 items-center justify-center" rdxSelectScrollUpButton>
+                        <svg class="size-4 shrink-0" lucideChevronUp size="16" aria-hidden="true" />
                     </div>
-                    <div [class]="s.list" rdxSelectList>
-                        <div [class]="s.groupLabel" rdxSelectGroupLabel>Fruits</div>
+                    <div class="p-1" rdxSelectList>
+                        <div class="demo-select-group-label px-6" rdxSelectGroupLabel>Fruits</div>
                         <div rdxSelectGroup>
                             @for (option of options; track option) {
-                                <div [class]="s.item" [value]="option" rdxSelectItem>
-                                    <span [class]="s.itemIndicator" rdxSelectItemIndicator>
-                                        <svg [class]="s.icon" lucideCheck size="16" aria-hidden="true" />
+                                <div
+                                    class="demo-select-item data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground data-[disabled]:text-muted-foreground relative flex min-h-7 items-center gap-2 ps-6 pe-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                    [value]="option"
+                                    rdxSelectItem
+                                >
+                                    <span
+                                        class="absolute start-0 inline-flex w-6 items-center justify-center"
+                                        rdxSelectItemIndicator
+                                    >
+                                        <svg class="size-4 shrink-0" lucideCheck size="16" aria-hidden="true" />
                                     </span>
                                     <span rdxSelectItemText>{{ option }}</span>
                                 </div>
                             }
                         </div>
-                        <div [class]="s.separator"></div>
-                        <div [class]="s.groupLabel" rdxSelectGroupLabel>Vegetables</div>
+                        <div class="bg-border mx-1 my-1 h-px"></div>
+                        <div class="demo-select-group-label px-6" rdxSelectGroupLabel>Vegetables</div>
                         <div rdxSelectGroup>
                             @for (vegetable of vegetables; track vegetable) {
-                                <div [class]="s.item" [value]="vegetable" rdxSelectItem>
-                                    <span [class]="s.itemIndicator" rdxSelectItemIndicator>
-                                        <svg [class]="s.icon" lucideCheck size="16" aria-hidden="true" />
+                                <div
+                                    class="demo-select-item data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground data-[disabled]:text-muted-foreground relative flex min-h-7 items-center gap-2 ps-6 pe-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                    [value]="vegetable"
+                                    rdxSelectItem
+                                >
+                                    <span
+                                        class="absolute start-0 inline-flex w-6 items-center justify-center"
+                                        rdxSelectItemIndicator
+                                    >
+                                        <svg class="size-4 shrink-0" lucideCheck size="16" aria-hidden="true" />
                                     </span>
                                     <span rdxSelectItemText>{{ vegetable }}</span>
                                 </div>
                             }
                         </div>
                     </div>
-                    <div [class]="s.scrollButton" rdxSelectScrollDownButton>
-                        <svg [class]="s.icon" lucideChevronDown size="16" aria-hidden="true" />
+                    <div
+                        class="demo-select-scroll-button flex h-7 items-center justify-center"
+                        rdxSelectScrollDownButton
+                    >
+                        <svg class="size-4 shrink-0" lucideChevronDown size="16" aria-hidden="true" />
                     </div>
                 </div>
             </div>
@@ -86,8 +111,6 @@ import { RdxSelectValue } from '../src/select-value';
     `
 })
 export class SelectWithScroll {
-    protected readonly s = demoSelect;
-
     readonly options = ['Apple', 'Banana', 'Blueberry', 'Grapes', 'Pineapple'];
     readonly vegetables = [
         'Aubergine',

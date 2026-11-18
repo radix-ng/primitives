@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxFieldControl, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
-import { RdxFormRoot, RdxFormSubmitEvent } from '../index';
+import { RdxFormRoot, RdxFormSubmitEvent } from '@radix-ng/primitives/form';
 import { formField, formInput, formLabel, formSubmit } from './form.shared';
 
 /**

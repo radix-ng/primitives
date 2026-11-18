@@ -1,24 +1,50 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { LucideChevronRight } from '@lucide/angular';
-import { RdxMenuModule, type RdxMenuOrientation } from '@radix-ng/primitives/menu';
+import {
+    RdxMenuItem,
+    RdxMenuPopup,
+    RdxMenuPortal,
+    RdxMenuPositioner,
+    RdxMenuRoot,
+    RdxMenuSeparator,
+    RdxMenuSubTrigger,
+    RdxMenuTrigger,
+    type RdxMenuOrientation
+} from '@radix-ng/primitives/menu';
 import { RdxMenubarRoot, type RdxMenubarOrientation } from '@radix-ng/primitives/menubar';
-import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
 
 @Component({
     selector: 'rdx-menubar-default',
-    imports: [RdxMenuModule, RdxMenubarRoot, LucideChevronRight],
+    imports: [
+        RdxMenuRoot,
+        RdxMenuTrigger,
+        RdxMenuSubTrigger,
+        RdxMenuPortal,
+        RdxMenuPositioner,
+        RdxMenuPopup,
+        RdxMenuItem,
+        RdxMenuSeparator,
+        RdxMenubarRoot,
+        LucideChevronRight
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <div
-            [class]="cn(mb.root, orientation() === 'vertical' && 'w-48 flex-col items-stretch')"
+            class="demo-menubar-root inline-flex items-center gap-1 p-1"
+            [class]="orientation() === 'vertical' ? 'w-48 flex-col items-stretch' : ''"
             [orientation]="orientation()"
             rdxMenubarRoot
         >
             <ng-container [orientation]="menuOrientation()" rdxMenuRoot>
-                <button [class]="mb.trigger" rdxMenuTrigger>File</button>
+                <button
+                    class="demo-menubar-trigger data-[popup-open]:bg-muted flex h-8 shrink-0 items-center px-3 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    rdxMenuTrigger
+                >
+                    File
+                </button>
                 <ng-template [keepMounted]="keepMounted()" rdxMenuPortal>
                     <div
-                        [class]="m.positioner"
+                        class="z-50 data-[closed]:pointer-events-none"
                         [side]="orientation() === 'vertical' ? 'inline-end' : 'bottom'"
                         align="start"
                         alignOffset="-4"
@@ -33,28 +59,42 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
                                 <div [class]="subTriggerClass()" rdxMenuSubTrigger>
                                     Export
                                     <svg
-                                        [class]="
-                                            cn(
-                                                'size-4 shrink-0',
-                                                menuOrientation() === 'horizontal' ? 'rotate-90' : 'rtl:rotate-180'
-                                            )
-                                        "
+                                        class="size-4 shrink-0"
+                                        [class]="menuOrientation() === 'horizontal' ? 'rotate-90' : 'rtl:rotate-180'"
                                         lucideChevronRight
                                     ></svg>
                                 </div>
                                 <ng-template [keepMounted]="keepMounted()" rdxMenuPortal>
                                     <div
-                                        [class]="m.positioner"
+                                        class="z-50 data-[closed]:pointer-events-none"
                                         [side]="menuOrientation() === 'horizontal' ? 'bottom' : 'inline-end'"
                                         [alignOffset]="menuOrientation() === 'horizontal' ? 0 : -4"
                                         sideOffset="8"
                                         align="start"
                                         rdxMenuPositioner
                                     >
-                                        <div [class]="submenuClass" rdxMenuPopup>
-                                            <div [class]="m.item" rdxMenuItem>PDF</div>
-                                            <div [class]="m.item" rdxMenuItem>PNG</div>
-                                            <div [class]="m.item" rdxMenuItem>SVG</div>
+                                        <div
+                                            class="demo-menu-popup min-w-40! min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                                            rdxMenuPopup
+                                        >
+                                            <div
+                                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                rdxMenuItem
+                                            >
+                                                PDF
+                                            </div>
+                                            <div
+                                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                rdxMenuItem
+                                            >
+                                                PNG
+                                            </div>
+                                            <div
+                                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                rdxMenuItem
+                                            >
+                                                SVG
+                                            </div>
                                         </div>
                                     </div>
                                 </ng-template>
@@ -71,10 +111,15 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
             </ng-container>
 
             <ng-container [orientation]="menuOrientation()" rdxMenuRoot>
-                <button [class]="mb.trigger" rdxMenuTrigger>Edit</button>
+                <button
+                    class="demo-menubar-trigger data-[popup-open]:bg-muted flex h-8 shrink-0 items-center px-3 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    rdxMenuTrigger
+                >
+                    Edit
+                </button>
                 <ng-template [keepMounted]="keepMounted()" rdxMenuPortal>
                     <div
-                        [class]="m.positioner"
+                        class="z-50 data-[closed]:pointer-events-none"
                         [side]="orientation() === 'vertical' ? 'inline-end' : 'bottom'"
                         align="start"
                         alignOffset="-4"
@@ -91,10 +136,15 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
             </ng-container>
 
             <ng-container [orientation]="menuOrientation()" rdxMenuRoot>
-                <button [class]="mb.trigger" rdxMenuTrigger>View</button>
+                <button
+                    class="demo-menubar-trigger data-[popup-open]:bg-muted flex h-8 shrink-0 items-center px-3 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    rdxMenuTrigger
+                >
+                    View
+                </button>
                 <ng-template [keepMounted]="keepMounted()" rdxMenuPortal>
                     <div
-                        [class]="m.positioner"
+                        class="z-50 data-[closed]:pointer-events-none"
                         [side]="orientation() === 'vertical' ? 'inline-end' : 'bottom'"
                         align="start"
                         alignOffset="-4"
@@ -108,28 +158,42 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
                                 <div [class]="subTriggerClass()" rdxMenuSubTrigger>
                                     Layout
                                     <svg
-                                        [class]="
-                                            cn(
-                                                'size-4 shrink-0',
-                                                menuOrientation() === 'horizontal' ? 'rotate-90' : 'rtl:rotate-180'
-                                            )
-                                        "
+                                        class="size-4 shrink-0"
+                                        [class]="menuOrientation() === 'horizontal' ? 'rotate-90' : 'rtl:rotate-180'"
                                         lucideChevronRight
                                     ></svg>
                                 </div>
                                 <ng-template [keepMounted]="keepMounted()" rdxMenuPortal>
                                     <div
-                                        [class]="m.positioner"
+                                        class="z-50 data-[closed]:pointer-events-none"
                                         [side]="menuOrientation() === 'horizontal' ? 'bottom' : 'inline-end'"
                                         [alignOffset]="menuOrientation() === 'horizontal' ? 0 : -4"
                                         sideOffset="8"
                                         align="start"
                                         rdxMenuPositioner
                                     >
-                                        <div [class]="submenuClass" rdxMenuPopup>
-                                            <div [class]="m.item" rdxMenuItem>Single Page</div>
-                                            <div [class]="m.item" rdxMenuItem>Two Pages</div>
-                                            <div [class]="m.item" rdxMenuItem>Continuous</div>
+                                        <div
+                                            class="demo-menu-popup min-w-40! min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                                            rdxMenuPopup
+                                        >
+                                            <div
+                                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                rdxMenuItem
+                                            >
+                                                Single Page
+                                            </div>
+                                            <div
+                                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                rdxMenuItem
+                                            >
+                                                Two Pages
+                                            </div>
+                                            <div
+                                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                rdxMenuItem
+                                            >
+                                                Continuous
+                                            </div>
                                         </div>
                                     </div>
                                 </ng-template>
@@ -146,7 +210,12 @@ import { cn, demoMenu, demoMenubar } from '../../storybook/styles';
             </ng-container>
 
             <ng-container [disabled]="true" [orientation]="menuOrientation()" rdxMenuRoot>
-                <button [class]="mb.trigger" rdxMenuTrigger>Help</button>
+                <button
+                    class="demo-menubar-trigger data-[popup-open]:bg-muted flex h-8 shrink-0 items-center px-3 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    rdxMenuTrigger
+                >
+                    Help
+                </button>
             </ng-container>
         </div>
     `
@@ -156,19 +225,25 @@ export class RdxMenubarDefaultComponent {
     readonly keepMounted = input(false);
     readonly menuOrientation = input<RdxMenuOrientation>('vertical');
     protected readonly popupClass = computed(() =>
-        cn(demoMenu.popup, this.menuOrientation() === 'horizontal' ? 'flex gap-1' : 'min-w-44!')
+        [
+            'demo-menu-popup min-w-[8rem] p-1 data-[closed]:hidden data-[closed]:pointer-events-none',
+            this.menuOrientation() === 'horizontal' ? 'flex gap-1' : 'min-w-44!'
+        ]
+            .filter(Boolean)
+            .join(' ')
     );
     protected readonly itemClass = computed(() =>
-        cn(demoMenu.item, this.menuOrientation() === 'horizontal' && 'w-auto! whitespace-nowrap')
+        [
+            'demo-menu-item relative flex w-full items-center gap-2 px-2 py-1.5 data-[highlighted]:bg-muted data-[highlighted]:outline data-[highlighted]:outline-1 data-[highlighted]:outline-border data-[disabled]:opacity-50',
+            this.menuOrientation() === 'horizontal' && 'w-auto! whitespace-nowrap'
+        ]
+            .filter(Boolean)
+            .join(' ')
     );
     protected readonly subTriggerClass = computed(() =>
-        cn(this.itemClass(), 'justify-between gap-6! data-[popup-open]:bg-muted')
+        [this.itemClass(), 'justify-between gap-6! data-[popup-open]:bg-muted'].filter(Boolean).join(' ')
     );
-    protected readonly submenuClass = cn(demoMenu.popup, 'min-w-40!');
     protected readonly separatorClass = computed(() =>
-        this.menuOrientation() === 'horizontal' ? 'bg-border mx-1 w-px self-stretch' : demoMenu.separator
+        this.menuOrientation() === 'horizontal' ? 'bg-border mx-1 w-px self-stretch' : '-mx-1 my-1 h-px bg-border'
     );
-    protected readonly cn = cn;
-    protected readonly mb = demoMenubar;
-    protected readonly m = demoMenu;
 }

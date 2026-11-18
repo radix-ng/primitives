@@ -1,21 +1,59 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { RdxMenuItemHighlightedEvent, RdxMenuModule } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoMenu } from '../../storybook/styles';
+import {
+    RdxMenuItem,
+    RdxMenuItemHighlightedEvent,
+    RdxMenuPopup,
+    RdxMenuPortal,
+    RdxMenuPositioner,
+    RdxMenuRoot,
+    RdxMenuTrigger
+} from '@radix-ng/primitives/menu';
 
 @Component({
     selector: 'rdx-menu-highlight-example',
-    imports: [RdxMenuModule],
+    imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPortal, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <section class="grid w-80 gap-4">
             <ng-container (onItemHighlighted)="highlight.set($event)" rdxMenuRoot>
-                <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Command preview</button>
-                <div *rdxMenuPortal [class]="m.positioner" align="start" sideOffset="4" rdxMenuPositioner>
-                    <div [class]="m.popup" rdxMenuPopup>
-                        <button [class]="m.item" rdxMenuItem>Open file</button>
-                        <button [class]="m.item" [disabled]="true" rdxMenuItem>Save file</button>
-                        <button [class]="m.item" label="Export document" rdxMenuItem>Export…</button>
-                        <button [class]="m.item" rdxMenuItem>Print document</button>
+                <button class="demo-button demo-button-outline h-9 px-4" rdxMenuTrigger>Command preview</button>
+                <div
+                    class="z-50 data-[closed]:pointer-events-none"
+                    *rdxMenuPortal
+                    align="start"
+                    sideOffset="4"
+                    rdxMenuPositioner
+                >
+                    <div
+                        class="demo-menu-popup min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                        rdxMenuPopup
+                    >
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            rdxMenuItem
+                        >
+                            Open file
+                        </button>
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            [disabled]="true"
+                            rdxMenuItem
+                        >
+                            Save file
+                        </button>
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            label="Export document"
+                            rdxMenuItem
+                        >
+                            Export…
+                        </button>
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            rdxMenuItem
+                        >
+                            Print document
+                        </button>
                     </div>
                 </div>
             </ng-container>
@@ -29,7 +67,4 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
 })
 export class RdxMenuHighlightExampleComponent {
     protected readonly highlight = signal<RdxMenuItemHighlightedEvent | undefined>(undefined);
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly m = demoMenu;
 }

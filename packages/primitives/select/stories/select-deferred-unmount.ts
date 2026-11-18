@@ -2,12 +2,40 @@ import { afterNextRender, Component, DestroyRef, effect, inject, Injector, signa
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { RdxFloatingInsideElement } from '@radix-ng/primitives/dismissable-layer';
 import { RdxPresenceTarget } from '@radix-ng/primitives/presence';
-import { cn, demoButton, demoSelect } from '../../storybook/styles';
-import { _importsSelect, RdxSelectOpenChangeEvent, RdxSelectPopup, RdxSelectRoot } from '../index';
+import {
+    RdxSelectItem,
+    RdxSelectItemIndicator,
+    RdxSelectItemText,
+    RdxSelectLabel,
+    RdxSelectList,
+    RdxSelectOpenChangeEvent,
+    RdxSelectPopup,
+    RdxSelectPortal,
+    RdxSelectPositioner,
+    RdxSelectRoot,
+    RdxSelectTrigger,
+    RdxSelectValue
+} from '@radix-ng/primitives/select';
 
 @Component({
     selector: 'select-deferred-unmount',
-    imports: [_importsSelect, LucideCheck, LucideChevronDown, RdxFloatingInsideElement, RdxPresenceTarget],
+    imports: [
+        RdxSelectRoot,
+        RdxSelectPortal,
+        RdxSelectTrigger,
+        RdxSelectValue,
+        RdxSelectPopup,
+        RdxSelectList,
+        RdxSelectLabel,
+        RdxSelectItemIndicator,
+        RdxSelectItem,
+        RdxSelectItemText,
+        RdxSelectPositioner,
+        LucideCheck,
+        LucideChevronDown,
+        RdxFloatingInsideElement,
+        RdxPresenceTarget
+    ],
     template: `
         <div
             class="grid gap-8 sm:grid-cols-2"
@@ -21,18 +49,31 @@ import { _importsSelect, RdxSelectOpenChangeEvent, RdxSelectPopup, RdxSelectRoot
         >
             <div class="flex w-64 flex-col gap-2">
                 <div class="text-foreground text-sm font-medium" rdxSelectLabel>Fruit</div>
-                <button class="w-full" [class]="s.trigger" rdxSelectTrigger>
+                <button
+                    class="demo-select-trigger data-[placeholder]:text-muted-foreground data-[invalid]:border-destructive data-[invalid]:aria-invalid:ring-destructive/30 demo-focus inline-flex min-h-9 w-full items-center justify-between gap-2 px-3 py-1.5 disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                    rdxSelectTrigger
+                >
                     <span #display="rdxSelectedValue" rdxSelectValue>{{ display.slotText() }}</span>
-                    <svg [class]="s.icon" lucideChevronDown size="16" aria-hidden="true" />
+                    <svg class="size-4 shrink-0" lucideChevronDown size="16" aria-hidden="true" />
                 </button>
                 <ng-template [keepMounted]="keepMounted()" rdxSelectPortal>
-                    <div [class]="s.positioner" sideOffset="5" rdxSelectPositioner>
-                        <div [class]="s.popup" rdxSelectPopup>
-                            <div [class]="s.list" rdxSelectList rdxPresenceTarget>
+                    <div class="z-[100]" sideOffset="5" rdxSelectPositioner>
+                        <div
+                            class="demo-select-popup min-w-[var(--anchor-width,10rem)] will-change-[opacity,transform]"
+                            rdxSelectPopup
+                        >
+                            <div class="p-1" rdxSelectList rdxPresenceTarget>
                                 @for (fruit of fruits; track fruit) {
-                                    <div [class]="s.item" [value]="fruit" rdxSelectItem>
-                                        <span [class]="s.itemIndicator" rdxSelectItemIndicator>
-                                            <svg [class]="s.icon" lucideCheck size="16" aria-hidden="true" />
+                                    <div
+                                        class="demo-select-item data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground data-[disabled]:text-muted-foreground relative flex min-h-7 items-center gap-2 ps-6 pe-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                        [value]="fruit"
+                                        rdxSelectItem
+                                    >
+                                        <span
+                                            class="absolute start-0 inline-flex w-6 items-center justify-center"
+                                            rdxSelectItemIndicator
+                                        >
+                                            <svg class="size-4 shrink-0" lucideCheck size="16" aria-hidden="true" />
                                         </span>
                                         <span rdxSelectItemText>{{ fruit }}</span>
                                     </div>
@@ -81,8 +122,20 @@ import { _importsSelect, RdxSelectOpenChangeEvent, RdxSelectPopup, RdxSelectRoot
                     Cancel next close
                 </label>
                 <div class="flex gap-2">
-                    <button [class]="buttonClass" (click)="select.close()" type="button">Close</button>
-                    <button [class]="buttonClass" (click)="finishExit()" type="button">Finish exit</button>
+                    <button
+                        class="demo-button demo-button-outline h-8 px-3 text-xs"
+                        (click)="select.close()"
+                        type="button"
+                    >
+                        Close
+                    </button>
+                    <button
+                        class="demo-button demo-button-outline h-8 px-3 text-xs"
+                        (click)="finishExit()"
+                        type="button"
+                    >
+                        Finish exit
+                    </button>
                 </div>
                 <p class="text-muted-foreground text-xs">
                     Close with Escape, a selection, or the Close action. The exit animation completes automatically;
@@ -97,8 +150,6 @@ import { _importsSelect, RdxSelectOpenChangeEvent, RdxSelectPopup, RdxSelectRoot
     `
 })
 export class SelectDeferredUnmount {
-    protected readonly s = demoSelect;
-    protected readonly buttonClass = cn(demoButton.base, demoButton.outline, demoButton.size.sm);
     readonly open = signal(false);
     readonly defer = signal(true);
     readonly keepMounted = signal(false);

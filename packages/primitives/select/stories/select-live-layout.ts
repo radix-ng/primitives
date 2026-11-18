@@ -1,11 +1,45 @@
 import { Component, computed, input, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown, LucideChevronUp } from '@lucide/angular';
-import { demoSelect } from '../../storybook/styles';
-import { _importsSelect } from '../index';
+import {
+    RdxSelectItem,
+    RdxSelectItemAlignedPosition,
+    RdxSelectItemAlignedPositionContent,
+    RdxSelectItemIndicator,
+    RdxSelectItemText,
+    RdxSelectLabel,
+    RdxSelectList,
+    RdxSelectPopup,
+    RdxSelectPortal,
+    RdxSelectPositioner,
+    RdxSelectRoot,
+    RdxSelectScrollDownButton,
+    RdxSelectScrollUpButton,
+    RdxSelectTrigger,
+    RdxSelectValue
+} from '@radix-ng/primitives/select';
 
 @Component({
     selector: 'select-live-layout',
-    imports: [_importsSelect, LucideCheck, LucideChevronDown, LucideChevronUp],
+    imports: [
+        RdxSelectRoot,
+        RdxSelectPortal,
+        RdxSelectTrigger,
+        RdxSelectValue,
+        RdxSelectPopup,
+        RdxSelectList,
+        RdxSelectLabel,
+        RdxSelectItemIndicator,
+        RdxSelectItem,
+        RdxSelectItemText,
+        RdxSelectPositioner,
+        RdxSelectItemAlignedPosition,
+        RdxSelectItemAlignedPositionContent,
+        RdxSelectScrollUpButton,
+        RdxSelectScrollDownButton,
+        LucideCheck,
+        LucideChevronDown,
+        LucideChevronUp
+    ],
     host: { '(document:keydown)': 'onCommand($event)' },
     template: `
         <p class="text-muted-foreground max-w-96 text-sm">
@@ -23,59 +57,69 @@ import { _importsSelect } from '../index';
             >
                 <ng-container [(value)]="value" [modal]="false" rdxSelectRoot>
                     <div class="text-sm font-medium" rdxSelectLabel>Destination</div>
-                    <button [class]="s.trigger" rdxSelectTrigger>
+                    <button
+                        class="demo-select-trigger data-[placeholder]:text-muted-foreground data-[invalid]:border-destructive data-[invalid]:aria-invalid:ring-destructive/30 demo-focus inline-flex min-h-9 items-center justify-between gap-2 px-3 py-1.5 disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                        rdxSelectTrigger
+                    >
                         <span #display="rdxSelectedValue" rdxSelectValue>{{ display.slotText() }}</span>
-                        <svg [class]="s.icon" lucideChevronDown size="16" aria-hidden="true" />
+                        <svg class="size-4 shrink-0" lucideChevronDown size="16" aria-hidden="true" />
                     </button>
                     <ng-template [container]="portalScale() ? portalHost : undefined" rdxSelectPortal>
                         @if (aligned()) {
                             <div
-                                [class]="s.positioner"
+                                class="z-[100]"
                                 [disableAnchorTracking]="disableTracking()"
                                 sideOffset="5"
                                 rdxSelectItemAlignedPosition
                             >
                                 <div class="min-h-0 flex-1" rdxSelectPopup>
                                     <div
-                                        [class]="s.popup + ' min-h-0 flex-1 overflow-hidden' + heightClass()"
+                                        class="demo-select-popup min-h-0 min-w-[var(--anchor-width,10rem)] flex-1 overflow-hidden will-change-[opacity,transform]"
+                                        [class]="heightClass()"
                                         rdxSelectItemAlignedPositionContent
                                     >
                                         <div
-                                            [class]="s.scrollButton + ' absolute inset-x-0 top-0 z-10'"
+                                            class="demo-select-scroll-button absolute inset-x-0 top-0 z-10 flex h-7 items-center justify-center"
                                             rdxSelectScrollUpButton
                                         >
-                                            <svg [class]="s.icon" lucideChevronUp size="16" aria-hidden="true" />
+                                            <svg class="size-4 shrink-0" lucideChevronUp size="16" aria-hidden="true" />
                                         </div>
-                                        <div class="min-h-0" [class]="s.list" rdxSelectList>
+                                        <div class="min-h-0 p-1" rdxSelectList>
                                             @for (option of options; track option) {
                                                 <div
-                                                    [class]="s.item + (tall() ? ' py-4!' : '')"
+                                                    class="demo-select-item data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground data-[disabled]:text-muted-foreground relative flex min-h-7 items-center gap-2 ps-6 pe-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                                    [class]="tall() ? 'py-4!' : ''"
                                                     [value]="option"
                                                     rdxSelectItem
                                                 >
                                                     <span
-                                                        [class]="s.itemIndicator"
+                                                        class="absolute start-0 inline-flex w-6 items-center justify-center"
                                                         rdxSelectItemIndicator
                                                         aria-hidden="true"
                                                     >
-                                                        <svg [class]="s.icon" lucideCheck size="16" />
+                                                        <svg class="size-4 shrink-0" lucideCheck size="16" />
                                                     </span>
                                                     <span rdxSelectItemText>{{ option }}</span>
                                                 </div>
                                             }
                                         </div>
                                         <div
-                                            [class]="s.scrollButton + ' absolute inset-x-0 bottom-0 z-10'"
+                                            class="demo-select-scroll-button absolute inset-x-0 bottom-0 z-10 flex h-7 items-center justify-center"
                                             rdxSelectScrollDownButton
                                         >
-                                            <svg [class]="s.icon" lucideChevronDown size="16" aria-hidden="true" />
+                                            <svg
+                                                class="size-4 shrink-0"
+                                                lucideChevronDown
+                                                size="16"
+                                                aria-hidden="true"
+                                            />
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         } @else {
                             <div
-                                [class]="s.positioner"
+                                class="z-[100]"
                                 [disableAnchorTracking]="disableTracking()"
                                 [hideWhenDetached]="hideWhenDetached()"
                                 sideOffset="5"
@@ -83,38 +127,40 @@ import { _importsSelect } from '../index';
                                 rdxSelectPositioner
                             >
                                 <div
-                                    [class]="s.popup + ' flex min-h-0 flex-col overflow-hidden' + heightClass()"
+                                    class="demo-select-popup flex min-h-0 min-w-[var(--anchor-width,10rem)] flex-col overflow-hidden will-change-[opacity,transform]"
+                                    [class]="heightClass()"
                                     rdxSelectPopup
                                 >
                                     <div
-                                        [class]="s.scrollButton + ' absolute inset-x-0 top-0 z-10'"
+                                        class="demo-select-scroll-button absolute inset-x-0 top-0 z-10 flex h-7 items-center justify-center"
                                         rdxSelectScrollUpButton
                                     >
-                                        <svg [class]="s.icon" lucideChevronUp size="16" aria-hidden="true" />
+                                        <svg class="size-4 shrink-0" lucideChevronUp size="16" aria-hidden="true" />
                                     </div>
-                                    <div class="min-h-0" [class]="s.list" rdxSelectList>
+                                    <div class="min-h-0 p-1" rdxSelectList>
                                         @for (option of options; track option) {
                                             <div
-                                                [class]="s.item + (tall() ? ' py-4!' : '')"
+                                                class="demo-select-item data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground data-[disabled]:text-muted-foreground relative flex min-h-7 items-center gap-2 ps-6 pe-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                                [class]="tall() ? 'py-4!' : ''"
                                                 [value]="option"
                                                 rdxSelectItem
                                             >
                                                 <span
-                                                    [class]="s.itemIndicator"
+                                                    class="absolute start-0 inline-flex w-6 items-center justify-center"
                                                     rdxSelectItemIndicator
                                                     aria-hidden="true"
                                                 >
-                                                    <svg [class]="s.icon" lucideCheck size="16" />
+                                                    <svg class="size-4 shrink-0" lucideCheck size="16" />
                                                 </span>
                                                 <span rdxSelectItemText>{{ option }}</span>
                                             </div>
                                         }
                                     </div>
                                     <div
-                                        [class]="s.scrollButton + ' absolute inset-x-0 bottom-0 z-10'"
+                                        class="demo-select-scroll-button absolute inset-x-0 bottom-0 z-10 flex h-7 items-center justify-center"
                                         rdxSelectScrollDownButton
                                     >
-                                        <svg [class]="s.icon" lucideChevronDown size="16" aria-hidden="true" />
+                                        <svg class="size-4 shrink-0" lucideChevronDown size="16" aria-hidden="true" />
                                     </div>
                                 </div>
                             </div>
@@ -164,7 +210,6 @@ import { _importsSelect } from '../index';
     `
 })
 export class SelectLiveLayout {
-    protected readonly s = demoSelect;
     readonly aligned = input(false);
     readonly tracking = input<'auto' | 'on' | 'off'>('auto');
     readonly portalScale = input(false);

@@ -1,42 +1,72 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucidePlus, LucideX } from '@lucide/angular';
-import { popoverImports } from '@radix-ng/primitives/popover';
+import {
+    RdxPopoverArrow,
+    RdxPopoverClose,
+    RdxPopoverDescription,
+    RdxPopoverPopup,
+    RdxPopoverPortal,
+    RdxPopoverPortalMisuseGuard,
+    RdxPopoverPositioner,
+    RdxPopoverRoot,
+    RdxPopoverTitle,
+    RdxPopoverTrigger
+} from '@radix-ng/primitives/popover';
 import { DemoPage } from '../shared/demo-page';
-import { cn, demoButton, demoInput, demoPopover } from '../shared/styles';
 
 @Component({
     selector: 'app-popover',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [DemoPage, ...popoverImports, LucidePlus, LucideX],
+    imports: [
+        DemoPage,
+        RdxPopoverRoot,
+        RdxPopoverTrigger,
+        RdxPopoverPortal,
+        RdxPopoverPortalMisuseGuard,
+        RdxPopoverPositioner,
+        RdxPopoverPopup,
+        RdxPopoverArrow,
+        RdxPopoverTitle,
+        RdxPopoverDescription,
+        RdxPopoverClose,
+        LucidePlus,
+        LucideX
+    ],
     template: `
         <demo-page
             title="Popover"
             description="Displays rich content in a portal, anchored to and triggered by a button."
         >
             <ng-container rdxPopoverRoot>
-                <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>
+                <button class="demo-button demo-button-outline h-9 px-4" rdxPopoverTrigger>
                     <svg aria-hidden="true" lucidePlus size="16"></svg>
                     Add details
                 </button>
 
-                <div *rdxPopoverPortal [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                    <div [class]="p.popup" rdxPopoverPopup>
-                        <span [class]="p.arrow" rdxPopoverArrow></span>
-                        <h2 [class]="p.title" rdxPopoverTitle>Dimensions</h2>
-                        <p [class]="p.description" rdxPopoverDescription>Set the width and height for the element.</p>
+                <div class="z-50" *rdxPopoverPortal sideOffset="8" rdxPopoverPositioner>
+                    <div class="demo-surface relative w-80 p-4" rdxPopoverPopup>
+                        <span class="text-card demo-arrow my-px" rdxPopoverArrow></span>
+                        <h2 class="demo-popover-title" rdxPopoverTitle>Dimensions</h2>
+                        <p class="text-muted-foreground mt-1 text-sm" rdxPopoverDescription>
+                            Set the width and height for the element.
+                        </p>
 
                         <div class="mt-4 grid gap-3">
                             <label class="text-foreground grid gap-1 text-xs font-medium">
                                 Width
-                                <input [class]="input" value="100%" />
+                                <input class="demo-input h-9 w-full px-3" value="100%" />
                             </label>
                             <label class="text-foreground grid gap-1 text-xs font-medium">
                                 Max width
-                                <input [class]="input" value="300px" />
+                                <input class="demo-input h-9 w-full px-3" value="300px" />
                             </label>
                         </div>
 
-                        <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                        <button
+                            class="demo-button demo-button-ghost absolute top-2 right-2 size-7 p-0"
+                            aria-label="Close"
+                            rdxPopoverClose
+                        >
                             <svg aria-hidden="true" lucideX size="14"></svg>
                         </button>
                     </div>
@@ -45,9 +75,4 @@ import { cn, demoButton, demoInput, demoPopover } from '../shared/styles';
         </demo-page>
     `
 })
-export default class PopoverPage {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly p = demoPopover;
-    protected readonly input = demoInput;
-}
+export default class PopoverPage {}

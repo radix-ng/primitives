@@ -1,45 +1,68 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
-import { cn, demoButton, demoDialog } from '../../storybook/styles';
+import {
+    RdxAlertDialogBackdrop,
+    RdxAlertDialogClose,
+    RdxAlertDialogDescription,
+    RdxAlertDialogPopup,
+    RdxAlertDialogPortal,
+    RdxAlertDialogRoot,
+    RdxAlertDialogTitle,
+    RdxAlertDialogTrigger
+} from '@radix-ng/primitives/alert-dialog';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-alert-dialog-multiple-triggers',
-    imports: [...alertDialogImports],
+    imports: [
+        RdxAlertDialogRoot,
+        RdxAlertDialogTrigger,
+        RdxAlertDialogPortal,
+        RdxAlertDialogBackdrop,
+        RdxAlertDialogPopup,
+        RdxAlertDialogTitle,
+        RdxAlertDialogDescription,
+        RdxAlertDialogClose
+    ],
     template: `
         <div #root="rdxAlertDialogRoot" rdxAlertDialogRoot>
             <div class="flex gap-2">
-                <button [class]="cn(b.base, b.outline, b.size.md)" payload="photo" rdxAlertDialogTrigger>
+                <button class="demo-button demo-button-outline h-9 px-4" payload="photo" rdxAlertDialogTrigger>
                     Delete photo
                 </button>
-                <button [class]="cn(b.base, b.outline, b.size.md)" payload="video" rdxAlertDialogTrigger>
+                <button class="demo-button demo-button-outline h-9 px-4" payload="video" rdxAlertDialogTrigger>
                     Delete video
                 </button>
-                <button [class]="cn(b.base, b.outline, b.size.md)" payload="album" rdxAlertDialogTrigger>
+                <button class="demo-button demo-button-outline h-9 px-4" payload="album" rdxAlertDialogTrigger>
                     Delete album
                 </button>
             </div>
 
             <ng-template rdxAlertDialogPortal>
-                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxAlertDialogBackdrop></div>
-                <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
-                    <h2 [class]="d.title" rdxAlertDialogTitle>Delete this {{ root.payload() || 'item' }}?</h2>
-                    <p [class]="d.description" rdxAlertDialogDescription>
+                <div
+                    class="bg-foreground/50 data-[open]:animate-dialog-overlay-in data-[closed]:animate-dialog-overlay-out fixed inset-0 z-50"
+                    rdxAlertDialogBackdrop
+                ></div>
+                <div
+                    class="demo-surface data-[open]:animate-dialog-popup-in data-[closed]:animate-dialog-popup-out fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 p-6 transition-[transform,scale] focus:outline-none data-[nested-dialog-open]:scale-[0.96]"
+                    rdxAlertDialogPopup
+                >
+                    <h2 class="demo-dialog-title" rdxAlertDialogTitle>Delete this {{ root.payload() || 'item' }}?</h2>
+                    <p class="text-muted-foreground mt-1.5 text-sm" rdxAlertDialogDescription>
                         Every trigger opens the same alert dialog; the active trigger's
                         <code>payload</code>
                         decides what is being deleted.
                     </p>
-                    <div [class]="d.footer">
-                        <button [class]="cn(b.base, b.outline, b.size.sm)" rdxAlertDialogClose>Cancel</button>
-                        <button [class]="cn(b.base, b.destructive, b.size.sm)" rdxAlertDialogClose>Delete</button>
+                    <div class="mt-6 flex justify-end gap-2">
+                        <button class="demo-button demo-button-outline h-8 px-3 text-xs" rdxAlertDialogClose>
+                            Cancel
+                        </button>
+                        <button class="demo-button demo-button-destructive h-8 px-3 text-xs" rdxAlertDialogClose>
+                            Delete
+                        </button>
                     </div>
                 </div>
             </ng-template>
         </div>
     `
 })
-export class RdxAlertDialogMultipleTriggersComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly d = demoDialog;
-}
+export class RdxAlertDialogMultipleTriggersComponent {}

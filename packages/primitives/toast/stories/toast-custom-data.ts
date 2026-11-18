@@ -1,6 +1,15 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
-import { cn, demoButton, demoToast } from '../../storybook/styles';
+import {
+    provideRdxToastManager,
+    RdxToastClose,
+    RdxToastContent,
+    RdxToastDescription,
+    RdxToastManager,
+    RdxToastPortal,
+    RdxToastRoot,
+    RdxToastTitle,
+    RdxToastViewport
+} from '@radix-ng/primitives/toast';
 
 interface MentionData {
     user: string;
@@ -15,17 +24,35 @@ interface MentionData {
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-custom-data-example',
-    imports: [...toastImports],
+    imports: [
+        RdxToastPortal,
+        RdxToastViewport,
+        RdxToastRoot,
+        RdxToastContent,
+        RdxToastTitle,
+        RdxToastDescription,
+        RdxToastClose
+    ],
     providers: [provideRdxToastManager()],
     template: `
-        <button [class]="cn(b.base, b.primary, b.size.md)" (click)="mention()">New mention</button>
+        <button class="demo-button demo-button-primary h-9 px-4" (click)="mention()">New mention</button>
 
         <div rdxToastPortal>
-            <div [class]="t.viewport" rdxToastViewport>
+            <div
+                class="fixed right-4 bottom-4 z-50 w-[360px] max-w-[calc(100vw-2rem)] outline-none [--toast-gap:0.75rem]"
+                rdxToastViewport
+            >
                 @for (toast of manager.toasts(); track toast.id) {
-                    <div [class]="t.root" [toast]="toast" rdxToastRoot>
+                    <div
+                        class="group data-[state=open]:animate-toast-in data-[state=closed]:animate-toast-out absolute right-0 bottom-0 [z-index:calc(50-var(--toast-index))] w-full origin-bottom [transform:translateY(calc(var(--toast-index)*-0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-[expanded]:[transform:translateY(calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1))] data-[expanded]:opacity-100 data-[front]:opacity-100"
+                        [toast]="toast"
+                        rdxToastRoot
+                    >
                         @let data = $any(toast.data);
-                        <div [class]="t.content" rdxToastContent>
+                        <div
+                            class="demo-surface relative flex [transform:translate3d(var(--toast-swipe-movement-x,0px),var(--toast-swipe-movement-y,0px),0)] items-start gap-3 p-4 pr-9 shadow-lg [transition:var(--transition-demo-toast-swipe)] group-data-[swiping]:[transition:none]"
+                            rdxToastContent
+                        >
                             <span
                                 class="bg-muted text-muted-foreground grid size-9 shrink-0 place-items-center rounded-full text-xs font-semibold"
                                 aria-hidden="true"
@@ -33,10 +60,18 @@ interface MentionData {
                                 {{ data.initials }}
                             </span>
                             <div class="min-w-0 flex-1">
-                                <p [class]="t.title" rdxToastTitle>{{ data.user }} mentioned you</p>
-                                <p [class]="t.description" rdxToastDescription>“{{ data.message }}”</p>
+                                <p class="demo-toast-title" rdxToastTitle>{{ data.user }} mentioned you</p>
+                                <p class="text-muted-foreground mt-1 text-sm" rdxToastDescription>
+                                    “{{ data.message }}”
+                                </p>
                             </div>
-                            <button [class]="t.close" aria-label="Dismiss" rdxToastClose>✕</button>
+                            <button
+                                class="demo-button demo-button-ghost absolute top-2 right-2 size-6 p-0"
+                                aria-label="Dismiss"
+                                rdxToastClose
+                            >
+                                ✕
+                            </button>
                         </div>
                     </div>
                 }
@@ -46,9 +81,6 @@ interface MentionData {
 })
 export class ToastCustomDataExample {
     protected readonly manager = inject(RdxToastManager);
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly t = demoToast;
 
     private readonly people: MentionData[] = [
         { user: 'Ada Lovelace', initials: 'AL', message: 'Can you review the toast PR?' },

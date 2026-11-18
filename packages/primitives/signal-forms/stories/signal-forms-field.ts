@@ -8,9 +8,7 @@ import {
     RdxFieldRoot
 } from '@radix-ng/primitives/field';
 import { RdxFormRoot, RdxFormSubmitEvent } from '@radix-ng/primitives/form';
-import { cn, demoButton, demoInput } from '../../storybook/styles';
-import { RdxSignalField } from '../src/signal-field';
-import { RdxSignalForm } from '../src/signal-form';
+import { RdxSignalField, RdxSignalForm } from '@radix-ng/primitives/signal-forms';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -38,26 +36,29 @@ import { RdxSignalForm } from '../src/signal-form';
               from the Signal Forms field, and the field expression is bound exactly once (on [formField]).
             -->
             <div class="flex flex-col gap-2" rdxFieldRoot required>
-                <label [class]="labelClass" rdxFieldLabel>Email</label>
-                <input [class]="inputClass" [formField]="email" rdxFieldControl rdxSignalField type="email" />
-                <p [class]="descriptionClass" rdxFieldDescription>Use the email connected to your account.</p>
-                <p #err="rdxFieldError" [class]="errorClass" rdxFieldError>{{ err.messages().join(' ') }}</p>
+                <label class="text-foreground text-sm font-medium data-[disabled]:opacity-50" rdxFieldLabel>
+                    Email
+                </label>
+                <input
+                    class="demo-input data-[invalid]:border-destructive data-[invalid]:ring-destructive/20 h-9 w-full px-3"
+                    [formField]="email"
+                    rdxFieldControl
+                    rdxSignalField
+                    type="email"
+                />
+                <p class="text-muted-foreground text-sm" rdxFieldDescription>
+                    Use the email connected to your account.
+                </p>
+                <p class="text-destructive text-sm" #err="rdxFieldError" rdxFieldError>
+                    {{ err.messages().join(' ') }}
+                </p>
             </div>
 
-            <button [class]="buttonClass" type="submit">Submit</button>
+            <button class="demo-button demo-button-primary h-9 self-start px-4" type="submit">Submit</button>
         </form>
     `
 })
 export class SignalFormsFieldExample {
-    protected readonly inputClass = cn(
-        demoInput,
-        'data-[invalid]:border-destructive data-[invalid]:ring-destructive/20'
-    );
-    protected readonly buttonClass = cn(demoButton.base, demoButton.primary, demoButton.size.md, 'self-start');
-    protected readonly labelClass = 'text-foreground text-sm font-medium data-[disabled]:opacity-50';
-    protected readonly descriptionClass = 'text-muted-foreground text-sm';
-    protected readonly errorClass = 'text-destructive text-sm';
-
     readonly model = signal({ email: '' });
     readonly loginForm = form(this.model, (path) => {
         required(path.email, { message: 'Email is required.' });

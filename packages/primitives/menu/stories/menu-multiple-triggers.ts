@@ -1,7 +1,18 @@
 import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
-import { createRdxMenuHandle, RdxMenuModule } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoMenu } from '../../storybook/styles';
+import {
+    createRdxMenuHandle,
+    RdxMenuGroup,
+    RdxMenuGroupLabel,
+    RdxMenuItem,
+    RdxMenuPopup,
+    RdxMenuPortal,
+    RdxMenuPositioner,
+    RdxMenuRoot,
+    RdxMenuSeparator,
+    RdxMenuTrigger,
+    RdxMenuViewport
+} from '@radix-ng/primitives/menu';
 
 interface MenuContent {
     id: string;
@@ -42,22 +53,35 @@ const menus: MenuContent[] = [
 
 @Component({
     selector: 'rdx-menu-multiple-triggers',
-    imports: [RdxMenuModule],
+    imports: [
+        RdxMenuRoot,
+        RdxMenuTrigger,
+        RdxMenuPortal,
+        RdxMenuPositioner,
+        RdxMenuPopup,
+        RdxMenuViewport,
+        RdxMenuItem,
+        RdxMenuGroup,
+        RdxMenuGroupLabel,
+        RdxMenuSeparator
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <div class="grid justify-items-center gap-4">
             @if (controlled()) {
                 <div class="flex flex-wrap justify-center gap-2">
-                    <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="openPlayback()">
+                    <button class="demo-button demo-button-outline h-8 px-3 text-xs" (click)="openPlayback()">
                         Open playback (controlled)
                     </button>
-                    <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="open.set(false)">Close menu</button>
+                    <button class="demo-button demo-button-outline h-8 px-3 text-xs" (click)="open.set(false)">
+                        Close menu
+                    </button>
                 </div>
             }
             <div class="flex flex-wrap items-center justify-center gap-2">
                 @for (menu of menus; track menu.id) {
                     <button
-                        [class]="cn(b.base, b.outline, b.size.md, 'data-[popup-open]:bg-muted')"
+                        class="demo-button demo-button-outline data-[popup-open]:bg-muted h-9 px-4"
                         [id]="prefix + menu.id"
                         [handle]="handle"
                         [payload]="menu"
@@ -76,25 +100,30 @@ const menus: MenuContent[] = [
                 rdxMenuRoot
             >
                 <div
+                    class="z-50 data-[closed]:pointer-events-none"
                     *rdxMenuPortal
-                    [class]="cn(m.positioner, animated() ? positionerAnimation : '')"
+                    [class]="animated() ? positionerAnimation : ''"
                     sideOffset="8"
                     align="start"
                     rdxMenuPositioner
                 >
-                    <div [class]="cn(m.popup, 'p-0!', animated() ? popupAnimation : '')" rdxMenuPopup>
-                        <div [class]="cn('relative', animated() ? viewportAnimation : '')" rdxMenuViewport>
-                            <div [class]="cn(root.payload()?.width, 'p-1')">
+                    <div
+                        class="demo-menu-popup min-w-[8rem] p-0! p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                        [class]="animated() ? popupAnimation : ''"
+                        rdxMenuPopup
+                    >
+                        <div class="relative" [class]="animated() ? viewportAnimation : ''" rdxMenuViewport>
+                            <div class="p-1" [class]="root.payload()?.width">
                                 @for (group of root.payload()?.groups; track group.id) {
                                     <div rdxMenuGroup>
                                         @if ($first) {
-                                            <div [class]="m.groupLabel" rdxMenuGroupLabel>
+                                            <div class="demo-menu-group-label px-2 py-1.5" rdxMenuGroupLabel>
                                                 {{ root.payload()?.heading }}
                                             </div>
                                         }
                                         @for (item of group.items; track item) {
                                             <button
-                                                [class]="cn(m.item, 'text-start')"
+                                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 text-start data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
                                                 (onSelect)="selected.set(item)"
                                                 rdxMenuItem
                                             >
@@ -103,7 +132,7 @@ const menus: MenuContent[] = [
                                         }
                                     </div>
                                     @if (!$last) {
-                                        <div [class]="m.separator" rdxMenuSeparator></div>
+                                        <div class="bg-border -mx-1 my-1 h-px" rdxMenuSeparator></div>
                                     }
                                 }
                             </div>
@@ -111,7 +140,7 @@ const menus: MenuContent[] = [
                     </div>
                 </div>
             </ng-container>
-            <output [class]="cn('text-muted-foreground text-sm', root.present() && 'invisible')">
+            <output class="text-muted-foreground text-sm" [class]="root.present() ? 'invisible' : ''">
                 Last action: {{ selected() }}
             </output>
         </div>
@@ -126,9 +155,6 @@ export class RdxMenuMultipleTriggersComponent {
     readonly triggerId = signal<string | null>(null);
     readonly selected = signal('None');
     readonly menus = menus;
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly m = demoMenu;
     protected readonly positionerAnimation =
         'h-[var(--positioner-height)] w-[var(--positioner-width)] transition-[top,left,right,bottom] duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] data-[instant]:transition-none motion-reduce:transition-none';
     protected readonly popupAnimation =

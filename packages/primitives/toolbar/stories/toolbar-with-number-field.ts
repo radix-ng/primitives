@@ -1,7 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideMinus, LucidePlus } from '@lucide/angular';
-import { RdxNumberFieldModule } from '@radix-ng/primitives/number-field';
-import { toolbarImports } from '@radix-ng/primitives/toolbar';
+import {
+    RdxNumberFieldDecrement,
+    RdxNumberFieldIncrement,
+    RdxNumberFieldInput,
+    RdxNumberFieldRoot
+} from '@radix-ng/primitives/number-field';
+import { RdxToolbarButton, RdxToolbarInput, RdxToolbarRoot, RdxToolbarSeparator } from '@radix-ng/primitives/toolbar';
 
 const stepClass =
     'text-foreground hover:bg-muted focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center rounded-md outline-none transition-colors focus-visible:ring-2 disabled:opacity-50';
@@ -9,10 +14,21 @@ const stepClass =
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toolbar-with-number-field',
-    imports: [...toolbarImports, RdxNumberFieldModule, LucideMinus, LucidePlus],
+    imports: [
+        RdxToolbarRoot,
+        RdxToolbarButton,
+        RdxToolbarInput,
+        RdxToolbarSeparator,
+        RdxNumberFieldRoot,
+        RdxNumberFieldInput,
+        RdxNumberFieldIncrement,
+        RdxNumberFieldDecrement,
+        LucideMinus,
+        LucidePlus
+    ],
     template: `
         <div
-            class="border-border bg-background flex items-center gap-1 rounded-lg border p-1 shadow-sm"
+            class="demo-toolbar-root flex items-center gap-1 p-1"
             rdxToolbarRoot
             aria-label="Toolbar with number field"
         >

@@ -17,11 +17,6 @@ export async function holdExitAnimations(
         );
     });
     const selector = roots.map((root) => `${root}[${closingAttribute}]`).join(',');
-    // Keep the duration safety net outside the observation window. Tests finish the actual
-    // animations below rather than waiting for this duration or synthesizing lifecycle events.
-    await page.addStyleTag({
-        content: `${selector} { animation-duration: 30s !important; transition-duration: 30s !important; }`
-    });
     const handle = await page.evaluateHandle(
         ({ selector, closingAttribute }) => {
             const animations = new Set<Animation>();
@@ -35,6 +30,7 @@ export async function holdExitAnimations(
             });
             observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: [closingAttribute] });
             return {
+                disconnect: () => observer.disconnect(),
                 count: () => animations.size,
                 seek: (fraction: number) => {
                     for (const animation of animations) {
@@ -54,6 +50,10 @@ export async function holdExitAnimations(
     return {
         count: () => handle.evaluate((hold) => hold.count()),
         seek: (fraction: number) => handle.evaluate((hold, fraction) => hold.seek(fraction), fraction),
+        dispose: async () => {
+            await handle.evaluate((hold) => hold.disconnect());
+            await handle.dispose();
+        },
         finish: async () => {
             await handle.evaluate((hold) => hold.finish());
             await handle.dispose();

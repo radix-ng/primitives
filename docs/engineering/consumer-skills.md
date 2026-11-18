@@ -62,6 +62,11 @@ differs. Version stamps describe generation provenance, not compatibility with e
 
 ## Packed consumer integration
 
+Storybook's migrated examples also have a focused [external AOT check](../../tools/storybook-portability/README.md).
+It copies raw component/wrapper sources and the rendered Tailwind stylesheet into an isolated app
+with the built package installed. The **Setup and shared files** section is included in every
+consumer example shard, so CSS, dependencies and wrapper sources survive extraction together.
+
 `pnpm test-consumer` checks skill discovery and installation from the public GitHub subpath, then
 builds the four Agents tasks in a fresh Angular application outside the workspace, using a packed
 library and public imports. It records the installed bundle's matching Git revision, versions and

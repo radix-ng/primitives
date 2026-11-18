@@ -9,16 +9,6 @@ import {
 } from '@radix-ng/primitives/field';
 import { RdxFormRoot } from '@radix-ng/primitives/form';
 import { RdxSignalField } from '@radix-ng/primitives/signal-forms';
-import {
-    recipeDescription,
-    recipeError,
-    recipeField,
-    recipeForm,
-    recipeInput,
-    recipeLabel,
-    recipeSubmit,
-    recipeTextarea
-} from '../forms-recipes.shared';
 
 type BugReport = { title: string; description: string };
 
@@ -51,52 +41,51 @@ type BugReport = { title: string; description: string };
         RdxSignalField
     ],
     template: `
-        <form [class]="form0" (onFormSubmit)="onSubmit()" rdxFormRoot>
-            <div [class]="field" name="title" rdxFieldRoot>
-                <label [class]="label" rdxFieldLabel>Bug Title</label>
+        <form class="flex w-100 flex-col gap-5" (onFormSubmit)="onSubmit()" rdxFormRoot>
+            <div class="flex flex-col gap-1.5" name="title" rdxFieldRoot>
+                <label class="demo-label data-[disabled]:opacity-50" rdxFieldLabel>Bug Title</label>
                 <input
-                    [class]="input"
+                    class="demo-input data-[invalid]:border-destructive data-[invalid]:ring-destructive/30 h-9 w-full px-3"
                     [formField]="reportForm.title"
                     rdxFieldControl
                     rdxSignalField
                     placeholder="Login button not working on mobile"
                     autocomplete="off"
                 />
-                <p [class]="description" rdxFieldDescription>Provide a concise title for your bug report.</p>
-                <p #titleError="rdxFieldError" [class]="error" rdxFieldError>{{ titleError.messages().join(' ') }}</p>
+                <p class="text-muted-foreground text-sm" rdxFieldDescription>
+                    Provide a concise title for your bug report.
+                </p>
+                <p class="text-destructive text-sm" #titleError="rdxFieldError" rdxFieldError>
+                    {{ titleError.messages().join(' ') }}
+                </p>
             </div>
 
-            <div [class]="field" name="description" rdxFieldRoot>
-                <label [class]="label" rdxFieldLabel>Description</label>
+            <div class="flex flex-col gap-1.5" name="description" rdxFieldRoot>
+                <label class="demo-label data-[disabled]:opacity-50" rdxFieldLabel>Description</label>
                 <textarea
-                    [class]="textarea"
+                    class="demo-input data-[invalid]:border-destructive data-[invalid]:ring-destructive/30 min-h-24 w-full px-3 py-2"
                     [formField]="reportForm.description"
                     rdxFieldControl
                     rdxSignalField
                     placeholder="When I click the login button on my phone, nothing happens…"
                 ></textarea>
-                <p [class]="description" rdxFieldDescription>The more details, the faster we can reproduce it.</p>
-                <p #descError="rdxFieldError" [class]="error" rdxFieldError>{{ descError.messages().join(' ') }}</p>
+                <p class="text-muted-foreground text-sm" rdxFieldDescription>
+                    The more details, the faster we can reproduce it.
+                </p>
+                <p class="text-destructive text-sm" #descError="rdxFieldError" rdxFieldError>
+                    {{ descError.messages().join(' ') }}
+                </p>
             </div>
 
-            <button [class]="submit" type="submit">Submit</button>
+            <button class="demo-button demo-button-primary h-9 px-4" type="submit">Submit</button>
 
             @if (result()) {
-                <p [class]="description">Submitted: "{{ result()!.title }}"</p>
+                <p class="text-muted-foreground text-sm">Submitted: "{{ result()!.title }}"</p>
             }
         </form>
     `
 })
 export class SignalFormsBugReport {
-    protected readonly form0 = recipeForm;
-    protected readonly field = recipeField;
-    protected readonly label = recipeLabel;
-    protected readonly input = recipeInput;
-    protected readonly textarea = recipeTextarea;
-    protected readonly description = recipeDescription;
-    protected readonly error = recipeError;
-    protected readonly submit = recipeSubmit;
-
     protected readonly result = signal<BugReport | null>(null);
 
     protected readonly model = signal<BugReport>({ title: '', description: '' });

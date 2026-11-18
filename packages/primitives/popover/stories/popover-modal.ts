@@ -1,18 +1,42 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
-import { popoverImports, RdxPopoverModal } from '@radix-ng/primitives/popover';
-import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
+import {
+    RdxPopoverArrow,
+    RdxPopoverBackdrop,
+    RdxPopoverClose,
+    RdxPopoverDescription,
+    RdxPopoverModal,
+    RdxPopoverPopup,
+    RdxPopoverPortal,
+    RdxPopoverPositioner,
+    RdxPopoverRoot,
+    RdxPopoverTitle,
+    RdxPopoverTrigger
+} from '@radix-ng/primitives/popover';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-modal',
-    imports: [...popoverImports, LucideX],
+    imports: [
+        RdxPopoverRoot,
+        RdxPopoverTrigger,
+        RdxPopoverPortal,
+        RdxPopoverBackdrop,
+        RdxPopoverPositioner,
+        RdxPopoverPopup,
+        RdxPopoverArrow,
+        RdxPopoverTitle,
+        RdxPopoverDescription,
+        RdxPopoverClose,
+        LucideX
+    ],
     template: `
         <div class="flex flex-col items-center gap-4">
             <div class="flex flex-wrap justify-center gap-2">
                 @for (option of options; track option.label) {
                     <button
-                        [class]="cn(b.base, modal() === option.value ? b.primary : b.outline, b.size.sm)"
+                        class="demo-button h-8 px-3 text-xs"
+                        [class]="modal() === option.value ? 'demo-button-primary' : 'demo-button-outline'"
                         (click)="modal.set(option.value)"
                     >
                         {{ option.label }}
@@ -25,30 +49,34 @@ import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
             </p>
 
             <ng-container [modal]="modal()" rdxPopoverRoot>
-                <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Open popover</button>
+                <button class="demo-button demo-button-outline h-9 px-4" rdxPopoverTrigger>Open popover</button>
 
                 <ng-template rdxPopoverPortal>
                     @if (modal() === true) {
-                        <div [class]="p.backdrop" rdxPopoverBackdrop></div>
+                        <div class="bg-foreground/10 fixed inset-0" rdxPopoverBackdrop></div>
                     }
-                    <div [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                        <div [class]="p.popup" rdxPopoverPopup>
-                            <span [class]="p.arrow" rdxPopoverArrow></span>
-                            <h2 [class]="p.title" rdxPopoverTitle>Modal behavior</h2>
-                            <p [class]="p.description" rdxPopoverDescription>
+                    <div class="z-50" sideOffset="8" rdxPopoverPositioner>
+                        <div class="demo-surface relative w-80 p-4" rdxPopoverPopup>
+                            <span class="text-card demo-arrow my-px" rdxPopoverArrow></span>
+                            <h2 class="demo-popover-title" rdxPopoverTitle>Modal behavior</h2>
+                            <p class="text-muted-foreground mt-1 text-sm" rdxPopoverDescription>
                                 Switch modes, use Tab to move between controls, then try the outside button.
                             </p>
 
                             <label class="mt-4 grid gap-1 text-xs font-medium">
                                 Name
-                                <input [class]="input" placeholder="Focused when opened" />
+                                <input class="demo-input h-9 w-full px-3" placeholder="Focused when opened" />
                             </label>
 
-                            <button [class]="cn(b.base, b.primary, b.size.sm, 'mt-3')" type="button">
+                            <button class="demo-button demo-button-primary mt-3 h-8 px-3 text-xs" type="button">
                                 Save changes
                             </button>
 
-                            <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                            <button
+                                class="demo-button demo-button-ghost absolute top-2 right-2 size-7 p-0"
+                                aria-label="Close"
+                                rdxPopoverClose
+                            >
                                 <svg aria-hidden="true" lucideX size="14" />
                             </button>
                         </div>
@@ -56,17 +84,16 @@ import { cn, demoButton, demoInput, demoPopover } from '../../storybook/styles';
                 </ng-template>
             </ng-container>
 
-            <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="outsideClicks.update((count) => count + 1)">
+            <button
+                class="demo-button demo-button-secondary h-8 px-3 text-xs"
+                (click)="outsideClicks.update((count) => count + 1)"
+            >
                 Outside interaction target: {{ outsideClicks() }}
             </button>
         </div>
     `
 })
 export class RdxPopoverModalComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly input = demoInput;
-    protected readonly p = demoPopover;
     protected readonly modal = signal<RdxPopoverModal>(true);
     protected readonly outsideClicks = signal(0);
     protected readonly options: Array<{ label: string; value: RdxPopoverModal }> = [

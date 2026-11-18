@@ -1,8 +1,30 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown, LucidePlus, LucideX } from '@lucide/angular';
-import { dialogImports } from '@radix-ng/primitives/dialog';
-import { cn, demoButton, demoCombobox, demoDialog } from '../../storybook/styles';
-import { _importsCombobox } from '../index';
+import {
+    RdxComboboxAnchor,
+    RdxComboboxChip,
+    RdxComboboxChipRemove,
+    RdxComboboxChips,
+    RdxComboboxEmpty,
+    RdxComboboxInput,
+    RdxComboboxItem,
+    RdxComboboxItemIndicator,
+    RdxComboboxList,
+    RdxComboboxPopup,
+    RdxComboboxPortal,
+    RdxComboboxPositioner,
+    RdxComboboxRoot,
+    RdxComboboxTrigger
+} from '@radix-ng/primitives/combobox';
+import {
+    RdxDialogBackdrop,
+    RdxDialogClose,
+    RdxDialogDescription,
+    RdxDialogPopup,
+    RdxDialogPortal,
+    RdxDialogRoot,
+    RdxDialogTitle
+} from '@radix-ng/primitives/dialog';
 
 /** Sentinel value for the "create" row, intercepted in `onValueChange`. */
 const CREATE = '__rdx_create__';
@@ -15,7 +37,33 @@ const CREATE = '__rdx_create__';
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-creatable',
-    imports: [_importsCombobox, ...dialogImports, LucideChevronDown, LucideCheck, LucidePlus, LucideX],
+    imports: [
+        RdxComboboxRoot,
+        RdxComboboxAnchor,
+        RdxComboboxInput,
+        RdxComboboxTrigger,
+        RdxComboboxPortal,
+        RdxComboboxPositioner,
+        RdxComboboxPopup,
+        RdxComboboxList,
+        RdxComboboxItem,
+        RdxComboboxItemIndicator,
+        RdxComboboxEmpty,
+        RdxComboboxChips,
+        RdxComboboxChip,
+        RdxComboboxChipRemove,
+        RdxDialogRoot,
+        RdxDialogPortal,
+        RdxDialogBackdrop,
+        RdxDialogPopup,
+        RdxDialogTitle,
+        RdxDialogDescription,
+        RdxDialogClose,
+        LucideChevronDown,
+        LucideCheck,
+        LucidePlus,
+        LucideX
+    ],
     template: `
         <div
             [(value)]="value"
@@ -25,13 +73,24 @@ const CREATE = '__rdx_create__';
             multiple
             rdxComboboxRoot
         >
-            <div [class]="control" rdxComboboxAnchor>
+            <div
+                class="demo-combobox-control focus-within:ring-ring focus-within:ring-offset-background relative inline-flex h-9 h-auto min-h-9 w-64 flex-wrap items-center gap-1 py-1 pl-1 focus-within:ring-2 focus-within:ring-offset-2 data-[disabled]:opacity-50"
+                rdxComboboxAnchor
+            >
                 @if (value().length) {
-                    <div [class]="c.chips" rdxComboboxChips>
+                    <div class="contents" rdxComboboxChips>
                         @for (label of value(); track label) {
-                            <span [class]="c.chip" [value]="label" rdxComboboxChip>
+                            <span
+                                class="demo-combobox-chip inline-flex items-center gap-1 px-1.5 py-0.5"
+                                [value]="label"
+                                rdxComboboxChip
+                            >
                                 {{ label }}
-                                <button [class]="c.chipRemove" rdxComboboxChipRemove aria-label="Remove">
+                                <button
+                                    class="hover:bg-border inline-flex size-3.5 items-center justify-center rounded-full"
+                                    rdxComboboxChipRemove
+                                    aria-label="Remove"
+                                >
                                     <svg lucideX size="12"></svg>
                                 </button>
                             </span>
@@ -39,60 +98,91 @@ const CREATE = '__rdx_create__';
                     </div>
                 }
                 <input
-                    [class]="c.inputInline"
+                    class="demo-combobox-input-inline placeholder:text-muted-foreground min-w-24 flex-1"
                     [placeholder]="value().length ? '' : 'e.g. bug'"
                     rdxComboboxInput
                     aria-label="Labels"
                 />
-                <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">
+                <button
+                    class="demo-combobox-trigger absolute top-1/2 right-1 inline-flex size-7 -translate-y-1/2 items-center justify-center disabled:pointer-events-none"
+                    rdxComboboxTrigger
+                    aria-label="Open"
+                >
                     <svg lucideChevronDown size="16"></svg>
                 </button>
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" rdxComboboxPopup>
-                    <div [class]="c.list" rdxComboboxList aria-label="Labels">
+            <div class="z-50 w-64 data-[closed]:pointer-events-none" *rdxComboboxPortal rdxComboboxPositioner>
+                <div
+                    class="demo-combobox-popup mt-2 max-h-60 overflow-y-auto p-1 data-[closed]:hidden"
+                    rdxComboboxPopup
+                >
+                    <div class="flex flex-col" rdxComboboxList aria-label="Labels">
                         @for (label of options(); track label) {
-                            <div [class]="c.item" [value]="label" rdxComboboxItem>
-                                <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                            <div
+                                class="demo-menu-item data-[highlighted]:bg-muted relative flex items-center py-1.5 pr-2 pl-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[selected]:font-medium"
+                                [value]="label"
+                                rdxComboboxItem
+                            >
+                                <span
+                                    class="absolute left-2 flex size-3.5 items-center justify-center"
+                                    rdxComboboxItemIndicator
+                                >
                                     <svg lucideCheck size="14"></svg>
                                 </span>
                                 {{ label }}
                             </div>
                         }
                         @if (showCreate()) {
-                            <div [class]="c.item" [value]="CREATE" [textValue]="query()" rdxComboboxItem>
-                                <span [class]="c.itemIndicator">
+                            <div
+                                class="demo-menu-item data-[highlighted]:bg-muted relative flex items-center py-1.5 pr-2 pl-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[selected]:font-medium"
+                                [value]="CREATE"
+                                [textValue]="query()"
+                                rdxComboboxItem
+                            >
+                                <span class="absolute left-2 flex size-3.5 items-center justify-center">
                                     <svg lucidePlus size="14"></svg>
                                 </span>
                                 Create "{{ query().trim() }}"
                             </div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxComboboxEmpty>No labels found.</div>
+                    <div class="demo-combobox-empty data-[empty]:py-6" rdxComboboxEmpty>No labels found.</div>
                 </div>
             </div>
         </div>
 
         <div [(open)]="dialogOpen" rdxDialogRoot>
             <ng-template rdxDialogPortal>
-                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
-                <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-                    <h2 [class]="d.title" rdxDialogTitle>Create new label</h2>
-                    <p [class]="d.description" rdxDialogDescription>Add a new label to select.</p>
+                <div
+                    class="bg-foreground/50 data-[open]:animate-dialog-overlay-in data-[closed]:animate-dialog-overlay-out fixed inset-0 z-50"
+                    rdxDialogBackdrop
+                ></div>
+                <div
+                    class="demo-surface data-[open]:animate-dialog-popup-in data-[closed]:animate-dialog-popup-out fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 p-6 transition-[transform,scale] focus:outline-none data-[nested-dialog-open]:scale-[0.96]"
+                    rdxDialogPopup
+                >
+                    <h2 class="demo-dialog-title" rdxDialogTitle>Create new label</h2>
+                    <p class="text-muted-foreground mt-1.5 text-sm" rdxDialogDescription>Add a new label to select.</p>
                     <form (submit)="confirmCreate($event)">
                         <input
-                            [class]="dialogInput"
+                            class="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring h-9 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-2"
                             [value]="newLabel()"
                             (input)="newLabel.set($any($event.target).value)"
                             placeholder="Label name"
                             aria-label="Label name"
                         />
-                        <div [class]="d.footer">
-                            <button [class]="cn(b.base, b.outline, b.size.sm)" type="button" rdxDialogClose>
+                        <div class="mt-6 flex justify-end gap-2">
+                            <button
+                                class="demo-button demo-button-outline h-8 px-3 text-xs"
+                                type="button"
+                                rdxDialogClose
+                            >
                                 Cancel
                             </button>
-                            <button [class]="cn(b.base, b.primary, b.size.sm)" type="submit">Create</button>
+                            <button class="demo-button demo-button-primary h-8 px-3 text-xs" type="submit">
+                                Create
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -101,16 +191,7 @@ const CREATE = '__rdx_create__';
     `
 })
 export class ComboboxCreatable {
-    protected readonly c = demoCombobox;
-    protected readonly d = demoDialog;
-    protected readonly b = demoButton;
-    protected readonly cn = cn;
     protected readonly CREATE = CREATE;
-    protected readonly control = cn(demoCombobox.control, 'h-auto min-h-9 flex-wrap items-center gap-1 py-1 pl-1');
-    protected readonly dialogInput = cn(
-        'h-9 w-full rounded-md border border-border bg-background px-3 text-sm text-foreground outline-none',
-        'placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring'
-    );
 
     readonly value = signal<string[]>([]);
     readonly open = signal(false);

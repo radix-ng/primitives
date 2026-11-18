@@ -1,31 +1,66 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
-import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
-import { cn, demoNavigationMenu } from '../../storybook/styles';
+import {
+    RdxNavigationMenuArrow,
+    RdxNavigationMenuContent,
+    RdxNavigationMenuIcon,
+    RdxNavigationMenuItem,
+    RdxNavigationMenuLink,
+    RdxNavigationMenuList,
+    RdxNavigationMenuPopup,
+    RdxNavigationMenuPortal,
+    RdxNavigationMenuPositioner,
+    RdxNavigationMenuRoot,
+    RdxNavigationMenuTrigger,
+    RdxNavigationMenuViewport
+} from '@radix-ng/primitives/navigation-menu';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-default',
-    imports: [...navigationMenuImports, LucideChevronDown],
+    imports: [
+        RdxNavigationMenuRoot,
+        RdxNavigationMenuList,
+        RdxNavigationMenuItem,
+        RdxNavigationMenuTrigger,
+        RdxNavigationMenuIcon,
+        RdxNavigationMenuContent,
+        RdxNavigationMenuLink,
+        RdxNavigationMenuPortal,
+        RdxNavigationMenuPositioner,
+        RdxNavigationMenuPopup,
+        RdxNavigationMenuArrow,
+        RdxNavigationMenuViewport,
+        LucideChevronDown
+    ],
     template: `
-        <nav [class]="m.root" rdxNavigationMenuRoot>
-            <ul [class]="m.list" rdxNavigationMenuList>
+        <nav class="relative flex justify-center" rdxNavigationMenuRoot>
+            <ul class="demo-surface flex list-none items-center gap-1 p-1" rdxNavigationMenuList>
                 <li rdxNavigationMenuItem value="overview">
-                    <button [class]="m.trigger" rdxNavigationMenuTrigger>
+                    <button
+                        class="demo-navigation-menu-trigger demo-label data-[popup-open]:bg-muted demo-focus flex h-9 items-center gap-1 px-3 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                        rdxNavigationMenuTrigger
+                    >
                         Overview
-                        <svg [class]="m.icon" rdxNavigationMenuIcon lucideChevronDown></svg>
+                        <svg
+                            class="size-3.5 shrink-0 transition-transform duration-200 data-[popup-open]:rotate-180"
+                            rdxNavigationMenuIcon
+                            lucideChevronDown
+                        ></svg>
                     </button>
 
                     <ng-container *rdxNavigationMenuContent>
-                        <div
-                            [class]="cn(m.content, 'w-[calc(100vw-40px)] min-[500px]:w-max min-[500px]:max-w-[400px]')"
-                        >
-                            <ul [class]="cn(m.contentGrid, 'grid-cols-1 min-[500px]:grid-cols-2')">
+                        <div class="w-[calc(100vw-40px)] p-4 min-[500px]:w-max min-[500px]:max-w-[400px]">
+                            <ul class="grid grid-cols-1 gap-2 min-[500px]:grid-cols-2">
                                 @for (item of overviewLinks; track item.title) {
                                     <li>
-                                        <a [class]="m.cardLink" [href]="item.href" rdxNavigationMenuLink>
-                                            <div [class]="m.cardHeading">{{ item.title }}</div>
-                                            <p [class]="m.cardText">{{ item.description }}</p>
+                                        <a
+                                            class="demo-navigation-menu-card-link demo-focus block p-3 no-underline"
+                                            [href]="item.href"
+                                            rdxNavigationMenuLink
+                                        >
+                                            <div class="demo-label mb-1">{{ item.title }}</div>
+                                            <p class="demo-navigation-menu-card-text">{{ item.description }}</p>
                                         </a>
                                     </li>
                                 }
@@ -35,21 +70,30 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 </li>
 
                 <li rdxNavigationMenuItem value="handbook">
-                    <button [class]="m.trigger" rdxNavigationMenuTrigger>
+                    <button
+                        class="demo-navigation-menu-trigger demo-label data-[popup-open]:bg-muted demo-focus flex h-9 items-center gap-1 px-3 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                        rdxNavigationMenuTrigger
+                    >
                         Handbook
-                        <svg [class]="m.icon" rdxNavigationMenuIcon lucideChevronDown></svg>
+                        <svg
+                            class="size-3.5 shrink-0 transition-transform duration-200 data-[popup-open]:rotate-180"
+                            rdxNavigationMenuIcon
+                            lucideChevronDown
+                        ></svg>
                     </button>
 
                     <ng-container *rdxNavigationMenuContent>
-                        <div
-                            [class]="cn(m.content, 'w-[calc(100vw-40px)] min-[500px]:w-max min-[500px]:max-w-[400px]')"
-                        >
-                            <ul [class]="cn(m.contentGrid, 'max-w-[400px]')">
+                        <div class="w-[calc(100vw-40px)] p-4 min-[500px]:w-max min-[500px]:max-w-[400px]">
+                            <ul class="grid max-w-[400px] gap-2">
                                 @for (item of handbookLinks; track item.title) {
                                     <li>
-                                        <a [class]="m.cardLink" [href]="item.href" rdxNavigationMenuLink>
-                                            <div [class]="m.cardHeading">{{ item.title }}</div>
-                                            <p [class]="m.cardText">{{ item.description }}</p>
+                                        <a
+                                            class="demo-navigation-menu-card-link demo-focus block p-3 no-underline"
+                                            [href]="item.href"
+                                            rdxNavigationMenuLink
+                                        >
+                                            <div class="demo-label mb-1">{{ item.title }}</div>
+                                            <p class="demo-navigation-menu-card-text">{{ item.description }}</p>
                                         </a>
                                     </li>
                                 }
@@ -59,14 +103,28 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 </li>
 
                 <li rdxNavigationMenuItem>
-                    <a [class]="m.link" rdxNavigationMenuLink href="https://github.com/mui/base-ui">GitHub</a>
+                    <a
+                        class="demo-navigation-menu-trigger demo-label demo-focus flex h-9 items-center px-3 no-underline"
+                        rdxNavigationMenuLink
+                        href="https://github.com/mui/base-ui"
+                    >
+                        GitHub
+                    </a>
                 </li>
             </ul>
 
-            <div *rdxNavigationMenuPortal [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
-                <div [class]="m.popup" rdxNavigationMenuPopup>
+            <div
+                class="z-50 data-[closed]:pointer-events-none"
+                *rdxNavigationMenuPortal
+                sideOffset="8"
+                rdxNavigationMenuPositioner
+            >
+                <div
+                    class="demo-surface data-[open]:animate-navigation-menu-popup-in data-[starting-style]:animate-navigation-menu-popup-in data-[ending-style]:animate-navigation-menu-popup-out relative origin-[var(--transform-origin)] p-0"
+                    rdxNavigationMenuPopup
+                >
                     <svg
-                        [class]="m.arrow"
+                        class="text-card demo-arrow my-px"
                         width="10"
                         height="5"
                         viewBox="0 0 30 10"
@@ -75,16 +133,16 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                     >
                         <polygon points="0,0 30,0 15,10" />
                     </svg>
-                    <div [class]="m.viewport" rdxNavigationMenuViewport></div>
+                    <div
+                        class="[&>[data-current]]:animate-navigation-menu-content-in [&>[data-previous]]:animate-navigation-menu-content-out relative block h-[var(--popup-height,auto)] w-[var(--popup-width,max-content)] overflow-hidden transition-[width,height] duration-200 [&>[data-previous]]:absolute [&>[data-previous]]:inset-0"
+                        rdxNavigationMenuViewport
+                    ></div>
                 </div>
             </div>
         </nav>
     `
 })
 export class RdxNavigationMenuDefaultComponent {
-    protected readonly cn = cn;
-    protected readonly m = demoNavigationMenu;
-
     protected readonly overviewLinks = [
         {
             href: '/react/overview/quick-start',

@@ -1,5 +1,16 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { drawerImports } from '@radix-ng/primitives/drawer';
+import {
+    RdxDrawerBackdrop,
+    RdxDrawerClose,
+    RdxDrawerContent,
+    RdxDrawerDescription,
+    RdxDrawerPopup,
+    RdxDrawerPortal,
+    RdxDrawerRoot,
+    RdxDrawerTitle,
+    RdxDrawerTrigger,
+    RdxDrawerViewport
+} from '@radix-ng/primitives/drawer';
 import {
     RdxScrollAreaContent,
     RdxScrollAreaRoot,
@@ -7,7 +18,6 @@ import {
     RdxScrollAreaThumb,
     RdxScrollAreaViewport
 } from '@radix-ng/primitives/scroll-area';
-import { cn, demoButton, demoCard, demoDrawer, demoFocusRing } from '../../storybook/styles';
 
 const ITEMS = [
     { href: '/react/overview', label: 'Overview' },
@@ -60,7 +70,16 @@ const LONG_LIST = [
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-scrollable',
     imports: [
-        ...drawerImports,
+        RdxDrawerRoot,
+        RdxDrawerTrigger,
+        RdxDrawerPortal,
+        RdxDrawerBackdrop,
+        RdxDrawerViewport,
+        RdxDrawerPopup,
+        RdxDrawerContent,
+        RdxDrawerTitle,
+        RdxDrawerDescription,
+        RdxDrawerClose,
         RdxScrollAreaRoot,
         RdxScrollAreaViewport,
         RdxScrollAreaContent,
@@ -69,13 +88,13 @@ const LONG_LIST = [
     ],
     template: `
         <div rdxDrawerRoot>
-            <button [class]="cn(b.base, b.primary, 'h-8 px-3 text-sm leading-none font-normal')" rdxDrawerTrigger>
+            <button class="demo-button demo-button-primary h-8 px-3 text-sm leading-none font-normal" rdxDrawerTrigger>
                 Open mobile menu
             </button>
 
             <ng-template rdxDrawerPortal>
                 <div
-                    [class]="cn(d.backdrop, d.overlayAnimated, 'opacity-[calc(1-var(--drawer-swipe-progress))]')"
+                    class="bg-foreground/50 fixed inset-0 z-50 opacity-[calc(1-var(--drawer-swipe-progress))] transition-opacity duration-200 data-[closed]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0"
                     rdxDrawerBackdrop
                 ></div>
 
@@ -87,17 +106,7 @@ const LONG_LIST = [
                                 rdxScrollAreaContent
                             >
                                 <div
-                                    [class]="
-                                        cn(
-                                            card,
-                                            'data-[closed]:[transform:translateY(100%)] data-[starting-style]:[transform:translateY(100%)]',
-                                            'w-full max-w-[42rem] rounded-t-2xl rounded-b-none border-x-0 border-b-0',
-                                            '[--drawer-swipe-movement-x:0px] [--drawer-swipe-movement-y:0px]',
-                                            '[transform:translate3d(var(--drawer-swipe-movement-x),var(--drawer-swipe-movement-y),0)]',
-                                            'transition-transform duration-300 outline-none data-[swiping]:transition-none',
-                                            'min-[42rem]:rounded-2xl min-[42rem]:border'
-                                        )
-                                    "
+                                    class="demo-surface w-full max-w-[42rem] [transform:translate3d(var(--drawer-swipe-movement-x),var(--drawer-swipe-movement-y),0)] rounded-t-2xl rounded-b-none border-x-0 border-b-0 transition-transform duration-300 outline-none [--drawer-swipe-movement-x:0px] [--drawer-swipe-movement-y:0px] data-[closed]:[transform:translateY(100%)] data-[starting-style]:[transform:translateY(100%)] data-[swiping]:transition-none min-[42rem]:rounded-2xl min-[42rem]:border"
                                     rdxDrawerPopup
                                 >
                                     <nav class="relative flex flex-col px-6 pt-4 pb-6" aria-label="Navigation">
@@ -105,7 +114,7 @@ const LONG_LIST = [
                                             <svg class="h-9 w-9" aria-hidden="true" />
                                             <div class="bg-muted h-1.5 w-12 justify-self-center rounded-full"></div>
                                             <button
-                                                [class]="cn(b.base, b.ghost, 'h-8 w-8 justify-self-end p-0')"
+                                                class="demo-button demo-button-ghost h-8 w-8 justify-self-end p-0"
                                                 aria-label="Close menu"
                                                 rdxDrawerClose
                                             >
@@ -126,8 +135,11 @@ const LONG_LIST = [
                                         </div>
 
                                         <div class="w-full" rdxDrawerContent>
-                                            <h2 [class]="cn(d.title, 'm-0 mb-1')" rdxDrawerTitle>Menu</h2>
-                                            <p [class]="cn(d.description, 'm-0 mb-5')" rdxDrawerDescription>
+                                            <h2 class="demo-dialog-title m-0 mb-1" rdxDrawerTitle>Menu</h2>
+                                            <p
+                                                class="text-muted-foreground m-0 mt-1.5 mb-5 text-sm"
+                                                rdxDrawerDescription
+                                            >
                                                 Scroll the long list. Flick down from the top to dismiss.
                                             </p>
 
@@ -135,7 +147,10 @@ const LONG_LIST = [
                                                 <ul class="m-0 grid list-none gap-1 p-0">
                                                     @for (item of items; track item.label) {
                                                         <li class="flex">
-                                                            <a [class]="link" [href]="item.href">
+                                                            <a
+                                                                class="demo-surface demo-focus text-foreground hover:bg-muted active:bg-muted flex h-12 w-full items-center px-4 text-sm no-underline shadow-none transition-colors"
+                                                                [href]="item.href"
+                                                            >
                                                                 {{ item.label }}
                                                             </a>
                                                         </li>
@@ -148,7 +163,10 @@ const LONG_LIST = [
                                                 >
                                                     @for (item of longList; track item.label) {
                                                         <li class="flex">
-                                                            <a [class]="link" [href]="item.href">
+                                                            <a
+                                                                class="demo-surface demo-focus text-foreground hover:bg-muted active:bg-muted flex h-12 w-full items-center px-4 text-sm no-underline shadow-none transition-colors"
+                                                                [href]="item.href"
+                                                            >
                                                                 {{ item.label }}
                                                             </a>
                                                         </li>
@@ -175,15 +193,6 @@ const LONG_LIST = [
     `
 })
 export class RdxDrawerScrollableComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly card = demoCard;
-    protected readonly d = demoDrawer;
     protected readonly items = ITEMS;
     protected readonly longList = LONG_LIST;
-    protected readonly link = cn(
-        demoCard,
-        demoFocusRing,
-        'text-foreground hover:bg-muted active:bg-muted flex h-12 w-full items-center px-4 text-sm no-underline shadow-none transition-colors'
-    );
 }

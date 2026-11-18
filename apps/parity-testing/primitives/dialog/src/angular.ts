@@ -2,7 +2,7 @@ import { Component, ElementRef, provideZonelessChangeDetection, signal, viewChil
 import { bootstrapApplication } from '@angular/platform-browser';
 import { dialogImports, RdxDialogOpenChange, RdxDialogRoot } from '@radix-ng/primitives/dialog';
 import type { RdxInitialFocus, RdxInteractionType, RdxReturnFocus } from '@radix-ng/primitives/floating-focus-manager';
-import '../../../../radix-storybook/.storybook/tailwind.css';
+import '../../../../radix-storybook/.storybook/main.css';
 import { chooseFocus, classes, config, installProbe, type NestedLayer } from './contract';
 import { AngularDetachedDialog } from './detached.angular';
 import './fixture.css';

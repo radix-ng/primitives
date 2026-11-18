@@ -1,11 +1,18 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { RdxMenuModule, RdxMenuOpenChange } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoMenu } from '../../storybook/styles';
+import {
+    RdxMenuItem,
+    RdxMenuOpenChange,
+    RdxMenuPopup,
+    RdxMenuPortal,
+    RdxMenuPositioner,
+    RdxMenuRoot,
+    RdxMenuTrigger
+} from '@radix-ng/primitives/menu';
 
 @Component({
     selector: 'rdx-menu-events',
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [RdxMenuModule],
+    imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPortal, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
     template: `
         <section class="grid w-80 gap-4">
             <label class="flex items-center gap-2 text-sm">
@@ -17,16 +24,36 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
                 Cancel next close
             </label>
             <ng-container (onOpenChange)="change($event)" rdxMenuRoot>
-                <button [id]="triggerId()" [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>
+                <button class="demo-button demo-button-outline h-9 px-4" [id]="triggerId()" rdxMenuTrigger>
                     Menu events
                 </button>
-                <div *rdxMenuPortal [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-                    <div [id]="popupId()" [class]="m.popup" rdxMenuPopup>
-                        <button [class]="m.item" (onSelect)="selected.set('Run action')" rdxMenuItem>Run action</button>
-                        <button [class]="m.item" [closeOnClick]="false" (onSelect)="rename()" rdxMenuItem>
+                <div class="z-50 data-[closed]:pointer-events-none" *rdxMenuPortal sideOffset="4" rdxMenuPositioner>
+                    <div
+                        class="demo-menu-popup min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                        [id]="popupId()"
+                        rdxMenuPopup
+                    >
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            (onSelect)="selected.set('Run action')"
+                            rdxMenuItem
+                        >
+                            Run action
+                        </button>
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            [closeOnClick]="false"
+                            (onSelect)="rename()"
+                            rdxMenuItem
+                        >
                             Rename parts
                         </button>
-                        <button [class]="m.item" rdxMenuItem>Close menu</button>
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            rdxMenuItem
+                        >
+                            Close menu
+                        </button>
                     </div>
                 </div>
             </ng-container>
@@ -40,9 +67,6 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
     `
 })
 export class RdxMenuEventsComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly m = demoMenu;
     protected readonly triggerId = signal('menu-events-trigger');
     protected readonly popupId = signal('menu-events-popup');
     protected readonly cancelNext = signal(false);

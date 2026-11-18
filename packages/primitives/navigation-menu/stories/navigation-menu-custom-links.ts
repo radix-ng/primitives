@@ -1,7 +1,18 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideArrowUpRight, LucideBookOpen, LucideChevronDown, LucideCode, LucideLifeBuoy } from '@lucide/angular';
-import { navigationMenuImports } from '@radix-ng/primitives/navigation-menu';
-import { cn, demoNavigationMenu } from '../../storybook/styles';
+import {
+    RdxNavigationMenuContent,
+    RdxNavigationMenuIcon,
+    RdxNavigationMenuItem,
+    RdxNavigationMenuLink,
+    RdxNavigationMenuList,
+    RdxNavigationMenuPopup,
+    RdxNavigationMenuPortal,
+    RdxNavigationMenuPositioner,
+    RdxNavigationMenuRoot,
+    RdxNavigationMenuTrigger,
+    RdxNavigationMenuViewport
+} from '@radix-ng/primitives/navigation-menu';
 
 /**
  * Custom links: `rdxNavigationMenuLink` composes onto your own anchor markup — rich rows with icons,
@@ -13,7 +24,17 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-custom-links',
     imports: [
-        ...navigationMenuImports,
+        RdxNavigationMenuRoot,
+        RdxNavigationMenuList,
+        RdxNavigationMenuItem,
+        RdxNavigationMenuTrigger,
+        RdxNavigationMenuIcon,
+        RdxNavigationMenuContent,
+        RdxNavigationMenuLink,
+        RdxNavigationMenuPortal,
+        RdxNavigationMenuPositioner,
+        RdxNavigationMenuPopup,
+        RdxNavigationMenuViewport,
         LucideChevronDown,
         LucideArrowUpRight,
         LucideBookOpen,
@@ -21,62 +42,100 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
         LucideLifeBuoy
     ],
     template: `
-        <nav [class]="m.root" rdxNavigationMenuRoot>
-            <ul [class]="m.list" rdxNavigationMenuList>
+        <nav class="relative flex justify-center" rdxNavigationMenuRoot>
+            <ul class="demo-surface flex list-none items-center gap-1 p-1" rdxNavigationMenuList>
                 <li rdxNavigationMenuItem value="resources">
-                    <button [class]="m.trigger" rdxNavigationMenuTrigger>
+                    <button
+                        class="demo-navigation-menu-trigger demo-label data-[popup-open]:bg-muted demo-focus flex h-9 items-center gap-1 px-3 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                        rdxNavigationMenuTrigger
+                    >
                         Resources
-                        <svg [class]="m.icon" rdxNavigationMenuIcon lucideChevronDown></svg>
+                        <svg
+                            class="size-3.5 shrink-0 transition-transform duration-200 data-[popup-open]:rotate-180"
+                            rdxNavigationMenuIcon
+                            lucideChevronDown
+                        ></svg>
                     </button>
 
                     <ng-container *rdxNavigationMenuContent>
                         <ul class="grid w-[420px] gap-1 p-2">
                             <li>
-                                <a [class]="row" rdxNavigationMenuLink href="#">
-                                    <span [class]="iconBox"><svg lucideBookOpen size="18"></svg></span>
+                                <a
+                                    class="hover:bg-muted focus-visible:bg-muted flex items-start gap-3 rounded-md p-3 no-underline transition-colors outline-none"
+                                    rdxNavigationMenuLink
+                                    href="#"
+                                >
+                                    <span
+                                        class="bg-muted text-foreground flex size-9 shrink-0 items-center justify-center rounded-md"
+                                    >
+                                        <svg lucideBookOpen size="18"></svg>
+                                    </span>
                                     <span class="flex min-w-0 flex-1 flex-col">
-                                        <span [class]="m.cardHeading">Documentation</span>
-                                        <span [class]="m.cardText">Guides and API references.</span>
+                                        <span class="demo-label mb-1">Documentation</span>
+                                        <span class="demo-navigation-menu-card-text">Guides and API references.</span>
                                     </span>
                                 </a>
                             </li>
                             <li>
-                                <a [class]="row" rdxNavigationMenuLink href="#">
-                                    <span [class]="iconBox"><svg lucideLifeBuoy size="18"></svg></span>
+                                <a
+                                    class="hover:bg-muted focus-visible:bg-muted flex items-start gap-3 rounded-md p-3 no-underline transition-colors outline-none"
+                                    rdxNavigationMenuLink
+                                    href="#"
+                                >
+                                    <span
+                                        class="bg-muted text-foreground flex size-9 shrink-0 items-center justify-center rounded-md"
+                                    >
+                                        <svg lucideLifeBuoy size="18"></svg>
+                                    </span>
                                     <span class="flex min-w-0 flex-1 flex-col">
-                                        <span [class]="m.cardHeading">Support</span>
-                                        <span [class]="m.cardText">Get help from the community.</span>
+                                        <span class="demo-label mb-1">Support</span>
+                                        <span class="demo-navigation-menu-card-text">Get help from the community.</span>
                                     </span>
                                 </a>
                             </li>
                             <li>
                                 <!-- An external link — the directive sits on a normal anchor. -->
                                 <a
-                                    [class]="row"
+                                    class="hover:bg-muted focus-visible:bg-muted flex items-start gap-3 rounded-md p-3 no-underline transition-colors outline-none"
                                     rel="noreferrer noopener"
                                     target="_blank"
                                     rdxNavigationMenuLink
                                     href="https://github.com/radix-ng/primitives"
                                 >
-                                    <span [class]="iconBox"><svg lucideCode size="18"></svg></span>
+                                    <span
+                                        class="bg-muted text-foreground flex size-9 shrink-0 items-center justify-center rounded-md"
+                                    >
+                                        <svg lucideCode size="18"></svg>
+                                    </span>
                                     <span class="flex min-w-0 flex-1 flex-col">
-                                        <span [class]="cn(m.cardHeading, 'flex items-center gap-1')">
+                                        <span class="demo-label mb-1 flex items-center gap-1">
                                             GitHub
                                             <svg class="text-muted-foreground size-3" lucideArrowUpRight></svg>
                                         </span>
-                                        <span [class]="m.cardText">Star and contribute on GitHub.</span>
+                                        <span class="demo-navigation-menu-card-text">
+                                            Star and contribute on GitHub.
+                                        </span>
                                     </span>
                                 </a>
                             </li>
                             <li>
                                 <!-- Action link: keeps the menu open and runs a handler instead of navigating. -->
-                                <a [class]="row" (onSelect)="copy($event)" rdxNavigationMenuLink href="#">
-                                    <span [class]="iconBox"><svg lucideCode size="18"></svg></span>
+                                <a
+                                    class="hover:bg-muted focus-visible:bg-muted flex items-start gap-3 rounded-md p-3 no-underline transition-colors outline-none"
+                                    (onSelect)="copy($event)"
+                                    rdxNavigationMenuLink
+                                    href="#"
+                                >
+                                    <span
+                                        class="bg-muted text-foreground flex size-9 shrink-0 items-center justify-center rounded-md"
+                                    >
+                                        <svg lucideCode size="18"></svg>
+                                    </span>
                                     <span class="flex min-w-0 flex-1 flex-col">
-                                        <span [class]="m.cardHeading">
+                                        <span class="demo-label mb-1">
                                             {{ copied() ? 'Copied!' : 'Copy install command' }}
                                         </span>
-                                        <span [class]="cn(m.cardText, 'font-mono')">
+                                        <span class="demo-navigation-menu-card-text font-mono">
                                             npm i &#64;radix-ng/primitives
                                         </span>
                                     </span>
@@ -87,24 +146,27 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                 </li>
             </ul>
 
-            <div *rdxNavigationMenuPortal [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
-                <div [class]="m.popup" rdxNavigationMenuPopup>
-                    <div [class]="m.viewport" rdxNavigationMenuViewport></div>
+            <div
+                class="z-50 data-[closed]:pointer-events-none"
+                *rdxNavigationMenuPortal
+                sideOffset="8"
+                rdxNavigationMenuPositioner
+            >
+                <div
+                    class="demo-surface data-[open]:animate-navigation-menu-popup-in data-[starting-style]:animate-navigation-menu-popup-in data-[ending-style]:animate-navigation-menu-popup-out relative origin-[var(--transform-origin)] p-0"
+                    rdxNavigationMenuPopup
+                >
+                    <div
+                        class="[&>[data-current]]:animate-navigation-menu-content-in [&>[data-previous]]:animate-navigation-menu-content-out relative block h-[var(--popup-height,auto)] w-[var(--popup-width,max-content)] overflow-hidden transition-[width,height] duration-200 [&>[data-previous]]:absolute [&>[data-previous]]:inset-0"
+                        rdxNavigationMenuViewport
+                    ></div>
                 </div>
             </div>
         </nav>
     `
 })
 export class RdxNavigationMenuCustomLinksComponent {
-    protected readonly cn = cn;
-    protected readonly m = demoNavigationMenu;
     protected readonly copied = signal(false);
-
-    protected readonly row = cn(
-        'flex items-start gap-3 rounded-md p-3 no-underline outline-none transition-colors',
-        'hover:bg-muted focus-visible:bg-muted'
-    );
-    protected readonly iconBox = 'flex size-9 shrink-0 items-center justify-center rounded-md bg-muted text-foreground';
 
     protected copy(event: Event) {
         event.preventDefault();

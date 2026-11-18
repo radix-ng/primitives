@@ -1,22 +1,57 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { cn, demoButton, demoCombobox } from '../../storybook/styles';
-import { _importsCombobox } from '../index';
+import {
+    RdxComboboxEmpty,
+    RdxComboboxInput,
+    RdxComboboxItem,
+    RdxComboboxList,
+    RdxComboboxPopup,
+    RdxComboboxPortal,
+    RdxComboboxPositioner,
+    RdxComboboxRoot,
+    RdxComboboxTrigger
+} from '@radix-ng/primitives/combobox';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-reorder',
-    imports: [_importsCombobox],
+    imports: [
+        RdxComboboxRoot,
+        RdxComboboxInput,
+        RdxComboboxTrigger,
+        RdxComboboxPortal,
+        RdxComboboxPositioner,
+        RdxComboboxPopup,
+        RdxComboboxList,
+        RdxComboboxItem,
+        RdxComboboxEmpty
+    ],
     template: `
         <div [(value)]="value" rdxComboboxRoot>
-            <div [class]="c.control">
-                <input [class]="c.input" rdxComboboxInput placeholder="Search a fruit…" aria-label="Fruit" />
-                <button [class]="c.trigger" rdxComboboxTrigger aria-label="Open">⌄</button>
+            <div
+                class="demo-combobox-control focus-within:ring-ring focus-within:ring-offset-background relative inline-flex h-9 w-64 items-center focus-within:ring-2 focus-within:ring-offset-2 data-[disabled]:opacity-50"
+            >
+                <input
+                    class="demo-combobox-input placeholder:text-muted-foreground h-full w-full pr-9 pl-3"
+                    rdxComboboxInput
+                    placeholder="Search a fruit…"
+                    aria-label="Fruit"
+                />
+                <button
+                    class="demo-combobox-trigger absolute top-1/2 right-1 inline-flex size-7 -translate-y-1/2 items-center justify-center disabled:pointer-events-none"
+                    rdxComboboxTrigger
+                    aria-label="Open"
+                >
+                    ⌄
+                </button>
             </div>
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" rdxComboboxPopup>
+            <div class="z-50 w-64 data-[closed]:pointer-events-none" *rdxComboboxPortal rdxComboboxPositioner>
+                <div
+                    class="demo-combobox-popup mt-2 max-h-60 overflow-y-auto p-1 data-[closed]:hidden"
+                    rdxComboboxPopup
+                >
                     <div class="border-border flex gap-2 border-b p-2">
                         <button
-                            [class]="button"
+                            class="demo-button demo-button-outline px-2 py-1"
                             (pointerdown)="$event.preventDefault()"
                             (click)="reverse()"
                             type="button"
@@ -24,7 +59,7 @@ import { _importsCombobox } from '../index';
                             Reverse order
                         </button>
                         <button
-                            [class]="button"
+                            class="demo-button demo-button-outline px-2 py-1"
                             [attr.aria-pressed]="grapeDisabled()"
                             (pointerdown)="$event.preventDefault()"
                             (click)="toggleGrape()"
@@ -33,10 +68,10 @@ import { _importsCombobox } from '../index';
                             Disable Grape
                         </button>
                     </div>
-                    <div [class]="c.list" rdxComboboxList aria-label="Fruits">
+                    <div class="flex flex-col" rdxComboboxList aria-label="Fruits">
                         @for (fruit of fruits(); track fruit) {
                             <div
-                                [class]="c.item"
+                                class="demo-menu-item data-[highlighted]:bg-muted relative flex items-center py-1.5 pr-2 pl-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[selected]:font-medium"
                                 [value]="fruit"
                                 [disabled]="fruit === 'Grape' && grapeDisabled()"
                                 rdxComboboxItem
@@ -45,15 +80,13 @@ import { _importsCombobox } from '../index';
                             </div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxComboboxEmpty>No fruit found.</div>
+                    <div class="demo-combobox-empty data-[empty]:py-6" rdxComboboxEmpty>No fruit found.</div>
                 </div>
             </div>
         </div>
     `
 })
 export class ComboboxReorder {
-    protected readonly c = demoCombobox;
-    protected readonly button = cn(demoButton.base, demoButton.outline, 'px-2 py-1');
     readonly value = signal<string | null>(null);
     readonly fruits = signal(['Apple', 'Banana', 'Grape']);
     readonly grapeDisabled = signal(false);

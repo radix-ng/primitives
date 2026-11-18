@@ -15,8 +15,7 @@ import {
     RdxFieldRoot,
     RdxNgControlField
 } from '@radix-ng/primitives/field';
-import { cn, demoButton, demoCheckbox, demoInput } from '../../storybook/styles';
-import { RdxInputDirective } from '../src/input.directive';
+import { RdxInputDirective } from '@radix-ng/primitives/input';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -42,7 +41,7 @@ import { RdxInputDirective } from '../src/input.directive';
                 <div class="flex flex-col gap-2" rdxFieldRoot required>
                     <label class="text-foreground text-sm font-medium" rdxFieldLabel>First name</label>
                     <input
-                        [class]="inputClass"
+                        class="demo-input h-9 w-full px-3"
                         rdxInput
                         rdxNgControlField
                         autocomplete="given-name"
@@ -54,7 +53,7 @@ import { RdxInputDirective } from '../src/input.directive';
                 <div class="flex flex-col gap-2" rdxFieldRoot required>
                     <label class="text-foreground text-sm font-medium" rdxFieldLabel>Last name</label>
                     <input
-                        [class]="inputClass"
+                        class="demo-input h-9 w-full px-3"
                         rdxInput
                         rdxNgControlField
                         autocomplete="family-name"
@@ -67,7 +66,7 @@ import { RdxInputDirective } from '../src/input.directive';
             <div class="flex flex-col gap-2" rdxFieldRoot required>
                 <label class="text-foreground text-sm font-medium" rdxFieldLabel>Email</label>
                 <input
-                    [class]="inputClass"
+                    class="demo-input h-9 w-full px-3"
                     rdxInput
                     rdxNgControlField
                     type="email"
@@ -84,7 +83,7 @@ import { RdxInputDirective } from '../src/input.directive';
             <div class="flex flex-col gap-2" rdxFieldRoot required>
                 <label class="text-foreground text-sm font-medium" rdxFieldLabel>Password</label>
                 <input
-                    [class]="inputClass"
+                    class="demo-input h-9 w-full px-3"
                     rdxInput
                     rdxNgControlField
                     type="password"
@@ -97,8 +96,13 @@ import { RdxInputDirective } from '../src/input.directive';
 
             <div class="flex items-start gap-3">
                 <div rdxCheckboxRoot required formControlName="terms">
-                    <button id="signup-terms" [class]="checkbox.button" type="button" rdxCheckboxButton>
-                        <svg [class]="checkbox.indicator" rdxCheckboxIndicator size="16" lucideCheck />
+                    <button
+                        class="demo-checkbox-button demo-focus flex size-6 items-center justify-center disabled:opacity-50 aria-disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                        id="signup-terms"
+                        type="button"
+                        rdxCheckboxButton
+                    >
+                        <svg class="text-primary flex items-center" rdxCheckboxIndicator size="16" lucideCheck />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -108,7 +112,9 @@ import { RdxInputDirective } from '../src/input.directive';
                 </label>
             </div>
 
-            <button [class]="submitClass" rdxButton type="submit">Create workspace</button>
+            <button class="demo-button demo-button-primary h-9 w-full px-4" rdxButton type="submit">
+                Create workspace
+            </button>
         </form>
     `
 })
@@ -123,10 +129,6 @@ export class InputSignupFormExample {
         }),
         terms: new FormControl(false, { nonNullable: true, validators: [Validators.requiredTrue] })
     });
-
-    protected readonly inputClass = demoInput;
-    protected readonly checkbox = demoCheckbox;
-    protected readonly submitClass = cn(demoButton.base, demoButton.primary, demoButton.size.md, 'w-full');
 
     submit(): void {
         this.form.markAllAsTouched();

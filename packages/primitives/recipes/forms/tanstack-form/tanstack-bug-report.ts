@@ -8,16 +8,6 @@ import {
 } from '@radix-ng/primitives/field';
 import { injectForm, TanStackField } from '@tanstack/angular-form';
 import { z } from 'zod';
-import {
-    recipeDescription,
-    recipeError,
-    recipeField,
-    recipeForm,
-    recipeInput,
-    recipeLabel,
-    recipeSubmit,
-    recipeTextarea
-} from '../forms-recipes.shared';
 
 /** Structural view of the `[tanstackField]` exportAs ref used in the templates. */
 type FieldRef = { api: { state: { meta: { isTouched: boolean; isValid: boolean; errors: unknown[] } } } };
@@ -48,18 +38,22 @@ const formSchema = z.object({
     selector: 'tanstack-bug-report',
     imports: [TanStackField, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
     template: `
-        <form [class]="form0" (submit)="$event.preventDefault(); reportForm.handleSubmit()" novalidate>
+        <form
+            class="flex w-100 flex-col gap-5"
+            (submit)="$event.preventDefault(); reportForm.handleSubmit()"
+            novalidate
+        >
             <ng-container #title="field" [tanstackField]="reportForm" [validators]="titleValidators" name="title">
                 <div
-                    [class]="field"
+                    class="flex flex-col gap-1.5"
                     [invalid]="isInvalid(title)"
                     [touched]="title.api.state.meta.isTouched"
                     rdxFieldRoot
                     required
                 >
-                    <label [class]="label" rdxFieldLabel>Bug Title</label>
+                    <label class="demo-label data-[disabled]:opacity-50" rdxFieldLabel>Bug Title</label>
                     <input
-                        [class]="input"
+                        class="demo-input data-[invalid]:border-destructive data-[invalid]:ring-destructive/30 h-9 w-full px-3"
                         [value]="title.api.state.value"
                         (input)="title.api.handleChange($any($event.target).value)"
                         (blur)="title.api.handleBlur()"
@@ -68,7 +62,7 @@ const formSchema = z.object({
                         autocomplete="off"
                     />
                     <p [class]="description" rdxFieldDescription>Provide a concise title for your bug report.</p>
-                    <p [class]="error" rdxFieldError>{{ messages(title) }}</p>
+                    <p class="text-destructive text-sm" rdxFieldError>{{ messages(title) }}</p>
                 </div>
             </ng-container>
 
@@ -79,46 +73,37 @@ const formSchema = z.object({
                 name="description"
             >
                 <div
-                    [class]="field"
+                    class="flex flex-col gap-1.5"
                     [invalid]="isInvalid(description)"
                     [touched]="description.api.state.meta.isTouched"
                     rdxFieldRoot
                     required
                 >
-                    <label [class]="label" rdxFieldLabel>Description</label>
+                    <label class="demo-label data-[disabled]:opacity-50" rdxFieldLabel>Description</label>
                     <textarea
-                        [class]="textarea"
+                        class="demo-input data-[invalid]:border-destructive data-[invalid]:ring-destructive/30 min-h-24 w-full px-3 py-2"
                         [value]="description.api.state.value"
                         (input)="description.api.handleChange($any($event.target).value)"
                         (blur)="description.api.handleBlur()"
                         rdxFieldControl
                         placeholder="When I click the login button on my phone, nothing happens…"
                     ></textarea>
-                    <p [class]="descriptionClass" rdxFieldDescription>
+                    <p class="text-muted-foreground text-sm" rdxFieldDescription>
                         The more details, the faster we can reproduce it.
                     </p>
-                    <p [class]="error" rdxFieldError>{{ messages(description) }}</p>
+                    <p class="text-destructive text-sm" rdxFieldError>{{ messages(description) }}</p>
                 </div>
             </ng-container>
 
-            <button [class]="submit" type="submit">Submit</button>
+            <button class="demo-button demo-button-primary h-9 px-4" type="submit">Submit</button>
 
             @if (result()) {
-                <p [class]="descriptionClass">Submitted: "{{ result()!.title }}"</p>
+                <p class="text-muted-foreground text-sm">Submitted: "{{ result()!.title }}"</p>
             }
         </form>
     `
 })
 export class TanstackBugReport {
-    protected readonly form0 = recipeForm;
-    protected readonly field = recipeField;
-    protected readonly label = recipeLabel;
-    protected readonly input = recipeInput;
-    protected readonly textarea = recipeTextarea;
-    protected readonly descriptionClass = recipeDescription;
-    protected readonly error = recipeError;
-    protected readonly submit = recipeSubmit;
-
     protected readonly result = signal<z.infer<typeof formSchema> | null>(null);
 
     // One Zod schema is the source of truth; each field validates against its slice on change (live

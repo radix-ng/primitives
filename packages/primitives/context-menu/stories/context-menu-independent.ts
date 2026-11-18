@@ -1,26 +1,59 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { RdxContextMenuModule } from '@radix-ng/primitives/context-menu';
-import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { cn, demoMenu } from '../../storybook/styles';
+import { RdxContextMenuRoot, RdxContextMenuTrigger } from '@radix-ng/primitives/context-menu';
+import {
+    RdxMenuItem,
+    RdxMenuPopup,
+    RdxMenuPortal,
+    RdxMenuPositioner,
+    RdxMenuSeparator
+} from '@radix-ng/primitives/menu';
 
 @Component({
     selector: 'rdx-context-menu-independent',
-    imports: [RdxContextMenuModule, RdxMenuModule],
+    imports: [
+        RdxContextMenuRoot,
+        RdxContextMenuTrigger,
+        RdxMenuPortal,
+        RdxMenuPositioner,
+        RdxMenuPopup,
+        RdxMenuItem,
+        RdxMenuSeparator
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <div class="grid max-w-full gap-4">
             <ng-container rdxContextMenuRoot>
-                <div [class]="cn(m.contextArea, 'min-h-36 min-w-64')" tabindex="0" rdxContextMenuTrigger>
+                <div
+                    class="demo-menu-context-area data-[popup-open]:bg-muted flex min-h-36 min-w-64 items-center justify-center p-4 data-[popup-open]:border-solid"
+                    tabindex="0"
+                    rdxContextMenuTrigger
+                >
                     Right-click the workspace
                 </div>
                 <ng-template [keepMounted]="true" rdxMenuPortal>
-                    <div [class]="m.positioner" side="right" align="start" sideOffset="4" rdxMenuPositioner>
-                        <div [class]="cn(m.popup, 'min-w-56!')" aria-label="Workspace actions" rdxMenuPopup>
-                            <div [class]="m.item" (onSelect)="selected.set('New file')" rdxMenuItem>New file</div>
-                            <div [class]="m.separator" rdxMenuSeparator></div>
+                    <div
+                        class="z-50 data-[closed]:pointer-events-none"
+                        side="right"
+                        align="start"
+                        sideOffset="4"
+                        rdxMenuPositioner
+                    >
+                        <div
+                            class="demo-menu-popup min-w-56! min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                            aria-label="Workspace actions"
+                            rdxMenuPopup
+                        >
+                            <div
+                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                (onSelect)="selected.set('New file')"
+                                rdxMenuItem
+                            >
+                                New file
+                            </div>
+                            <div class="bg-border -mx-1 my-1 h-px" rdxMenuSeparator></div>
                             <ng-container rdxContextMenuRoot>
                                 <div
-                                    [class]="cn(m.contextArea, 'm-1 min-h-24 flex-col gap-1 p-4 text-center')"
+                                    class="demo-menu-context-area data-[popup-open]:bg-muted m-1 flex min-h-24 flex-col items-center justify-center gap-1 p-4 text-center data-[popup-open]:border-solid"
                                     tabindex="0"
                                     rdxContextMenuTrigger
                                 >
@@ -29,17 +62,29 @@ import { cn, demoMenu } from '../../storybook/styles';
                                 </div>
                                 <ng-template [keepMounted]="true" rdxMenuPortal>
                                     <div
-                                        [class]="m.positioner"
+                                        class="z-50 data-[closed]:pointer-events-none"
                                         side="right"
                                         align="start"
                                         sideOffset="4"
                                         rdxMenuPositioner
                                     >
-                                        <div [class]="cn(m.popup, 'min-w-44!')" aria-label="Image actions" rdxMenuPopup>
-                                            <div [class]="m.item" (onSelect)="selected.set('Copy image')" rdxMenuItem>
+                                        <div
+                                            class="demo-menu-popup min-w-44! min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                                            aria-label="Image actions"
+                                            rdxMenuPopup
+                                        >
+                                            <div
+                                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                (onSelect)="selected.set('Copy image')"
+                                                rdxMenuItem
+                                            >
                                                 Copy image
                                             </div>
-                                            <div [class]="m.item" (onSelect)="selected.set('Save image')" rdxMenuItem>
+                                            <div
+                                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                (onSelect)="selected.set('Save image')"
+                                                rdxMenuItem
+                                            >
                                                 Save image
                                             </div>
                                         </div>
@@ -59,6 +104,4 @@ import { cn, demoMenu } from '../../storybook/styles';
 })
 export class RdxContextMenuIndependentComponent {
     protected readonly selected = signal('none');
-    protected readonly cn = cn;
-    protected readonly m = demoMenu;
 }

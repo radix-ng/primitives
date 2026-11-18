@@ -1,9 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
-import { RdxFieldControl } from '../src/field-control';
-import { RdxFieldDescription } from '../src/field-description';
-import { RdxFieldError } from '../src/field-error';
-import { RdxFieldLabel } from '../src/field-label';
-import { RdxFieldRoot } from '../src/field-root';
+import {
+    RdxFieldControl,
+    RdxFieldDescription,
+    RdxFieldError,
+    RdxFieldLabel,
+    RdxFieldRoot
+} from '@radix-ng/primitives/field';
+
 import { fieldCustomTrigger, fieldDescription, fieldError, fieldLabel } from './field.shared';
 
 @Component({

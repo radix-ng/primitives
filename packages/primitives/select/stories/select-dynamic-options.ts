@@ -1,30 +1,69 @@
 import { Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
-import { demoSelect } from '../../storybook/styles';
-import { _importsSelect } from '../index';
+import {
+    RdxSelectItem,
+    RdxSelectItemIndicator,
+    RdxSelectItemText,
+    RdxSelectLabel,
+    RdxSelectList,
+    RdxSelectPopup,
+    RdxSelectPortal,
+    RdxSelectPositioner,
+    RdxSelectRoot,
+    RdxSelectTrigger,
+    RdxSelectValue
+} from '@radix-ng/primitives/select';
 
 @Component({
     selector: 'select-dynamic-options',
-    imports: [_importsSelect, LucideCheck, LucideChevronDown],
+    imports: [
+        RdxSelectRoot,
+        RdxSelectPortal,
+        RdxSelectTrigger,
+        RdxSelectValue,
+        RdxSelectPopup,
+        RdxSelectList,
+        RdxSelectLabel,
+        RdxSelectItemIndicator,
+        RdxSelectItem,
+        RdxSelectItemText,
+        RdxSelectPositioner,
+        LucideCheck,
+        LucideChevronDown
+    ],
     host: { '(document:keydown)': 'command($event)' },
     template: `
         <div class="grid w-80 max-w-full gap-3">
             <ng-container [(value)]="value" [items]="fruits()" defaultValue="apple" rdxSelectRoot>
                 <div class="text-sm font-medium" rdxSelectLabel>Live options</div>
-                <button [class]="s.trigger" rdxSelectTrigger>
+                <button
+                    class="demo-select-trigger data-[placeholder]:text-muted-foreground data-[invalid]:border-destructive data-[invalid]:aria-invalid:ring-destructive/30 demo-focus inline-flex min-h-9 items-center justify-between gap-2 px-3 py-1.5 disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                    rdxSelectTrigger
+                >
                     <span #display="rdxSelectedValue" rdxSelectValue placeholder="Choose a fruit">
                         {{ display.slotText() }}
                     </span>
-                    <svg [class]="s.icon" lucideChevronDown size="16" aria-hidden="true" />
+                    <svg class="size-4 shrink-0" lucideChevronDown size="16" aria-hidden="true" />
                 </button>
                 <ng-template rdxSelectPortal>
-                    <div [class]="s.positioner" sideOffset="6" rdxSelectPositioner>
-                        <div [class]="s.popup" rdxSelectPopup>
-                            <div [class]="s.list" rdxSelectList>
+                    <div class="z-[100]" sideOffset="6" rdxSelectPositioner>
+                        <div
+                            class="demo-select-popup min-w-[var(--anchor-width,10rem)] will-change-[opacity,transform]"
+                            rdxSelectPopup
+                        >
+                            <div class="p-1" rdxSelectList>
                                 @for (fruit of fruits(); track fruit.value) {
-                                    <div [class]="s.item" [value]="fruit.value" rdxSelectItem>
-                                        <span [class]="s.itemIndicator" rdxSelectItemIndicator aria-hidden="true">
-                                            <svg [class]="s.icon" lucideCheck size="16" />
+                                    <div
+                                        class="demo-select-item data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground data-[disabled]:text-muted-foreground relative flex min-h-7 items-center gap-2 ps-6 pe-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                        [value]="fruit.value"
+                                        rdxSelectItem
+                                    >
+                                        <span
+                                            class="absolute start-0 inline-flex w-6 items-center justify-center"
+                                            rdxSelectItemIndicator
+                                            aria-hidden="true"
+                                        >
+                                            <svg class="size-4 shrink-0" lucideCheck size="16" />
                                         </span>
                                         <span rdxSelectItemText>{{ fruit.label }}</span>
                                     </div>
@@ -51,7 +90,6 @@ import { _importsSelect } from '../index';
     `
 })
 export class SelectDynamicOptions {
-    protected readonly s = demoSelect;
     readonly value = signal<string | null | undefined>('apple');
     private readonly initial = [
         { value: 'apple', label: 'Apple' },

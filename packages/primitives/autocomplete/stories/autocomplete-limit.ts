@@ -1,25 +1,60 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { demoCombobox } from '../../storybook/styles';
-import { _importsAutocomplete } from '../index';
+import {
+    RdxAutocompleteEmpty,
+    RdxAutocompleteInput,
+    RdxAutocompleteInputGroup,
+    RdxAutocompleteItem,
+    RdxAutocompleteList,
+    RdxAutocompletePopup,
+    RdxAutocompletePortal,
+    RdxAutocompletePositioner,
+    RdxAutocompleteRoot
+} from '@radix-ng/primitives/autocomplete';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-limit',
-    imports: [_importsAutocomplete],
+    imports: [
+        RdxAutocompleteRoot,
+        RdxAutocompleteInputGroup,
+        RdxAutocompleteInput,
+        RdxAutocompletePortal,
+        RdxAutocompletePositioner,
+        RdxAutocompletePopup,
+        RdxAutocompleteList,
+        RdxAutocompleteItem,
+        RdxAutocompleteEmpty
+    ],
     template: `
         <div #ac="rdxAutocompleteRoot" [(value)]="value" [limit]="8" rdxAutocompleteRoot>
-            <div [class]="c.control" rdxAutocompleteInputGroup>
-                <input [class]="c.input" rdxAutocompleteInput placeholder="e.g. component" aria-label="Search tags" />
+            <div
+                class="demo-combobox-control focus-within:ring-ring focus-within:ring-offset-background relative inline-flex h-9 w-64 items-center focus-within:ring-2 focus-within:ring-offset-2 data-[disabled]:opacity-50"
+                rdxAutocompleteInputGroup
+            >
+                <input
+                    class="demo-combobox-input placeholder:text-muted-foreground h-full w-full pr-9 pl-3"
+                    rdxAutocompleteInput
+                    placeholder="e.g. component"
+                    aria-label="Search tags"
+                />
             </div>
 
-            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
-                <div [class]="c.popup" rdxAutocompletePopup>
-                    <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
+            <div class="z-50 w-64 data-[closed]:pointer-events-none" *rdxAutocompletePortal rdxAutocompletePositioner>
+                <div
+                    class="demo-combobox-popup mt-2 max-h-60 overflow-y-auto p-1 data-[closed]:hidden"
+                    rdxAutocompletePopup
+                >
+                    <div class="flex flex-col" rdxAutocompleteList aria-label="Tags">
                         @for (tag of tags; track tag) {
-                            <div [class]="c.item" rdxAutocompleteItem>{{ tag }}</div>
+                            <div
+                                class="demo-menu-item data-[highlighted]:bg-muted relative flex items-center py-1.5 pr-2 pl-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[selected]:font-medium"
+                                rdxAutocompleteItem
+                            >
+                                {{ tag }}
+                            </div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
+                    <div class="demo-combobox-empty data-[empty]:py-6" rdxAutocompleteEmpty>No tags found.</div>
                     @if (hiddenCount(ac.value()); as hidden) {
                         <div class="text-muted-foreground border-border mt-1 border-t px-2 py-1 text-xs">
                             {{ hidden }} more {{ hidden === 1 ? 'result' : 'results' }} not shown
@@ -31,7 +66,6 @@ import { _importsAutocomplete } from '../index';
     `
 })
 export class AutocompleteLimit {
-    protected readonly c = demoCombobox;
     readonly value = signal('');
 
     /** How many matches are hidden by the `limit` of 8, for the "N more results" hint. */

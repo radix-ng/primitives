@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { cn, demoAvatar } from '../../storybook/styles';
-import { RdxAvatarFallbackDirective } from '../src/avatar-fallback.directive';
-import { RdxAvatarImageDirective } from '../src/avatar-image.directive';
-import { RdxAvatarRootDirective } from '../src/avatar-root.directive';
+import {
+    RdxAvatarFallbackDirective,
+    RdxAvatarImageDirective,
+    RdxAvatarRootDirective
+} from '@radix-ng/primitives/avatar';
 
 const IMG_COLM = 'https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?&w=128&h=128&dpr=2&q=80';
 const IMG_PEDRO = 'https://images.unsplash.com/photo-1511485977113-f34c92461ad9?ixlib=rb-1.2.1&w=128&h=128&dpr=2&q=80';
@@ -18,21 +19,37 @@ const AVATAR_DIRECTIVES = [RdxAvatarRootDirective, RdxAvatarImageDirective, RdxA
     imports: AVATAR_DIRECTIVES,
     template: `
         <div class="flex items-center gap-4">
-            <span [class]="cn(a.root, a.size.md)" rdxAvatarRoot>
-                <img [class]="a.image" [src]="imgColm" rdxAvatarImage alt="Colm Tuite" />
-                <span [class]="a.fallback" [delayMs]="600" rdxAvatarFallback>CT</span>
+            <span
+                class="demo-avatar-root relative inline-flex size-10 shrink-0 items-center justify-center overflow-hidden align-middle text-sm"
+                rdxAvatarRoot
+            >
+                <img class="size-full object-cover" [src]="imgColm" rdxAvatarImage alt="Colm Tuite" />
+                <span
+                    class="text-foreground flex size-full items-center justify-center font-medium"
+                    [delayMs]="600"
+                    rdxAvatarFallback
+                >
+                    CT
+                </span>
             </span>
 
-            <span [class]="cn(a.root, a.size.md)" rdxAvatarRoot>
-                <img [class]="a.image" [src]="imgPedro" rdxAvatarImage alt="Pedro Duarte" />
-                <span [class]="a.fallback" [delayMs]="600" rdxAvatarFallback>PD</span>
+            <span
+                class="demo-avatar-root relative inline-flex size-10 shrink-0 items-center justify-center overflow-hidden align-middle text-sm"
+                rdxAvatarRoot
+            >
+                <img class="size-full object-cover" [src]="imgPedro" rdxAvatarImage alt="Pedro Duarte" />
+                <span
+                    class="text-foreground flex size-full items-center justify-center font-medium"
+                    [delayMs]="600"
+                    rdxAvatarFallback
+                >
+                    PD
+                </span>
             </span>
         </div>
     `
 })
 export class RdxAvatarDemoComponent {
-    protected readonly cn = cn;
-    protected readonly a = demoAvatar;
     protected readonly imgColm = IMG_COLM;
     protected readonly imgPedro = IMG_PEDRO;
 }
@@ -46,24 +63,37 @@ export class RdxAvatarDemoComponent {
     imports: AVATAR_DIRECTIVES,
     template: `
         <div class="flex items-center gap-4">
-            <span [class]="cn(a.root, a.size.sm)" rdxAvatarRoot>
-                <img [class]="a.image" [src]="img" rdxAvatarImage alt="Colm Tuite" />
-                <span [class]="a.fallback" rdxAvatarFallback>CT</span>
+            <span
+                class="demo-avatar-root relative inline-flex size-8 shrink-0 items-center justify-center overflow-hidden align-middle text-xs"
+                rdxAvatarRoot
+            >
+                <img class="size-full object-cover" [src]="img" rdxAvatarImage alt="Colm Tuite" />
+                <span class="text-foreground flex size-full items-center justify-center font-medium" rdxAvatarFallback>
+                    CT
+                </span>
             </span>
-            <span [class]="cn(a.root, a.size.md)" rdxAvatarRoot>
-                <img [class]="a.image" [src]="img" rdxAvatarImage alt="Colm Tuite" />
-                <span [class]="a.fallback" rdxAvatarFallback>CT</span>
+            <span
+                class="demo-avatar-root relative inline-flex size-10 shrink-0 items-center justify-center overflow-hidden align-middle text-sm"
+                rdxAvatarRoot
+            >
+                <img class="size-full object-cover" [src]="img" rdxAvatarImage alt="Colm Tuite" />
+                <span class="text-foreground flex size-full items-center justify-center font-medium" rdxAvatarFallback>
+                    CT
+                </span>
             </span>
-            <span [class]="cn(a.root, a.size.lg)" rdxAvatarRoot>
-                <img [class]="a.image" [src]="img" rdxAvatarImage alt="Colm Tuite" />
-                <span [class]="a.fallback" rdxAvatarFallback>CT</span>
+            <span
+                class="demo-avatar-root relative inline-flex size-12 shrink-0 items-center justify-center overflow-hidden align-middle text-base"
+                rdxAvatarRoot
+            >
+                <img class="size-full object-cover" [src]="img" rdxAvatarImage alt="Colm Tuite" />
+                <span class="text-foreground flex size-full items-center justify-center font-medium" rdxAvatarFallback>
+                    CT
+                </span>
             </span>
         </div>
     `
 })
 export class RdxAvatarSizesComponent {
-    protected readonly cn = cn;
-    protected readonly a = demoAvatar;
     protected readonly img = IMG_COLM;
 }
 
@@ -77,22 +107,29 @@ export class RdxAvatarSizesComponent {
     template: `
         <div class="flex items-center gap-4">
             <!-- no image at all -->
-            <span [class]="cn(a.root, a.size.md)" rdxAvatarRoot>
-                <span [class]="a.fallback" rdxAvatarFallback>PD</span>
+            <span
+                class="demo-avatar-root relative inline-flex size-10 shrink-0 items-center justify-center overflow-hidden align-middle text-sm"
+                rdxAvatarRoot
+            >
+                <span class="text-foreground flex size-full items-center justify-center font-medium" rdxAvatarFallback>
+                    PD
+                </span>
             </span>
 
             <!-- image that fails to load -->
-            <span [class]="cn(a.root, a.size.md)" rdxAvatarRoot>
-                <img [class]="a.image" rdxAvatarImage alt="Broken" src="" />
-                <span [class]="a.fallback" rdxAvatarFallback>JD</span>
+            <span
+                class="demo-avatar-root relative inline-flex size-10 shrink-0 items-center justify-center overflow-hidden align-middle text-sm"
+                rdxAvatarRoot
+            >
+                <img class="size-full object-cover" rdxAvatarImage alt="Broken" src="" />
+                <span class="text-foreground flex size-full items-center justify-center font-medium" rdxAvatarFallback>
+                    JD
+                </span>
             </span>
         </div>
     `
 })
-export class RdxAvatarFallbackComponent {
-    protected readonly cn = cn;
-    protected readonly a = demoAvatar;
-}
+export class RdxAvatarFallbackComponent {}
 
 /**
  * `delayMs` waits before showing the fallback, so it only appears on slower
@@ -103,13 +140,19 @@ export class RdxAvatarFallbackComponent {
     selector: 'rdx-avatar-delay',
     imports: AVATAR_DIRECTIVES,
     template: `
-        <span [class]="cn(a.root, a.size.md)" rdxAvatarRoot>
-            <img [class]="a.image" rdxAvatarImage alt="Slow" src="https://invalid.example/none.png" />
-            <span [class]="a.fallback" [delayMs]="600" rdxAvatarFallback>RN</span>
+        <span
+            class="demo-avatar-root relative inline-flex size-10 shrink-0 items-center justify-center overflow-hidden align-middle text-sm"
+            rdxAvatarRoot
+        >
+            <img class="size-full object-cover" rdxAvatarImage alt="Slow" src="https://invalid.example/none.png" />
+            <span
+                class="text-foreground flex size-full items-center justify-center font-medium"
+                [delayMs]="600"
+                rdxAvatarFallback
+            >
+                RN
+            </span>
         </span>
     `
 })
-export class RdxAvatarDelayComponent {
-    protected readonly cn = cn;
-    protected readonly a = demoAvatar;
-}
+export class RdxAvatarDelayComponent {}

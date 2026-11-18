@@ -1,9 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
-import { RdxProgressIndicatorDirective } from '../src/progress-indicator.directive';
-import { RdxProgressLabelDirective } from '../src/progress-label.directive';
-import { RdxProgressRootDirective } from '../src/progress-root.directive';
-import { RdxProgressTrackDirective } from '../src/progress-track.directive';
-import { RdxProgressValueDirective } from '../src/progress-value.directive';
+import {
+    RdxProgressIndicatorDirective,
+    RdxProgressLabelDirective,
+    RdxProgressRootDirective,
+    RdxProgressTrackDirective,
+    RdxProgressValueDirective
+} from '@radix-ng/primitives/progress';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,

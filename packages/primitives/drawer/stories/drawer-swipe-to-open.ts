@@ -1,11 +1,32 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { drawerImports } from '@radix-ng/primitives/drawer';
-import { cn, demoButton, demoDrawer } from '../../storybook/styles';
+import {
+    RdxDrawerBackdrop,
+    RdxDrawerClose,
+    RdxDrawerContent,
+    RdxDrawerDescription,
+    RdxDrawerPopup,
+    RdxDrawerPortal,
+    RdxDrawerRoot,
+    RdxDrawerSwipeArea,
+    RdxDrawerTitle,
+    RdxDrawerViewport
+} from '@radix-ng/primitives/drawer';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-drawer-swipe-to-open',
-    imports: [...drawerImports],
+    imports: [
+        RdxDrawerRoot,
+        RdxDrawerSwipeArea,
+        RdxDrawerPortal,
+        RdxDrawerBackdrop,
+        RdxDrawerViewport,
+        RdxDrawerPopup,
+        RdxDrawerContent,
+        RdxDrawerTitle,
+        RdxDrawerDescription,
+        RdxDrawerClose
+    ],
     template: `
         <div
             class="border-border bg-background text-foreground relative min-h-80 w-full max-w-2xl overflow-hidden border"
@@ -29,29 +50,24 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
 
                 <ng-template [container]="portalContainer" rdxDrawerPortal>
                     <div
-                        [class]="
-                            cn(
-                                'bg-foreground/20 absolute inset-0 opacity-[calc(1-var(--drawer-swipe-progress))]',
-                                'transition-opacity duration-[450ms] ease-[cubic-bezier(0.32,0.72,0,1)]',
-                                d.overlayAnimated,
-                                'data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0'
-                            )
-                        "
+                        class="bg-foreground/20 ease-demo-drawer-swipe absolute inset-0 opacity-[calc(1-var(--drawer-swipe-progress))] transition-opacity duration-(--duration-demo-drawer-swipe) data-[closed]:opacity-0 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0"
                         rdxDrawerBackdrop
                     ></div>
 
                     <div class="absolute inset-0 z-20 flex items-stretch justify-end" rdxDrawerViewport>
                         <div
-                            class="border-border bg-card text-card-foreground h-full w-80 max-w-[calc(100%-3rem)] [transform:translateX(var(--drawer-swipe-movement-x))] overflow-y-auto border-l p-6 shadow-lg outline-none [--drawer-swipe-movement-x:0px] [transition:transform_450ms_cubic-bezier(0.32,0.72,0,1)] data-[ending-style]:[transform:translateX(100%)] data-[starting-style]:[transform:translateX(100%)] data-[swiping]:select-none data-[swiping]:[transition:none]"
+                            class="border-border bg-card text-card-foreground h-full w-80 max-w-[calc(100%-3rem)] [transform:translateX(var(--drawer-swipe-movement-x))] overflow-y-auto border-l p-6 shadow-lg outline-none [--drawer-swipe-movement-x:0px] [transition:var(--transition-demo-drawer-swipe)] data-[ending-style]:[transform:translateX(100%)] data-[starting-style]:[transform:translateX(100%)] data-[swiping]:select-none data-[swiping]:[transition:none]"
                             rdxDrawerPopup
                         >
                             <div class="mx-auto w-full max-w-lg" rdxDrawerContent>
-                                <h2 [class]="d.title" rdxDrawerTitle>Library</h2>
-                                <p [class]="d.description" rdxDrawerDescription>
+                                <h2 class="demo-dialog-title" rdxDrawerTitle>Library</h2>
+                                <p class="text-muted-foreground mt-1.5 text-sm" rdxDrawerDescription>
                                     Swipe from the edge whenever you want to jump back into your playlists.
                                 </p>
-                                <div [class]="d.footer">
-                                    <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDrawerClose>Close</button>
+                                <div class="mt-6 flex justify-end gap-2">
+                                    <button class="demo-button demo-button-outline h-8 px-3 text-xs" rdxDrawerClose>
+                                        Close
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -61,8 +77,4 @@ import { cn, demoButton, demoDrawer } from '../../storybook/styles';
         </div>
     `
 })
-export class RdxDrawerSwipeToOpenComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly d = demoDrawer;
-}
+export class RdxDrawerSwipeToOpenComponent {}

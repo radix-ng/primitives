@@ -1,12 +1,44 @@
 import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
-import { createRdxDialogHandle, dialogImports } from '@radix-ng/primitives/dialog';
-import { menuImports, RdxMenuRoot, type RdxMenuOpenChange } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoDialog, demoInput, demoMenu } from '../../storybook/styles';
+import {
+    createRdxDialogHandle,
+    RdxDialogBackdrop,
+    RdxDialogClose,
+    RdxDialogDescription,
+    RdxDialogPopup,
+    RdxDialogPortal,
+    RdxDialogRoot,
+    RdxDialogTitle,
+    RdxDialogTrigger
+} from '@radix-ng/primitives/dialog';
+import {
+    RdxMenuItem,
+    RdxMenuPopup,
+    RdxMenuPortal,
+    RdxMenuPositioner,
+    RdxMenuRoot,
+    RdxMenuTrigger,
+    type RdxMenuOpenChange
+} from '@radix-ng/primitives/menu';
 
 @Component({
     selector: 'rdx-menu-open-dialog',
-    imports: [...menuImports, ...dialogImports],
+    imports: [
+        RdxMenuRoot,
+        RdxMenuTrigger,
+        RdxMenuPortal,
+        RdxMenuPositioner,
+        RdxMenuPopup,
+        RdxMenuItem,
+        RdxDialogRoot,
+        RdxDialogTrigger,
+        RdxDialogPortal,
+        RdxDialogBackdrop,
+        RdxDialogPopup,
+        RdxDialogTitle,
+        RdxDialogDescription,
+        RdxDialogClose
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <section class="grid gap-4">
@@ -21,15 +53,33 @@ import { cn, demoButton, demoDialog, demoInput, demoMenu } from '../../storybook
                 </label>
             </div>
             <ng-container (onOpenChange)="change($event)" (onOpenChangeComplete)="complete($event)" rdxMenuRoot>
-                <button [class]="cn(b.base, b.outline, b.size.md, 'w-fit')" rdxMenuTrigger>Document actions</button>
+                <button class="demo-button demo-button-outline h-9 w-fit px-4" rdxMenuTrigger>Document actions</button>
                 <ng-template [keepMounted]="keep()" rdxMenuPortal>
-                    <div [class]="m.positioner" align="start" sideOffset="4" rdxMenuPositioner>
-                        <div [class]="cn(m.popup, m.popupAnimated, 'w-56')" rdxMenuPopup>
-                            <button [class]="m.item" [handle]="dialog" rdxMenuItem rdxDialogTrigger>
+                    <div class="z-50 data-[closed]:pointer-events-none" align="start" sideOffset="4" rdxMenuPositioner>
+                        <div
+                            class="demo-menu-popup data-[open]:animate-popover-popup-in data-[closed]:animate-popover-popup-out w-56 min-w-[8rem] origin-[var(--transform-origin)] p-1 data-[closed]:pointer-events-none data-[closed]:block! data-[closed]:hidden"
+                            rdxMenuPopup
+                        >
+                            <button
+                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                [handle]="dialog"
+                                rdxMenuItem
+                                rdxDialogTrigger
+                            >
                                 Rename document…
                             </button>
-                            <button [class]="m.item" rdxMenuItem>Duplicate</button>
-                            <button [class]="m.item" rdxMenuItem>Archive</button>
+                            <button
+                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                rdxMenuItem
+                            >
+                                Duplicate
+                            </button>
+                            <button
+                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                rdxMenuItem
+                            >
+                                Archive
+                            </button>
                         </div>
                     </div>
                 </ng-template>
@@ -39,22 +89,32 @@ import { cn, demoButton, demoDialog, demoInput, demoMenu } from '../../storybook
             </output>
             <ng-container [handle]="dialog" rdxDialogRoot>
                 <ng-template rdxDialogPortal>
-                    <div [class]="d.backdrop" rdxDialogBackdrop></div>
-                    <div [class]="d.popup" rdxDialogPopup>
-                        <h2 [class]="d.title" rdxDialogTitle>Rename document</h2>
-                        <p [class]="d.description" rdxDialogDescription>
+                    <div class="bg-foreground/50 fixed inset-0 z-50" rdxDialogBackdrop></div>
+                    <div
+                        class="demo-surface fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 p-6 transition-[transform,scale] focus:outline-none data-[nested-dialog-open]:scale-[0.96]"
+                        rdxDialogPopup
+                    >
+                        <h2 class="demo-dialog-title" rdxDialogTitle>Rename document</h2>
+                        <p class="text-muted-foreground mt-1.5 text-sm" rdxDialogDescription>
                             Focus stays in this dialog while the menu finishes closing.
                         </p>
-                        <label [class]="d.field" [for]="nameId">Document name</label>
-                        <input [id]="nameId" [class]="input" value="Project notes" />
-                        <div [class]="d.footer">
+                        <label class="demo-label mt-4 grid gap-1.5" [for]="nameId">Document name</label>
+                        <input class="demo-input h-9 w-full px-3" [id]="nameId" value="Project notes" />
+                        <div class="mt-6 flex justify-end gap-2">
                             @if (defer()) {
-                                <button [class]="cn(b.base, b.ghost, b.size.sm)" (click)="finishMenuExit()">
+                                <button
+                                    class="demo-button demo-button-ghost h-8 px-3 text-xs"
+                                    (click)="finishMenuExit()"
+                                >
                                     Finish menu exit
                                 </button>
                             }
-                            <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDialogClose>Cancel</button>
-                            <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Save</button>
+                            <button class="demo-button demo-button-outline h-8 px-3 text-xs" rdxDialogClose>
+                                Cancel
+                            </button>
+                            <button class="demo-button demo-button-primary h-8 px-3 text-xs" rdxDialogClose>
+                                Save
+                            </button>
                         </div>
                     </div>
                 </ng-template>
@@ -63,11 +123,6 @@ import { cn, demoButton, demoDialog, demoInput, demoMenu } from '../../storybook
     `
 })
 export class RdxMenuOpenDialogComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly d = demoDialog;
-    protected readonly m = demoMenu;
-    protected readonly input = demoInput;
     protected readonly nameId = injectId('rdx-menu-document-name-');
     protected readonly dialog = createRdxDialogHandle();
     protected readonly keep = signal(false);

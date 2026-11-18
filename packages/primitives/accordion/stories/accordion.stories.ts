@@ -1,12 +1,16 @@
-import { argsToTemplate, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { cn, demoAccordion } from '../../storybook/styles';
+import {
+    RdxAccordionHeaderDirective,
+    RdxAccordionItemDirective,
+    RdxAccordionPanelDirective,
+    RdxAccordionPanelPresenceDirective,
+    RdxAccordionRootDirective,
+    RdxAccordionTriggerDirective
+} from '@radix-ng/primitives/accordion';
+import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
-import { RdxAccordionHeaderDirective } from '../src/accordion-header.directive';
-import { RdxAccordionItemDirective } from '../src/accordion-item.directive';
-import { RdxAccordionPanelPresenceDirective } from '../src/accordion-panel-presence.directive';
-import { RdxAccordionPanelDirective } from '../src/accordion-panel.directive';
-import { RdxAccordionRootDirective } from '../src/accordion-root.directive';
-import { RdxAccordionTriggerDirective } from '../src/accordion-trigger.directive';
+import { AccordionDefaultStory } from './accordion-default-example';
+import defaultPortableSource from './accordion-default-example?raw';
+
 import { AccordionCollapsibleExample } from './accordion-collapsible';
 import { AccordionCollapsibleArrayExample } from './accordion-collapsible-array';
 import { AccordionControlledExample } from './accordion-controlled';
@@ -40,6 +44,7 @@ export default {
     decorators: [
         moduleMetadata({
             imports: [
+                AccordionDefaultStory,
                 RdxAccordionRootDirective,
                 RdxAccordionItemDirective,
                 RdxAccordionHeaderDirective,
@@ -65,41 +70,15 @@ export default {
 type Story = StoryObj;
 
 export const Default: Story = {
+    parameters: source(defaultPortableSource),
     args: {
         disabled: false,
         multiple: false
     },
     render: (args) => ({
-        props: { ...args, cn, a: demoAccordion },
+        props: { ...args },
         template: html`
-            <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="['item-1']" ${argsToTemplate(args)} rdxAccordionRoot>
-                <div [class]="a.item" [value]="'item-1'" rdxAccordionItem>
-                    <h3 [class]="a.header" rdxAccordionHeader>
-                        <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
-                    </h3>
-                    <div [class]="a.content" *rdxAccordionPanelPresence rdxAccordionPanel>
-                        <div [class]="a.contentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
-                    </div>
-                </div>
-                <div [class]="a.item" [value]="'item-2'" rdxAccordionItem>
-                    <h3 [class]="a.header" rdxAccordionHeader>
-                        <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
-                    </h3>
-                    <div [class]="a.content" *rdxAccordionPanelPresence rdxAccordionPanel>
-                        <div [class]="a.contentText">
-                            Yes. It's unstyled by default, giving you freedom over the look and feel.
-                        </div>
-                    </div>
-                </div>
-                <div [class]="a.item" [value]="'item-3'" rdxAccordionItem>
-                    <h3 [class]="a.header" rdxAccordionHeader>
-                        <button [class]="a.trigger" type="button" rdxAccordionTrigger>Can it be animated?</button>
-                    </h3>
-                    <div [class]="a.content" *rdxAccordionPanelPresence rdxAccordionPanel>
-                        <div [class]="a.contentText">Yes! You can animate the Accordion with CSS or JavaScript.</div>
-                    </div>
-                </div>
-            </div>
+            <rdx-accordion-default-example [disabled]="disabled" [multiple]="multiple" />
         `
     })
 };

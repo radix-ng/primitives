@@ -1,7 +1,15 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideArrowRight } from '@lucide/angular';
-import { demoCombobox } from '../../storybook/styles';
-import { _importsCombobox } from '../index';
+import {
+    RdxComboboxEmpty,
+    RdxComboboxInput,
+    RdxComboboxItem,
+    RdxComboboxList,
+    RdxComboboxPopup,
+    RdxComboboxPortal,
+    RdxComboboxPositioner,
+    RdxComboboxRoot
+} from '@radix-ng/primitives/combobox';
 
 /**
  * A command/search palette: `selectionMode="none"` (no value is committed — it filters and runs an
@@ -10,7 +18,17 @@ import { _importsCombobox } from '../index';
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-command',
-    imports: [_importsCombobox, LucideArrowRight],
+    imports: [
+        RdxComboboxRoot,
+        RdxComboboxInput,
+        RdxComboboxPortal,
+        RdxComboboxPositioner,
+        RdxComboboxPopup,
+        RdxComboboxList,
+        RdxComboboxItem,
+        RdxComboboxEmpty,
+        LucideArrowRight
+    ],
     template: `
         <div
             class="flex w-64 flex-col gap-2"
@@ -19,23 +37,37 @@ import { _importsCombobox } from '../index';
             autoHighlight="always"
             rdxComboboxRoot
         >
-            <div [class]="c.control">
-                <input [class]="c.input" rdxComboboxInput placeholder="Run a command…" aria-label="Command" />
+            <div
+                class="demo-combobox-control focus-within:ring-ring focus-within:ring-offset-background relative inline-flex h-9 w-64 items-center focus-within:ring-2 focus-within:ring-offset-2 data-[disabled]:opacity-50"
+            >
+                <input
+                    class="demo-combobox-input placeholder:text-muted-foreground h-full w-full pr-9 pl-3"
+                    rdxComboboxInput
+                    placeholder="Run a command…"
+                    aria-label="Command"
+                />
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="c.popup" rdxComboboxPopup>
-                    <div [class]="c.list" rdxComboboxList aria-label="Commands">
+            <div class="z-50 w-64 data-[closed]:pointer-events-none" *rdxComboboxPortal rdxComboboxPositioner>
+                <div
+                    class="demo-combobox-popup mt-2 max-h-60 overflow-y-auto p-1 data-[closed]:hidden"
+                    rdxComboboxPopup
+                >
+                    <div class="flex flex-col" rdxComboboxList aria-label="Commands">
                         @for (command of commands; track command) {
-                            <div [class]="c.item" [value]="command" rdxComboboxItem>
-                                <span [class]="c.itemIndicator">
+                            <div
+                                class="demo-menu-item data-[highlighted]:bg-muted relative flex items-center py-1.5 pr-2 pl-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[selected]:font-medium"
+                                [value]="command"
+                                rdxComboboxItem
+                            >
+                                <span class="absolute left-2 flex size-3.5 items-center justify-center">
                                     <svg lucideArrowRight size="14"></svg>
                                 </span>
                                 {{ command }}
                             </div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxComboboxEmpty>No commands.</div>
+                    <div class="demo-combobox-empty data-[empty]:py-6" rdxComboboxEmpty>No commands.</div>
                 </div>
             </div>
 
@@ -47,7 +79,6 @@ import { _importsCombobox } from '../index';
     `
 })
 export class ComboboxCommand {
-    protected readonly c = demoCombobox;
     readonly lastRun = signal<string | null>(null);
     readonly commands = ['New File', 'Open Folder', 'Save All', 'Toggle Terminal', 'Find in Files'];
 

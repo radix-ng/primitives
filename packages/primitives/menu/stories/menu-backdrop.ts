@@ -1,33 +1,70 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoMenu } from '../../storybook/styles';
+import {
+    RdxMenuBackdrop,
+    RdxMenuItem,
+    RdxMenuPopup,
+    RdxMenuPortal,
+    RdxMenuPositioner,
+    RdxMenuRoot,
+    RdxMenuSeparator,
+    RdxMenuTrigger
+} from '@radix-ng/primitives/menu';
 
 @Component({
     selector: 'rdx-menu-backdrop',
-    imports: [RdxMenuModule],
+    imports: [
+        RdxMenuRoot,
+        RdxMenuTrigger,
+        RdxMenuPortal,
+        RdxMenuPositioner,
+        RdxMenuPopup,
+        RdxMenuBackdrop,
+        RdxMenuItem,
+        RdxMenuSeparator
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <ng-container #root="rdxMenuRoot" [modal]="true" rdxMenuRoot>
-            <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>With Backdrop</button>
+            <button class="demo-button demo-button-outline h-9 px-4" rdxMenuTrigger>With Backdrop</button>
 
             <ng-template rdxMenuPortal>
                 <div class="bg-foreground/10 fixed inset-0" rdxMenuBackdrop></div>
-                <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-                    <div [class]="m.popup" rdxMenuPopup>
-                        <button [class]="m.item" rdxMenuItem>New Tab</button>
-                        <button [class]="m.item" rdxMenuItem>New Window</button>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" [disabled]="true" rdxMenuItem>New Private Window</button>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" rdxMenuItem>Print…</button>
+                <div class="z-50 data-[closed]:pointer-events-none" sideOffset="4" rdxMenuPositioner>
+                    <div
+                        class="demo-menu-popup min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                        rdxMenuPopup
+                    >
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            rdxMenuItem
+                        >
+                            New Tab
+                        </button>
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            rdxMenuItem
+                        >
+                            New Window
+                        </button>
+                        <div class="bg-border -mx-1 my-1 h-px" rdxMenuSeparator></div>
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            [disabled]="true"
+                            rdxMenuItem
+                        >
+                            New Private Window
+                        </button>
+                        <div class="bg-border -mx-1 my-1 h-px" rdxMenuSeparator></div>
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            rdxMenuItem
+                        >
+                            Print…
+                        </button>
                     </div>
                 </div>
             </ng-template>
         </ng-container>
     `
 })
-export class RdxMenuBackdropExampleComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly m = demoMenu;
-}
+export class RdxMenuBackdropExampleComponent {}

@@ -1,4 +1,6 @@
-import { Meta } from '@storybook/addon-docs/blocks';
+import { Meta, Source } from '@storybook/addon-docs/blocks';
+import buttonExampleSource from '../button/stories/button-default-example?raw';
+import demoStylesSource from '../../../apps/radix-storybook/.storybook/demo-styles.css?raw';
 
 <Meta title="Guides/Styling" />
 
@@ -19,7 +21,7 @@ Visual reference: [coss.com](https://coss.com/ui) (Base UI + Tailwind). The Stor
 2. **Keep shared styles in one place.** Theme values belong in `@theme`. Stable combinations of
    classes that should change together may use `@apply` in the shared `@layer components`.
    Keep sizes, spacing, layout and state utilities specific to an example visible in its template.
-   Existing shared recipes remain available from `packages/primitives/storybook/styles.ts`.
+   Reuse the common classes from `demo-styles.css`.
 3. **Reach for semantic tokens first** — `bg-background`, `text-foreground`, `bg-muted`,
    `bg-popover`, `border-border`, `text-primary-foreground`, `ring-ring`. Avoid raw Radix theme
    colors (`violet`, `mauve`, `black-a*`) or hard-coded `white`/`black` when a token exists. These
@@ -32,73 +34,68 @@ Visual reference: [coss.com](https://coss.com/ui) (Base UI + Tailwind). The Stor
 
 ## The style layer
 
-`packages/primitives/storybook/styles.ts` exports documented constants:
+Storybook and Playground share `apps/radix-storybook/.storybook/main.css`, which imports
+`demo-styles.css`. That portable stylesheet owns the theme, common recipes and keyframes.
 
-| Export          | Purpose                                                    |
-| --------------- | --------------------------------------------------------- |
-| `cn(...)`       | Join conditional class strings, dropping falsy values.    |
-| `demoFocusRing` | Shared `focus-visible` ring matching the `--ring` token.  |
-| `demoButton`    | `base` + a `variant` + a `size` for buttons.              |
-| `demoCard`      | Compatibility alias for the shared `.demo-surface` class. |
-| `demoInput`     | Text input surface.                                       |
-| `demoSelect`    | Select trigger, popup, list, items, indicators and icons.  |
+| Class | Purpose |
+| --- | --- |
+| `demo-button` | Button appearance, intrinsic alignment, shared focus and disabled states. |
+| `demo-button-primary`, `demo-button-outline`, … | One button color variant. |
+| `demo-input` | Text input appearance and shared focus. |
+| `demo-focus` | The same focus-visible ring for other controls. |
+| `demo-surface` | Card or panel colors, border, rounding and shadow. |
+| `demo-arrow` | Common popup arrow fill and border shadow. |
+| `demo-label` | Shared label typography. |
+| `demo-select-*`, `demo-combobox-*`, … | Appearance shared by parts of one family. |
 
-### Surfaces
-
-The common theme defines `.demo-surface` once, in `@layer components`, using semantic card,
-foreground and border tokens, rounding and a small shadow. Default Popover keeps its own details
-on the Popup:
+Sizes, spacing, content layout and state rules specific to an example stay in the template:
 
 ```html
+<button rdxButton class="demo-button demo-button-primary h-9 px-4">Primary</button>
+<button rdxButton class="demo-button demo-button-outline h-8 px-3 text-xs">Outline</button>
+<input rdxInput class="demo-input h-9 w-full px-3" />
 <div
   rdxPopoverPopup
   class="demo-surface relative w-80 p-4 data-[starting-style]:animate-popover-popup-in data-[ending-style]:animate-popover-popup-out"
 >…</div>
 ```
 
-Utilities have priority over the components layer: `bg-muted`, `border-transparent` and
-`shadow-none` override the corresponding surface defaults regardless of class-string order.
-`cn` joins strings; it does not resolve conflicting utilities.
+The button variants are `primary`, `secondary`, `outline`, `ghost` and `destructive`. Sizes are
+ordinary utilities on each example. `demo-button` handles native `disabled`, `data-disabled` and
+`aria-disabled`; `demo-focus` is also shared by button and input selectors in a single declaration.
 
-Default Popover provides two copyable blocks. **Show code** provides the component with public
-imports. The CSS block supplies the tokens, surface and animations from `demo-styles.css`,
-which Storybook and Playground import through the same stylesheet.
+Utilities have priority over `components`. Local `bg-muted`, `border-transparent`, `shadow-none`
+or size utilities override the corresponding common defaults regardless of class-string order.
 
-### Buttons
+## Copy an example into your app
 
-Compose one variant and one size on top of `base`:
+The component's **Show code** uses explicit imports from public Radix NG entry points. The page's
+**Setup and shared files** section includes wrapper/helper sources, dependencies and the actual CSS
+read with `?raw` from the file used by both applications. Consumer skills preserve those same blocks.
+The old TS style exports and Playground's re-export are no longer needed.
 
-```ts
-import { cn, demoButton } from '../../storybook/styles';
+Install `@radix-ng/primitives` and the dependencies listed on the example page, such as
+`@lucide/angular` for icons. Configure Tailwind v4 through `@tailwindcss/postcss`. Save the supplied
+CSS as `demo-styles.css`, then import it after Tailwind in your global stylesheet:
 
-// in a component:
-protected readonly cn = cn;
-protected readonly b = demoButton;
+```css
+@import 'tailwindcss';
+@import './demo-styles.css';
 ```
 
-```html
-<button rdxButton [class]="cn(b.base, b.primary, b.size.md)">Primary</button>
-<button rdxButton [class]="cn(b.base, b.outline, b.size.sm)">Outline</button>
-<button rdxButton aria-label="Add" [class]="cn(b.base, b.ghost, b.size.icon)">
-  <svg lucidePlus size="16" />
-</button>
-```
+Import the example component into its parent and use its selector. Copy additional files alongside
+it, preserving their relative import paths. Set `data-theme="dark"` on `<html>` for the dark theme.
+Explicit directive imports also work when Angular compiles the copied component against an installed
+package: avoid spreading published arrays such as `popoverImports` in component metadata.
 
-Variants: `primary`, `secondary`, `outline`, `ghost`, `destructive`.
-Sizes: `sm`, `md`, `lg`, `icon`.
+<Source language="typescript" code={buttonExampleSource} />
 
-`demoButton.base` already styles the disabled look for both the native `disabled` attribute and the
-headless `data-disabled` attribute, so it pairs directly with `RdxButtonDirective`.
+<details>
+<summary>demo-styles.css</summary>
 
-See the **Primitives/Button** story for the live reference. Other primitives are migrated onto this
-layer in follow-up changes.
+<Source language="css" code={demoStylesSource} />
 
-### Select
-
-Use `demoSelect` for Select examples, including application wrappers and form recipes. It shares
-the trigger shadow, border, focus ring and disabled/invalid states, popup surface, item highlights,
-and icon sizing across stories. Keep width and content-specific layout classes on the example.
-Apply `demoSelect.list` to the list so popup padding is consistent even with scroll buttons.
+</details>
 
 ## Positioning popups: put `z-index` on the positioner
 
@@ -122,4 +119,4 @@ the `z-*` on the positioner keeps the whole popup above the backdrop.
 > **Migration (ADR 0012).** Earlier versions copied the popup's computed `z-index` onto the
 > positioner, so the guidance was the inverse ("put `z-*` on the popup"). The positioner no longer
 > copies anything; if you set the stacking `z-*` on the popup, move it up one element to the
-> positioner. The shared `demoCombobox` constants now place `z-50` on `positioner` for this reason.
+> positioner. Combobox templates place `z-50` on the positioner for this reason.

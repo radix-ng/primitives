@@ -205,6 +205,7 @@ test.describe('Autocomplete grid (emoji picker) trigger reachability', () => {
         const search = page.locator(input);
         await search.pressSequentially('face');
         await search.press('ArrowDown');
+        await expect(search).toHaveAttribute('aria-activedescendant', /.+/);
         const activeId = await search.getAttribute('aria-activedescendant');
         expect(activeId).toBeTruthy();
         await search.press('End');

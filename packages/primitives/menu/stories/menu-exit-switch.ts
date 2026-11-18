@@ -1,8 +1,17 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
 import { RdxFloatingInsideElement } from '@radix-ng/primitives/dismissable-layer';
-import { createRdxMenuHandle, RdxMenuModule, RdxMenuOpenChange } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoMenu } from '../../storybook/styles';
+import {
+    createRdxMenuHandle,
+    RdxMenuItem,
+    RdxMenuOpenChange,
+    RdxMenuPopup,
+    RdxMenuPortal,
+    RdxMenuPositioner,
+    RdxMenuRoot,
+    RdxMenuTrigger,
+    RdxMenuViewport
+} from '@radix-ng/primitives/menu';
 
 interface MailMenu {
     label: string;
@@ -11,7 +20,16 @@ interface MailMenu {
 
 @Component({
     selector: 'rdx-menu-exit-switch',
-    imports: [RdxMenuModule, RdxFloatingInsideElement],
+    imports: [
+        RdxMenuRoot,
+        RdxMenuTrigger,
+        RdxMenuPortal,
+        RdxMenuPositioner,
+        RdxMenuPopup,
+        RdxMenuViewport,
+        RdxMenuItem,
+        RdxFloatingInsideElement
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <section class="grid w-96 max-w-full gap-4">
@@ -39,21 +57,35 @@ interface MailMenu {
                     </label>
                 </div>
                 <div class="flex flex-wrap gap-2" rdxFloatingInside>
-                    <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="handle.open(inboxId)">
+                    <button class="demo-button demo-button-outline h-8 px-3 text-xs" (click)="handle.open(inboxId)">
                         Open Inbox
                     </button>
-                    <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="openArchive()">Open Archive</button>
-                    <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="root.close()">Close</button>
-                    <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="root.unmount()">Finish exit</button>
+                    <button class="demo-button demo-button-outline h-8 px-3 text-xs" (click)="openArchive()">
+                        Open Archive
+                    </button>
+                    <button class="demo-button demo-button-outline h-8 px-3 text-xs" (click)="root.close()">
+                        Close
+                    </button>
+                    <button class="demo-button demo-button-outline h-8 px-3 text-xs" (click)="root.unmount()">
+                        Finish exit
+                    </button>
                 </div>
                 <ng-template [keepMounted]="keep()" rdxMenuPortal>
-                    <div [class]="m.positioner" sideOffset="8" align="start" rdxMenuPositioner>
-                        <div [class]="cn(m.popup, m.popupAnimated, 'w-56')" rdxMenuPopup>
+                    <div class="z-50 data-[closed]:pointer-events-none" sideOffset="8" align="start" rdxMenuPositioner>
+                        <div
+                            class="demo-menu-popup data-[open]:animate-popover-popup-in data-[closed]:animate-popover-popup-out w-56 min-w-[8rem] origin-[var(--transform-origin)] p-1 data-[closed]:pointer-events-none data-[closed]:block! data-[closed]:hidden"
+                            rdxMenuPopup
+                        >
                             <div rdxMenuViewport>
                                 <div>
-                                    <div [class]="m.groupLabel">{{ root.payload()?.label }}</div>
+                                    <div class="demo-menu-group-label px-2 py-1.5">{{ root.payload()?.label }}</div>
                                     @for (item of root.payload()?.items; track item.id) {
-                                        <button [class]="m.item" rdxMenuItem>{{ item.label }}</button>
+                                        <button
+                                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                            rdxMenuItem
+                                        >
+                                            {{ item.label }}
+                                        </button>
                                     }
                                 </div>
                             </div>
@@ -66,7 +98,7 @@ interface MailMenu {
             </output>
             <div class="flex gap-2">
                 <button
-                    [class]="cn(b.base, b.outline, b.size.md, 'data-[popup-open]:bg-muted')"
+                    class="demo-button demo-button-outline data-[popup-open]:bg-muted h-9 px-4"
                     [id]="inboxId"
                     [handle]="handle"
                     [payload]="inbox"
@@ -75,7 +107,7 @@ interface MailMenu {
                     Inbox
                 </button>
                 <button
-                    [class]="cn(b.base, b.outline, b.size.md, 'data-[popup-open]:bg-muted')"
+                    class="demo-button demo-button-outline data-[popup-open]:bg-muted h-9 px-4"
                     [id]="archiveId"
                     [handle]="handle"
                     [payload]="archive"
@@ -110,9 +142,6 @@ export class RdxMenuExitSwitchComponent {
     protected readonly defer = signal(true);
     protected readonly keep = signal(false);
     protected readonly completed = signal<string[]>([]);
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly m = demoMenu;
     protected change(change: RdxMenuOpenChange): void {
         if (!change.open && this.defer()) change.eventDetails.preventUnmountOnClose();
     }

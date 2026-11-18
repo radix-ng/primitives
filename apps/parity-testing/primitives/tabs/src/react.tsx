@@ -1,6 +1,6 @@
 import { Tabs } from '@base-ui/react/tabs';
 import { createRoot } from 'react-dom/client';
-import '../../../../radix-storybook/.storybook/tailwind.css';
+import '../../../../radix-storybook/.storybook/main.css';
 import { ReactActivation } from './activation.react';
 import { ReactCollection } from './collection.react';
 import { config, installProbe, classes as s } from './contract';

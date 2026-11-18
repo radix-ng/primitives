@@ -7,8 +7,7 @@ import {
     RdxFieldRoot,
     RdxNgControlField
 } from '@radix-ng/primitives/field';
-import { demoInput } from '../../storybook/styles';
-import { RdxInputDirective } from '../src/input.directive';
+import { RdxInputDirective } from '@radix-ng/primitives/input';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -26,7 +25,7 @@ import { RdxInputDirective } from '../src/input.directive';
         <div class="flex w-80 flex-col gap-2" rdxFieldRoot required>
             <label class="text-foreground text-sm font-medium" rdxFieldLabel>Email</label>
             <input
-                [class]="inputClass"
+                class="demo-input h-9 w-full px-3"
                 [formControl]="email"
                 rdxInput
                 rdxNgControlField
@@ -41,5 +40,4 @@ import { RdxInputDirective } from '../src/input.directive';
 })
 export class InputReactiveFormsExample {
     readonly email = new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.email] });
-    protected readonly inputClass = demoInput;
 }

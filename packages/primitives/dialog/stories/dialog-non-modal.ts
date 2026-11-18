@@ -1,12 +1,28 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
-import { dialogImports } from '@radix-ng/primitives/dialog';
-import { cn, demoButton, demoDialog } from '../../storybook/styles';
+import {
+    RdxDialogClose,
+    RdxDialogDescription,
+    RdxDialogPopup,
+    RdxDialogPortal,
+    RdxDialogRoot,
+    RdxDialogTitle,
+    RdxDialogTrigger
+} from '@radix-ng/primitives/dialog';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-non-modal',
-    imports: [...dialogImports, LucideX],
+    imports: [
+        RdxDialogRoot,
+        RdxDialogTrigger,
+        RdxDialogPortal,
+        RdxDialogPopup,
+        RdxDialogTitle,
+        RdxDialogDescription,
+        RdxDialogClose,
+        LucideX
+    ],
     template: `
         <div class="flex flex-col items-center gap-4">
             <p class="text-muted-foreground max-w-96 text-center text-xs leading-5">
@@ -14,31 +30,38 @@ import { cn, demoButton, demoDialog } from '../../storybook/styles';
             </p>
 
             <div [modal]="false" rdxDialogRoot>
-                <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open non-modal dialog</button>
+                <button class="demo-button demo-button-primary h-9 px-4" rdxDialogTrigger>Open non-modal dialog</button>
 
                 <ng-template rdxDialogPortal>
-                    <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-                        <h2 [class]="d.title" rdxDialogTitle>Non-modal dialog</h2>
-                        <p [class]="d.description" rdxDialogDescription>
+                    <div
+                        class="demo-surface data-[open]:animate-dialog-popup-in data-[closed]:animate-dialog-popup-out fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 p-6 transition-[transform,scale] focus:outline-none data-[nested-dialog-open]:scale-[0.96]"
+                        rdxDialogPopup
+                    >
+                        <h2 class="demo-dialog-title" rdxDialogTitle>Non-modal dialog</h2>
+                        <p class="text-muted-foreground mt-1.5 text-sm" rdxDialogDescription>
                             There is no backdrop, so you can keep interacting with the rest of the page.
                         </p>
 
-                        <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                        <button
+                            class="demo-button demo-button-ghost absolute top-3 right-3 size-7 p-0"
+                            aria-label="Close"
+                            rdxDialogClose
+                        >
                             <svg aria-hidden="true" lucideX size="16" />
                         </button>
                     </div>
                 </ng-template>
             </div>
 
-            <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="outsideClicks.update((count) => count + 1)">
+            <button
+                class="demo-button demo-button-secondary h-8 px-3 text-xs"
+                (click)="outsideClicks.update((count) => count + 1)"
+            >
                 Outside interaction target: {{ outsideClicks() }}
             </button>
         </div>
     `
 })
 export class RdxDialogNonModalComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly d = demoDialog;
     protected readonly outsideClicks = signal(0);
 }

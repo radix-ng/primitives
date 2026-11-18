@@ -1,10 +1,16 @@
 import { ChangeDetectionStrategy, Component, effect, signal } from '@angular/core';
-import { popperImports } from '../index';
+import {
+    RdxPopper,
+    RdxPopperAnchor,
+    RdxPopperArrow,
+    RdxPopperContent,
+    RdxPopperContentWrapper
+} from '@radix-ng/primitives/popper';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'popper-upd-position',
-    imports: [...popperImports],
+    imports: [RdxPopper, RdxPopperArrow, RdxPopperContentWrapper, RdxPopperContent, RdxPopperAnchor],
     template: `
         <div
             class="border-border bg-muted relative h-60 w-[min(600px,80vw)] overflow-hidden rounded-2xl border-2 border-dashed"
@@ -53,7 +59,7 @@ export class PopperUpdPosition {
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'popper-follow-pointer',
-    imports: [...popperImports],
+    imports: [RdxPopper, RdxPopperArrow, RdxPopperContentWrapper, RdxPopperContent, RdxPopperAnchor],
     template: `
         <div
             class="border-border bg-muted relative h-80 w-[min(600px,80vw)] overflow-hidden rounded-xl border-2 border-dashed"

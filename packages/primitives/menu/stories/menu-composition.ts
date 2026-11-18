@@ -1,7 +1,15 @@
 import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
 import { LucideChevronDown, LucideChevronRight } from '@lucide/angular';
-import { RdxMenuItem, RdxMenuModule, RdxMenuRoot, RdxMenuSubTrigger, RdxMenuTrigger } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoMenu } from '../../storybook/styles';
+import {
+    RdxMenuItem,
+    RdxMenuPopup,
+    RdxMenuPortal,
+    RdxMenuPositioner,
+    RdxMenuRoot,
+    RdxMenuSeparator,
+    RdxMenuSubTrigger,
+    RdxMenuTrigger
+} from '@radix-ng/primitives/menu';
 
 @Component({
     selector: 'demo-menu',
@@ -26,13 +34,29 @@ export class DemoMenuSubTrigger {}
 
 @Component({
     selector: 'demo-menu-popup',
-    imports: [RdxMenuModule],
+    imports: [RdxMenuPortal, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem, RdxMenuSeparator],
     template: `
-        <div *rdxMenuPortal [class]="m.positioner" [side]="side()" align="start" sideOffset="6" rdxMenuPositioner>
-            <div [class]="m.popup" rdxMenuPopup>
+        <div
+            class="z-50 data-[closed]:pointer-events-none"
+            *rdxMenuPortal
+            [side]="side()"
+            align="start"
+            sideOffset="6"
+            rdxMenuPositioner
+        >
+            <div
+                class="demo-menu-popup min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                rdxMenuPopup
+            >
                 @if (showRefresh()) {
-                    <button [class]="m.item" (onSelect)="refresh.emit()" rdxMenuItem>Refresh</button>
-                    <div [class]="m.separator" rdxMenuSeparator></div>
+                    <button
+                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                        (onSelect)="refresh.emit()"
+                        rdxMenuItem
+                    >
+                        Refresh
+                    </button>
+                    <div class="bg-border -mx-1 my-1 h-px" rdxMenuSeparator></div>
                 }
                 <ng-content />
             </div>
@@ -40,7 +64,6 @@ export class DemoMenuSubTrigger {}
     `
 })
 export class DemoMenuPopup {
-    readonly m = demoMenu;
     readonly side = input<'bottom' | 'right'>('bottom');
     readonly showRefresh = input(false);
     readonly refresh = output<void>();
@@ -61,28 +84,57 @@ export class DemoMenuPopup {
     template: `
         <div class="grid justify-items-center gap-4">
             <demo-menu>
-                <button [class]="cn(b.base, b.outline, b.size.md)" demoMenuTrigger>
+                <button class="demo-button demo-button-outline h-9 px-4" demoMenuTrigger>
                     Menu actions
                     <svg class="size-4" lucideChevronDown></svg>
                 </button>
                 <demo-menu-popup [showRefresh]="true" (refresh)="selected.set('Refresh')">
-                    <button [class]="m.item" (onSelect)="selected.set('Rename')" demoMenuItem>Rename</button>
-                    <button [class]="m.item" [disabled]="true" demoMenuItem>Unavailable</button>
+                    <button
+                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                        (onSelect)="selected.set('Rename')"
+                        demoMenuItem
+                    >
+                        Rename
+                    </button>
+                    <button
+                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                        [disabled]="true"
+                        demoMenuItem
+                    >
+                        Unavailable
+                    </button>
                     <demo-menu>
-                        <button [class]="cn(m.item, 'flex items-center justify-between')" demoMenuSubTrigger>
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center justify-between gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            demoMenuSubTrigger
+                        >
                             More options
                             <svg class="size-4" lucideChevronRight></svg>
                         </button>
                         <demo-menu-popup side="right">
-                            <button [class]="m.item" (onSelect)="selected.set('Export file')" demoMenuItem>
+                            <button
+                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                (onSelect)="selected.set('Export file')"
+                                demoMenuItem
+                            >
                                 Export file
                             </button>
-                            <button [class]="m.item" (onSelect)="selected.set('Duplicate')" demoMenuItem>
+                            <button
+                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                (onSelect)="selected.set('Duplicate')"
+                                demoMenuItem
+                            >
                                 Duplicate
                             </button>
                         </demo-menu-popup>
                     </demo-menu>
-                    <button [class]="m.item" (onSelect)="selected.set('Remove')" demoMenuItem>Remove</button>
+                    <button
+                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                        (onSelect)="selected.set('Remove')"
+                        demoMenuItem
+                    >
+                        Remove
+                    </button>
                 </demo-menu-popup>
             </demo-menu>
             <output class="text-muted-foreground text-sm">Last action: {{ selected() }}</output>
@@ -90,8 +142,5 @@ export class DemoMenuPopup {
     `
 })
 export class RdxMenuCompositionComponent {
-    readonly cn = cn;
-    readonly b = demoButton;
-    readonly m = demoMenu;
     readonly selected = signal('None');
 }

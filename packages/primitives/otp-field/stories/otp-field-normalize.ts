@@ -1,35 +1,59 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { demoOtpField as otpFieldStyles } from '../../storybook/styles';
-import { RdxOtpFieldModule } from '../index';
+import { RdxOtpFieldInput, RdxOtpFieldRoot } from '@radix-ng/primitives/otp-field';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-otp-field-normalize-example',
-    imports: [RdxOtpFieldModule],
+    imports: [RdxOtpFieldRoot, RdxOtpFieldInput],
     template: `
-        <div [class]="s.field">
-            <label [class]="s.label" for="uppercase-code">Alphabetic code</label>
+        <div class="grid gap-1.5">
+            <label class="demo-label mb-2 block" for="uppercase-code">Alphabetic code</label>
             <div
+                class="flex items-center gap-2"
                 id="uppercase-code"
-                [class]="s.root"
                 [length]="6"
                 [normalizeValue]="uppercase"
                 [validationType]="'alpha'"
                 aria-label="Uppercase verification code"
                 rdxOtpFieldRoot
             >
-                <input [class]="s.slot" placeholder="A" rdxOtpFieldInput />
-                <input [class]="s.slot" placeholder="B" rdxOtpFieldInput />
-                <input [class]="s.slot" placeholder="C" rdxOtpFieldInput />
-                <input [class]="s.slot" placeholder="D" rdxOtpFieldInput />
-                <input [class]="s.slot" placeholder="E" rdxOtpFieldInput />
-                <input [class]="s.slot" placeholder="F" rdxOtpFieldInput />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    placeholder="A"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    placeholder="B"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    placeholder="C"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    placeholder="D"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    placeholder="E"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    placeholder="F"
+                    rdxOtpFieldInput
+                />
             </div>
-            <p [class]="s.description">Type lowercase or uppercase; the stored value is normalized to uppercase.</p>
+            <p class="text-muted-foreground mt-2 text-sm">
+                Type lowercase or uppercase; the stored value is normalized to uppercase.
+            </p>
         </div>
     `
 })
 export class OtpFieldNormalizeExample {
-    protected readonly s = otpFieldStyles;
     protected readonly uppercase = (value: string): string => value.toUpperCase();
 }

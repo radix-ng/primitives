@@ -1,6 +1,15 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { cn, demoCombobox } from '../../storybook/styles';
-import { _importsAutocomplete } from '../index';
+import {
+    RdxAutocompleteEmpty,
+    RdxAutocompleteInput,
+    RdxAutocompleteInputGroup,
+    RdxAutocompleteItem,
+    RdxAutocompleteList,
+    RdxAutocompletePopup,
+    RdxAutocompletePortal,
+    RdxAutocompletePositioner,
+    RdxAutocompleteRoot
+} from '@radix-ng/primitives/autocomplete';
 
 const TAGS = [
     'feature',
@@ -49,34 +58,53 @@ const TAGS = [
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-default',
-    imports: [_importsAutocomplete],
+    imports: [
+        RdxAutocompleteRoot,
+        RdxAutocompleteInputGroup,
+        RdxAutocompleteInput,
+        RdxAutocompletePortal,
+        RdxAutocompletePositioner,
+        RdxAutocompletePopup,
+        RdxAutocompleteList,
+        RdxAutocompleteItem,
+        RdxAutocompleteEmpty
+    ],
     template: `
         <div [(value)]="value" rdxAutocompleteRoot>
-            <div [class]="c.control" rdxAutocompleteInputGroup>
+            <div
+                class="demo-combobox-control focus-within:ring-ring focus-within:ring-offset-background relative inline-flex h-9 w-64 items-center focus-within:ring-2 focus-within:ring-offset-2 data-[disabled]:opacity-50"
+                rdxAutocompleteInputGroup
+            >
                 <input
-                    [class]="cn(c.input, 'pr-3')"
+                    class="demo-combobox-input placeholder:text-muted-foreground h-full w-full pr-3 pr-9 pl-3"
                     rdxAutocompleteInput
                     placeholder="e.g. fix"
                     aria-label="Search tags"
                 />
             </div>
 
-            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
-                <div [class]="c.popup" rdxAutocompletePopup>
-                    <div [class]="c.list" rdxAutocompleteList aria-label="Tags">
+            <div class="z-50 w-64 data-[closed]:pointer-events-none" *rdxAutocompletePortal rdxAutocompletePositioner>
+                <div
+                    class="demo-combobox-popup mt-2 max-h-60 overflow-y-auto p-1 data-[closed]:hidden"
+                    rdxAutocompletePopup
+                >
+                    <div class="flex flex-col" rdxAutocompleteList aria-label="Tags">
                         @for (tag of tags; track tag) {
-                            <div [class]="c.item" rdxAutocompleteItem>{{ tag }}</div>
+                            <div
+                                class="demo-menu-item data-[highlighted]:bg-muted relative flex items-center py-1.5 pr-2 pl-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[selected]:font-medium"
+                                rdxAutocompleteItem
+                            >
+                                {{ tag }}
+                            </div>
                         }
                     </div>
-                    <div [class]="c.empty" rdxAutocompleteEmpty>No tags found.</div>
+                    <div class="demo-combobox-empty data-[empty]:py-6" rdxAutocompleteEmpty>No tags found.</div>
                 </div>
             </div>
         </div>
     `
 })
 export class AutocompleteDefault {
-    protected readonly c = demoCombobox;
-    protected readonly cn = cn;
     readonly value = signal('');
     readonly tags = TAGS;
 }

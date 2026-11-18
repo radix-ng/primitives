@@ -8,8 +8,8 @@ import {
     RdxNgControlField
 } from '@radix-ng/primitives/field';
 import { RdxFieldsetLegend, RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
+import { RdxFormErrors, RdxFormRoot } from '@radix-ng/primitives/form';
 import { RdxInputDirective } from '@radix-ng/primitives/input';
-import { RdxFormErrors, RdxFormRoot } from '../index';
 import {
     type AccountFormValue,
     formError,

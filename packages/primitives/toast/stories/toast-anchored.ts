@@ -1,6 +1,16 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
-import { cn, demoButton, demoToast } from '../../storybook/styles';
+import {
+    provideRdxToastManager,
+    RdxToastClose,
+    RdxToastContent,
+    RdxToastDescription,
+    RdxToastManager,
+    RdxToastPortal,
+    RdxToastPositioner,
+    RdxToastRoot,
+    RdxToastTitle,
+    RdxToastViewport
+} from '@radix-ng/primitives/toast';
 
 /**
  * An anchored toast is positioned against an element with `rdxToastPositioner` (powered by popper)
@@ -10,23 +20,50 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-anchored-example',
-    imports: [...toastImports],
+    imports: [
+        RdxToastPortal,
+        RdxToastViewport,
+        RdxToastPositioner,
+        RdxToastRoot,
+        RdxToastContent,
+        RdxToastTitle,
+        RdxToastDescription,
+        RdxToastClose
+    ],
     providers: [provideRdxToastManager()],
     template: `
-        <button [class]="cn(b.base, b.primary, b.size.md)" (click)="show($event)">Anchored toast</button>
+        <button class="demo-button demo-button-primary h-9 px-4" (click)="show($event)">Anchored toast</button>
 
         <div rdxToastPortal>
-            <div [class]="t.viewport" rdxToastViewport>
+            <div
+                class="fixed right-4 bottom-4 z-50 w-[360px] max-w-[calc(100vw-2rem)] outline-none [--toast-gap:0.75rem]"
+                rdxToastViewport
+            >
                 @for (toast of manager.toasts(); track toast.id) {
                     @if (toast.positionerProps; as positioner) {
                         <div [anchor]="positioner.anchor" [side]="positioner.side ?? 'top'" rdxToastPositioner>
-                            <div [class]="t.anchored" [toast]="toast" rdxToastRoot>
-                                <div [class]="t.content" rdxToastContent>
+                            <div
+                                class="data-[state=open]:animate-popover-popup-in data-[state=closed]:animate-popover-popup-out w-72 origin-[var(--toast-transform-origin)]"
+                                [toast]="toast"
+                                rdxToastRoot
+                            >
+                                <div
+                                    class="demo-surface relative flex [transform:translate3d(var(--toast-swipe-movement-x,0px),var(--toast-swipe-movement-y,0px),0)] items-start gap-3 p-4 pr-9 shadow-lg [transition:var(--transition-demo-toast-swipe)] group-data-[swiping]:[transition:none]"
+                                    rdxToastContent
+                                >
                                     <div class="min-w-0 flex-1">
-                                        <p [class]="t.title" rdxToastTitle>{{ toast.title }}</p>
-                                        <p [class]="t.description" rdxToastDescription>{{ toast.description }}</p>
+                                        <p class="demo-toast-title" rdxToastTitle>{{ toast.title }}</p>
+                                        <p class="text-muted-foreground mt-1 text-sm" rdxToastDescription>
+                                            {{ toast.description }}
+                                        </p>
                                     </div>
-                                    <button [class]="t.close" aria-label="Dismiss" rdxToastClose>✕</button>
+                                    <button
+                                        class="demo-button demo-button-ghost absolute top-2 right-2 size-6 p-0"
+                                        aria-label="Dismiss"
+                                        rdxToastClose
+                                    >
+                                        ✕
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -38,9 +75,6 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
 })
 export class ToastAnchoredExample {
     protected readonly manager = inject(RdxToastManager);
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly t = demoToast;
 
     show(event: MouseEvent): void {
         this.manager.add({

@@ -1,5 +1,3 @@
-import { cn, demoButton, demoInput } from '../../storybook/styles';
-
 export interface AccountFormValue {
     username: string;
     email: string;
@@ -14,6 +12,7 @@ export const simulateFormRequest = (duration = 500): Promise<void> =>
 export const formField = 'flex flex-col gap-1.5';
 export const formLabel = 'text-foreground text-sm font-medium';
 export const formError = 'text-destructive text-sm';
-export const formInput = cn(demoInput, 'data-[invalid]:border-destructive data-[invalid]:ring-destructive/30');
-export const formSubmit = cn(demoButton.base, demoButton.primary, demoButton.size.md, 'self-start');
-export const formReset = cn(demoButton.base, demoButton.outline, demoButton.size.md);
+export const formInput =
+    'demo-input h-9 w-full px-3 data-[invalid]:border-destructive data-[invalid]:ring-destructive/30';
+export const formSubmit = 'demo-button demo-button-primary h-9 px-4 self-start';
+export const formReset = 'demo-button demo-button-outline h-9 px-4';

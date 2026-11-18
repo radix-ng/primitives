@@ -1,20 +1,36 @@
 import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
 import { RdxInteractionType, RdxReturnFocus } from '@radix-ng/primitives/floating-focus-manager';
-import { RdxMenuModule, type RdxMenuOpenChange } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoInput, demoMenu } from '../../storybook/styles';
+import {
+    RdxMenuItem,
+    RdxMenuPopup,
+    RdxMenuPortal,
+    RdxMenuPositioner,
+    RdxMenuRoot,
+    RdxMenuSubTrigger,
+    RdxMenuTrigger,
+    type RdxMenuOpenChange
+} from '@radix-ng/primitives/menu';
 
 @Component({
     selector: 'rdx-menu-focus-return',
-    imports: [RdxMenuModule],
+    imports: [
+        RdxMenuRoot,
+        RdxMenuTrigger,
+        RdxMenuSubTrigger,
+        RdxMenuPortal,
+        RdxMenuPositioner,
+        RdxMenuPopup,
+        RdxMenuItem
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <div class="grid w-80 gap-4">
             <div class="grid gap-2 text-sm">
                 <label for="menu-root-return">Parent return focus</label>
                 <select
+                    class="demo-input h-9 w-full px-3"
                     id="menu-root-return"
                     #rootChoice
-                    [class]="i.base"
                     [value]="rootMode()"
                     (change)="rootMode.set(rootChoice.value)"
                 >
@@ -26,9 +42,9 @@ import { cn, demoButton, demoInput, demoMenu } from '../../storybook/styles';
                 </select>
                 <label for="menu-child-return">Child return focus</label>
                 <select
+                    class="demo-input h-9 w-full px-3"
                     id="menu-child-return"
                     #childChoice
-                    [class]="i.base"
                     [value]="childMode()"
                     (change)="childMode.set(childChoice.value)"
                 >
@@ -72,50 +88,70 @@ import { cn, demoButton, demoInput, demoMenu } from '../../storybook/styles';
                     <label for="menu-return-retained">Keep mounted</label>
                 </div>
             </div>
-            <button #returnTarget [class]="cn(b.base, b.outline, b.size.md)">Return target</button>
+            <button class="demo-button demo-button-outline h-9 px-4" #returnTarget>Return target</button>
             <ng-container (onOpenChange)="change('Parent', $event)" rdxMenuRoot>
-                <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Focus policies</button>
+                <button class="demo-button demo-button-outline h-9 px-4" rdxMenuTrigger>Focus policies</button>
                 <ng-template [keepMounted]="keepMounted()" rdxMenuPortal>
-                    <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-                        <div [class]="m.popup" [finalFocus]="policy(rootMode(), returnTarget)" rdxMenuPopup>
+                    <div class="z-50 data-[closed]:pointer-events-none" sideOffset="4" rdxMenuPositioner>
+                        <div
+                            class="demo-menu-popup min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                            [finalFocus]="policy(rootMode(), returnTarget)"
+                            rdxMenuPopup
+                        >
                             @if (childMode() === 'custom') {
                                 <input
+                                    class="demo-input h-9 w-full px-3"
                                     #parentField
-                                    [class]="i.base"
                                     aria-label="Child return target"
                                     placeholder="Child return target"
                                 />
                             }
                             <ng-container (onOpenChange)="change('Child', $event)" rdxMenuRoot>
-                                <button [class]="m.item" rdxMenuSubTrigger>More commands</button>
+                                <button
+                                    class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                    rdxMenuSubTrigger
+                                >
+                                    More commands
+                                </button>
                                 <ng-template [keepMounted]="keepMounted()" rdxMenuPortal>
-                                    <div [class]="m.positioner" side="right" sideOffset="4" rdxMenuPositioner>
+                                    <div
+                                        class="z-50 data-[closed]:pointer-events-none"
+                                        side="right"
+                                        sideOffset="4"
+                                        rdxMenuPositioner
+                                    >
                                         <div
-                                            [class]="m.popup"
+                                            class="demo-menu-popup min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
                                             [finalFocus]="policy(childMode(), parentField()?.nativeElement)"
                                             rdxMenuPopup
                                         >
-                                            <button [class]="m.item" rdxMenuItem>Run command</button>
+                                            <button
+                                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                rdxMenuItem
+                                            >
+                                                Run command
+                                            </button>
                                         </div>
                                     </div>
                                 </ng-template>
                             </ng-container>
-                            <button [class]="m.item" rdxMenuItem>Close menu</button>
+                            <button
+                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                rdxMenuItem
+                            >
+                                Close menu
+                            </button>
                         </div>
                     </div>
                 </ng-template>
             </ng-container>
-            <button [class]="cn(b.base, b.outline, b.size.md)">After menu</button>
+            <button class="demo-button demo-button-outline h-9 px-4">After menu</button>
             <output class="text-muted-foreground text-sm" aria-live="polite">{{ lastChange() }}</output>
             <p class="text-muted-foreground text-sm" aria-live="polite">{{ lastReturn() }}</p>
         </div>
     `
 })
 export class RdxMenuFocusReturnComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly i = demoInput;
-    protected readonly m = demoMenu;
     protected readonly rootMode = signal('auto');
     protected readonly childMode = signal('auto');
     protected readonly cancelParent = signal(false);

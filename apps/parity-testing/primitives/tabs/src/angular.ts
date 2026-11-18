@@ -2,7 +2,7 @@ import '@angular/compiler';
 import { Component, provideZonelessChangeDetection } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { RdxTabsList, RdxTabsPanel, RdxTabsRoot, RdxTabsTab, RdxTabsValueChangeEvent } from '@radix-ng/primitives/tabs';
-import '../../../../radix-storybook/.storybook/tailwind.css';
+import '../../../../radix-storybook/.storybook/main.css';
 import { AngularActivation } from './activation.angular';
 import { AngularCollection } from './collection.angular';
 import { classes, config, installProbe } from './contract';

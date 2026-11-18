@@ -1,7 +1,18 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import {
+    AutocompleteFilter,
+    RdxAutocompleteEmpty,
+    RdxAutocompleteInput,
+    RdxAutocompleteInputGroup,
+    RdxAutocompleteItem,
+    RdxAutocompleteList,
+    RdxAutocompletePopup,
+    RdxAutocompletePortal,
+    RdxAutocompletePositioner,
+    RdxAutocompleteRoot
+} from '@radix-ng/primitives/autocomplete';
+
 import { matchSorter, rankings } from 'match-sorter';
-import { cn, demoCombobox } from '../../storybook/styles';
-import { _importsAutocomplete, AutocompleteFilter } from '../index';
 
 interface DocItem {
     title: string;
@@ -31,19 +42,47 @@ const fuzzyFilter: AutocompleteFilter = (value, query) => {
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-fuzzy',
-    imports: [_importsAutocomplete],
+    imports: [
+        RdxAutocompleteRoot,
+        RdxAutocompleteInputGroup,
+        RdxAutocompleteInput,
+        RdxAutocompletePortal,
+        RdxAutocompletePositioner,
+        RdxAutocompletePopup,
+        RdxAutocompleteList,
+        RdxAutocompleteItem,
+        RdxAutocompleteEmpty
+    ],
     template: `
         <div #ac="rdxAutocompleteRoot" [(value)]="value" [filter]="fuzzy" rdxAutocompleteRoot>
-            <div [class]="control" rdxAutocompleteInputGroup>
-                <input [class]="c.input" rdxAutocompleteInput placeholder="e.g. React" aria-label="Documentation" />
+            <div
+                class="border-border bg-background focus-within:ring-ring focus-within:ring-offset-background relative inline-flex h-9 w-80 items-center rounded-md border focus-within:ring-2 focus-within:ring-offset-2"
+                rdxAutocompleteInputGroup
+            >
+                <input
+                    class="demo-combobox-input placeholder:text-muted-foreground h-full w-full pr-9 pl-3"
+                    rdxAutocompleteInput
+                    placeholder="e.g. React"
+                    aria-label="Documentation"
+                />
             </div>
 
-            <div *rdxAutocompletePortal [class]="positioner" rdxAutocompletePositioner>
-                <div [class]="popup" rdxAutocompletePopup>
-                    <div [class]="c.empty" rdxAutocompleteEmpty>No results found for "{{ ac.value() }}".</div>
-                    <div [class]="c.list" rdxAutocompleteList aria-label="Documentation">
+            <div class="w-80 data-[closed]:pointer-events-none" *rdxAutocompletePortal rdxAutocompletePositioner>
+                <div
+                    class="border-border bg-popover text-popover-foreground z-50 mt-2 max-h-72 overflow-y-auto rounded-md border p-1 shadow-md data-[closed]:hidden"
+                    rdxAutocompletePopup
+                >
+                    <div class="demo-combobox-empty data-[empty]:py-6" rdxAutocompleteEmpty>
+                        No results found for "{{ ac.value() }}".
+                    </div>
+                    <div class="flex flex-col" rdxAutocompleteList aria-label="Documentation">
                         @for (item of items; track item.title) {
-                            <div [class]="itemClass" [value]="item" [textValue]="item.title" rdxAutocompleteItem>
+                            <div
+                                class="data-[highlighted]:bg-muted flex cursor-default rounded-sm px-2 py-2 outline-none select-none"
+                                [value]="item"
+                                [textValue]="item.title"
+                                rdxAutocompleteItem
+                            >
                                 <span class="flex flex-col gap-0.5">
                                     <span
                                         class="text-foreground leading-5 font-semibold"
@@ -63,21 +102,7 @@ const fuzzyFilter: AutocompleteFilter = (value, query) => {
     `
 })
 export class AutocompleteFuzzy {
-    protected readonly c = demoCombobox;
     protected readonly fuzzy = fuzzyFilter;
-    protected readonly control = cn(
-        'border-border bg-background relative inline-flex h-9 w-80 items-center rounded-md border',
-        'focus-within:ring-ring focus-within:ring-offset-background focus-within:ring-2 focus-within:ring-offset-2'
-    );
-    protected readonly positioner = 'w-80 data-[closed]:pointer-events-none';
-    protected readonly popup = cn(
-        'border-border bg-popover text-popover-foreground z-50 mt-2 max-h-72 overflow-y-auto rounded-md border p-1 shadow-md',
-        'data-[closed]:hidden'
-    );
-    protected readonly itemClass = cn(
-        'flex cursor-default select-none rounded-sm px-2 py-2 outline-none',
-        'data-[highlighted]:bg-muted'
-    );
     protected readonly markClass = 'text-match bg-transparent font-semibold';
 
     readonly value = signal('');

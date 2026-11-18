@@ -10,7 +10,7 @@ import {
     type RdxMenuOpenChange
 } from '@radix-ng/primitives/menu';
 import { RdxMenubarRoot } from '@radix-ng/primitives/menubar';
-import '../../../../radix-storybook/.storybook/tailwind.css';
+import '../../../../radix-storybook/.storybook/main.css';
 import { changeCollection, type MenuEntry } from '../../../shared/menu-collection';
 import { createMenuPopupTemplate } from '../../../shared/menu-fixture';
 import { rootRemovalExitClass, rootRemovalFinalFocus } from '../../../shared/root-removal';

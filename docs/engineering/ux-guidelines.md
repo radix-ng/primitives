@@ -20,39 +20,37 @@ existing links in Chromium, Firefox and WebKit, including the manager sidebar on
 
 ## Demo styling system
 
-The shared entry stylesheet is `apps/radix-storybook/.storybook/main.css`. Theme values belong
-in `@theme`. Use `@apply` in the shared `@layer components` for stable combinations that should
-change together. The `.demo-surface` rule lives in `demo-styles.css`. The existing
-`demoCard` export in `packages/primitives/storybook/styles.ts` is a compatibility alias for that
-class, also consumed by Playground through its shared stylesheet and TS re-export.
+Storybook and Playground import `apps/radix-storybook/.storybook/main.css`. Its
+`demo-styles.css` is the portable source for theme values, light/dark colors, common recipes and
+keyframes. Put theme values and animation timings in `@theme`, and stable combinations that change
+together in `@layer components` with `@apply`. Each common recipe has one declaration.
 
-Keep sizes, spacing, layout and state variants specific to a demo visible on its template elements.
-For example, Default Popover uses:
+The shared controls are `.demo-button` plus one `.demo-button-*` variant, `.demo-input`,
+`.demo-focus`, `.demo-surface`, `.demo-arrow` and `.demo-label`. Family recipes use names such as
+`.demo-select-trigger`, `.demo-accordion-trigger` and `.demo-combobox-control`. The old TS recipes
+and the Playground re-export have been removed after migrating their consumers.
+
+Keep demo-specific sizes, spacing, layout and `data-*` rules on the element in its template:
 
 ```html
+<button class="demo-button demo-button-primary h-9 px-4" rdxButton>Save</button>
 <div
-  class="demo-surface data-[starting-style]:animate-popover-popup-in data-[ending-style]:animate-popover-popup-out relative w-80 p-4"
+  class="demo-surface data-[open]:animate-popover-popup-in data-[starting-style]:animate-popover-popup-in data-[ending-style]:animate-popover-popup-out relative w-80 p-4"
   rdxPopoverPopup
 >
   …
 </div>
 ```
 
-The animation names and timings stay in `@theme`. Utilities override the components layer, so a
-consumer can use `bg-muted`, `border-transparent` or `shadow-none` on `.demo-surface` without
-depending on class-string order. `cn` only joins conditional strings; it does not merge conflicts.
+Preserve the animated element and its state selectors when changing class storage: Portal lifetime
+waits for that element's real motion. Check appearance, exit and reopening during exit in a browser.
+For keyframe entry animations, keep the same animation on `data-open` after the transient
+`data-starting-style` attribute clears; otherwise removing that attribute cancels the animation.
+The ending-style rule selects the exit keyframes on the same element.
+Utilities override the components layer, so local background, border, shadow and sizing overrides
+have priority independent of class-string order.
 
-Other existing recipes remain in `packages/primitives/storybook/styles.ts` (`demoFocusRing`,
-`demoButton`, `demoInput`, etc.). This pilot migrates only `demoCard` and Default Popover.
-
-In standalone story components, expose constants and bind via `[class]`:
-
-- `protected readonly cn = cn;`
-- `protected readonly b = demoButton;`
-- Template: `<button [class]="cn(b.base, b.primary, b.size.md)">`
-
-When a demo needs dynamic variants in TS, use typed parameters and complete class names so
-Tailwind can discover them. Do not construct fragments such as `` `w-${size}` ``:
+Dynamic variants in TS use typed parameters and complete class names:
 
 ```ts
 type DemoSize = 'compact' | 'comfortable';
@@ -63,13 +61,25 @@ const sizeClasses = {
 const classesForSize = (size: DemoSize) => sizeClasses[size];
 ```
 
-No story-local CSS files, component `styles` / `styleUrl`, inline `<style>` or `style="…"`.
-Use the shared demo shell in `packages/primitives/storybook/tailwind-demo.ts`.
+Use the shared demo shell in `packages/primitives/storybook/tailwind-demo.ts`. Story-local CSS,
+component styles and inline style blocks remain outside this system.
 
-For a portable example, use public imports in the component source shown by **Show code**.
-Default Popover uses the shared `demo-styles.css`, which supplies the semantic colors,
-`.demo-surface` and popup animation tokens. Its MDX displays that stylesheet with a `?raw` import
-and a `Source` block alongside the component. The consumer docs generator exports both blocks.
+## Copyable public source
+
+Every affected standalone story supplies its own `?raw` component through `parameters.docs.source`.
+Use explicit imports of the required directives from public `@radix-ng/primitives/*` entry points.
+Published arrays such as `popoverImports` lack statically evaluable initializers in declarations;
+spreading them in component metadata can pass Storybook but fail a consumer's AOT build.
+
+The MDX **Setup and shared files** section lists dependencies, PostCSS configuration and stylesheet
+order (`tailwindcss` first, then `demo-styles.css`). Its `Source` blocks import the rendered CSS and
+local wrapper/helper files with `?raw`. Include external HTML for `templateUrl` examples. Preserve
+relative paths when copying multiple files. The consumer Markdown pipeline appends this same setup
+to each example shard, including its CSS and wrapper sources.
+
+Run the [external portability check](../../tools/storybook-portability/README.md) against an installed
+tarball. It compiles all selected examples with strict Angular templates and Tailwind v4 outside
+the workspace; a Storybook build alone does not establish copyability.
 
 ## Semantic tokens (Tailwind v4)
 

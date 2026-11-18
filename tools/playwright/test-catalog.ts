@@ -1,4 +1,5 @@
 const names = [
+    'storybook-styles',
     'presence-waapi',
     'tabs',
     'accordion',

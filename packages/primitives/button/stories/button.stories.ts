@@ -1,8 +1,9 @@
+import { RdxButtonDirective } from '@radix-ng/primitives/button';
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { cn, demoButton } from '../../storybook/styles';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
-import { RdxButtonDirective } from '../src/button.directive';
 import { RdxButtonAsLinkComponent } from './button-as-link';
+import { ButtonDefaultStory } from './button-default-example';
+import defaultPortableSource from './button-default-example?raw';
 import { RdxButtonDisabledComponent } from './button-disabled';
 import { RdxButtonLoadingComponent } from './button-loading';
 import { RdxButtonSizesComponent } from './button-sizes';
@@ -32,6 +33,7 @@ export default {
     decorators: [
         moduleMetadata({
             imports: [
+                ButtonDefaultStory,
                 RdxButtonDirective,
                 RdxButtonVariantsComponent,
                 RdxButtonSizesComponent,
@@ -47,10 +49,10 @@ export default {
 type Story = StoryObj;
 
 export const Default: Story = {
+    parameters: source(defaultPortableSource),
     render: () => ({
-        props: { cn, b: demoButton },
         template: html`
-            <button rdxButton [class]="cn(b.base, b.primary, b.size.md)">Button</button>
+            <rdx-button-default-example />
         `
     })
 };

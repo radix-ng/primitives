@@ -13,7 +13,7 @@ import {
     type AutocompleteValueChangeDetails
 } from '@radix-ng/primitives/autocomplete';
 import type { RdxComboboxOpenChange } from '@radix-ng/primitives/combobox';
-import '../../../../radix-storybook/.storybook/tailwind.css';
+import '../../../../radix-storybook/.storybook/main.css';
 import { classes, config, installProbe } from './contract';
 import { AngularNavigation } from './navigation.angular';
 import { AngularValueState } from './value.angular';

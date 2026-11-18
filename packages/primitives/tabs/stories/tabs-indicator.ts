@@ -6,28 +6,24 @@ import { RdxTabsIndicator, RdxTabsList, RdxTabsPanel, RdxTabsRoot, RdxTabsTab } 
     selector: 'tabs-indicator-example',
     imports: [RdxTabsRoot, RdxTabsList, RdxTabsTab, RdxTabsPanel, RdxTabsIndicator],
     template: `
-        <div
-            class="border-border bg-background text-foreground w-[460px] overflow-hidden rounded-xl border shadow-sm"
-            rdxTabsRoot
-            defaultValue="overview"
-        >
-            <div class="border-border bg-muted/30 relative flex border-b" rdxTabsList>
+        <div class="demo-tabs-root w-[460px] overflow-hidden" rdxTabsRoot defaultValue="overview">
+            <div class="demo-tabs-list relative flex" rdxTabsList>
                 <button
-                    class="text-muted-foreground hover:text-foreground data-[active]:text-foreground focus-visible:ring-ring relative inline-flex h-11 items-center justify-center px-5 text-sm font-medium transition-colors outline-none focus-visible:ring-2"
+                    class="demo-tabs-tab data-[active]:text-foreground focus-visible:ring-ring relative inline-flex h-11 items-center justify-center px-5 focus-visible:ring-2"
                     rdxTabsTab
                     value="overview"
                 >
                     Overview
                 </button>
                 <button
-                    class="text-muted-foreground hover:text-foreground data-[active]:text-foreground focus-visible:ring-ring relative inline-flex h-11 items-center justify-center px-5 text-sm font-medium transition-colors outline-none focus-visible:ring-2"
+                    class="demo-tabs-tab data-[active]:text-foreground focus-visible:ring-ring relative inline-flex h-11 items-center justify-center px-5 focus-visible:ring-2"
                     rdxTabsTab
                     value="activity"
                 >
                     Activity
                 </button>
                 <button
-                    class="text-muted-foreground hover:text-foreground data-[active]:text-foreground focus-visible:ring-ring relative inline-flex h-11 items-center justify-center px-5 text-sm font-medium transition-colors outline-none focus-visible:ring-2"
+                    class="demo-tabs-tab data-[active]:text-foreground focus-visible:ring-ring relative inline-flex h-11 items-center justify-center px-5 focus-visible:ring-2"
                     rdxTabsTab
                     value="settings"
                 >
@@ -38,13 +34,13 @@ import { RdxTabsIndicator, RdxTabsList, RdxTabsPanel, RdxTabsRoot, RdxTabsTab } 
                     rdxTabsIndicator
                 ></span>
             </div>
-            <div class="bg-background text-foreground p-6 text-sm leading-6 outline-none" rdxTabsPanel value="overview">
+            <div class="demo-tabs-panel p-6" rdxTabsPanel value="overview">
                 A high-level summary of your workspace and recent highlights.
             </div>
-            <div class="bg-background text-foreground p-6 text-sm leading-6 outline-none" rdxTabsPanel value="activity">
+            <div class="demo-tabs-panel p-6" rdxTabsPanel value="activity">
                 Everything that happened recently, in reverse chronological order.
             </div>
-            <div class="bg-background text-foreground p-6 text-sm leading-6 outline-none" rdxTabsPanel value="settings">
+            <div class="demo-tabs-panel p-6" rdxTabsPanel value="settings">
                 Configure preferences, members, and integrations for this workspace.
             </div>
         </div>

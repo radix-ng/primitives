@@ -1,19 +1,40 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
-import { popoverImports } from '@radix-ng/primitives/popover';
+import {
+    RdxPopoverArrow,
+    RdxPopoverClose,
+    RdxPopoverDescription,
+    RdxPopoverPopup,
+    RdxPopoverPortal,
+    RdxPopoverPositioner,
+    RdxPopoverRoot,
+    RdxPopoverTitle,
+    RdxPopoverTrigger
+} from '@radix-ng/primitives/popover';
 import { Side } from '@radix-ng/primitives/popper';
-import { cn, demoButton, demoPopover } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-positioning',
-    imports: [...popoverImports, LucideX],
+    imports: [
+        RdxPopoverRoot,
+        RdxPopoverTrigger,
+        RdxPopoverPortal,
+        RdxPopoverPositioner,
+        RdxPopoverPopup,
+        RdxPopoverArrow,
+        RdxPopoverTitle,
+        RdxPopoverDescription,
+        RdxPopoverClose,
+        LucideX
+    ],
     template: `
         <div class="flex flex-col items-center gap-4">
             <div class="flex flex-wrap justify-center gap-2">
                 @for (side of sides; track side) {
                     <button
-                        [class]="cn(b.base, selectedSide() === side ? b.primary : b.outline, b.size.sm)"
+                        class="demo-button h-8 px-3 text-xs"
+                        [class]="selectedSide() === side ? 'demo-button-primary' : 'demo-button-outline'"
                         (click)="selectedSide.set(side)"
                     >
                         {{ side }}
@@ -22,22 +43,22 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
             </div>
 
             <ng-container rdxPopoverRoot>
-                <button [class]="cn(b.base, b.outline, b.size.md)" rdxPopoverTrigger>Open {{ selectedSide() }}</button>
+                <button class="demo-button demo-button-outline h-9 px-4" rdxPopoverTrigger>
+                    Open {{ selectedSide() }}
+                </button>
 
-                <div
-                    *rdxPopoverPortal
-                    [class]="p.positioner"
-                    [side]="selectedSide()"
-                    sideOffset="8"
-                    rdxPopoverPositioner
-                >
-                    <div [class]="p.popup" rdxPopoverPopup>
-                        <span [class]="p.arrow" rdxPopoverArrow></span>
-                        <h2 [class]="p.title" rdxPopoverTitle>Positioned popup</h2>
-                        <p [class]="p.description" rdxPopoverDescription>
+                <div class="z-50" *rdxPopoverPortal [side]="selectedSide()" sideOffset="8" rdxPopoverPositioner>
+                    <div class="demo-surface relative w-80 p-4" rdxPopoverPopup>
+                        <span class="text-card demo-arrow my-px" rdxPopoverArrow></span>
+                        <h2 class="demo-popover-title" rdxPopoverTitle>Positioned popup</h2>
+                        <p class="text-muted-foreground mt-1 text-sm" rdxPopoverDescription>
                             The positioner delegates collision handling to the shared Popper primitive.
                         </p>
-                        <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                        <button
+                            class="demo-button demo-button-ghost absolute top-2 right-2 size-7 p-0"
+                            aria-label="Close"
+                            rdxPopoverClose
+                        >
                             <svg aria-hidden="true" lucideX size="14" />
                         </button>
                     </div>
@@ -47,9 +68,6 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
     `
 })
 export class RdxPopoverPositioningComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly p = demoPopover;
     protected readonly sides: Side[] = ['top', 'right', 'bottom', 'left'];
     protected readonly selectedSide = signal<Side>('bottom');
 }

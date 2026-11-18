@@ -1,39 +1,68 @@
 import { ChangeDetectionStrategy, Component, input, resource, signal, viewChild } from '@angular/core';
 import { LucideChevronRight } from '@lucide/angular';
-import { RdxMenuModule, RdxMenuRoot } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoMenu } from '../../storybook/styles';
+import {
+    RdxMenuItem,
+    RdxMenuPopup,
+    RdxMenuPortal,
+    RdxMenuPositioner,
+    RdxMenuRoot,
+    RdxMenuSubTrigger,
+    RdxMenuTrigger
+} from '@radix-ng/primitives/menu';
 
 @Component({
     selector: 'rdx-menu-async',
-    imports: [RdxMenuModule, LucideChevronRight],
+    imports: [
+        RdxMenuRoot,
+        RdxMenuTrigger,
+        RdxMenuSubTrigger,
+        RdxMenuPortal,
+        RdxMenuPositioner,
+        RdxMenuPopup,
+        RdxMenuItem,
+        LucideChevronRight
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <div class="grid gap-4">
             <ng-container #root="rdxMenuRoot" rdxMenuRoot>
-                <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>
+                <button class="demo-button demo-button-outline h-9 px-4" rdxMenuTrigger>
                     {{ nested() ? 'Documents' : 'Recent documents' }}
                 </button>
                 <ng-template [keepMounted]="true" rdxMenuPortal>
-                    <div [class]="m.positioner" align="start" sideOffset="4" rdxMenuPositioner>
-                        <div [class]="m.popup" rdxMenuPopup>
+                    <div class="z-50 data-[closed]:pointer-events-none" align="start" sideOffset="4" rdxMenuPositioner>
+                        <div
+                            class="demo-menu-popup min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                            rdxMenuPopup
+                        >
                             @if (nested()) {
-                                <button [class]="m.item" (onSelect)="selected.set('New document')" rdxMenuItem>
+                                <button
+                                    class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                    (onSelect)="selected.set('New document')"
+                                    rdxMenuItem
+                                >
                                     New document
                                 </button>
                                 <ng-container #recent="rdxMenuRoot" rdxMenuRoot>
-                                    <button [class]="cn(m.item, 'justify-between')" rdxMenuSubTrigger>
+                                    <button
+                                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center justify-between gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                        rdxMenuSubTrigger
+                                    >
                                         Recent documents
                                         <svg class="size-4 shrink-0" lucideChevronRight></svg>
                                     </button>
                                     <ng-template [keepMounted]="true" rdxMenuPortal>
                                         <div
-                                            [class]="m.positioner"
+                                            class="z-50 data-[closed]:pointer-events-none"
                                             side="right"
                                             align="start"
                                             sideOffset="4"
                                             rdxMenuPositioner
                                         >
-                                            <div [class]="m.popup" rdxMenuPopup>
+                                            <div
+                                                class="demo-menu-popup min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                                                rdxMenuPopup
+                                            >
                                                 @if (documents.isLoading()) {
                                                     <p class="text-muted-foreground px-3 py-2 text-sm" role="status">
                                                         Loading documents…
@@ -41,7 +70,7 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
                                                 }
                                                 @for (document of documents.value() ?? []; track document) {
                                                     <button
-                                                        [class]="m.item"
+                                                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
                                                         (onSelect)="selected.set(document)"
                                                         rdxMenuItem
                                                     >
@@ -59,7 +88,11 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
                                     </p>
                                 }
                                 @for (document of documents.value() ?? []; track document) {
-                                    <button [class]="m.item" (onSelect)="selected.set(document)" rdxMenuItem>
+                                    <button
+                                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                        (onSelect)="selected.set(document)"
+                                        rdxMenuItem
+                                    >
                                         {{ document }}
                                     </button>
                                 }
@@ -95,7 +128,4 @@ export class RdxMenuAsyncComponent {
         }
     });
     protected readonly selected = signal('none');
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly m = demoMenu;
 }

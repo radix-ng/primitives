@@ -2,7 +2,7 @@ import '@angular/compiler';
 import { Component, provideZonelessChangeDetection, signal, viewChild } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { popoverImports, RdxPopoverOpenChange, RdxPopoverRoot } from '@radix-ng/primitives/popover';
-import '../../../../radix-storybook/.storybook/tailwind.css';
+import '../../../../radix-storybook/.storybook/main.css';
 import { exitClass, heldExitClass } from '../../../shared/lifecycle';
 import { classes, config, installProbe } from './contract';
 

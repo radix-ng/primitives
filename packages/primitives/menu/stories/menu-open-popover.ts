@@ -1,12 +1,43 @@
 import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
-import { menuImports, RdxMenuRoot, type RdxMenuOpenChange } from '@radix-ng/primitives/menu';
-import { popoverImports } from '@radix-ng/primitives/popover';
-import { cn, demoButton, demoInput, demoMenu, demoPopover } from '../../storybook/styles';
+import {
+    RdxMenuItem,
+    RdxMenuPopup,
+    RdxMenuPortal,
+    RdxMenuPositioner,
+    RdxMenuRoot,
+    RdxMenuTrigger,
+    type RdxMenuOpenChange
+} from '@radix-ng/primitives/menu';
+import {
+    RdxPopoverArrow,
+    RdxPopoverClose,
+    RdxPopoverDescription,
+    RdxPopoverPopup,
+    RdxPopoverPortal,
+    RdxPopoverPositioner,
+    RdxPopoverRoot,
+    RdxPopoverTitle
+} from '@radix-ng/primitives/popover';
 
 @Component({
     selector: 'rdx-menu-open-popover',
-    imports: [...menuImports, ...popoverImports],
+    imports: [
+        RdxMenuRoot,
+        RdxMenuTrigger,
+        RdxMenuPortal,
+        RdxMenuPositioner,
+        RdxMenuPopup,
+        RdxMenuItem,
+        RdxPopoverRoot,
+        RdxPopoverPortal,
+        RdxPopoverPositioner,
+        RdxPopoverPopup,
+        RdxPopoverArrow,
+        RdxPopoverTitle,
+        RdxPopoverDescription,
+        RdxPopoverClose
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <section class="grid gap-4">
@@ -21,15 +52,34 @@ import { cn, demoButton, demoInput, demoMenu, demoPopover } from '../../storyboo
                 </label>
             </div>
             <ng-container (onOpenChange)="change($event)" (onOpenChangeComplete)="complete($event)" rdxMenuRoot>
-                <button #anchor [class]="cn(b.base, b.outline, b.size.md, 'w-fit')" rdxMenuTrigger>
+                <button class="demo-button demo-button-outline h-9 w-fit px-4" #anchor rdxMenuTrigger>
                     Document actions
                 </button>
                 <ng-template [keepMounted]="keep()" rdxMenuPortal>
-                    <div [class]="m.positioner" align="start" sideOffset="4" rdxMenuPositioner>
-                        <div [class]="cn(m.popup, m.popupAnimated, 'w-56')" rdxMenuPopup>
-                            <button [class]="m.item" (onSelect)="editor.set(true)" rdxMenuItem>Rename document…</button>
-                            <button [class]="m.item" rdxMenuItem>Duplicate</button>
-                            <button [class]="m.item" rdxMenuItem>Archive</button>
+                    <div class="z-50 data-[closed]:pointer-events-none" align="start" sideOffset="4" rdxMenuPositioner>
+                        <div
+                            class="demo-menu-popup data-[open]:animate-popover-popup-in data-[closed]:animate-popover-popup-out w-56 min-w-[8rem] origin-[var(--transform-origin)] p-1 data-[closed]:pointer-events-none data-[closed]:block! data-[closed]:hidden"
+                            rdxMenuPopup
+                        >
+                            <button
+                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                (onSelect)="editor.set(true)"
+                                rdxMenuItem
+                            >
+                                Rename document…
+                            </button>
+                            <button
+                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                rdxMenuItem
+                            >
+                                Duplicate
+                            </button>
+                            <button
+                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                rdxMenuItem
+                            >
+                                Archive
+                            </button>
                         </div>
                     </div>
                 </ng-template>
@@ -39,36 +89,33 @@ import { cn, demoButton, demoInput, demoMenu, demoPopover } from '../../storyboo
             </output>
             <ng-container [(open)]="editor" rdxPopoverRoot>
                 <ng-template rdxPopoverPortal>
-                    <div
-                        [class]="p.positioner"
-                        [anchor]="anchor"
-                        side="right"
-                        align="start"
-                        sideOffset="8"
-                        rdxPopoverPositioner
-                    >
-                        <div [class]="cn(p.popup, 'grid gap-4')" rdxPopoverPopup>
-                            <span [class]="p.arrow" rdxPopoverArrow></span>
-                            <h2 [class]="p.title" rdxPopoverTitle>Rename document</h2>
-                            <p [class]="p.description" rdxPopoverDescription>
+                    <div class="z-50" [anchor]="anchor" side="right" align="start" sideOffset="8" rdxPopoverPositioner>
+                        <div class="demo-surface relative grid w-80 gap-4 p-4" rdxPopoverPopup>
+                            <span class="text-card demo-arrow my-px" rdxPopoverArrow></span>
+                            <h2 class="demo-popover-title" rdxPopoverTitle>Rename document</h2>
+                            <p class="text-muted-foreground mt-1 text-sm" rdxPopoverDescription>
                                 The editor stays beside Document actions after the menu closes.
                             </p>
                             <div class="grid gap-2">
                                 <label class="text-sm font-medium" [for]="nameId">Document name</label>
-                                <input [id]="nameId" [class]="input" value="Project notes" />
+                                <input class="demo-input h-9 w-full px-3" [id]="nameId" value="Project notes" />
                             </div>
                             <div class="flex flex-wrap justify-end gap-2">
                                 @if (defer()) {
                                     <button
-                                        [class]="cn(b.base, b.ghost, b.size.sm)"
+                                        class="demo-button demo-button-ghost h-8 px-3 text-xs"
                                         (click)="finishMenuExit()"
                                         type="button"
                                     >
                                         Finish menu exit
                                     </button>
                                 }
-                                <button [class]="cn(b.base, b.outline, b.size.sm)" rdxPopoverClose>Cancel</button>
-                                <button [class]="cn(b.base, b.primary, b.size.sm)" rdxPopoverClose>Save</button>
+                                <button class="demo-button demo-button-outline h-8 px-3 text-xs" rdxPopoverClose>
+                                    Cancel
+                                </button>
+                                <button class="demo-button demo-button-primary h-8 px-3 text-xs" rdxPopoverClose>
+                                    Save
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -78,11 +125,6 @@ import { cn, demoButton, demoInput, demoMenu, demoPopover } from '../../storyboo
     `
 })
 export class RdxMenuOpenPopoverComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly m = demoMenu;
-    protected readonly p = demoPopover;
-    protected readonly input = demoInput;
     protected readonly nameId = injectId('rdx-menu-popover-name-');
     protected readonly keep = signal(false);
     protected readonly defer = signal(false);

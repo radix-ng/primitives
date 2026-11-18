@@ -44,6 +44,7 @@ restores the default. An explicit tab index makes the application responsible fo
 
 ## Examples
 
+- [Default](../examples/button--default.md)
 - [Variants](../examples/button--variants.md)
 - [Sizes](../examples/button--sizes.md)
 - [Disabled](../examples/button--disabled.md)

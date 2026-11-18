@@ -51,6 +51,7 @@ are optional — `activationMode` and `submitMode` can drive the whole interacti
 
 ## Examples
 
+- [Default](../examples/editable--default.md)
 - [Double-click to edit](../examples/editable--double-click-to-edit.md)
 - [Auto-resize](../examples/editable--auto-resize.md)
 

@@ -1,16 +1,17 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
-import { demoSelect } from '../../storybook/styles';
-import { RdxSelectItem } from '../src/select-item';
-import { RdxSelectItemIndicator } from '../src/select-item-indicator';
-import { RdxSelectItemText } from '../src/select-item-text';
-import { RdxSelectList } from '../src/select-list';
-import { RdxSelectPopup } from '../src/select-popup';
-import { RdxSelectPortal } from '../src/select-portal';
-import { RdxSelectPositioner } from '../src/select-positioner';
-import { RdxSelectRoot } from '../src/select-root';
-import { RdxSelectTrigger } from '../src/select-trigger';
-import { RdxSelectValue } from '../src/select-value';
+import {
+    RdxSelectItem,
+    RdxSelectItemIndicator,
+    RdxSelectItemText,
+    RdxSelectList,
+    RdxSelectPopup,
+    RdxSelectPortal,
+    RdxSelectPositioner,
+    RdxSelectRoot,
+    RdxSelectTrigger,
+    RdxSelectValue
+} from '@radix-ng/primitives/select';
 
 interface ShippingMethod {
     id: string;
@@ -48,7 +49,11 @@ interface ShippingMethod {
             </label>
 
             <ng-container #root="rdxSelectRoot" [value]="shippingMethods[0]" [isItemEqualToValue]="'id'" rdxSelectRoot>
-                <button class="min-w-64" [class]="s.trigger" aria-labelledby="shipping-method-label" rdxSelectTrigger>
+                <button
+                    class="demo-select-trigger data-[placeholder]:text-muted-foreground data-[invalid]:border-destructive data-[invalid]:aria-invalid:ring-destructive/30 demo-focus inline-flex min-h-9 min-w-64 items-center justify-between gap-2 px-3 py-1.5 disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                    aria-labelledby="shipping-method-label"
+                    rdxSelectTrigger
+                >
                     <span #value="rdxSelectedValue" rdxSelectValue placeholder="Select a method...">
                         @if (asMethod(root.value()); as method) {
                             <span class="flex flex-col items-start gap-0.5">
@@ -61,16 +66,26 @@ interface ShippingMethod {
                             {{ value.placeholder() }}
                         }
                     </span>
-                    <svg [class]="s.icon" lucideChevronDown size="16" aria-hidden="true" />
+                    <svg class="size-4 shrink-0" lucideChevronDown size="16" aria-hidden="true" />
                 </button>
 
-                <div *rdxSelectPortal [class]="s.positioner" [sideOffset]="5" align="start" rdxSelectPositioner>
-                    <div [class]="s.popup" rdxSelectPopup>
-                        <div [class]="s.list" rdxSelectList>
+                <div class="z-[100]" *rdxSelectPortal [sideOffset]="5" align="start" rdxSelectPositioner>
+                    <div
+                        class="demo-select-popup min-w-[var(--anchor-width,10rem)] will-change-[opacity,transform]"
+                        rdxSelectPopup
+                    >
+                        <div class="p-1" rdxSelectList>
                             @for (method of shippingMethods; track method.id) {
-                                <div class="group py-1.5" [class]="s.item" [value]="method" rdxSelectItem>
-                                    <span [class]="s.itemIndicator" rdxSelectItemIndicator>
-                                        <svg [class]="s.icon" lucideCheck size="16" aria-hidden="true" />
+                                <div
+                                    class="demo-select-item data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground data-[disabled]:text-muted-foreground group relative flex min-h-7 items-center gap-2 py-1.5 ps-6 pe-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                    [value]="method"
+                                    rdxSelectItem
+                                >
+                                    <span
+                                        class="absolute start-0 inline-flex w-6 items-center justify-center"
+                                        rdxSelectItemIndicator
+                                    >
+                                        <svg class="size-4 shrink-0" lucideCheck size="16" aria-hidden="true" />
                                     </span>
                                     <span class="flex flex-col gap-0.5" rdxSelectItemText>
                                         <span class="text-sm leading-none">{{ method.name }}</span>
@@ -90,8 +105,6 @@ interface ShippingMethod {
     `
 })
 export class SelectObjectValues {
-    protected readonly s = demoSelect;
-
     readonly shippingMethods: ShippingMethod[] = [
         { id: 'standard', name: 'Standard', duration: 'Delivers in 4-6 business days', price: '$4.99' },
         { id: 'express', name: 'Express', duration: 'Delivers in 2-3 business days', price: '$9.99' },

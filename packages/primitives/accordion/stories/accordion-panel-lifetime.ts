@@ -7,7 +7,6 @@ import {
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
-import { demoAccordion } from '../../storybook/styles';
 
 @Component({
     selector: 'accordion-panel-lifetime-example',
@@ -24,20 +23,27 @@ import { demoAccordion } from '../../storybook/styles';
             <p class="text-muted-foreground text-sm">
                 Edit each field, then close and reopen its panel to compare state retention.
             </p>
-            <div [class]="a.root" rdxAccordionRoot multiple>
+            <div class="demo-accordion-root overflow-hidden" rdxAccordionRoot multiple>
                 @for (retained of [false, true]; track retained) {
-                    <div [value]="retained" [class]="a.item" rdxAccordionItem>
-                        <h3 [class]="a.header" rdxAccordionHeader>
-                            <button [class]="a.trigger" rdxAccordionTrigger>
+                    <div
+                        class="border-border focus-within:ring-ring overflow-hidden border-b last:border-b-0 focus-within:relative focus-within:z-[1] focus-within:ring-2 focus-within:outline-none focus-within:ring-inset"
+                        [value]="retained"
+                        rdxAccordionItem
+                    >
+                        <h3 class="flex" rdxAccordionHeader>
+                            <button
+                                class="demo-accordion-trigger flex h-12 w-full flex-1 items-center justify-between px-5 aria-disabled:opacity-60"
+                                rdxAccordionTrigger
+                            >
                                 {{ retained ? 'Keep state' : 'Reset state' }}
                             </button>
                         </h3>
                         <div
+                            class="demo-accordion-content [&[data-open][data-orientation=vertical]]:animate-accordion-down [&:not([data-open])[data-orientation=vertical]]:animate-accordion-up [&[data-open][data-orientation=horizontal]]:animate-accordion-right [&:not([data-open])[data-orientation=horizontal]]:animate-accordion-left overflow-hidden [&:not([data-open])[data-orientation=horizontal]]:w-0 [&:not([data-open])[data-orientation=vertical]]:h-0"
                             *rdxAccordionPanelPresence="{ keepMounted: retained }"
-                            [class]="a.content"
                             rdxAccordionPanel
                         >
-                            <div [class]="a.contentText">
+                            <div class="px-5 py-4">
                                 <label
                                     class="flex flex-col gap-2"
                                     [for]="retained ? 'accordion-retained-input' : 'accordion-fresh-input'"
@@ -57,6 +63,4 @@ import { demoAccordion } from '../../storybook/styles';
         </div>
     `
 })
-export class AccordionPanelLifetimeExample {
-    protected readonly a = demoAccordion;
-}
+export class AccordionPanelLifetimeExample {}

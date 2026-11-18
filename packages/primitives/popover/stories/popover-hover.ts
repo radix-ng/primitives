@@ -1,26 +1,50 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
-import { popoverImports } from '@radix-ng/primitives/popover';
-import { cn, demoButton, demoPopover } from '../../storybook/styles';
+import {
+    RdxPopoverArrow,
+    RdxPopoverClose,
+    RdxPopoverDescription,
+    RdxPopoverPopup,
+    RdxPopoverPortal,
+    RdxPopoverPositioner,
+    RdxPopoverRoot,
+    RdxPopoverTitle,
+    RdxPopoverTrigger
+} from '@radix-ng/primitives/popover';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-hover',
-    imports: [...popoverImports, LucideX],
+    imports: [
+        RdxPopoverRoot,
+        RdxPopoverTrigger,
+        RdxPopoverPortal,
+        RdxPopoverPositioner,
+        RdxPopoverPopup,
+        RdxPopoverArrow,
+        RdxPopoverTitle,
+        RdxPopoverDescription,
+        RdxPopoverClose,
+        LucideX
+    ],
     template: `
         <ng-container rdxPopoverRoot>
-            <button [class]="cn(b.base, b.outline, b.size.md)" [delay]="300" openOnHover rdxPopoverTrigger>
+            <button class="demo-button demo-button-outline h-9 px-4" [delay]="300" openOnHover rdxPopoverTrigger>
                 Hover for details
             </button>
 
-            <div *rdxPopoverPortal [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                <div [class]="p.popup" rdxPopoverPopup>
-                    <span [class]="p.arrow" rdxPopoverArrow></span>
-                    <h2 [class]="p.title" rdxPopoverTitle>Hover popover</h2>
-                    <p [class]="p.description" rdxPopoverDescription>
+            <div class="z-50" *rdxPopoverPortal sideOffset="8" rdxPopoverPositioner>
+                <div class="demo-surface relative w-80 p-4" rdxPopoverPopup>
+                    <span class="text-card demo-arrow my-px" rdxPopoverArrow></span>
+                    <h2 class="demo-popover-title" rdxPopoverTitle>Hover popover</h2>
+                    <p class="text-muted-foreground mt-1 text-sm" rdxPopoverDescription>
                         Move the pointer into this popup. It remains interactive after leaving the trigger.
                     </p>
-                    <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                    <button
+                        class="demo-button demo-button-ghost absolute top-2 right-2 size-7 p-0"
+                        aria-label="Close"
+                        rdxPopoverClose
+                    >
                         <svg aria-hidden="true" lucideX size="14" />
                     </button>
                 </div>
@@ -28,8 +52,4 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
         </ng-container>
     `
 })
-export class RdxPopoverHoverComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly p = demoPopover;
-}
+export class RdxPopoverHoverComponent {}

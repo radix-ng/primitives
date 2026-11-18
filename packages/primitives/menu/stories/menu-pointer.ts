@@ -1,10 +1,16 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoMenu } from '../../storybook/styles';
+import {
+    RdxMenuItem,
+    RdxMenuPopup,
+    RdxMenuPortal,
+    RdxMenuPositioner,
+    RdxMenuRoot,
+    RdxMenuTrigger
+} from '@radix-ng/primitives/menu';
 
 @Component({
     selector: 'rdx-menu-pointer',
-    imports: [RdxMenuModule],
+    imports: [RdxMenuRoot, RdxMenuTrigger, RdxMenuPortal, RdxMenuPositioner, RdxMenuPopup, RdxMenuItem],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <div class="flex max-w-sm flex-col gap-4">
@@ -13,7 +19,7 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
             </p>
             <ng-container rdxMenuRoot>
                 <button
-                    [class]="cn(b.base, b.outline, b.size.md)"
+                    class="demo-button demo-button-outline h-9 px-4"
                     [openOnHover]="true"
                     [delay]="180"
                     [closeDelay]="80"
@@ -21,11 +27,32 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
                 >
                     Commands
                 </button>
-                <div *rdxMenuPortal [class]="m.positioner" sideOffset="8" rdxMenuPositioner>
-                    <div [class]="m.popup" rdxMenuPopup>
-                        <button [class]="m.item" (click)="selected.set('New tab')" rdxMenuItem>New tab</button>
-                        <button [class]="m.item" [disabled]="true" rdxMenuItem>Unavailable</button>
-                        <button [class]="m.item" (click)="selected.set('Save page')" rdxMenuItem>Save page</button>
+                <div class="z-50 data-[closed]:pointer-events-none" *rdxMenuPortal sideOffset="8" rdxMenuPositioner>
+                    <div
+                        class="demo-menu-popup min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                        rdxMenuPopup
+                    >
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            (click)="selected.set('New tab')"
+                            rdxMenuItem
+                        >
+                            New tab
+                        </button>
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            [disabled]="true"
+                            rdxMenuItem
+                        >
+                            Unavailable
+                        </button>
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            (click)="selected.set('Save page')"
+                            rdxMenuItem
+                        >
+                            Save page
+                        </button>
                     </div>
                 </div>
             </ng-container>
@@ -36,8 +63,5 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
     `
 })
 export class RdxMenuPointerComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly m = demoMenu;
     protected readonly selected = signal('');
 }

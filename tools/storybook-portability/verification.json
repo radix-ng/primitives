@@ -1,0 +1,1361 @@
+{
+    "aot": "passed",
+    "packageVersion": "1.3.0",
+    "angularVersion": "22.0.2",
+    "tailwindVersion": "4.3.5",
+    "workspaceAliases": false,
+    "rejectedPublishedArray": true,
+    "examples": 266,
+    "dependencies": 3,
+    "stylesheet": {
+        "path": "apps/radix-storybook/.storybook/demo-styles.css",
+        "sha256": "e277de0f1fc5405c46ab36aeca3616708a65e4f066b0516d92a75235ccd3d5a3"
+    },
+    "files": [
+        {
+            "path": "packages/primitives/accordion/stories/accordion-collapsible-array.ts",
+            "sha256": "5f3256a234d599d625ddd9e0e38609aca554826e70310293be98d1042fa1d409",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/accordion/stories/accordion-collapsible.ts",
+            "sha256": "2f96e6e273d6e44b36a350505f9e71f195385cb4f3ca04071eeb07e693783f75",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/accordion/stories/accordion-controlled.ts",
+            "sha256": "3900eaf332557940ce7c757926d10a84ce7cf13ee2697b2c8bfeb9533ba75120",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/accordion/stories/accordion-default-example.ts",
+            "sha256": "3e7b851fae9b36fdb3bdcc3abab4c83ae1ad3512ebfd74a095d49526ad1095e9",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/accordion/stories/accordion-disabled.ts",
+            "sha256": "73adf3a2875810d8836ce2cfb523307a2efc8b0ca2c43b8abffc4472f53bd769",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/accordion/stories/accordion-events.ts",
+            "sha256": "f89c574d39165c8bdac4ac49c0f2c695ec5b12c6288c3bc745b2aacda9928241",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/accordion/stories/accordion-horizontal.ts",
+            "sha256": "83f3b5619fafd7dcf87dfdc6749f76e4e8f8571135c8b8c1f7c9df7a461d9fa0",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/accordion/stories/accordion-keep-mounted.ts",
+            "sha256": "279105606976349ffaad636ae6545de91c4ac9ddfd720c4fecbe71673ab289b0",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/accordion/stories/accordion-motion.ts",
+            "sha256": "73c2b11e7064c7b15b9c7ec44a291b0fef6f567c4d1c9c755f4aefb70de88721",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/accordion/stories/accordion-multiple.ts",
+            "sha256": "72b887719e176e9a5bcf5f3bc7c3dc2c1eea9cfb5c78ec67a1b53685647e1a55",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/accordion/stories/accordion-panel-lifetime.ts",
+            "sha256": "fa560f37705e4234bde869a2bb6b046f0ae3ac720e7a91bee951347b6f6a5bbe",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/alert-dialog/stories/alert-dialog-close-confirmation.ts",
+            "sha256": "62cb7f96477eb88a9ae8df65a1b4d19bd5688dedd96518ac3506e71168a733f2",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/alert-dialog/stories/alert-dialog-controlled-multiple.ts",
+            "sha256": "ade0911158703fbf81814b2093468dae4a0abfdc88cb93137ec307744a99ce73",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/alert-dialog/stories/alert-dialog-controlled.ts",
+            "sha256": "d9182ae27821bfef109e5237273547e01e56755dcbf7aadb74eaaa20a9cac2ab",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/alert-dialog/stories/alert-dialog-default.ts",
+            "sha256": "ed6028cb07e4edbe98e8b7e38f13faa566672eae0123a30df8d29967e458b5c5",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/alert-dialog/stories/alert-dialog-detached.ts",
+            "sha256": "7905621a507de0d2af32034920f7021da6ff5ba6645df920ece172fcd3c7b77f",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/alert-dialog/stories/alert-dialog-from-menu.ts",
+            "sha256": "9eb28293782d3ce267c40ab27685fb0b40082d634fe27c3011e47b9dc3e08776",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/alert-dialog/stories/alert-dialog-multiple-triggers.ts",
+            "sha256": "6db2aa1084d6b6781a8c7fa9a945c4ab521e7c058a12d79d9c6eb2f303dac2d5",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/autocomplete/stories/autocomplete-async.ts",
+            "sha256": "c6eb0d0d21a943fbcdfc52edd86f25ed0428028ae98f24b1f7ab62c3c8ca4a49",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/autocomplete/stories/autocomplete-auto-highlight.ts",
+            "sha256": "325384cee06c02e9fe6a78152eeeda10ac6ccb530c999bfbc577257b2b45afd5",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/autocomplete/stories/autocomplete-command-palette.ts",
+            "sha256": "8fd2951ad8d93df3d48427dbd044ce0347c806d438b018046b17469ec2c88891",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/autocomplete/stories/autocomplete-default.ts",
+            "sha256": "0ee38b1d671b7a07052670045ec572101b6ea838a484b1c68ca099de5fd00353",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/autocomplete/stories/autocomplete-disabled.ts",
+            "sha256": "5c3ad51257c76232091b804a977730153d0c5e45a4a84de447174e05a0ce8a17",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/autocomplete/stories/autocomplete-fuzzy.ts",
+            "sha256": "936fe0ac78afd8dc25a88b773944b620c798d87e5fab6b641680ab81e7e16899",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/autocomplete/stories/autocomplete-grid.ts",
+            "sha256": "9bf874600e0fafd9003b2b5120c82a9d898aebcf570e379f37b0a4a897970799",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/autocomplete/stories/autocomplete-grouped.ts",
+            "sha256": "c9c5e8e2c5a196f2245f6a84a1ff8f4a64794858a71dfe9f2d2275195474eba5",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/autocomplete/stories/autocomplete-inline.ts",
+            "sha256": "38e674b15fa994cb7c9350a484ae8b93dac07ec824c06f32d2b1823cc0a36091",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/autocomplete/stories/autocomplete-limit.ts",
+            "sha256": "4d2c0fd722715f9d1556897f16e2c75c627bc478855112949599f50b84213979",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/autocomplete/stories/autocomplete-locale.ts",
+            "sha256": "64afbaa2beff699db2b6342715ae249e4a3ac149746df4bd6a582b8da7de2394",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/autocomplete/stories/autocomplete-reactive-forms.ts",
+            "sha256": "c672b690d5598052df7143c18e69e0ae4845351248c58dd3fbb8f2207b928cb2",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/autocomplete/stories/autocomplete-template-forms.ts",
+            "sha256": "b1a40ebd786ae3b7db03bc51f5e97d0e48c986a3fa411cf7f9423ab44ac8a56d",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/autocomplete/stories/autocomplete-validation.ts",
+            "sha256": "dece078354d8fb07a459e726a55a8d47931c9256f4ceaa383ba0684a9978a780",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/autocomplete/stories/autocomplete-virtualized.ts",
+            "sha256": "033f3899fbd5267ec232bdaca4a06ff0ff54301c4fef11577d99eed159487d1a",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/button/stories/button-as-link.ts",
+            "sha256": "ff40f1ac4e6c84ace57853a37431b382987f1f42e4e5878d4e66c11f4a256039",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/button/stories/button-default-example.ts",
+            "sha256": "6f1e8c870beb9307b244d26125b447664289b03dd0b55adf470618653b56176e",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/button/stories/button-disabled.ts",
+            "sha256": "8b4bd8b0dc3d9cec198e1abeef65c98601deaf18ef291c6c44dc4c3d73d073fb",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/button/stories/button-loading.ts",
+            "sha256": "53bc6236dd78b6d08421e1b1b592ea7794f1387004a39cbe96cfc98704779f54",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/button/stories/button-sizes.ts",
+            "sha256": "9e3000f75ef6ad12ab9e7e7c0c5d73a1a194d779ece783e56d4464fbe1d2651e",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/button/stories/button-variants.ts",
+            "sha256": "33a04dd4c82a3616601fba4b546a2e67a827e7612ecf5faf19f4e0491518906c",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/calendar/stories/calendar-custom-navigation.ts",
+            "sha256": "ccdd39bc9cbcb9417b42520382315d12a3d1aafddb58a91494ac66a0e41ea6f5",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/calendar/stories/calendar-default.ts",
+            "sha256": "a30793ce7257f38f7e7376ce9cf14963432ce6e24d31e8bdeed5956b3b295b4c",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/calendar/stories/calendar-disabled-dates.ts",
+            "sha256": "a601908588e715213861764aa872f418f6e64a04c61f2829937e3c09e04f91f9",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/calendar/stories/calendar-multiple.ts",
+            "sha256": "691978c9e4d7e1865dac7a8488e0af559c63548fa862991bd72815118d94846c",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/calendar/stories/calendar-number-of-months.ts",
+            "sha256": "cc446fe4146060a9a73a41fe26e1c6f3caf7db5f90a7aeadcf7585050c316e54",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/calendar/stories/calendar-unavailable-dates.ts",
+            "sha256": "a77547d6b1eeb1e8f511c7d68ac2440104106ab7f68ed4de11c5cddb822ee453",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/calendar/stories/calendar-week.ts",
+            "sha256": "747b2352fad90b27b3acd4b4942515faaabf85eeb0c233ea853399592ee904ae",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/calendar/stories/calendar-with-locale.ts",
+            "sha256": "9936b51e107ec169044536c92b81f87fb7a63e4489de80ebcd28a5baa59e11a2",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/checkbox/stories/checkbox-default-example.ts",
+            "sha256": "466abcc7a9f6a1b4a7c063e2f306eb7d1960f4a1658a1df82ece4a4ab36099f0",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/checkbox/stories/checkbox-forms.ts",
+            "sha256": "9fd75d32b30030bcbcdd7024762a8d06f700dc1554a15e03c3e5ed5b09fcdc37",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/checkbox/stories/checkbox-group.ts",
+            "sha256": "4d5a0b0d0ba7a9675cc4921d7df22730f20503a9911c6b0c81d34f3177e1a810",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/checkbox/stories/checkbox-indeterminate.ts",
+            "sha256": "c4aa1ca7aacdb1b8037424d93341d7793b5c51d12c577e39189a65094960087c",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/checkbox/stories/checkbox-ngmodel.ts",
+            "sha256": "256b1631e38b51c1a3be5b0cfd17e341d4db145f509eb7ca215fd0a8ea5ad78f",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/checkbox/stories/checkbox-presence.ts",
+            "sha256": "3181007c150891f07c76f47875fa23117ef659f5d184e67093da925145533001",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/checkbox/stories/checkbox-select-all.ts",
+            "sha256": "81563618818f82b35dc14c3e316130f632e8d7a44b35cc62ce1cf1a0c3b131d0",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/checkbox/stories/checkbox-validation.ts",
+            "sha256": "4dd99ad4d681b9df1f139cefa3fc95f6cf1681ec1d6eee01d7036b449aa09be4",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/combobox/stories/combobox-async-multiple.ts",
+            "sha256": "1cd931ab8980abbe70230eeba9e15b7cffdfcf555347fefe8c2c68dcf3effe13",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/combobox/stories/combobox-async.ts",
+            "sha256": "595ff2d9d45725d414bf3ea676387b4aec1821e62173e98bbf845a0c23540c1d",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/combobox/stories/combobox-command.ts",
+            "sha256": "99545ed6ae8b1ad957bcbfba4b4282ecdbc5d84f20d7f4e023e87d526613e714",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/combobox/stories/combobox-creatable.ts",
+            "sha256": "b244575bdf020be80843c11b0bcd34d5bf8a3bf3052dfee53c4ab59520807bcb",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/combobox/stories/combobox-default.ts",
+            "sha256": "adde16099c3c64f936845a9ba7c0a95676913bc09c7acf37013b95c74eac1786",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/combobox/stories/combobox-disabled.ts",
+            "sha256": "505ca35731c74a0d9b30b08f7c172363c6dcaef918c4985d2d83b1288e95a1ee",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/combobox/stories/combobox-empty.ts",
+            "sha256": "e00f3eb5b1e06dd7c16957b7466d29c7cdbf16976e3531ba513a5404465b4bc3",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/combobox/stories/combobox-grid.ts",
+            "sha256": "b98c8d152545b5872910c539ddcd0a1375de85b773273fbd2e5ace373835cbf0",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/combobox/stories/combobox-grouped.ts",
+            "sha256": "69e128c2abf493e03736c528a9a68e9cc29bc40544bbdc461de87ef507bb7d94",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/combobox/stories/combobox-input-in-popup.ts",
+            "sha256": "891e280cbcdbcb02c891f5e87bc83d2d1f15fb650def2551e9f9d6b6a982758b",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/combobox/stories/combobox-modal.ts",
+            "sha256": "f05f0b4f73ec3c234e02a7a34b959cf81f873de89b8c075aec6b0f6ff2df72fd",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/combobox/stories/combobox-multiple.ts",
+            "sha256": "2eb17e2066cb11b2245307a9f692c6cd7e3af9387559aaf1e29c3913ac32bdc6",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/combobox/stories/combobox-open-change.ts",
+            "sha256": "76a1d111b02088a150a84081ddc64593374d471052fa0e66836ee61785d25c0a",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/combobox/stories/combobox-reactive-forms.ts",
+            "sha256": "49e316d03243aac71c9666583ee2a4ea7b528989c458c126f4b0b3fdecea40a3",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/combobox/stories/combobox-reorder.ts",
+            "sha256": "0b0965f4d70f7ab93f3906eebb6f7905207b447dc180c92cc7a1656b9fc33925",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/combobox/stories/combobox-validation.ts",
+            "sha256": "563af57ebcbb35986285e726161acfabcab0a83d98ef41b9ea25c6be4da1a3cc",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/combobox/stories/combobox-virtualized.ts",
+            "sha256": "a7b861fb8c9a4ae8691bd9936a5b7ab583abaeab28df8fc92d54fc3a43f599cd",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/composite/stories/composite-default.ts",
+            "sha256": "9154b99e7678c2b9df612d1a076181b5b7b8e8283b787454ad55c6234ab64b91",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/composite/stories/composite-list-only.ts",
+            "sha256": "ca55fafd982abd52732e895ee939b8b9e58b9c3f5ea98e3302bd614fef6ae04f",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/composite/stories/composite-reorder.ts",
+            "sha256": "741a976a154f3bfe8f5ee35d589f889f7cd78905db00b24136fe213a61fad754",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/context-menu/stories/context-menu-areas.ts",
+            "sha256": "89e46665f135f7d52d7b68ce84c31bb6ee912b0c0b76916fae51b0305a5a79f5",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/context-menu/stories/context-menu-default.ts",
+            "sha256": "3b2a2c6436478fafc873f701a5d1fd124b43a747850f569fde259df73d81c519",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/context-menu/stories/context-menu-independent.ts",
+            "sha256": "ff2f6c2b4125ce1b626d20905576d5ff2dd446aa619cabe8f620d1919a52fd89",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/context-menu/stories/context-menu-radio.ts",
+            "sha256": "cf778da21e9ada93c6902b9bcadc4eceb621db1806084fba0f081d81ba5b10f1",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/context-menu/stories/context-menu-sides.ts",
+            "sha256": "2ff48bbb3769e2abccb69d392c44e6eb698f24fafca982c3ca7f265c8b480a43",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/core/stories/inject-id.ts",
+            "sha256": "280e78d9d2e26b0bb8666de85e41d4f7ba92a4b0d6edb0e6c01cd1fae289f316",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/core/stories/live-announcer.ts",
+            "sha256": "c0c70c14c83de598dd5a997bc1fba41abf4f50ec0b78c25e72df786eb9cf2811",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/cropper/stories/cropper-default.ts",
+            "sha256": "74b0773f06f65da61ddb2432bb947ed467a9f1389b8a6beca7bce09efde5e10e",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/cropper/stories/cropper-disabled.ts",
+            "sha256": "bac28ece1839f394bfa486e9cb9995de14d7c0f43c835e42cb83f66754aeb685",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/cropper/stories/cropper-with-data.ts",
+            "sha256": "b5aba02b815c5f01f5b50ee5dcccd7f4499c1b8c6dcf63f2805fb3700ae660cb",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/dialog/stories/dialog-close-confirmation.ts",
+            "sha256": "edd9b8dc15221355ac6441b347082dba241744c8d3eaee2ee69ef7c19d826db8",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/dialog/stories/dialog-controlled-multiple.ts",
+            "sha256": "c8afe470adda3caa46f4ee7a9660c2689da532a9b1629575b7f5a6068875f448",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/dialog/stories/dialog-controlled.ts",
+            "sha256": "75c207650b02d02b123129992f22750a334410951fd7af115c04617e22735526",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/dialog/stories/dialog-default.ts",
+            "sha256": "9046a6dd2d8a64c07ee3bd4a76dc3a925f2f25b20391ba4da1da3e8af7433e7c",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/dialog/stories/dialog-deferred-open.ts",
+            "sha256": "23253b68a7c84ef14369a997fbb023deacd2456f139954d8a72a35830bf9e95b",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/dialog/stories/dialog-detached.ts",
+            "sha256": "b90343204f18cee50702c30a8b037811629621938f1da0764568fc2ff732eb1a",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/dialog/stories/dialog-from-menu.ts",
+            "sha256": "e7066919621ecceb98a63cf3d69cf09684f1bbfc88fbeed1fd8e5e20c6945d92",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/dialog/stories/dialog-inside-scroll.ts",
+            "sha256": "61c1370852d22284e9c59eb6423c8635109d569bfb665957b0ade6ae7b5f7bc6",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/dialog/stories/dialog-manual-close.ts",
+            "sha256": "c986f7aa06e6af36a84be8ee4b74b22133f2346fa095bc5c835b237fd22d7c34",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/dialog/stories/dialog-multiple-triggers.ts",
+            "sha256": "b0b51ebd11eb99cc4241062fb096129e773fad3d14fb3089e03915ad9e4b023d",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/dialog/stories/dialog-nested.ts",
+            "sha256": "cd75f1434590882504b7c766dfb48effdd6718247233d14c391287abb3e0ff74",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/dialog/stories/dialog-non-modal.ts",
+            "sha256": "341d7921b316db1d4646271aa00f0115b4a8887f3268cad838f56f75c37dfa7d",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/dialog/stories/dialog-outside-scroll.ts",
+            "sha256": "c2b17dc54139fa6e7d1df7552fd80f19f792d68bdc90eb48e772a0aa838920cd",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/dialog/stories/dialog-trap-focus.ts",
+            "sha256": "82e4a9501798b64a2d2eea7f4f9a13f38d8060e58eba876f39752f1904fd40a4",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/dialog/stories/dialog-uncontained.ts",
+            "sha256": "e946c374cef11cfee4540cffebd748a9eb685179e8cdea2897956bfb305a8d3a",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/dialog/stories/dialog-without-dismiss.ts",
+            "sha256": "682a85d52fcf1255bc7dc4d006b5e2552f2eac7ffd348f0506bbb348b2ab555b",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/drawer/stories/drawer-action-sheet.ts",
+            "sha256": "a7b87f355bcf7eb843b82fffa877244d3b0163d65f989cc0e803c649a4b33dcf",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/drawer/stories/drawer-controlled.ts",
+            "sha256": "3189e0de9770c2b4d8e5d93673d4794702aec2fe17c77533b93bad92f19d2388",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/drawer/stories/drawer-default.ts",
+            "sha256": "8416686b93e4b51eda96e067552d1dde2b2d215d75153ea7867cf8ca27e21b54",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/drawer/stories/drawer-detached.ts",
+            "sha256": "a863dd7b394bdd9dba84dc1b27c9d7709653c160d17400643dfd2bf45029b38c",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/drawer/stories/drawer-nested.ts",
+            "sha256": "a4c113d24c55efdf0a92b851be1a35fbdc298911c959c7465c7eb901c9d1d09b",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/drawer/stories/drawer-non-modal.ts",
+            "sha256": "334272b0eac22a16c2da9e63880c6be876bdca7eb3495edd5e1546982bbdc98b",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/drawer/stories/drawer-page-scale.ts",
+            "sha256": "77daf6557e4a1ad889e53f47a4ef78628cafb034f20dee72f642ce06b96f80e0",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/drawer/stories/drawer-scrollable.ts",
+            "sha256": "9d1253e5184598e493661f10759a918013b754a30873d1bfefd02d0359ee1f86",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/drawer/stories/drawer-sides.ts",
+            "sha256": "07fca0be868e1fecf3f05c825a81738d425e303d301662afe7617a6cfdc5f395",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/drawer/stories/drawer-snap-points.ts",
+            "sha256": "bc23c35c3eb6d5ed785be70e1411c9057aa2c49bc22911c8a744191b30601841",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/drawer/stories/drawer-swipe-to-open.ts",
+            "sha256": "cc43a70f708f10b6f9d50067047dd462b52e803f97747728531dbd23ca99077b",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/drawer/stories/drawer-virtual-keyboard.ts",
+            "sha256": "ef0037ee05a266bbfc39aad18f2a0d189185ddab14eb2b4d0a7cf5b380c3bce9",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/editable/stories/editable-auto-resize.ts",
+            "sha256": "a86f8080d6140fc5dc684df069eb8aac0497456788489296fe345d643b57d9f6",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/editable/stories/editable-default.ts",
+            "sha256": "7b54cd0afb09fcc92598f708c87f51da0777169495d3f98150329822ea571317",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/editable/stories/editable-double-click.ts",
+            "sha256": "cf11b99eabe4d7afa6e401d420fb4e748625173731141c939319c61290bbe94d",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/field/stories/field-custom-control.ts",
+            "sha256": "95e3262cbbd76ef196d0e8c1eef0536f3c6e49b5b1344d3347729006700f2757",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/field/stories/field-default.ts",
+            "sha256": "2f1318a8e7941a99482531ec8f0971cd4d97db7d4a2d4ad661928f91000d04c5",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/field/stories/field-invalid.ts",
+            "sha256": "27b0c037357b126c28da3ec47b8fcf001b6d206163c755428c627aabfddf3b71",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/field/stories/field-reactive-forms.ts",
+            "sha256": "e0ec1fedd6caccdc8bd1158c3769968fb2024df7509bf042a5c66b5e84fe68a5",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/field/stories/field.shared.ts",
+            "sha256": "04ca218459510d129814c85c6d3b76d6b09cdc89282917d1422008a71256a1bc",
+            "kind": "dependency"
+        },
+        {
+            "path": "packages/primitives/fieldset/stories/fieldset-default-example.ts",
+            "sha256": "4b932a3453b62ca8715bd3c67a6d4e3f849bb724f83117d03c78804701aaeaec",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/fieldset/stories/fieldset-disabled-example.ts",
+            "sha256": "ce1a9390c520fe220749dcc0bf7850f2d5f4cb9816980e7e6f59d5fc49cc4916",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/fieldset/stories/fieldset-signup-form.ts",
+            "sha256": "5b81b45cc63327db87bae4dbea31ea4218187457f9c92cd3ca9f993fd18c7ab0",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/form/stories/form-default.ts",
+            "sha256": "fed56be4d4aad37e60514772ca1c533a076c118a7b31fd1d41b93f8ae2826a1d",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/form/stories/form-native-controls.ts",
+            "sha256": "2f8783919d069a7b82b426bab5e23f3220d12985afa9d3d1b3c89e168e05e9f9",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/form/stories/form-reactive-forms.ts",
+            "sha256": "20077626132dd3bdde961af43febd81b1b06dc2353e75bc3116892e859c2d01b",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/form/stories/form-reset.ts",
+            "sha256": "582e650de72ae74786bfdbc27f5b3816a3b8e4585d4886cbcecda3c1cf7700a6",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/form/stories/form.shared.ts",
+            "sha256": "39d42985f3dd7052026473b7a2b1316610e0752a362e0fdd66e78901bd14361a",
+            "kind": "dependency"
+        },
+        {
+            "path": "packages/primitives/input/stories/input-default-example.ts",
+            "sha256": "342c4b99f7e55419832e5284c98bce99b429b4f70992a0a214b20677d2a28dc7",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/input/stories/input-disabled-example.ts",
+            "sha256": "0975daa7644773ad13a519762663a2dec79ac442b2f23f72c171497ec58a75c1",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/input/stories/input-field.ts",
+            "sha256": "0f3d48cc3c67bd180869454d30f3cdc008b08530df236be0be9d91513009904a",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/input/stories/input-reactive-forms.ts",
+            "sha256": "ba2abaa5148022948e10d579504a6751037b16a6a44a5eb1474b4668746de515",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/input/stories/input-signup-form.ts",
+            "sha256": "1ef4f038edea2b019c1f60e969f353872a5431c8ebad402b7fbf58bbbab6b689",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-animated.ts",
+            "sha256": "5a15ad179c849cc16e8bf0cd062aeb9158d5df6dee4a4bf9ea1a1092cd8097fc",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-arrow.ts",
+            "sha256": "2864a3e616b7f98a9ff6daeda8b70b13830167a32648921b81f1581d67a3e635",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-async.ts",
+            "sha256": "bbf8c8b8636c6160227df0edde093e44fba8f91d75534fc39d2c5627ea404d3a",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-backdrop.ts",
+            "sha256": "c94372186d1aa1899b205210fd6659b970a32966c4315906de2735ff8c2658ef",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-composition.ts",
+            "sha256": "9fdedd91d05a5bf1a9690fd9e19d7606f5ea232c7581748a495b3505cbdee4af",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-custom-container.ts",
+            "sha256": "6ad84c3894b36d2df4fc619b69e06ebead2fb765f6baccc65a653fd3448bdd98",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-default.ts",
+            "sha256": "2f94af20c7a3eec03e012227d2a7fb627b764e2e06fb1f983964956754ca3905",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-events.ts",
+            "sha256": "78e5bdd7d4c5c0ea697a91b3c027fee6acd248234b4cbfbaa23462dec7dc37d5",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-exit-switch.ts",
+            "sha256": "3b6aecf1d8ee538b6d6621c8ae8f281a4e99817e758b9444abbc51446c9474ed",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-focus-return.ts",
+            "sha256": "6417b053a0e00cd347e4de9e5e80d9cf859e4f41e0eb3327dce6c9caf53ea303",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-highlight.ts",
+            "sha256": "6b75c7d28df824094a4a9f4a07d28881ad15733a665ff1bdd0a4ce0ea926eeb7",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-in-dialog.ts",
+            "sha256": "5e089bcf91e67417f0cddd04972b02795c6b6fcc20169452f7c5a8b9c6aebbef",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-in-popover.ts",
+            "sha256": "cae2ce18f83d4cf7fe68991473683a5adff5650deedb8bbc0673327ed8239261",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-initial-focus.ts",
+            "sha256": "7951eebeb8361ecf248fa4fac57a9db3b0f8a0ce8b51a499da1d7fb7ae37784e",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-keep-mounted.ts",
+            "sha256": "4b821635de2f06e25ccb340a647c1eccfa278fe241f447d3edf05d23fed17129",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-lifecycle.ts",
+            "sha256": "7377d0b44e606c49b740962244eea7d3e14e0e63ebeec0df2ce975452053ea63",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-multiple-triggers.ts",
+            "sha256": "04283a921afc7c5ab70124fe9f2bdfc754294de4197fd831b5728fe0db68a277",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-native-elements.ts",
+            "sha256": "960c0f86c7f98c5bf80d8d3750dc2e04a9d09b4ee4e0eb179a85e01e130f984d",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-nested-popover.ts",
+            "sha256": "b012241c5c1767580d068a7bcfaf6205288daf0cdbe5d45424715d3f6019374e",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-nested-rtl.ts",
+            "sha256": "e608efd880fab989693b16a789339ea0e77868cafe4519aaab124f04bc20a653",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-nested.ts",
+            "sha256": "8def466fb0465379d3d00abb0ba94f9b27e32f3bbd54c6bdcb0175848bfea327",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-open-dialog.ts",
+            "sha256": "efc268020017626363ddac490285b1e128dad3700fbcbc0d57bf08c9a3a4a9e5",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-open-popover.ts",
+            "sha256": "14df1741c82a119ffa943ffab4f85a116b26500f32d7aeffec2db4dc44416957",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-pointer.ts",
+            "sha256": "e41496dd0c619bcb9b9cca6e99dba830ca38eae913949567c6cd6f4865730144",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/menu-viewport.ts",
+            "sha256": "cb9a791d7c31b41148067ef3cea218c3457148d8b3e0c34eda118a09bf7c936e",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menubar/stories/menubar-default.ts",
+            "sha256": "109aaf45004bee900332516ff4bbdd95ad619c643f863c988452e19c0f370d10",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/navigation-menu/stories/navigation-menu-custom-links.ts",
+            "sha256": "536f21c19f13186b169884ea0a7f94c7a7e9439acb74d6ce3b92f73f88204a24",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/navigation-menu/stories/navigation-menu-default.ts",
+            "sha256": "8c9567e773da5b11374cea9ed9f70e388f551714cdc8d6159d217f40a0064578",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/navigation-menu/stories/navigation-menu-large.ts",
+            "sha256": "7892f3f2069a844f39c7c773cfa94f06d22ff23983f1d5202ec51424cfe8eb78",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/navigation-menu/stories/navigation-menu-links.ts",
+            "sha256": "74dceae9673f074f543d618d80ed2efa10a4a9b8dad1b12513b5fb1f1d6e6632",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/navigation-menu/stories/navigation-menu-nested-inline.ts",
+            "sha256": "02347ce0cab180fd30905c286d79cd0a7f7e27b324c7c09080053973b83d4c2f",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/navigation-menu/stories/navigation-menu-nested.ts",
+            "sha256": "90615ff781d860071667a698ee300e5270ba6e8743d1884f7e492935ed945d2b",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/navigation-menu/stories/navigation-menu-rtl.ts",
+            "sha256": "e3ea5aa4f03190ef06ec26c0135de2e83ca37f686d1916cab7ef9dd89663ead8",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/navigation-menu/stories/navigation-menu-vertical.ts",
+            "sha256": "912bd1e3c138d4c685af78ed2ac73a8bdca2e30819e723cc45465f81173f65d2",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/otp-field/stories/otp-field-default.ts",
+            "sha256": "a9e9fb5e780c744b0571cc7cafb771bf62ad411c2ff93447d1c8e77722798cc9",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/otp-field/stories/otp-field-forms.ts",
+            "sha256": "c9fb9aef937b69bc9e1a25aedab01b5b8ef4bb7d61f8f8863b6a3ab280fb6797",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/otp-field/stories/otp-field-groups.ts",
+            "sha256": "9e703d8bd270518f911a2685da9ce5c3c834d1fff8d8b5d22607a922b5f104c1",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/otp-field/stories/otp-field-mask.ts",
+            "sha256": "1be96b9adce69f117103ec11d4acdc185c600da9536cc387c9486dc7acf7d684",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/otp-field/stories/otp-field-ngmodel.ts",
+            "sha256": "dedeb5c08f1b24e2c19519573dc96e24592972b42c449b050ec9a88bceccac85",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/otp-field/stories/otp-field-normalize.ts",
+            "sha256": "7dd0a9286377e5192dd262bf08ed582fac8d1a4e133854f0692441c594d8275a",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/otp-field/stories/otp-field-placeholder.ts",
+            "sha256": "923dbbd21621a8adf0736ef038188b60e55e14d97eb7fbf592de3b7b408b51ce",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/otp-field/stories/otp-field-signal-forms.ts",
+            "sha256": "6dbd6eca18c690d0ee74eb7d0a6bebdcc5887021bb567afe581eec781902ed04",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/otp-field/stories/otp-field-validation.ts",
+            "sha256": "cb0e15a8729806100d7391d3eccce47c0066a86b8becf34f21fbda2411261d32",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/popover/stories/popover-animated.ts",
+            "sha256": "57f93d1ee6ecb19a5e0ea534655ec12f5717c33f866f09f1b36b92f6b559c7ad",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/popover/stories/popover-controlled-multiple.ts",
+            "sha256": "be8d1ee030242bc77f4b1793ec55b70f8f61aa0c7c1f3d76e34dfd1d77c4ecd8",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/popover/stories/popover-controlled.ts",
+            "sha256": "ab5b702f654501d6f0da744518be9a287a31ee1437fc42b9544e7346c8d2fbad",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/popover/stories/popover-custom-anchor.ts",
+            "sha256": "83fca8ab7c62f389e6b78ac942a577adbfb59dd16a6efbbd1c7bda077dfa2675",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/popover/stories/popover-default.ts",
+            "sha256": "7b45b738cfce9226372535f901d9f28dcfd515f95ca2195286fd0c2d0de78cb1",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/popover/stories/popover-detached.ts",
+            "sha256": "0d02ed97a32dfc61db812f5d11d7abf2ea913078d908ef49baf9bee777d291c2",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/popover/stories/popover-hover.ts",
+            "sha256": "e51141fd3ac8c8802512fce9101535bad664cbe5d8d50cde7aea9df7d29b404a",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/popover/stories/popover-lifecycle.ts",
+            "sha256": "d78fa296de1a900d39ecefb73f4e3a4cd3b24491f3f4044e237c2234b4d9a8f6",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/popover/stories/popover-modal.ts",
+            "sha256": "0899cceede5d14e80690637c2fafef95df44467e61b0f0d739ae4e6b0e57f2a2",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/popover/stories/popover-positioning.ts",
+            "sha256": "1de448622fbe63a4124db73a1e610352c5be88850381bddb4e3f60f7e2103316",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/popover/stories/popover-viewport.ts",
+            "sha256": "a73fffe661e314d24e3380808f74b9b8d08d118835b6d680a74757f50531097f",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/presence/stories/presence-dynamic-targets.ts",
+            "sha256": "939b97d8f964f6aa39940f7c553364d5b4a041eb88961ad7b05b5ebad87b09f0",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/presence/stories/presence-pending-portal.ts",
+            "sha256": "b71c6428f2433a7d36c1d554567dcb1113f0b0dd24d7028feb25e4c326a588e5",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/presence/stories/presence-waapi-spinner.ts",
+            "sha256": "30203e08d8cd135286036c1311fcb4f748d540feaf9c1d8f60feaa75d17a3a6c",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/presence/stories/presence-waapi-subtree.ts",
+            "sha256": "29a51f3db3281b1a892d5752297b9d3faf8a7125dc7ddc23e227266c2cd687b3",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/presence/stories/presence-waapi-transition.ts",
+            "sha256": "e7305b46c4b9cf65788a1a5952c72d011cedb6837589bc93909a807d44080338",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/presence/stories/presence.ts",
+            "sha256": "63ee5adfb81dc11c341a870ac1b8181e6293c71e80d772a454212b83238f067e",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/preview-card/stories/preview-card-controlled-multiple.ts",
+            "sha256": "21037803fe2c592d561df3b813ec2248f92e65b394165aa4c760d0bf90d3b30b",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/preview-card/stories/preview-card-default.ts",
+            "sha256": "8dfc78f4f4aeddbc79e9b585644230da1163d07047d78094edb298a0e0e4f9e7",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/preview-card/stories/preview-card-detached.ts",
+            "sha256": "fe3ed03b412f418ddb86273273ee88d7abf04651d58dae01a66e1aa84c35b8b7",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/preview-card/stories/preview-card-positioning.ts",
+            "sha256": "7536376797e91252300499b29e94e7ff1e43c4d9c2df96a8d6f8b8a22c89399e",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/preview-card/stories/preview-card-viewport.ts",
+            "sha256": "b223b7e7ff8c48dc4d16a61150c3a40bcd27186e553265fa3f84fd0915786cfe",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/radio/stories/radio-default.ts",
+            "sha256": "53e7eff1cb9a4079f7aeb005cdeb0215ec30e4df8527cdd91180f0f41102e5e8",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/radio/stories/radio-disabled.ts",
+            "sha256": "e982343fd0f4763a263693a8a589a1ee93facf042f40379fe535661ffd9766d5",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/radio/stories/radio-template-driven-forms.ts",
+            "sha256": "6fb44596990c1783228654759aee5f04d39b8ecf3f6f34f95b8ff97662ce214e",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/recipes/confirmation-dialog/confirmation-dialog.ts",
+            "sha256": "d73fe75e0baaaa812be35afbcca540b7c7830841031c505b8e5642c29e17d7e9",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/recipes/forms/signal-forms/signal-forms-array.ts",
+            "sha256": "98fd14d3f37789af8859a89586cc98308ea70ff4a5326fe404fa95501c6147f4",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/recipes/forms/signal-forms/signal-forms-bug-report.ts",
+            "sha256": "6efe6ce3bfd884c34338b4c52f8098d8518c411264da6465695f481783eb2470",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/recipes/forms/signal-forms/signal-forms-complex.ts",
+            "sha256": "bf482f5219616a517947c806b1b0d580a3c48e3463f79d6b4eddfb611e99be9f",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/recipes/forms/tanstack-form/tanstack-array.ts",
+            "sha256": "33c86117a9e6bdc3615939bd5762787cacf0e5295c43ee0d2a26d20c53d05188",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/recipes/forms/tanstack-form/tanstack-bug-report.ts",
+            "sha256": "39531ed8e327a1fd2e92e26e8fd23209112c4b0988e6afe0fda03d53cffaa277",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/recipes/forms/tanstack-form/tanstack-complex.ts",
+            "sha256": "4c67b4bbf54188e64d1ffa4ccda6abda846c7ff798be222c965fc3aeff1c0296",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/recipes/notification-dropdown/notification-dropdown.ts",
+            "sha256": "3f34332898343e2ce92b345443c61f1198d018eec4874db518de978f112e2925",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/recipes/split-button/split-button.ts",
+            "sha256": "0b343aef9873a3f6fe48b41a0f4e001c023ca93e7c08aabdbd817c7f7d40ab85",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/select/stories/select-aligned-position-with-scroll.ts",
+            "sha256": "e3ebb6f89ba204ba339a584e62d1da3d9e0f01028cd857407b2007422a2ef795",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/select/stories/select-aligned-position.ts",
+            "sha256": "25095485a58c10e8e49a70a7f7fa212b5a82e2747973b27666e8dd3774d0fce2",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/select/stories/select-arbitrary-values.ts",
+            "sha256": "1ee33433799290ea5f2c40bb4f1b1fcca5687e601b6404b5fb2bf625e2cebbd1",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/select/stories/select-arrow.ts",
+            "sha256": "3b0cb91355c8c377a2435c71169854e26a929d53c80347dbc729fb9b81834135",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/select/stories/select-default.ts",
+            "sha256": "bfaa2ffc28aeae7a005d92eb9415150f423ee257d86c773b5141998fcf58f697",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/select/stories/select-deferred-unmount.ts",
+            "sha256": "2f84fc26103bbf2f07a499e96db9c3b7c9789c2e22fd89b2a95c85b816c2ca43",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/select/stories/select-dynamic-options.ts",
+            "sha256": "3b07f3469ddd31c22fb17daccea84d4e651ab797a8f6764db42b6142fb4d53e9",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/select/stories/select-events.ts",
+            "sha256": "f9e950c1e04a30be273b493b4649ae91d781e44d0e0dec912b7eb058ebefeac7",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/select/stories/select-focus-management.ts",
+            "sha256": "fa310d6b5fa029673b7761ff51498a4afe03a18cbb78a9eb026aec6f713d5fa2",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/select/stories/select-items.ts",
+            "sha256": "fffcbc9c563ff00be465bb397fae7e267eb5db43729efd49b0ff1392b1e9dba3",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/select/stories/select-labels.ts",
+            "sha256": "6c179af5c53e49b56dd0d2b67366f3608473c25e3b20db564986968e8e81e159",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/select/stories/select-live-layout.ts",
+            "sha256": "01a7deb1bde7df7a3b66bda947bc1c6a3f3d1e76c03f101f7646cdd0cdabc2e2",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/select/stories/select-multiple.ts",
+            "sha256": "2c5cdd0760eb77591c51ef3cf7ed57a4e608e0183fa27f89e5a39a65d449edff",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/select/stories/select-native-forms.ts",
+            "sha256": "8e5aa2a8ef27ea323dab1c3784f2371932e504f7120771a0467fd3179ea2cad0",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/select/stories/select-object-values.ts",
+            "sha256": "9245b67440dd58df5f5fbbfd373591223103f23c84ebe0afbbbbcc4653b2121b",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/select/stories/select-reactive-forms.ts",
+            "sha256": "7e31f0dc07f87a0168f989e347e06bfb40f8d76874c2bf08fb743185de3d00fb",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/select/stories/select-template-driven-forms.ts",
+            "sha256": "0cf90901aa83d34a4dc841022566b1f31686af4743a90c7b6019d20e585cfd23",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/select/stories/select-typeahead.ts",
+            "sha256": "c08234ab8ca56a4abeb6635f849a2f98559cdecfd0292cfa65d7740a3c4475d0",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/select/stories/select-typed-control.ts",
+            "sha256": "39235ecb5027acc6b2b99f51398442becd7aeb58bc95dd5ff39d6592add6c0d9",
+            "kind": "dependency"
+        },
+        {
+            "path": "packages/primitives/select/stories/select-typed-wrapper.ts",
+            "sha256": "970e73db6df4337c147a34e9a2845b5f85453619b267cb964dd7661e7d07b184",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/select/stories/select-viewport-edges.ts",
+            "sha256": "6c4c11002ac3554f6e245320494115d04ffe97dc3211ceb0503c43e740cd3403",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/select/stories/select-with-scroll.ts",
+            "sha256": "440d7a582d8cd5321d940595c799e724cfb2cb77635091c7cc422652e1e1af85",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/signal-forms/stories/signal-forms-field.ts",
+            "sha256": "68113334f9cc4c5407b96aaa8cf219b1df411f123759c3b9f805f17bde049b8f",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/signal-forms/stories/signal-forms-submission.ts",
+            "sha256": "c03a83f1596457725e9211e661f6dfcbb9f455561d7b64ef824f256b899c62a7",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/signal-forms/stories/signal-forms-validation-lifecycle.ts",
+            "sha256": "ee76ccc48bd8d3f7a7f0208750b9b4732aa8170743f6d718a4384ed870a85df3",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/tabs/stories/tabs-activate-on-focus-example.ts",
+            "sha256": "deb1772a53e73028b170701314cc8669fdeb92fea5277066da7e89e6bca0ff44",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/tabs/stories/tabs-animated.ts",
+            "sha256": "96ecb25515865c87a34eb5ef99804b789bc6fe76eef6bbc1285aa166d78dcfba",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/tabs/stories/tabs-controlled.ts",
+            "sha256": "544cb2c85085ba92ea862689ed9c83d0fe041901765a7cb9f00b9754f169949f",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/tabs/stories/tabs-default-example.ts",
+            "sha256": "36646f21048da2e64a1df0af44678b886500d5666c40cc633908d8e0dbdbd6ed",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/tabs/stories/tabs-disabled-example.ts",
+            "sha256": "8fa8a5353c0f5c674ef60661143a48972941cbf5b448eab278a3233665eeb2a9",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/tabs/stories/tabs-indicator.ts",
+            "sha256": "c4b49ae118b5de785fa4304147afd35dc154f4ed215deee0e25dc2f468e16e7d",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/tabs/stories/tabs-keyframes.ts",
+            "sha256": "07ea3b6687e5002e81b8c58bb81763c35ad32c83d5fdccb56575574980f06284",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/tabs/stories/tabs-object-values.ts",
+            "sha256": "6ee47e284219c666b5f44452e297976d1b1d13143bc1c40bda1553212e8c4404",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/tabs/stories/tabs-projected-wrapper.ts",
+            "sha256": "12de10105a45704c68ce58869b258c9ec531456147974828c857bb92f4935642",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/tabs/stories/tabs-vertical-example.ts",
+            "sha256": "01d5493061a186982d914d5a559a617e6ec64d83b2e1d12f4b0468116cac5abf",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/toast/stories/toast-anchored.ts",
+            "sha256": "f1ae597cb610be694723a038cc78554d5afeed20d73deee24846401f71d31956",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/toast/stories/toast-custom-data.ts",
+            "sha256": "163ca4917876ee393021e04a000f9ee26853d64b4fb005c9ed3189518e7c9cf0",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/toast/stories/toast-custom-position.ts",
+            "sha256": "2f58a358d87e5d5a9512e7ad738da0fa9d291bf409755bd6671b258b61c9801e",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/toast/stories/toast-deduplicated.ts",
+            "sha256": "300084fb060100d21efaca65598cad32047df1018e989bbccdaa7cdfec12c3f9",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/toast/stories/toast-default.ts",
+            "sha256": "384e9c00653910e2566785acc15c816c60561148e2ee66cdcf0b68cf7c52b669",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/toast/stories/toast-promise.ts",
+            "sha256": "949f182b1a493ca86690b63414e05fba9be82be944ca4486a604abc0ddbbc8ff",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/toast/stories/toast-stacking.ts",
+            "sha256": "35e23f78b6da4b1594de23592463848f2e7c36830ef36f64555571f4830083ba",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/toast/stories/toast-swipe.ts",
+            "sha256": "8a86cad8c989d8ab311d109912155265d1b0228f423b378fac0c413633f15acb",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/toast/stories/toast-types.ts",
+            "sha256": "c6d3311e5d737f59ac3fbfb1392cda3f96620e7c57a1611d6a17a64c99bd87d0",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/toast/stories/toast-undo-action.ts",
+            "sha256": "44c999d30a3aed72694a9ec62e94d1104cce16c280e0da78342a68746f83c9be",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/toast/stories/toast-varying-heights.ts",
+            "sha256": "68f40919596629710e8ec2ed2658c6bab5bc3d6f2358b1b60725a99864f8c747",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/toolbar/stories/toolbar-default-example.ts",
+            "sha256": "5654072b26bebd685be5a9861b586e190494ee43fe17a6188a15511a6b92e35c",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/toolbar/stories/toolbar-disabled-example.ts",
+            "sha256": "2a112e645fcc47cf5bc07192d826322a1590727b3fb4ecf6504f417a83d22270",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/toolbar/stories/toolbar-vertical-example.ts",
+            "sha256": "a510b16a317ac3a16f3f853f6a04acfa7d8e5dd3a898b3aeb71c7d72ff06053a",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/toolbar/stories/toolbar-with-menu.ts",
+            "sha256": "4e7139a5202e933d8646f3b92352af7272382b01285163e49b5e9d8b4dc1c7c7",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/toolbar/stories/toolbar-with-number-field.ts",
+            "sha256": "73a7d3e7611e92da8264d8ae573a87233ad95abc33f638e45738898f39e16bd0",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/toolbar/stories/toolbar-with-tooltip.ts",
+            "sha256": "8489952ff653243dd9088e38d7c906a1ca648a33e13c36be49d7d1b26ee8908d",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/tooltip/stories/tooltip-default.ts",
+            "sha256": "66cc2dceaf1102d59f39d8e4727917219b7d84e430b22198d109164057829be8",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/tooltip/stories/tooltip-delay.ts",
+            "sha256": "2f9c4407e4a6ac7c7559cb90479d70232ef098a89bf7a88eafe74aeb00753a01",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/tooltip/stories/tooltip-disabled.ts",
+            "sha256": "dc2afb588e8a2ac70641f0c39cdd38f6e68708c7b312c8e70e4e0285ea339080",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/tooltip/stories/tooltip-provider.ts",
+            "sha256": "2e8ecef4d45256f95e2140925e4cca9b08bc9248070607b077b944e1fd4149f0",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/tooltip/stories/tooltip-slider.ts",
+            "sha256": "d7cc441b26b1bf3c3b292755f062932b6af48972eb1dddcccc2dce12acd10f0f",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/tooltip/stories/tooltip-track-cursor.ts",
+            "sha256": "0d0cf8a872d47ab1488d97de60d948ceb6eb0a535f17ce6b3c5495ff47d01dc2",
+            "kind": "example"
+        }
+    ]
+}

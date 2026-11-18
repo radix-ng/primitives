@@ -1,24 +1,60 @@
 import { Component, ElementRef, signal, viewChild } from '@angular/core';
-import { menuImports } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoMenu } from '../../storybook/styles';
+import {
+    RdxMenuGroup,
+    RdxMenuGroupLabel,
+    RdxMenuItem,
+    RdxMenuPopup,
+    RdxMenuPortal,
+    RdxMenuPositioner,
+    RdxMenuRoot,
+    RdxMenuTrigger
+} from '@radix-ng/primitives/menu';
 
 @Component({
     selector: 'rdx-menu-custom-container',
-    imports: [menuImports],
+    imports: [
+        RdxMenuRoot,
+        RdxMenuTrigger,
+        RdxMenuPortal,
+        RdxMenuPositioner,
+        RdxMenuPopup,
+        RdxMenuItem,
+        RdxMenuGroup,
+        RdxMenuGroupLabel
+    ],
     template: `
         <div class="flex w-80 flex-col gap-4">
-            <button [class]="cn(b.base, b.outline, b.size.md)" (click)="showTarget.update(toggle)">
+            <button class="demo-button demo-button-outline h-9 px-4" (click)="showTarget.update(toggle)">
                 {{ showTarget() ? 'Remove container' : 'Create container' }}
             </button>
             <ng-container [modal]="false" rdxMenuRoot>
-                <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Actions</button>
+                <button class="demo-button demo-button-outline h-9 px-4" rdxMenuTrigger>Actions</button>
                 <ng-template [container]="target()?.nativeElement ?? null" rdxMenuPortal>
-                    <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-                        <div [class]="m.popup" rdxMenuPopup>
+                    <div class="z-50 data-[closed]:pointer-events-none" sideOffset="4" rdxMenuPositioner>
+                        <div
+                            class="demo-menu-popup min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                            rdxMenuPopup
+                        >
                             <div rdxMenuGroup>
-                                <div id="custom-commands-label" [class]="m.groupLabel" rdxMenuGroupLabel>Commands</div>
-                                <button [class]="m.item" (onSelect)="selected.set('Edit')" rdxMenuItem>Edit</button>
-                                <button [class]="m.item" (onSelect)="selected.set('Duplicate')" rdxMenuItem>
+                                <div
+                                    class="demo-menu-group-label px-2 py-1.5"
+                                    id="custom-commands-label"
+                                    rdxMenuGroupLabel
+                                >
+                                    Commands
+                                </div>
+                                <button
+                                    class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                    (onSelect)="selected.set('Edit')"
+                                    rdxMenuItem
+                                >
+                                    Edit
+                                </button>
+                                <button
+                                    class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                    (onSelect)="selected.set('Duplicate')"
+                                    rdxMenuItem
+                                >
                                     Duplicate
                                 </button>
                             </div>
@@ -36,9 +72,6 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
     `
 })
 export class RdxMenuCustomContainerComponent {
-    readonly cn = cn;
-    readonly b = demoButton;
-    readonly m = demoMenu;
     readonly showTarget = signal(false);
     readonly target = viewChild<ElementRef<HTMLElement>>('portalTarget');
     readonly selected = signal('none');

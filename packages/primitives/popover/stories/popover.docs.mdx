@@ -1,3 +1,4 @@
+
 import { ArgTypes, Canvas, Meta, Source } from '@storybook/addon-docs/blocks';
 import demoStylesSource from '../../../../apps/radix-storybook/.storybook/demo-styles.css?raw';
 import * as Stories from './popover.stories';
@@ -119,10 +120,7 @@ in its template.
 
 <Canvas of={Stories.Default} />
 
-Add the CSS below after `@import 'tailwindcss';` in your global stylesheet. It supplies the semantic
-colors, shared surface and popup animations used by the component.
-
-<Source language="css" code={demoStylesSource} />
+The shared stylesheet and setup instructions below apply to every example on this page.
 
 ### Controlled
 
@@ -216,6 +214,39 @@ moves between triggers. The viewport exposes `data-activation-direction` and ret
 `data-previous` snapshot until its CSS transition or animation completes.
 
 <Canvas of={Stories.Viewport} />
+
+## Setup and shared files
+
+These examples use Angular standalone components and Tailwind CSS v4. Install
+`@radix-ng/primitives` and `@lucide/angular`. Copy the component from **Show code** and any shared files below,
+preserving their relative import paths. Import the example component in its parent and use its selector.
+
+Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
+
+```json
+{ "plugins": { "@tailwindcss/postcss": {} } }
+```
+
+Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
+then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
+
+```css
+@import 'tailwindcss';
+@import './demo-styles.css';
+```
+
+The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
+Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
+system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
+
+<details>
+<summary>demo-styles.css</summary>
+
+<Source language="css" code={demoStylesSource} />
+
+</details>
+
+
 
 ## API Reference
 

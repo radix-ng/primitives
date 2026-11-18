@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoMenu } from '../../../storybook/styles';
 
 @Component({
     selector: 'menu-with-labels-items-story',
@@ -8,18 +7,23 @@ import { cn, demoButton, demoMenu } from '../../../storybook/styles';
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <ng-container #root="rdxMenuRoot" rdxMenuRoot>
-            <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Foods</button>
+            <button class="demo-button demo-button-outline h-9 px-4" rdxMenuTrigger>Foods</button>
 
-            <div *rdxMenuPortal [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-                <div [class]="m.popup" rdxMenuPopup>
+            <div class="z-50 data-[closed]:pointer-events-none" *rdxMenuPortal sideOffset="4" rdxMenuPositioner>
+                <div
+                    class="demo-menu-popup min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                    rdxMenuPopup
+                >
                     @for (group of foodGroups; track $index) {
                         <div rdxMenuGroup>
                             @if (group.label) {
-                                <span [class]="m.groupLabel" rdxMenuGroupLabel>{{ group.label }}</span>
+                                <span class="demo-menu-group-label px-2 py-1.5" rdxMenuGroupLabel>
+                                    {{ group.label }}
+                                </span>
                             }
                             @for (food of group.foods; track food.value) {
                                 <button
-                                    [class]="m.item"
+                                    class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
                                     [disabled]="food.disabled ?? false"
                                     (onSelect)="handleSelect(food.value)"
                                     rdxMenuItem
@@ -29,7 +33,7 @@ import { cn, demoButton, demoMenu } from '../../../storybook/styles';
                             }
                         </div>
                         @if ($index < foodGroups.length - 1) {
-                            <div [class]="m.separator" rdxMenuSeparator></div>
+                            <div class="bg-border -mx-1 my-1 h-px" rdxMenuSeparator></div>
                         }
                     }
                 </div>
@@ -38,10 +42,6 @@ import { cn, demoButton, demoMenu } from '../../../storybook/styles';
     `
 })
 export class MenuWithLabelsItemsStory {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly m = demoMenu;
-
     handleSelect(food: string): void {
         console.log(food);
     }

@@ -69,6 +69,7 @@ to the positioner — use the explicit `<ng-template rdxPreviewCardPortal>` form
 
 ## Examples
 
+- [Default](../examples/preview-card--default.md)
 - [Controlled Multiple](../examples/preview-card--controlled-multiple.md)
 - [Detached](../examples/preview-card--detached.md)
 - [Positioning](../examples/preview-card--positioning.md)

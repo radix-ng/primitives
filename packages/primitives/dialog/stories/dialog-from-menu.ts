@@ -1,24 +1,72 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
-import { dialogImports } from '@radix-ng/primitives/dialog';
-import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoDialog, demoMenu } from '../../storybook/styles';
+import {
+    RdxDialogBackdrop,
+    RdxDialogClose,
+    RdxDialogDescription,
+    RdxDialogPopup,
+    RdxDialogPortal,
+    RdxDialogRoot,
+    RdxDialogTitle
+} from '@radix-ng/primitives/dialog';
+import {
+    RdxMenuItem,
+    RdxMenuPopup,
+    RdxMenuPositioner,
+    RdxMenuRoot,
+    RdxMenuSeparator,
+    RdxMenuTrigger
+} from '@radix-ng/primitives/menu';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-from-menu',
-    imports: [...dialogImports, RdxMenuModule, LucideX],
+    imports: [
+        RdxDialogRoot,
+        RdxDialogPortal,
+        RdxDialogBackdrop,
+        RdxDialogPopup,
+        RdxDialogTitle,
+        RdxDialogDescription,
+        RdxDialogClose,
+        RdxMenuRoot,
+        RdxMenuTrigger,
+        RdxMenuPositioner,
+        RdxMenuPopup,
+        RdxMenuItem,
+        RdxMenuSeparator,
+        LucideX
+    ],
     template: `
         <ng-container #menu="rdxMenuRoot" rdxMenuRoot>
-            <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Actions</button>
+            <button class="demo-button demo-button-outline h-9 px-4" rdxMenuTrigger>Actions</button>
 
             @if (menu.open()) {
-                <div [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-                    <div [class]="m.popup" rdxMenuPopup>
-                        <button [class]="m.item" rdxMenuItem>Duplicate</button>
-                        <button [class]="m.item" (click)="renameOpen.set(true)" rdxMenuItem>Rename…</button>
-                        <div [class]="m.separator" rdxMenuSeparator></div>
-                        <button [class]="m.item" rdxMenuItem>Archive</button>
+                <div class="z-50 data-[closed]:pointer-events-none" sideOffset="4" rdxMenuPositioner>
+                    <div
+                        class="demo-menu-popup min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                        rdxMenuPopup
+                    >
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            rdxMenuItem
+                        >
+                            Duplicate
+                        </button>
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            (click)="renameOpen.set(true)"
+                            rdxMenuItem
+                        >
+                            Rename…
+                        </button>
+                        <div class="bg-border -mx-1 my-1 h-px" rdxMenuSeparator></div>
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            rdxMenuItem
+                        >
+                            Archive
+                        </button>
                     </div>
                 </div>
             }
@@ -27,17 +75,27 @@ import { cn, demoButton, demoDialog, demoMenu } from '../../storybook/styles';
         <!-- Controlled dialog opened from the menu item. -->
         <div [(open)]="renameOpen" rdxDialogRoot>
             <ng-template rdxDialogPortal>
-                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
-                <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-                    <h2 [class]="d.title" rdxDialogTitle>Rename item</h2>
-                    <p [class]="d.description" rdxDialogDescription>
+                <div
+                    class="bg-foreground/50 data-[open]:animate-dialog-overlay-in data-[closed]:animate-dialog-overlay-out fixed inset-0 z-50"
+                    rdxDialogBackdrop
+                ></div>
+                <div
+                    class="demo-surface data-[open]:animate-dialog-popup-in data-[closed]:animate-dialog-popup-out fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 p-6 transition-[transform,scale] focus:outline-none data-[nested-dialog-open]:scale-[0.96]"
+                    rdxDialogPopup
+                >
+                    <h2 class="demo-dialog-title" rdxDialogTitle>Rename item</h2>
+                    <p class="text-muted-foreground mt-1.5 text-sm" rdxDialogDescription>
                         Opened by controlling the dialog from a menu item.
                     </p>
-                    <div [class]="d.footer">
-                        <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDialogClose>Cancel</button>
-                        <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Rename</button>
+                    <div class="mt-6 flex justify-end gap-2">
+                        <button class="demo-button demo-button-outline h-8 px-3 text-xs" rdxDialogClose>Cancel</button>
+                        <button class="demo-button demo-button-primary h-8 px-3 text-xs" rdxDialogClose>Rename</button>
                     </div>
-                    <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                    <button
+                        class="demo-button demo-button-ghost absolute top-3 right-3 size-7 p-0"
+                        aria-label="Close"
+                        rdxDialogClose
+                    >
                         <svg aria-hidden="true" lucideX size="16" />
                     </button>
                 </div>
@@ -46,9 +104,5 @@ import { cn, demoButton, demoDialog, demoMenu } from '../../storybook/styles';
     `
 })
 export class RdxDialogFromMenuComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly d = demoDialog;
-    protected readonly m = demoMenu;
     protected readonly renameOpen = signal(false);
 }

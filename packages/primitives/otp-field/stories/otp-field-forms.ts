@@ -1,20 +1,19 @@
 import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { demoOtpField as otpFieldStyles } from '../../storybook/styles';
-import { RdxOtpFieldModule } from '../index';
+import { RdxOtpFieldInput, RdxOtpFieldRoot } from '@radix-ng/primitives/otp-field';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-otp-field-reactive-forms-example',
-    imports: [JsonPipe, ReactiveFormsModule, RdxOtpFieldModule],
+    imports: [JsonPipe, ReactiveFormsModule, RdxOtpFieldRoot, RdxOtpFieldInput],
     template: `
-        <form [class]="s.form" [formGroup]="verification" (ngSubmit)="onSubmit()">
-            <div [class]="s.field">
-                <label [class]="s.label" for="form-code">Verification code</label>
+        <form class="grid max-w-md gap-5" [formGroup]="verification" (ngSubmit)="onSubmit()">
+            <div class="grid gap-1.5">
+                <label class="demo-label mb-2 block" for="form-code">Verification code</label>
                 <div
+                    class="flex items-center gap-2"
                     id="form-code"
-                    [class]="s.root"
                     [length]="6"
                     [autoComplete]="'one-time-code'"
                     [inputMode]="'numeric'"
@@ -24,17 +23,35 @@ import { RdxOtpFieldModule } from '../index';
                     aria-label="Verification code"
                     rdxOtpFieldRoot
                 >
-                    <input [class]="s.slot" rdxOtpFieldInput />
-                    <input [class]="s.slot" rdxOtpFieldInput />
-                    <input [class]="s.slot" rdxOtpFieldInput />
-                    <input [class]="s.slot" rdxOtpFieldInput />
-                    <input [class]="s.slot" rdxOtpFieldInput />
-                    <input [class]="s.slot" rdxOtpFieldInput />
+                    <input
+                        class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                        rdxOtpFieldInput
+                    />
+                    <input
+                        class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                        rdxOtpFieldInput
+                    />
+                    <input
+                        class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                        rdxOtpFieldInput
+                    />
+                    <input
+                        class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                        rdxOtpFieldInput
+                    />
+                    <input
+                        class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                        rdxOtpFieldInput
+                    />
+                    <input
+                        class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                        rdxOtpFieldInput
+                    />
                 </div>
-                <p [class]="s.description">Reactive Forms owns the value and required validation.</p>
+                <p class="text-muted-foreground mt-2 text-sm">Reactive Forms owns the value and required validation.</p>
             </div>
 
-            <button [class]="s.submit" type="submit">Verify</button>
+            <button class="demo-button demo-button-primary px-4 py-2" type="submit">Verify</button>
             <p class="text-muted-foreground text-sm">Form value: {{ verification.value | json }}</p>
             @if (submitted) {
                 <p class="text-foreground text-sm">Submitted code: {{ submitted }}</p>
@@ -43,8 +60,6 @@ import { RdxOtpFieldModule } from '../index';
     `
 })
 export class OtpFieldReactiveFormsExample {
-    protected readonly s = otpFieldStyles;
-
     protected readonly verification = new FormGroup({
         code: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(6)] })
     });

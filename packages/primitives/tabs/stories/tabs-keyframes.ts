@@ -11,21 +11,17 @@ import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTa
     // `data-ending-style`, so the inner element runs the exit keyframes while the panel remains
     // visible and inert. Explicit targets share the Panel's render lifetime.
     template: `
-        <div
-            class="border-border bg-background text-foreground w-[420px] overflow-hidden rounded-xl border shadow-sm"
-            rdxTabsRoot
-            defaultValue="account"
-        >
-            <div class="border-border bg-muted/30 flex border-b" rdxTabsList>
+        <div class="demo-tabs-root w-[420px] overflow-hidden" rdxTabsRoot defaultValue="account">
+            <div class="demo-tabs-list flex" rdxTabsList>
                 <button
-                    class="text-muted-foreground hover:text-foreground data-[active]:text-foreground data-[active]:bg-background focus-visible:ring-ring inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-colors outline-none focus-visible:ring-2 data-[active]:shadow-[inset_0_-2px_0_0_var(--primary)]"
+                    class="demo-tabs-tab data-[active]:text-foreground data-[active]:bg-background focus-visible:ring-ring inline-flex h-10 items-center justify-center px-4 focus-visible:ring-2 data-[active]:shadow-[inset_0_-2px_0_0_var(--primary)]"
                     rdxTabsTab
                     value="account"
                 >
                     Account
                 </button>
                 <button
-                    class="text-muted-foreground hover:text-foreground data-[active]:text-foreground data-[active]:bg-background focus-visible:ring-ring inline-flex h-10 items-center justify-center px-4 text-sm font-medium transition-colors outline-none focus-visible:ring-2 data-[active]:shadow-[inset_0_-2px_0_0_var(--primary)]"
+                    class="demo-tabs-tab data-[active]:text-foreground data-[active]:bg-background focus-visible:ring-ring inline-flex h-10 items-center justify-center px-4 focus-visible:ring-2 data-[active]:shadow-[inset_0_-2px_0_0_var(--primary)]"
                     rdxTabsTab
                     value="password"
                 >
@@ -35,7 +31,7 @@ import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTa
             <div class="grid">
                 <div class="group col-start-1 row-start-1" *rdxTabsPanelPresence="'account'" rdxTabsPanel>
                     <div
-                        class="bg-background text-foreground animate-tabs-panel-in group-data-[ending-style]:animate-tabs-panel-out p-6 text-sm leading-6 outline-none"
+                        class="demo-tabs-panel animate-tabs-panel-in group-data-[ending-style]:animate-tabs-panel-out p-6"
                         rdxPresenceTarget
                     >
                         Make changes to your account here. Click save when you're done.
@@ -43,7 +39,7 @@ import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTa
                 </div>
                 <div class="group col-start-1 row-start-1" *rdxTabsPanelPresence="'password'" rdxTabsPanel>
                     <div
-                        class="bg-background text-foreground animate-tabs-panel-in group-data-[ending-style]:animate-tabs-panel-out p-6 text-sm leading-6 outline-none"
+                        class="demo-tabs-panel animate-tabs-panel-in group-data-[ending-style]:animate-tabs-panel-out p-6"
                         rdxPresenceTarget
                     >
                         Change your password here. After saving, you'll be logged out.

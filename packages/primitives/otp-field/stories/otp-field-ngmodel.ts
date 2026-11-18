@@ -1,20 +1,19 @@
 import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { demoOtpField as otpFieldStyles } from '../../storybook/styles';
-import { RdxOtpFieldModule } from '../index';
+import { RdxOtpFieldInput, RdxOtpFieldRoot } from '@radix-ng/primitives/otp-field';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-otp-field-ngmodel-example',
-    imports: [FormsModule, JsonPipe, RdxOtpFieldModule],
+    imports: [FormsModule, JsonPipe, RdxOtpFieldRoot, RdxOtpFieldInput],
     template: `
-        <div [class]="s.field">
-            <label [class]="s.label" for="template-code">Recovery code</label>
+        <div class="grid gap-1.5">
+            <label class="demo-label mb-2 block" for="template-code">Recovery code</label>
             <div
+                class="flex items-center gap-2"
                 id="template-code"
                 [(ngModel)]="code"
-                [class]="s.root"
                 [length]="6"
                 [autoComplete]="'one-time-code'"
                 [inputMode]="'numeric'"
@@ -22,18 +21,35 @@ import { RdxOtpFieldModule } from '../index';
                 aria-label="Recovery code"
                 rdxOtpFieldRoot
             >
-                <input [class]="s.slot" rdxOtpFieldInput />
-                <input [class]="s.slot" rdxOtpFieldInput />
-                <input [class]="s.slot" rdxOtpFieldInput />
-                <input [class]="s.slot" rdxOtpFieldInput />
-                <input [class]="s.slot" rdxOtpFieldInput />
-                <input [class]="s.slot" rdxOtpFieldInput />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
             </div>
             <p class="text-muted-foreground text-sm">ngModel value: {{ code | json }}</p>
         </div>
     `
 })
 export class OtpFieldNgModelExample {
-    protected readonly s = otpFieldStyles;
     protected code = '';
 }

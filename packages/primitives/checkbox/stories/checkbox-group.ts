@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideDynamicIcon } from '@lucide/angular';
+import {
+    RdxCheckboxButtonDirective,
+    RdxCheckboxGroupDirective,
+    RdxCheckboxIndicatorDirective,
+    RdxCheckboxRootDirective
+} from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { demoCheckbox } from '../../storybook/styles';
-import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
-import { RdxCheckboxGroupDirective } from '../src/checkbox-group';
-import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
-import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 /**
  * `rdxCheckboxGroup` holds the array of checked values. Each child participates by its `value`, and
@@ -31,9 +32,13 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
         <div class="flex flex-col gap-3" #group="rdxCheckboxGroup" [(value)]="value" [allValues]="all" rdxCheckboxGroup>
             <div class="flex items-center gap-3">
                 <div parent rdxCheckboxRoot>
-                    <button id="all" [class]="c.button" rdxCheckboxButton>
+                    <button
+                        class="demo-checkbox-button demo-focus flex size-6 items-center justify-center disabled:opacity-50 aria-disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                        id="all"
+                        rdxCheckboxButton
+                    >
                         <svg
-                            [class]="c.indicator"
+                            class="text-primary flex items-center"
                             [lucideIcon]="group.parentState() === 'indeterminate' ? 'minus' : 'check'"
                             rdxCheckboxIndicator
                             size="16"
@@ -47,8 +52,17 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
                 @for (item of items; track item.value) {
                     <div class="flex items-center gap-3">
                         <div [value]="item.value" rdxCheckboxRoot>
-                            <button [class]="c.button" [id]="item.value" rdxCheckboxButton>
-                                <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
+                            <button
+                                class="demo-checkbox-button demo-focus flex size-6 items-center justify-center disabled:opacity-50 aria-disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                                [id]="item.value"
+                                rdxCheckboxButton
+                            >
+                                <svg
+                                    class="text-primary flex items-center"
+                                    rdxCheckboxIndicator
+                                    size="16"
+                                    lucideCheck
+                                />
                             </button>
                         </div>
                         <label class="text-foreground text-sm font-medium" [htmlFor]="item.value" rdxLabel>
@@ -61,8 +75,6 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
     `
 })
 export class CheckboxGroupExample {
-    protected readonly c = demoCheckbox;
-
     protected readonly items = [
         { value: 'apples', label: 'Apples' },
         { value: 'bananas', label: 'Bananas' },

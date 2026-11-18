@@ -1,6 +1,15 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
-import { demoCombobox } from '../../storybook/styles';
-import { _importsAutocomplete } from '../index';
+import {
+    RdxAutocompleteInput,
+    RdxAutocompleteInputGroup,
+    RdxAutocompleteItem,
+    RdxAutocompleteList,
+    RdxAutocompletePopup,
+    RdxAutocompletePortal,
+    RdxAutocompletePositioner,
+    RdxAutocompleteRoot,
+    RdxAutocompleteStatus
+} from '@radix-ng/primitives/autocomplete';
 
 interface Movie {
     id: string;
@@ -121,20 +130,37 @@ const top100Movies: Movie[] = [
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-async',
-    imports: [_importsAutocomplete],
+    imports: [
+        RdxAutocompleteRoot,
+        RdxAutocompleteInputGroup,
+        RdxAutocompleteInput,
+        RdxAutocompletePortal,
+        RdxAutocompletePositioner,
+        RdxAutocompletePopup,
+        RdxAutocompleteList,
+        RdxAutocompleteItem,
+        RdxAutocompleteStatus
+    ],
     template: `
         <div [(value)]="value" [filter]="null" (onValueChange)="search($event.value)" rdxAutocompleteRoot>
-            <div [class]="c.control" rdxAutocompleteInputGroup>
+            <div
+                class="demo-combobox-control focus-within:ring-ring focus-within:ring-offset-background relative inline-flex h-9 w-64 items-center focus-within:ring-2 focus-within:ring-offset-2 data-[disabled]:opacity-50"
+                rdxAutocompleteInputGroup
+            >
                 <input
-                    [class]="c.input"
+                    class="demo-combobox-input placeholder:text-muted-foreground h-full w-full pr-9 pl-3"
                     rdxAutocompleteInput
                     placeholder="e.g. Pulp Fiction or 1994"
                     aria-label="Movie"
                 />
             </div>
 
-            <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner>
-                <div [class]="c.popup" [hidden]="!status()" rdxAutocompletePopup>
+            <div class="z-50 w-64 data-[closed]:pointer-events-none" *rdxAutocompletePortal rdxAutocompletePositioner>
+                <div
+                    class="demo-combobox-popup mt-2 max-h-60 overflow-y-auto p-1 data-[closed]:hidden"
+                    [hidden]="!status()"
+                    rdxAutocompletePopup
+                >
                     <div class="text-muted-foreground flex items-center gap-2 px-2 py-1 text-xs" rdxAutocompleteStatus>
                         @if (loading()) {
                             <span
@@ -146,9 +172,14 @@ const top100Movies: Movie[] = [
                             {{ status() }}
                         }
                     </div>
-                    <div [class]="c.list" rdxAutocompleteList aria-label="Movies">
+                    <div class="flex flex-col" rdxAutocompleteList aria-label="Movies">
                         @for (movie of results(); track movie.id) {
-                            <div [class]="c.item" [value]="movie.title" [textValue]="movie.title" rdxAutocompleteItem>
+                            <div
+                                class="demo-menu-item data-[highlighted]:bg-muted relative flex items-center py-1.5 pr-2 pl-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[selected]:font-medium"
+                                [value]="movie.title"
+                                [textValue]="movie.title"
+                                rdxAutocompleteItem
+                            >
                                 {{ movie.title }}
                                 <span class="text-muted-foreground ml-1 text-xs">{{ movie.year }}</span>
                             </div>
@@ -160,7 +191,6 @@ const top100Movies: Movie[] = [
     `
 })
 export class AutocompleteAsync {
-    protected readonly c = demoCombobox;
     readonly value = signal('');
     readonly results = signal<Movie[]>([]);
     readonly loading = signal(false);

@@ -9,7 +9,6 @@ import {
 } from '@radix-ng/primitives/field';
 import { RdxFieldsetLegend, RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
 import { RdxInputDirective } from '@radix-ng/primitives/input';
-import { cn, demoButton, demoInput } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -35,7 +34,7 @@ import { cn, demoButton, demoInput } from '../../storybook/styles';
                 <div class="space-y-2" rdxFieldRoot required>
                     <label class="text-foreground text-sm font-medium" rdxFieldLabel>First name</label>
                     <input
-                        [class]="inputClass"
+                        class="demo-input h-9 w-full px-3"
                         rdxInput
                         rdxNgControlField
                         autocomplete="given-name"
@@ -48,7 +47,7 @@ import { cn, demoButton, demoInput } from '../../storybook/styles';
                 <div class="space-y-2" rdxFieldRoot required>
                     <label class="text-foreground text-sm font-medium" rdxFieldLabel>Email</label>
                     <input
-                        [class]="inputClass"
+                        class="demo-input h-9 w-full px-3"
                         rdxInput
                         rdxNgControlField
                         autocomplete="email"
@@ -77,7 +76,7 @@ import { cn, demoButton, demoInput } from '../../storybook/styles';
                 </div>
             </fieldset>
 
-            <button [class]="cn(button.base, button.primary, button.size.md)" type="submit">
+            <button class="demo-button demo-button-primary h-9 px-4" type="submit">
                 {{ submitting ? 'Submitting...' : 'Create account' }}
             </button>
 
@@ -89,10 +88,6 @@ import { cn, demoButton, demoInput } from '../../storybook/styles';
 })
 export class FieldsetSignupFormExample {
     private readonly formBuilder = inject(FormBuilder);
-
-    protected readonly cn = cn;
-    protected readonly button = demoButton;
-    protected readonly inputClass = demoInput;
 
     protected submitting = false;
     protected submittedEmail = '';

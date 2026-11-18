@@ -45,6 +45,7 @@ matches against; the native control's `name` is what `FormData` serializes.
 
 ## Examples
 
+- [Default](../examples/form--default.md)
 - [Server errors with clear-on-edit](../examples/form--server-errors-with-clear-on-edit.md)
 - [Reset](../examples/form--reset.md)
 - [Reactive Forms](../examples/form--reactive-forms.md)

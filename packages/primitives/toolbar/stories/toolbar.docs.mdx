@@ -1,4 +1,6 @@
-import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import defaultExampleSource from './toolbar-default-example?raw';
+import demoStylesSource from '../../../../apps/radix-storybook/.storybook/demo-styles.css?raw';
+import { Source, ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as ToolbarStories from './toolbar.stories';
 import { RdxToolbarRoot } from '../src/toolbar-root';
 import { RdxToolbarButton } from '../src/toolbar-button';
@@ -61,6 +63,12 @@ set `[nativeButton]="false"`; Enter and Space activate the control, with Space h
 
 ## Examples
 
+### Default
+
+The preview above uses this standalone component. Copy the setup and shared files below as well.
+
+<Source language="typescript" code={defaultExampleSource} />
+
 ### Vertical
 
 Set `orientation="vertical"` to lay the toolbar out vertically (arrow navigation switches to Up/Down).
@@ -95,6 +103,39 @@ text editing — the arrow keys move the caret and only move toolbar focus once 
 matching edge.
 
 <Canvas of={ToolbarStories.WithNumberField} />
+
+## Setup and shared files
+
+These examples use Angular standalone components and Tailwind CSS v4. Install
+`@radix-ng/primitives` and `@lucide/angular`. Copy the component from **Show code** and any shared files below,
+preserving their relative import paths. Import the example component in its parent and use its selector.
+
+Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
+
+```json
+{ "plugins": { "@tailwindcss/postcss": {} } }
+```
+
+Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
+then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
+
+```css
+@import 'tailwindcss';
+@import './demo-styles.css';
+```
+
+The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
+Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
+system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
+
+<details>
+<summary>demo-styles.css</summary>
+
+<Source language="css" code={demoStylesSource} />
+
+</details>
+
+
 
 ## API Reference
 

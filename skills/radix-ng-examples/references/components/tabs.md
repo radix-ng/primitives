@@ -47,6 +47,7 @@ plus a `Panel` per value and an optional `Indicator`.
 
 ## Examples
 
+- [Default](../examples/tabs--default.md)
 - [Activate on focus](../examples/tabs--activate-on-focus.md)
 - [Vertical](../examples/tabs--vertical.md)
 - [Disabled](../examples/tabs--disabled.md)

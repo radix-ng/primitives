@@ -1,12 +1,33 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
-import { popoverImports, RdxPopoverOpenChange } from '@radix-ng/primitives/popover';
-import { cn, demoButton, demoPopover } from '../../storybook/styles';
+import {
+    RdxPopoverArrow,
+    RdxPopoverClose,
+    RdxPopoverDescription,
+    RdxPopoverOpenChange,
+    RdxPopoverPopup,
+    RdxPopoverPortal,
+    RdxPopoverPositioner,
+    RdxPopoverRoot,
+    RdxPopoverTitle,
+    RdxPopoverTrigger
+} from '@radix-ng/primitives/popover';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-controlled-multiple',
-    imports: [...popoverImports, LucideX],
+    imports: [
+        RdxPopoverRoot,
+        RdxPopoverTrigger,
+        RdxPopoverPortal,
+        RdxPopoverPositioner,
+        RdxPopoverPopup,
+        RdxPopoverArrow,
+        RdxPopoverTitle,
+        RdxPopoverDescription,
+        RdxPopoverClose,
+        LucideX
+    ],
     template: `
         <div class="flex flex-col items-center gap-4">
             <ng-container
@@ -18,7 +39,7 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
                 <div class="flex flex-wrap justify-center gap-2">
                     @for (item of items; track item.id) {
                         <button
-                            [class]="cn(b.base, b.outline, b.size.sm)"
+                            class="demo-button demo-button-outline h-8 px-3 text-xs"
                             [id]="item.id"
                             [payload]="item"
                             rdxPopoverTrigger
@@ -27,19 +48,23 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
                         </button>
                     }
 
-                    <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="openProgrammatically()">
+                    <button class="demo-button demo-button-secondary h-8 px-3 text-xs" (click)="openProgrammatically()">
                         Open programmatically
                     </button>
                 </div>
 
-                <div *rdxPopoverPortal [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                    <div [class]="p.popup" rdxPopoverPopup>
-                        <span [class]="p.arrow" rdxPopoverArrow></span>
-                        <h2 [class]="p.title" rdxPopoverTitle>{{ activeItem()?.label }}</h2>
-                        <p [class]="p.description" rdxPopoverDescription>
+                <div class="z-50" *rdxPopoverPortal sideOffset="8" rdxPopoverPositioner>
+                    <div class="demo-surface relative w-80 p-4" rdxPopoverPopup>
+                        <span class="text-card demo-arrow my-px" rdxPopoverArrow></span>
+                        <h2 class="demo-popover-title" rdxPopoverTitle>{{ activeItem()?.label }}</h2>
+                        <p class="text-muted-foreground mt-1 text-sm" rdxPopoverDescription>
                             The externally controlled trigger id is {{ triggerId() }}.
                         </p>
-                        <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                        <button
+                            class="demo-button demo-button-ghost absolute top-2 right-2 size-7 p-0"
+                            aria-label="Close"
+                            rdxPopoverClose
+                        >
                             <svg aria-hidden="true" lucideX size="14" />
                         </button>
                     </div>
@@ -54,9 +79,6 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
     `
 })
 export class RdxPopoverControlledMultipleComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly p = demoPopover;
     protected readonly open = signal(false);
     protected readonly triggerId = signal<string | null>(null);
     protected readonly lastReason = signal('none');

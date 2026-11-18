@@ -2,19 +2,18 @@
 
 ## Checklist — run through this before writing any story file
 
-1. **Any story embedded via `<Canvas of={X}>` must be a standalone component — `props` do not survive a Canvas embed.**
-   The exception is the **primary `Default` story**, which may be a small inline template using
-   `props` + `args`, _provided_ it is surfaced in the MDX via `<Primary />` / `<Controls />` (never
-   `<Canvas of={Default}>`). This matches the `button` and `checkbox` references.
+1. **Copyable public examples use standalone components, including `Default`.** Storybook `props`
+   do not survive a Canvas embed. Keep component source in its own file and supply it through `?raw`,
+   so both Primary and Canvas expose a complete Angular example. The Button and Checkbox defaults
+   follow this pattern. Forward controls through the component's inputs when needed.
 
    ```ts
-   // ✅ Default — small inline template with props/args, shown via <Primary/> in MDX
+   // ✅ Default — standalone component with its actual source, shown via <Primary/> in MDX
    export const Default: Story = {
-     args: { disabled: false },
-     render: (args) => ({
-       props: { ...args, b: demoButton },
+     parameters: source(defaultSource),
+     render: () => ({
        template: html`
-         <button rdxButton ${argsToTemplate(args)} [class]="b.base">Button</button>
+         <rdx-button-default-example />
        `
      })
    };
@@ -31,7 +30,7 @@
 
    // ❌ wrong — a props-based story embedded via <Canvas of={WithScroll}> renders blank
    export const WithScroll: Story = {
-     render: () => ({ props: { r: demoRadio }, template: `<div [class]="r.group">...` })
+     render: () => ({ props: { label: 'Choose' }, template: `<button>{{ label }}</button>` })
    };
    ```
 
@@ -64,7 +63,7 @@
 
 5. **Semantic tokens only** in templates: `bg-background`, `text-foreground`, `bg-muted`, `bg-popover`, `border-border`, `text-muted-foreground`, `text-primary-foreground`. No raw colors (`violet`, `mauve`, `white`, `black`).
 
-6. **Shared styles, visible demo details.** Theme values belong in `@theme`; stable combinations that change together may use the shared `@layer components` (the card surface is `.demo-surface`). Keep demo-specific layout and state utilities in templates. Existing TS recipes remain available from `packages/primitives/storybook/styles.ts`; dynamic variants use typed parameters and complete Tailwind class names. See [demo styling](../../../../docs/engineering/ux-guidelines.md#demo-styling-system).
+6. **Shared styles, visible demo details.** Theme values belong in `@theme`; stable combinations that change together may use the shared `@layer components` (the card surface is `.demo-surface`). Keep demo-specific layout and state utilities in templates. Common recipes live in `demo-styles.css`, shared through `main.css` by Storybook and Playground. Dynamic variants use typed parameters and complete Tailwind class names. See [demo styling](../../../../docs/engineering/ux-guidelines.md#demo-styling-system).
 
 7. **Story order:** `Default` first, then state variants, then advanced examples.
 
@@ -74,7 +73,7 @@
 
 When creating or rewriting primitive stories, follow this format by default:
 
-- Imports: Storybook APIs → primitive dependencies → `../../storybook/styles` helpers → `tailwindDemoDecorator` → primitive directives/components → standalone demo components → raw `?raw` sources for standalone demos.
+- Imports: Storybook APIs → primitive dependencies → `tailwindDemoDecorator` → primitive directives/components → standalone demo components → raw `?raw` sources for standalone demos.
 - Define `const source = (code: string) => ({ docs: { source: { code, language: 'typescript' } } });` when a story renders only a standalone component tag.
 - Define `const html = String.raw;`, `export default { title, decorators: [moduleMetadata({ imports: [...] }), tailwindDemoDecorator()] } as Meta;`, then `type Story = StoryObj;`.
 - Story order: `Default` first, then state variants (`Disabled`, `Readonly`, `Required`, etc.), then form/value examples (`ReactiveForms`, `TemplateDrivenForms`, `Validation`) and advanced examples.
@@ -103,6 +102,8 @@ When creating or rewriting primitive stories, follow this format by default:
   };
   ```
 
-- `*.ts?raw` is wired by the `rawTsPlugin` in `.storybook/main.ts` (the AnalogJS Angular plugin shadows Vite's built-in `?raw`); types come from `packages/primitives/storybook/raw.d.ts`. Inline-template stories (source lives in `.stories.ts`) don't need this.
+- `*.ts?raw` is wired by the `rawTsPlugin` in `.storybook/main.ts` (the AnalogJS Angular plugin shadows Vite's built-in `?raw`); types come from `packages/primitives/storybook/raw.d.ts`. Copyable inline examples should be extracted into standalone components with their own raw source.
 - Each story export gets `parameters: source(itsOwnRawFile)` — never point two story exports at one combined source file.
-- For portable examples with shared CSS, use public imports and follow [the Default Popover source pattern](../../../../docs/engineering/ux-guidelines.md#demo-styling-system).
+- For portable examples with shared CSS, use public imports and follow [copyable source contract](../../../../docs/engineering/ux-guidelines.md#copyable-public-source).
+
+- The MDX **Setup and shared files** section uses `Source` with raw CSS and local wrapper/helper imports. State dependencies and import Tailwind before the copied stylesheet. The consumer bundle appends this section to every example shard. Run the [external AOT check](../../../../tools/storybook-portability/README.md); explicit public directive imports avoid the published-array spread failure.

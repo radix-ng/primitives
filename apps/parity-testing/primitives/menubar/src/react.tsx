@@ -3,7 +3,7 @@ import { Menu } from '@base-ui/react/menu';
 import { Menubar } from '@base-ui/react/menubar';
 import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import '../../../../radix-storybook/.storybook/tailwind.css';
+import '../../../../radix-storybook/.storybook/main.css';
 import { changeCollection, type MenuEntry } from '../../../shared/menu-collection';
 import { MenuItems } from '../../../shared/menu-items';
 import { rootRemovalExitClass, rootRemovalFinalFocus } from '../../../shared/root-removal';

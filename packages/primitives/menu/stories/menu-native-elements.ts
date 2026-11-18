@@ -1,25 +1,53 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoMenu } from '../../storybook/styles';
+import {
+    RdxMenuItem,
+    RdxMenuLinkItem,
+    RdxMenuPopup,
+    RdxMenuPortal,
+    RdxMenuPositioner,
+    RdxMenuRoot,
+    RdxMenuTrigger
+} from '@radix-ng/primitives/menu';
 
 @Component({
     selector: 'rdx-menu-native-elements',
-    imports: [RdxMenuModule],
+    imports: [
+        RdxMenuRoot,
+        RdxMenuTrigger,
+        RdxMenuPortal,
+        RdxMenuPositioner,
+        RdxMenuPopup,
+        RdxMenuItem,
+        RdxMenuLinkItem
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <div class="flex flex-col items-center gap-4">
             <ng-container rdxMenuRoot>
-                <button [class]="cn(b.base, b.outline, b.size.md)" rdxMenuTrigger>Actions</button>
-                <div *rdxMenuPortal [class]="m.positioner" sideOffset="4" rdxMenuPositioner>
-                    <div [class]="m.popup" rdxMenuPopup>
-                        <button [class]="m.item" (click)="selected.set('Button command')" rdxMenuItem>
+                <button class="demo-button demo-button-outline h-9 px-4" rdxMenuTrigger>Actions</button>
+                <div class="z-50 data-[closed]:pointer-events-none" *rdxMenuPortal sideOffset="4" rdxMenuPositioner>
+                    <div
+                        class="demo-menu-popup min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                        rdxMenuPopup
+                    >
+                        <button
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            (click)="selected.set('Button command')"
+                            rdxMenuItem
+                        >
                             Button command
                         </button>
                         <!-- RdxMenuItem supplies role, roving tabindex and keyboard activation. -->
                         <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
-                        <div [class]="m.item" (click)="selected.set('Custom command')" rdxMenuItem>Custom command</div>
+                        <div
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            (click)="selected.set('Custom command')"
+                            rdxMenuItem
+                        >
+                            Custom command
+                        </div>
                         <a
-                            [class]="m.item"
+                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
                             (click)="selected.set('Open section')"
                             href="#menu-native-target"
                             rdxMenuLinkItem
@@ -35,8 +63,5 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
     `
 })
 export class RdxMenuNativeElementsComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly m = demoMenu;
     protected readonly selected = signal('none');
 }

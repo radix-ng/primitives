@@ -3,18 +3,6 @@ import { LucidePlus, LucideX } from '@lucide/angular';
 import { RdxFieldControl, RdxFieldError, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { injectForm, TanStackField } from '@tanstack/angular-form';
 import { z } from 'zod';
-import {
-    cn,
-    recipeDescription,
-    recipeError,
-    recipeField,
-    recipeForm,
-    recipeGhostButton,
-    recipeInput,
-    recipeLabel,
-    recipeReset,
-    recipeSubmit
-} from '../forms-recipes.shared';
 
 type FieldRef = { api: { state: { meta: { isTouched: boolean; isValid: boolean; errors: unknown[] } } } };
 
@@ -41,10 +29,16 @@ const addressSchema = z.email('Enter a valid email address.');
     selector: 'tanstack-array',
     imports: [TanStackField, RdxFieldRoot, RdxFieldControl, RdxFieldError, LucidePlus, LucideX],
     template: `
-        <form [class]="form0" (submit)="$event.preventDefault(); contactsForm.handleSubmit()" novalidate>
+        <form
+            class="flex w-100 flex-col gap-5"
+            (submit)="$event.preventDefault(); contactsForm.handleSubmit()"
+            novalidate
+        >
             <div class="flex flex-col gap-1">
-                <span [class]="label">Email addresses</span>
-                <p [class]="description">Add up to {{ max }} email addresses where we can contact you.</p>
+                <span class="demo-label data-[disabled]:opacity-50">Email addresses</span>
+                <p class="text-muted-foreground text-sm">
+                    Add up to {{ max }} email addresses where we can contact you.
+                </p>
             </div>
 
             <ng-container
@@ -62,7 +56,7 @@ const addressSchema = z.email('Enter a valid email address.');
                         [name]="'emails[' + index + '].address'"
                     >
                         <div
-                            [class]="field"
+                            class="flex flex-col gap-1.5"
                             [invalid]="isInvalid(sub)"
                             [touched]="isTouched(sub)"
                             rdxFieldRoot
@@ -70,7 +64,7 @@ const addressSchema = z.email('Enter a valid email address.');
                         >
                             <div class="flex items-center gap-2">
                                 <input
-                                    [class]="input"
+                                    class="demo-input data-[invalid]:border-destructive data-[invalid]:ring-destructive/30 h-9 w-full px-3"
                                     [value]="sub.api.state.value"
                                     (input)="sub.api.handleChange($any($event.target).value)"
                                     (blur)="sub.api.handleBlur()"
@@ -81,7 +75,7 @@ const addressSchema = z.email('Enter a valid email address.');
                                 />
                                 @if ($any(emails.api.state.value).length > 1) {
                                     <button
-                                        [class]="ghost"
+                                        class="demo-button demo-button-ghost size-9 p-0"
                                         [attr.aria-label]="'Remove email ' + (index + 1)"
                                         (click)="emails.api.removeValue(index)"
                                         type="button"
@@ -90,17 +84,17 @@ const addressSchema = z.email('Enter a valid email address.');
                                     </button>
                                 }
                             </div>
-                            <p [class]="error" rdxFieldError>{{ messages(sub) }}</p>
+                            <p class="text-destructive text-sm" rdxFieldError>{{ messages(sub) }}</p>
                         </div>
                     </ng-container>
                 }
 
                 @if (arrayError(emails)) {
-                    <p [class]="error">{{ arrayError(emails) }}</p>
+                    <p class="text-destructive text-sm">{{ arrayError(emails) }}</p>
                 }
 
                 <button
-                    [class]="addButton"
+                    class="demo-button demo-button-outline h-9 gap-2 self-start px-4"
                     [disabled]="$any(emails.api.state.value).length >= max"
                     (click)="emails.api.pushValue({ address: '' })"
                     type="button"
@@ -110,24 +104,15 @@ const addressSchema = z.email('Enter a valid email address.');
                 </button>
             </ng-container>
 
-            <button [class]="submit" type="submit">Save contacts</button>
+            <button class="demo-button demo-button-primary h-9 px-4" type="submit">Save contacts</button>
 
             @if (result()) {
-                <p [class]="description">Saved {{ result()!.emails.length }} address(es).</p>
+                <p class="text-muted-foreground text-sm">Saved {{ result()!.emails.length }} address(es).</p>
             }
         </form>
     `
 })
 export class TanstackArray {
-    protected readonly form0 = recipeForm;
-    protected readonly field = recipeField;
-    protected readonly label = recipeLabel;
-    protected readonly input = recipeInput;
-    protected readonly description = recipeDescription;
-    protected readonly error = recipeError;
-    protected readonly submit = recipeSubmit;
-    protected readonly ghost = recipeGhostButton;
-    protected readonly addButton = cn(recipeReset, 'self-start gap-2');
     protected readonly max = MAX_EMAILS;
 
     protected readonly result = signal<Contacts | null>(null);

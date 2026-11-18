@@ -1,21 +1,20 @@
 import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { form, FormField, required } from '@angular/forms/signals';
-import { demoOtpField as otpFieldStyles } from '../../storybook/styles';
-import { RdxOtpFieldModule } from '../index';
+import { RdxOtpFieldInput, RdxOtpFieldRoot } from '@radix-ng/primitives/otp-field';
 
 type Verification = { code: string };
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-otp-field-signal-forms-example',
-    imports: [FormField, JsonPipe, RdxOtpFieldModule],
+    imports: [FormField, JsonPipe, RdxOtpFieldRoot, RdxOtpFieldInput],
     template: `
-        <div [class]="s.field">
-            <label [class]="s.label" for="signal-code">One-time code</label>
+        <div class="grid gap-1.5">
+            <label class="demo-label mb-2 block" for="signal-code">One-time code</label>
             <div
+                class="flex items-center gap-2"
                 id="signal-code"
-                [class]="s.root"
                 [formField]="verificationForm.code"
                 [length]="6"
                 [autoComplete]="'one-time-code'"
@@ -23,19 +22,36 @@ type Verification = { code: string };
                 aria-label="Verification code"
                 rdxOtpFieldRoot
             >
-                <input [class]="s.slot" rdxOtpFieldInput />
-                <input [class]="s.slot" rdxOtpFieldInput />
-                <input [class]="s.slot" rdxOtpFieldInput />
-                <input [class]="s.slot" rdxOtpFieldInput />
-                <input [class]="s.slot" rdxOtpFieldInput />
-                <input [class]="s.slot" rdxOtpFieldInput />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
             </div>
             <p class="text-muted-foreground text-sm">Signal Forms model: {{ model() | json }}</p>
         </div>
     `
 })
 export class OtpFieldSignalFormsExample {
-    protected readonly s = otpFieldStyles;
     protected readonly model = signal<Verification>({ code: '' });
     protected readonly verificationForm = form(this.model, (path) => {
         required(path.code, { message: 'Enter a code.' });

@@ -8,12 +8,13 @@ An animated labelled meter with formatted value text.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
-import { cn } from '../../storybook/styles';
-import { RdxMeterIndicatorDirective } from '../src/meter-indicator.directive';
-import { RdxMeterLabelDirective } from '../src/meter-label.directive';
-import { RdxMeterRootDirective } from '../src/meter-root.directive';
-import { RdxMeterTrackDirective } from '../src/meter-track.directive';
-import { RdxMeterValueDirective } from '../src/meter-value.directive';
+import {
+    RdxMeterIndicatorDirective,
+    RdxMeterLabelDirective,
+    RdxMeterRootDirective,
+    RdxMeterTrackDirective,
+    RdxMeterValueDirective
+} from '@radix-ng/primitives/meter';
 
 const storageSteps = [24, 38, 52, 67, 81] as const;
 
@@ -54,7 +55,9 @@ export class MeterStorageComponent {
     protected readonly getAriaValueText = (formattedValue: string) => `${formattedValue} of storage used`;
 
     protected readonly indicatorClass = computed(() =>
-        cn('h-full rounded-full bg-primary transition-all duration-700 ease-out', this.widthClass())
+        ['h-full rounded-full bg-primary transition-all duration-700 ease-out', this.widthClass()]
+            .filter(Boolean)
+            .join(' ')
     );
 
     private readonly widthClass = computed(() => {

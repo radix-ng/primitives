@@ -1,12 +1,47 @@
 import { Component, computed, input, signal, viewChild } from '@angular/core';
 import { LucideCheck, LucideChevronDown, LucideChevronUp } from '@lucide/angular';
 import { RdxDirectionProvider } from '@radix-ng/primitives/direction-provider';
-import { demoSelect } from '../../storybook/styles';
-import { _importsSelect, RdxSelectRoot } from '../index';
+import {
+    RdxSelectArrow,
+    RdxSelectItem,
+    RdxSelectItemAlignedPosition,
+    RdxSelectItemAlignedPositionContent,
+    RdxSelectItemIndicator,
+    RdxSelectItemText,
+    RdxSelectLabel,
+    RdxSelectList,
+    RdxSelectPopup,
+    RdxSelectPortal,
+    RdxSelectRoot,
+    RdxSelectScrollDownButton,
+    RdxSelectScrollUpButton,
+    RdxSelectTrigger,
+    RdxSelectValue
+} from '@radix-ng/primitives/select';
 
 @Component({
     selector: 'select-viewport-edges',
-    imports: [_importsSelect, RdxDirectionProvider, LucideCheck, LucideChevronDown, LucideChevronUp],
+    imports: [
+        RdxSelectRoot,
+        RdxSelectPortal,
+        RdxSelectTrigger,
+        RdxSelectValue,
+        RdxSelectPopup,
+        RdxSelectArrow,
+        RdxSelectList,
+        RdxSelectLabel,
+        RdxSelectItemIndicator,
+        RdxSelectItem,
+        RdxSelectItemText,
+        RdxSelectItemAlignedPosition,
+        RdxSelectItemAlignedPositionContent,
+        RdxSelectScrollUpButton,
+        RdxSelectScrollDownButton,
+        RdxDirectionProvider,
+        LucideCheck,
+        LucideChevronDown,
+        LucideChevronUp
+    ],
     host: { '(document:keydown)': 'closeShortcut($event)' },
     template: `
         <div class="text-muted-foreground max-w-64 text-sm">
@@ -30,40 +65,57 @@ import { _importsSelect, RdxSelectRoot } from '../index';
         >
             <ng-container [(value)]="value" [defaultValue]="initial()" rdxSelectRoot>
                 <div class="text-sm font-medium" rdxSelectLabel>Viewport edge</div>
-                <button [class]="s.trigger" rdxSelectTrigger>
+                <button
+                    class="demo-select-trigger data-[placeholder]:text-muted-foreground data-[invalid]:border-destructive data-[invalid]:aria-invalid:ring-destructive/30 demo-focus inline-flex min-h-9 items-center justify-between gap-2 px-3 py-1.5 disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                    rdxSelectTrigger
+                >
                     <span #display="rdxSelectedValue" rdxSelectValue>{{ display.slotText() }}</span>
-                    <svg [class]="s.icon" lucideChevronDown size="16" aria-hidden="true" />
+                    <svg class="size-4 shrink-0" lucideChevronDown size="16" aria-hidden="true" />
                 </button>
                 <ng-template
                     [container]="transformed() ? portalHost : undefined"
                     [keepMounted]="keepMounted()"
                     rdxSelectPortal
                 >
-                    <div [class]="s.positioner" rdxSelectItemAlignedPosition>
+                    <div class="z-[100]" rdxSelectItemAlignedPosition>
                         <div class="min-h-0 flex-1" data-testid="viewport-popup" rdxSelectPopup>
                             <div
-                                class="min-h-0 flex-1 overflow-hidden"
-                                [class]="s.popup + (capped() ? ' max-h-60' : '')"
+                                class="demo-select-popup min-h-0 min-w-[var(--anchor-width,10rem)] flex-1 overflow-hidden will-change-[opacity,transform]"
+                                [class]="capped() ? 'max-h-60' : ''"
                                 rdxSelectItemAlignedPositionContent
                             >
                                 @if (showArrow()) {
-                                    <div [class]="s.arrow" rdxSelectArrow></div>
+                                    <div class="text-popover demo-arrow my-px" rdxSelectArrow></div>
                                 }
-                                <div [class]="s.scrollButton" rdxSelectScrollUpButton>
-                                    <svg [class]="s.icon" lucideChevronUp size="16" aria-hidden="true" />
+                                <div
+                                    class="demo-select-scroll-button flex h-7 items-center justify-center"
+                                    rdxSelectScrollUpButton
+                                >
+                                    <svg class="size-4 shrink-0" lucideChevronUp size="16" aria-hidden="true" />
                                 </div>
-                                <div class="min-h-0" [class]="s.list" rdxSelectList>
+                                <div class="min-h-0 p-1" rdxSelectList>
                                     @for (option of options; track option) {
-                                        <div [class]="s.item" [value]="option" rdxSelectItem>
-                                            <span [class]="s.itemIndicator" rdxSelectItemIndicator aria-hidden="true">
-                                                <svg [class]="s.icon" lucideCheck size="16" />
+                                        <div
+                                            class="demo-select-item data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground data-[disabled]:text-muted-foreground relative flex min-h-7 items-center gap-2 ps-6 pe-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                            [value]="option"
+                                            rdxSelectItem
+                                        >
+                                            <span
+                                                class="absolute start-0 inline-flex w-6 items-center justify-center"
+                                                rdxSelectItemIndicator
+                                                aria-hidden="true"
+                                            >
+                                                <svg class="size-4 shrink-0" lucideCheck size="16" />
                                             </span>
                                             <span rdxSelectItemText>{{ option }}</span>
                                         </div>
                                     }
                                 </div>
-                                <div [class]="s.scrollButton" rdxSelectScrollDownButton>
-                                    <svg [class]="s.icon" lucideChevronDown size="16" aria-hidden="true" />
+                                <div
+                                    class="demo-select-scroll-button flex h-7 items-center justify-center"
+                                    rdxSelectScrollDownButton
+                                >
+                                    <svg class="size-4 shrink-0" lucideChevronDown size="16" aria-hidden="true" />
                                 </div>
                             </div>
                         </div>
@@ -90,7 +142,6 @@ export class SelectViewportEdges {
             this.root()?.close();
         }
     }
-    protected readonly s = demoSelect;
     readonly edge = input<'top' | 'middle' | 'bottom' | 'near-top'>('top');
     readonly initialIndex = input<number>();
     readonly capped = input(false);

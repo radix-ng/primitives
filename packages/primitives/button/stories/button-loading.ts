@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideDynamicIcon, LucidePlus } from '@lucide/angular';
-import { cn, demoButton } from '../../storybook/styles';
-import { RdxButtonDirective } from '../src/button.directive';
+import { LucideDynamicIcon } from '@lucide/angular';
+import { RdxButtonDirective } from '@radix-ng/primitives/button';
 
 /**
  * Loading state. Following Base UI's guidance, the button becomes `disabled`
@@ -11,12 +10,12 @@ import { RdxButtonDirective } from '../src/button.directive';
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-button-loading',
-    imports: [RdxButtonDirective, LucideDynamicIcon, LucidePlus],
+    imports: [RdxButtonDirective, LucideDynamicIcon],
     template: `
         <button
+            class="demo-button demo-button-primary h-9 px-4"
             [disabled]="loading()"
             [attr.aria-busy]="loading() ? 'true' : null"
-            [class]="cn(b.base, b.primary, b.size.md)"
             (click)="run()"
             rdxButton
             focusableWhenDisabled
@@ -32,8 +31,6 @@ import { RdxButtonDirective } from '../src/button.directive';
     `
 })
 export class RdxButtonLoadingComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
     protected readonly loading = signal(false);
 
     protected run(): void {

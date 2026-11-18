@@ -4,6 +4,7 @@ import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from 
 import { RdxFieldsetLegend, RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
 import { RdxFormRoot } from '@radix-ng/primitives/form';
 import { RdxInputDirective } from '@radix-ng/primitives/input';
+import { RdxSignalField, RdxSignalForm } from '@radix-ng/primitives/signal-forms';
 import {
     type AccountFormValue,
     formError,
@@ -17,8 +18,6 @@ import {
     takenEmail,
     unavailableUsername
 } from '../../form/stories/form.shared';
-import { RdxSignalField } from '../src/signal-field';
-import { RdxSignalForm } from '../src/signal-form';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,

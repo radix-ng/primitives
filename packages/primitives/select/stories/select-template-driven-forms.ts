@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
 import { RdxFieldDescription, RdxFieldLabel, RdxFieldRoot, RdxNgControlField } from '@radix-ng/primitives/field';
-import { cn, demoButton, demoSelect } from '../../storybook/styles';
 import {
     RdxSelectItem,
     RdxSelectItemIndicator,
@@ -14,7 +13,7 @@ import {
     RdxSelectRoot,
     RdxSelectTrigger,
     RdxSelectValue
-} from '../index';
+} from '@radix-ng/primitives/select';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -44,20 +43,33 @@ import {
                 <label class="text-foreground text-sm font-medium" rdxFieldLabel>Fruit</label>
 
                 <div #fruitModel="ngModel" [(ngModel)]="fruit" name="fruit" rdxSelectRoot rdxNgControlField>
-                    <button class="w-full" [class]="s.trigger" rdxSelectTrigger>
+                    <button
+                        class="demo-select-trigger data-[placeholder]:text-muted-foreground data-[invalid]:border-destructive data-[invalid]:aria-invalid:ring-destructive/30 demo-focus inline-flex min-h-9 w-full items-center justify-between gap-2 px-3 py-1.5 disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                        rdxSelectTrigger
+                    >
                         <span #selectedValue="rdxSelectedValue" rdxSelectValue placeholder="Select a fruit…">
                             {{ selectedValue.slotText() }}
                         </span>
-                        <svg [class]="s.icon" lucideChevronDown size="16" aria-hidden="true"></svg>
+                        <svg class="size-4 shrink-0" lucideChevronDown size="16" aria-hidden="true"></svg>
                     </button>
 
-                    <div *rdxSelectPortal [class]="s.positioner" [sideOffset]="4" align="start" rdxSelectPositioner>
-                        <div [class]="s.popup" rdxSelectPopup>
-                            <div [class]="s.list" rdxSelectList>
+                    <div class="z-[100]" *rdxSelectPortal [sideOffset]="4" align="start" rdxSelectPositioner>
+                        <div
+                            class="demo-select-popup min-w-[var(--anchor-width,10rem)] will-change-[opacity,transform]"
+                            rdxSelectPopup
+                        >
+                            <div class="p-1" rdxSelectList>
                                 @for (option of options; track option) {
-                                    <div [class]="s.item" [value]="option" rdxSelectItem>
-                                        <span [class]="s.itemIndicator" rdxSelectItemIndicator>
-                                            <svg [class]="s.icon" lucideCheck size="16" aria-hidden="true"></svg>
+                                    <div
+                                        class="demo-select-item data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground data-[disabled]:text-muted-foreground relative flex min-h-7 items-center gap-2 ps-6 pe-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                        [value]="option"
+                                        rdxSelectItem
+                                    >
+                                        <span
+                                            class="absolute start-0 inline-flex w-6 items-center justify-center"
+                                            rdxSelectItemIndicator
+                                        >
+                                            <svg class="size-4 shrink-0" lucideCheck size="16" aria-hidden="true"></svg>
                                         </span>
                                         <span rdxSelectItemText>{{ option }}</span>
                                     </div>
@@ -73,8 +85,10 @@ import {
             </div>
 
             <div class="flex gap-2">
-                <button [class]="primaryButtonClass" type="submit">Submit</button>
-                <button [class]="outlineButtonClass" (click)="reset(fruitForm)" type="button">Reset</button>
+                <button class="demo-button demo-button-primary h-9 px-4" type="submit">Submit</button>
+                <button class="demo-button demo-button-outline h-9 px-4" (click)="reset(fruitForm)" type="button">
+                    Reset
+                </button>
             </div>
 
             <p class="text-muted-foreground text-xs" aria-live="polite">
@@ -89,14 +103,9 @@ import {
     `
 })
 export class SelectTemplateDrivenForms {
-    protected readonly s = demoSelect;
-
     protected readonly options = ['Apple', 'Banana', 'Blueberry'];
     protected fruit = 'Banana';
     protected readonly submittedValue = signal<string | null>(null);
-
-    protected readonly primaryButtonClass = cn(demoButton.base, demoButton.primary, demoButton.size.md);
-    protected readonly outlineButtonClass = cn(demoButton.base, demoButton.outline, demoButton.size.md);
 
     protected submit(form: NgForm): void {
         if (form.valid) {

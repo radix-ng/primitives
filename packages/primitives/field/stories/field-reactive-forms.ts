@@ -1,11 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RdxFieldControl } from '../src/field-control';
-import { RdxFieldDescription } from '../src/field-description';
-import { RdxFieldError } from '../src/field-error';
-import { RdxFieldLabel } from '../src/field-label';
-import { RdxFieldRoot } from '../src/field-root';
-import { RdxNgControlField } from '../src/ng-control-field';
+import {
+    RdxFieldControl,
+    RdxFieldDescription,
+    RdxFieldError,
+    RdxFieldLabel,
+    RdxFieldRoot,
+    RdxNgControlField
+} from '@radix-ng/primitives/field';
+
 import { fieldDescription, fieldError, fieldInputInvalid, fieldLabel, fieldSubmitButton } from './field.shared';
 
 @Component({

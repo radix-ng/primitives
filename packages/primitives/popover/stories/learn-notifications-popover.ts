@@ -1,5 +1,18 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { popoverImports } from '@radix-ng/primitives/popover';
+import {
+    RdxPopoverArrow,
+    RdxPopoverBackdrop,
+    RdxPopoverClose,
+    RdxPopoverDescription,
+    RdxPopoverPopup,
+    RdxPopoverPortal,
+    RdxPopoverPortalMisuseGuard,
+    RdxPopoverPositioner,
+    RdxPopoverRoot,
+    RdxPopoverTitle,
+    RdxPopoverTrigger,
+    RdxPopoverViewport
+} from '@radix-ng/primitives/popover';
 
 /**
  * Final step of the "Build a styled component" Learn tutorial: the bare Popover parts,
@@ -10,7 +23,20 @@ import { popoverImports } from '@radix-ng/primitives/popover';
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'learn-notifications-popover',
-    imports: [popoverImports],
+    imports: [
+        RdxPopoverRoot,
+        RdxPopoverTrigger,
+        RdxPopoverPortal,
+        RdxPopoverPortalMisuseGuard,
+        RdxPopoverBackdrop,
+        RdxPopoverPositioner,
+        RdxPopoverPopup,
+        RdxPopoverArrow,
+        RdxPopoverTitle,
+        RdxPopoverDescription,
+        RdxPopoverClose,
+        RdxPopoverViewport
+    ],
     template: `
         <ng-container rdxPopoverRoot>
             <button

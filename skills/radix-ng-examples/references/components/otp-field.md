@@ -48,6 +48,7 @@ The root's `length` is required and should match the number of slot inputs. Slot
 
 ## Examples
 
+- [Default](../examples/otp-field--default.md)
 - [Basic numeric code](../examples/otp-field--basic-numeric-code.md)
 - [Groups and separator](../examples/otp-field--groups-and-separator.md)
 - [Character validation](../examples/otp-field--character-validation.md)

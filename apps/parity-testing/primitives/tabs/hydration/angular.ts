@@ -1,7 +1,7 @@
 import '@angular/compiler';
 import { CSP_NONCE, provideZonelessChangeDetection } from '@angular/core';
 import { bootstrapApplication, provideClientHydration } from '@angular/platform-browser';
-import '../../../../radix-storybook/.storybook/tailwind.css';
+import '../../../../radix-storybook/.storybook/main.css';
 import { AngularHydrationTabs, HYDRATION_CHANGES, HYDRATION_SETTINGS } from './angular-app';
 import { hydrationNonce, hydrationSettings } from './cases';
 window.tabsHydration = { ready: false, changes: [], errors: [], reference: __PARITY_REFERENCE__ };

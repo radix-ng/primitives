@@ -30,24 +30,17 @@ import {
     ],
     template: `
         <ng-container rdxPopoverRoot>
-            <button
-                class="border-border bg-background text-foreground hover:bg-muted focus-visible:ring-ring focus-visible:ring-offset-background inline-flex h-9 items-center gap-2 rounded-md border px-4 text-sm font-medium whitespace-nowrap transition-colors outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-                type="button"
-                rdxPopoverTrigger
-            >
+            <button class="demo-button demo-button-outline h-9 px-4" type="button" rdxPopoverTrigger>
                 <svg aria-hidden="true" lucidePlus size="16" />
                 Add details
             </button>
 
             <div class="z-50" *rdxPopoverPortal sideOffset="8" rdxPopoverPositioner>
                 <div
-                    class="demo-surface data-[starting-style]:animate-popover-popup-in data-[ending-style]:animate-popover-popup-out relative w-80 p-4"
+                    class="demo-surface data-[open]:animate-popover-popup-in data-[starting-style]:animate-popover-popup-in data-[ending-style]:animate-popover-popup-out relative w-80 p-4"
                     rdxPopoverPopup
                 >
-                    <span
-                        class="text-card my-px fill-current drop-shadow-[0_1px_0_var(--color-border)]"
-                        rdxPopoverArrow
-                    ></span>
+                    <span class="demo-arrow text-card my-px" rdxPopoverArrow></span>
                     <h2 class="text-popover-foreground text-sm font-semibold" rdxPopoverTitle>Dimensions</h2>
                     <p class="text-muted-foreground mt-1 text-sm" rdxPopoverDescription>
                         Set the width and height for the element.
@@ -57,16 +50,13 @@ import {
                         @for (field of fields; track field.label) {
                             <label class="grid gap-1 text-xs font-medium">
                                 {{ field.label }}
-                                <input
-                                    class="border-border bg-background text-foreground focus-visible:ring-ring focus-visible:ring-offset-background h-9 w-full rounded-md border px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-                                    [value]="field.value"
-                                />
+                                <input class="demo-input h-9 w-full px-3" [value]="field.value" />
                             </label>
                         }
                     </div>
 
                     <button
-                        class="text-foreground hover:bg-muted focus-visible:ring-ring focus-visible:ring-offset-background absolute top-2 right-2 inline-flex size-7 items-center justify-center rounded-md transition-colors outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                        class="demo-button demo-button-ghost absolute top-2 right-2 size-7 p-0"
                         type="button"
                         aria-label="Close"
                         rdxPopoverClose

@@ -1,7 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject, Injectable, signal } from '@angular/core';
-import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
+import {
+    RdxAlertDialogBackdrop,
+    RdxAlertDialogDescription,
+    RdxAlertDialogPopup,
+    RdxAlertDialogPortal,
+    RdxAlertDialogRoot,
+    RdxAlertDialogTitle
+} from '@radix-ng/primitives/alert-dialog';
 import { RdxButtonDirective } from '@radix-ng/primitives/button';
-import { cn, demoButton, demoDialog } from '../../storybook/styles';
 
 /**
  * Confirmation Dialog — an imperative `confirm()` built on the Alert Dialog primitive.
@@ -63,25 +69,44 @@ export class ConfirmService {
 @Component({
     selector: 'confirm-dialog-host',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [...alertDialogImports],
+    imports: [
+        RdxAlertDialogRoot,
+        RdxAlertDialogPortal,
+        RdxAlertDialogBackdrop,
+        RdxAlertDialogPopup,
+        RdxAlertDialogTitle,
+        RdxAlertDialogDescription
+    ],
     template: `
         <div [open]="confirm.open()" (openChange)="confirm.onOpenChange($event)" rdxAlertDialogRoot>
             <ng-template rdxAlertDialogPortal>
-                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxAlertDialogBackdrop></div>
+                <div
+                    class="bg-foreground/50 data-[open]:animate-dialog-overlay-in data-[closed]:animate-dialog-overlay-out fixed inset-0 z-50"
+                    rdxAlertDialogBackdrop
+                ></div>
 
-                <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
+                <div
+                    class="demo-surface data-[open]:animate-dialog-popup-in data-[closed]:animate-dialog-popup-out fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 p-6 transition-[transform,scale] focus:outline-none data-[nested-dialog-open]:scale-[0.96]"
+                    rdxAlertDialogPopup
+                >
                     @if (confirm.options(); as o) {
-                        <h2 [class]="d.title" rdxAlertDialogTitle>{{ o.title }}</h2>
+                        <h2 class="demo-dialog-title" rdxAlertDialogTitle>{{ o.title }}</h2>
                         @if (o.description) {
-                            <p [class]="d.description" rdxAlertDialogDescription>{{ o.description }}</p>
+                            <p class="text-muted-foreground mt-1.5 text-sm" rdxAlertDialogDescription>
+                                {{ o.description }}
+                            </p>
                         }
 
-                        <div [class]="d.footer">
-                            <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="confirm.settle(false)">
+                        <div class="mt-6 flex justify-end gap-2">
+                            <button
+                                class="demo-button demo-button-outline h-8 px-3 text-xs"
+                                (click)="confirm.settle(false)"
+                            >
                                 {{ o.cancelText ?? 'Cancel' }}
                             </button>
                             <button
-                                [class]="cn(b.base, o.destructive ? b.destructive : b.primary, b.size.sm)"
+                                class="demo-button h-8 px-3 text-xs"
+                                [class]="o.destructive ? 'demo-button-destructive' : 'demo-button-primary'"
                                 (click)="confirm.settle(true)"
                             >
                                 {{ o.confirmText ?? 'Confirm' }}
@@ -95,9 +120,6 @@ export class ConfirmService {
 })
 export class ConfirmDialogHost {
     protected readonly confirm = inject(ConfirmService);
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly d = demoDialog;
 }
 
 /**
@@ -110,7 +132,7 @@ export class ConfirmDialogHost {
     imports: [RdxButtonDirective, ConfirmDialogHost],
     template: `
         <div class="flex flex-col items-center gap-4">
-            <button [class]="cn(b.base, b.destructive, b.size.md)" (click)="deleteAccount()" rdxButton>
+            <button class="demo-button demo-button-destructive h-9 px-4" (click)="deleteAccount()" rdxButton>
                 Delete account
             </button>
 
@@ -125,8 +147,6 @@ export class ConfirmDialogHost {
 })
 export class ConfirmationDialogExample {
     private readonly confirm = inject(ConfirmService);
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
     protected readonly result = signal('—');
 
     protected async deleteAccount(): Promise<void> {

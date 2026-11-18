@@ -1,12 +1,28 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
-import { dialogImports } from '@radix-ng/primitives/dialog';
-import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
+import {
+    RdxDialogClose,
+    RdxDialogDescription,
+    RdxDialogPopup,
+    RdxDialogPortal,
+    RdxDialogRoot,
+    RdxDialogTitle,
+    RdxDialogTrigger
+} from '@radix-ng/primitives/dialog';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-trap-focus',
-    imports: [...dialogImports, LucideX],
+    imports: [
+        RdxDialogRoot,
+        RdxDialogTrigger,
+        RdxDialogPortal,
+        RdxDialogPopup,
+        RdxDialogTitle,
+        RdxDialogDescription,
+        RdxDialogClose,
+        LucideX
+    ],
     template: `
         <div class="flex flex-col items-center gap-4">
             <p class="text-muted-foreground max-w-96 text-center text-xs leading-5">
@@ -15,45 +31,53 @@ import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
             </p>
 
             <div modal="trap-focus" rdxDialogRoot>
-                <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open dialog</button>
+                <button class="demo-button demo-button-primary h-9 px-4" rdxDialogTrigger>Open dialog</button>
 
                 <ng-template rdxDialogPortal>
-                    <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-                        <h2 [class]="d.title" rdxDialogTitle>Focus is trapped</h2>
-                        <p [class]="d.description" rdxDialogDescription>
+                    <div
+                        class="demo-surface data-[open]:animate-dialog-popup-in data-[closed]:animate-dialog-popup-out fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 p-6 transition-[transform,scale] focus:outline-none data-[nested-dialog-open]:scale-[0.96]"
+                        rdxDialogPopup
+                    >
+                        <h2 class="demo-dialog-title" rdxDialogTitle>Focus is trapped</h2>
+                        <p class="text-muted-foreground mt-1.5 text-sm" rdxDialogDescription>
                             Press Tab and notice focus never leaves the dialog.
                         </p>
 
-                        <label [class]="d.field">
+                        <label class="demo-label mt-4 grid gap-1.5">
                             First field
-                            <input [class]="input" placeholder="Focused when opened" />
+                            <input class="demo-input h-9 w-full px-3" placeholder="Focused when opened" />
                         </label>
-                        <label [class]="d.field">
+                        <label class="demo-label mt-4 grid gap-1.5">
                             Second field
-                            <input [class]="input" placeholder="Tab to reach me" />
+                            <input class="demo-input h-9 w-full px-3" placeholder="Tab to reach me" />
                         </label>
 
-                        <div [class]="d.footer">
-                            <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Done</button>
+                        <div class="mt-6 flex justify-end gap-2">
+                            <button class="demo-button demo-button-primary h-8 px-3 text-xs" rdxDialogClose>
+                                Done
+                            </button>
                         </div>
 
-                        <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                        <button
+                            class="demo-button demo-button-ghost absolute top-3 right-3 size-7 p-0"
+                            aria-label="Close"
+                            rdxDialogClose
+                        >
                             <svg aria-hidden="true" lucideX size="16" />
                         </button>
                     </div>
                 </ng-template>
             </div>
 
-            <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="outsideClicks.update((count) => count + 1)">
+            <button
+                class="demo-button demo-button-secondary h-8 px-3 text-xs"
+                (click)="outsideClicks.update((count) => count + 1)"
+            >
                 Outside interaction target: {{ outsideClicks() }}
             </button>
         </div>
     `
 })
 export class RdxDialogTrapFocusComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly d = demoDialog;
-    protected readonly input = demoInput;
     protected readonly outsideClicks = signal(0);
 }

@@ -34,6 +34,7 @@ Use `rdxInput` directly on a native input. Wrap it in Field when you need label,
 
 ## Examples
 
+- [Default](../examples/input--default.md)
 - [Disabled](../examples/input--disabled.md)
 - [With Field](../examples/input--with-field.md)
 - [Reactive Forms](../examples/input--reactive-forms.md)

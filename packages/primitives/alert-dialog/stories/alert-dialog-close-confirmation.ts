@@ -1,34 +1,76 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { alertDialogImports } from '@radix-ng/primitives/alert-dialog';
-import { dialogImports, RdxDialogOpenChange } from '@radix-ng/primitives/dialog';
-import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
+import {
+    RdxAlertDialogBackdrop,
+    RdxAlertDialogDescription,
+    RdxAlertDialogPopup,
+    RdxAlertDialogPortal,
+    RdxAlertDialogRoot,
+    RdxAlertDialogTitle
+} from '@radix-ng/primitives/alert-dialog';
+import {
+    RdxDialogBackdrop,
+    RdxDialogDescription,
+    RdxDialogOpenChange,
+    RdxDialogPopup,
+    RdxDialogPortal,
+    RdxDialogRoot,
+    RdxDialogTitle,
+    RdxDialogTrigger
+} from '@radix-ng/primitives/dialog';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-alert-dialog-close-confirmation',
-    imports: [...dialogImports, ...alertDialogImports, FormsModule],
+    imports: [
+        RdxDialogRoot,
+        RdxDialogTrigger,
+        RdxDialogPortal,
+        RdxDialogBackdrop,
+        RdxDialogPopup,
+        RdxDialogTitle,
+        RdxDialogDescription,
+        RdxAlertDialogRoot,
+        RdxAlertDialogPortal,
+        RdxAlertDialogBackdrop,
+        RdxAlertDialogPopup,
+        RdxAlertDialogTitle,
+        RdxAlertDialogDescription,
+        FormsModule
+    ],
     template: `
         <!-- The editor is a regular Dialog, controlled so a close request can be intercepted. -->
         <div [(open)]="editorOpen" (onOpenChange)="onEditorOpenChange($event)" rdxDialogRoot>
-            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Edit note</button>
+            <button class="demo-button demo-button-primary h-9 px-4" rdxDialogTrigger>Edit note</button>
 
             <ng-template rdxDialogPortal>
-                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
-                <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-                    <h2 [class]="d.title" rdxDialogTitle>Edit note</h2>
-                    <p [class]="d.description" rdxDialogDescription>
+                <div
+                    class="bg-foreground/50 data-[open]:animate-dialog-overlay-in data-[closed]:animate-dialog-overlay-out fixed inset-0 z-50"
+                    rdxDialogBackdrop
+                ></div>
+                <div
+                    class="demo-surface data-[open]:animate-dialog-popup-in data-[closed]:animate-dialog-popup-out fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 p-6 transition-[transform,scale] focus:outline-none data-[nested-dialog-open]:scale-[0.96]"
+                    rdxDialogPopup
+                >
+                    <h2 class="demo-dialog-title" rdxDialogTitle>Edit note</h2>
+                    <p class="text-muted-foreground mt-1.5 text-sm" rdxDialogDescription>
                         Closing with unsaved changes asks an alert dialog to confirm.
                     </p>
 
-                    <label [class]="d.field">
+                    <label class="demo-label mt-4 grid gap-1.5">
                         Note
-                        <input [(ngModel)]="text" [class]="input" placeholder="Type to create changes" />
+                        <input
+                            class="demo-input h-9 w-full px-3"
+                            [(ngModel)]="text"
+                            placeholder="Type to create changes"
+                        />
                     </label>
 
-                    <div [class]="d.footer">
-                        <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="requestClose()">Cancel</button>
-                        <button [class]="cn(b.base, b.primary, b.size.sm)" (click)="save()">Save</button>
+                    <div class="mt-6 flex justify-end gap-2">
+                        <button class="demo-button demo-button-outline h-8 px-3 text-xs" (click)="requestClose()">
+                            Cancel
+                        </button>
+                        <button class="demo-button demo-button-primary h-8 px-3 text-xs" (click)="save()">Save</button>
                     </div>
                 </div>
             </ng-template>
@@ -37,15 +79,28 @@ import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
         <!-- The confirmation is an Alert Dialog (assertive, not outside-dismissable). -->
         <div [(open)]="confirmOpen" rdxAlertDialogRoot>
             <ng-template rdxAlertDialogPortal>
-                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxAlertDialogBackdrop></div>
-                <div [class]="cn(d.popup, d.popupAnimated)" rdxAlertDialogPopup>
-                    <h2 [class]="d.title" rdxAlertDialogTitle>Discard changes?</h2>
-                    <p [class]="d.description" rdxAlertDialogDescription>Your unsaved note will be lost.</p>
-                    <div [class]="d.footer">
-                        <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="confirmOpen.set(false)">
+                <div
+                    class="bg-foreground/50 data-[open]:animate-dialog-overlay-in data-[closed]:animate-dialog-overlay-out fixed inset-0 z-50"
+                    rdxAlertDialogBackdrop
+                ></div>
+                <div
+                    class="demo-surface data-[open]:animate-dialog-popup-in data-[closed]:animate-dialog-popup-out fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 p-6 transition-[transform,scale] focus:outline-none data-[nested-dialog-open]:scale-[0.96]"
+                    rdxAlertDialogPopup
+                >
+                    <h2 class="demo-dialog-title" rdxAlertDialogTitle>Discard changes?</h2>
+                    <p class="text-muted-foreground mt-1.5 text-sm" rdxAlertDialogDescription>
+                        Your unsaved note will be lost.
+                    </p>
+                    <div class="mt-6 flex justify-end gap-2">
+                        <button
+                            class="demo-button demo-button-outline h-8 px-3 text-xs"
+                            (click)="confirmOpen.set(false)"
+                        >
                             Keep editing
                         </button>
-                        <button [class]="cn(b.base, b.destructive, b.size.sm)" (click)="discard()">Discard</button>
+                        <button class="demo-button demo-button-destructive h-8 px-3 text-xs" (click)="discard()">
+                            Discard
+                        </button>
                     </div>
                 </div>
             </ng-template>
@@ -53,11 +108,6 @@ import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
     `
 })
 export class RdxAlertDialogCloseConfirmationComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly d = demoDialog;
-    protected readonly input = demoInput;
-
     protected readonly editorOpen = signal(false);
     protected readonly confirmOpen = signal(false);
     protected text = '';

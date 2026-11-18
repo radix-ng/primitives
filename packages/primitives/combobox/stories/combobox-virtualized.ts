@@ -1,9 +1,19 @@
 import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
 import { LucideCheck } from '@lucide/angular';
+import {
+    ComboboxItemHighlightedDetails,
+    RdxComboboxEmpty,
+    RdxComboboxInput,
+    RdxComboboxItem,
+    RdxComboboxItemIndicator,
+    RdxComboboxList,
+    RdxComboboxPopup,
+    RdxComboboxPortal,
+    RdxComboboxPositioner,
+    RdxComboboxRoot
+} from '@radix-ng/primitives/combobox';
+
 import { injectVirtualizer } from '@tanstack/angular-virtual';
-import { cn, demoCombobox } from '../../storybook/styles';
-import { _importsCombobox } from '../index';
-import { ComboboxItemHighlightedDetails, RdxComboboxRoot } from '../src/combobox-root';
 
 /**
  * Externally virtualized list of 10,000 items. The combobox owns filtering and index navigation
@@ -14,7 +24,18 @@ import { ComboboxItemHighlightedDetails, RdxComboboxRoot } from '../src/combobox
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'combobox-virtualized-example',
-    imports: [_importsCombobox, LucideCheck],
+    imports: [
+        RdxComboboxRoot,
+        RdxComboboxInput,
+        RdxComboboxPortal,
+        RdxComboboxPositioner,
+        RdxComboboxPopup,
+        RdxComboboxList,
+        RdxComboboxItem,
+        RdxComboboxItemIndicator,
+        RdxComboboxEmpty,
+        LucideCheck
+    ],
     template: `
         <div
             #cmb="rdxComboboxRoot"
@@ -24,26 +45,39 @@ import { ComboboxItemHighlightedDetails, RdxComboboxRoot } from '../src/combobox
             virtualized
             rdxComboboxRoot
         >
-            <div [class]="c.control">
-                <input [class]="c.input" rdxComboboxInput placeholder="Search 10,000 items…" aria-label="Item" />
+            <div
+                class="demo-combobox-control focus-within:ring-ring focus-within:ring-offset-background relative inline-flex h-9 w-64 items-center focus-within:ring-2 focus-within:ring-offset-2 data-[disabled]:opacity-50"
+            >
+                <input
+                    class="demo-combobox-input placeholder:text-muted-foreground h-full w-full pr-9 pl-3"
+                    rdxComboboxInput
+                    placeholder="Search 10,000 items…"
+                    aria-label="Item"
+                />
             </div>
 
-            <div *rdxComboboxPortal [class]="c.positioner" rdxComboboxPositioner>
-                <div [class]="popup" rdxComboboxPopup>
-                    <div [class]="c.empty" rdxComboboxEmpty>No items found.</div>
-                    <div [class]="c.list" rdxComboboxList aria-label="Items">
-                        <div #scroll [class]="scroller">
-                            <div [class]="spacer" [style.height.px]="virtualizer.getTotalSize()">
+            <div class="z-50 w-64 data-[closed]:pointer-events-none" *rdxComboboxPortal rdxComboboxPositioner>
+                <div
+                    class="border-border bg-popover text-popover-foreground z-50 mt-2 rounded-md border shadow-md data-[closed]:hidden"
+                    rdxComboboxPopup
+                >
+                    <div class="demo-combobox-empty data-[empty]:py-6" rdxComboboxEmpty>No items found.</div>
+                    <div class="flex flex-col" rdxComboboxList aria-label="Items">
+                        <div class="max-h-60 overflow-auto overscroll-contain p-1" #scroll>
+                            <div class="relative w-full" [style.height.px]="virtualizer.getTotalSize()">
                                 @for (row of virtualizer.getVirtualItems(); track row.key) {
                                     <div
-                                        [class]="item"
+                                        class="data-[highlighted]:bg-muted absolute top-0 left-0 flex w-full cursor-default items-center rounded-sm pr-2 pl-8 text-sm outline-none select-none data-[selected]:font-medium"
                                         [value]="cmb.filteredItems()[row.index]"
                                         [index]="row.index"
                                         [style.height.px]="row.size"
                                         [style.transform]="'translateY(' + row.start + 'px)'"
                                         rdxComboboxItem
                                     >
-                                        <span [class]="c.itemIndicator" rdxComboboxItemIndicator>
+                                        <span
+                                            class="absolute left-2 flex size-3.5 items-center justify-center"
+                                            rdxComboboxItemIndicator
+                                        >
                                             <svg lucideCheck size="14"></svg>
                                         </span>
                                         {{ cmb.filteredItems()[row.index] }}
@@ -58,21 +92,6 @@ import { ComboboxItemHighlightedDetails, RdxComboboxRoot } from '../src/combobox
     `
 })
 export class ComboboxVirtualizedExample {
-    protected readonly c = demoCombobox;
-    // The inner `#scroll` div owns scrolling + max-height, so the popup must NOT add its own (the
-    // shared `demoCombobox.popup` bakes in `max-h-60 overflow-y-auto`, which would be a second scrollbar).
-    protected readonly popup = cn(
-        'z-50 mt-2 rounded-md border border-border bg-popover text-popover-foreground shadow-md',
-        'data-[closed]:hidden'
-    );
-    protected readonly scroller = 'max-h-60 overflow-auto overscroll-contain p-1';
-    protected readonly spacer = 'relative w-full';
-    // Absolutely positioned rows (no `relative` from `demoCombobox.item`) translated by the virtualizer.
-    protected readonly item = cn(
-        'absolute left-0 top-0 flex w-full cursor-default select-none items-center rounded-sm pl-8 pr-2 text-sm outline-none',
-        'data-[highlighted]:bg-muted data-[selected]:font-medium'
-    );
-
     readonly value = signal<string | null>(null);
 
     /** 10,000 string items — labels double as filter text, so no `itemToStringLabel` is needed here. */

@@ -1,12 +1,13 @@
 import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, model } from '@angular/core';
 import { LucideDynamicIcon } from '@lucide/angular';
-import { RdxCheckboxButtonDirective } from '@radix-ng/primitives/checkbox';
+import {
+    RdxCheckboxButtonDirective,
+    RdxCheckboxIndicatorDirective,
+    RdxCheckboxInputDirective,
+    RdxCheckboxRootDirective
+} from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { cn, demoButton, demoCheckbox } from '../../storybook/styles';
-import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
-import { RdxCheckboxInputDirective } from '../src/checkbox-input';
-import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -28,8 +29,17 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
                 (onCheckedChange)="checked.set($event.checked); indeterminate.set(false)"
                 rdxCheckboxRoot
             >
-                <button id="r1" [class]="c.button" rdxCheckboxButton>
-                    <svg [class]="c.indicator" [lucideIcon]="iconName()" rdxCheckboxIndicator size="16" />
+                <button
+                    class="demo-checkbox-button demo-focus flex size-6 items-center justify-center disabled:opacity-50 aria-disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                    id="r1"
+                    rdxCheckboxButton
+                >
+                    <svg
+                        class="text-primary flex items-center"
+                        [lucideIcon]="iconName()"
+                        rdxCheckboxIndicator
+                        size="16"
+                    />
                 </button>
                 <input rdxCheckboxInput />
             </div>
@@ -43,7 +53,7 @@ import { RdxCheckboxRootDirective } from '../src/checkbox-root';
             <p>indeterminate:&nbsp;{{ indeterminate() | json }}</p>
         </section>
 
-        <button [class]="cn(b.base, b.primary, b.size.md, 'mt-3')" (click)="toggleIndeterminate()" type="button">
+        <button class="demo-button demo-button-primary mt-3 h-9 px-4" (click)="toggleIndeterminate()" type="button">
             Toggle Indeterminate state
         </button>
     `
@@ -54,10 +64,6 @@ export class CheckboxIndeterminate {
 
     // `checked` and `indeterminate` are orthogonal; the mixed state takes visual priority.
     readonly iconName = computed(() => (this.indeterminate() ? 'minus' : 'check'));
-
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly c = demoCheckbox;
 
     toggleIndeterminate() {
         this.indeterminate.update((value) => !value);

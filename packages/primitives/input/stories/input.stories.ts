@@ -1,8 +1,11 @@
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RdxInputDirective } from '@radix-ng/primitives/input';
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
-import { demoInput } from '../../storybook/styles';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
-import { RdxInputDirective } from '../src/input.directive';
+import { InputDefaultStory } from './input-default-example';
+import defaultPortableSource from './input-default-example?raw';
+import { InputDisabledStory } from './input-disabled-example';
+import disabledPortableSource from './input-disabled-example?raw';
 import { InputFieldExample } from './input-field';
 import fieldSource from './input-field?raw';
 import { InputReactiveFormsExample } from './input-reactive-forms';
@@ -18,6 +21,8 @@ export default {
     decorators: [
         moduleMetadata({
             imports: [
+                InputDefaultStory,
+                InputDisabledStory,
                 FormsModule,
                 ReactiveFormsModule,
                 RdxInputDirective,
@@ -33,19 +38,19 @@ export default {
 type Story = StoryObj;
 
 export const Default: Story = {
+    parameters: source(defaultPortableSource),
     render: () => ({
-        props: { inputClass: demoInput },
         template: html`
-            <input rdxInput [class]="inputClass" placeholder="name@example.com" />
+            <rdx-input-default-example />
         `
     })
 };
 
 export const Disabled: Story = {
+    parameters: source(disabledPortableSource),
     render: () => ({
-        props: { inputClass: demoInput },
         template: html`
-            <input rdxInput disabled [class]="inputClass" defaultValue="name@example.com" />
+            <rdx-input-disabled-example />
         `
     })
 };

@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
-import { RdxCollapsiblePanelDirective } from '../src/collapsible-panel.directive';
-import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
+import { RdxCollapsiblePanelDirective, RdxCollapsibleRootDirective } from '@radix-ng/primitives/collapsible';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,

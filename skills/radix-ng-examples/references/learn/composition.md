@@ -30,35 +30,112 @@ export class RdxAccordionItemDirective {
 All the open/close behavior, the `data-*` state, and the panel mounting come from Collapsible for
 free. The accordion only writes the part that's genuinely new. Here's the result:
 
-```html
-<div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="['item-1']" ${argsToTemplate(args)} rdxAccordionRoot>
-    <div [class]="a.item" [value]="'item-1'" rdxAccordionItem>
-        <h3 [class]="a.header" rdxAccordionHeader>
-            <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it accessible?</button>
-        </h3>
-        <div [class]="a.content" *rdxAccordionPanelPresence rdxAccordionPanel>
-            <div [class]="a.contentText">Yes. It adheres to the WAI-ARIA design pattern.</div>
-        </div>
-    </div>
-    <div [class]="a.item" [value]="'item-2'" rdxAccordionItem>
-        <h3 [class]="a.header" rdxAccordionHeader>
-            <button [class]="a.trigger" type="button" rdxAccordionTrigger>Is it unstyled?</button>
-        </h3>
-        <div [class]="a.content" *rdxAccordionPanelPresence rdxAccordionPanel>
-            <div [class]="a.contentText">
-                Yes. It's unstyled by default, giving you freedom over the look and feel.
+```typescript
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import {
+    RdxAccordionHeaderDirective,
+    RdxAccordionItemDirective,
+    RdxAccordionPanelDirective,
+    RdxAccordionPanelPresenceDirective,
+    RdxAccordionRootDirective,
+    RdxAccordionTriggerDirective
+} from '@radix-ng/primitives/accordion';
+
+@Component({
+    host: { class: 'contents' },
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'rdx-accordion-default-example',
+    imports: [
+        RdxAccordionHeaderDirective,
+        RdxAccordionItemDirective,
+        RdxAccordionPanelPresenceDirective,
+        RdxAccordionPanelDirective,
+        RdxAccordionRootDirective,
+        RdxAccordionTriggerDirective
+    ],
+    template: `
+        <div
+            class="demo-accordion-root w-[300px] overflow-hidden"
+            [defaultValue]="['item-1']"
+            [disabled]="disabled()"
+            [multiple]="multiple()"
+            rdxAccordionRoot
+        >
+            <div
+                class="border-border focus-within:ring-ring overflow-hidden border-b last:border-b-0 focus-within:relative focus-within:z-[1] focus-within:ring-2 focus-within:outline-none focus-within:ring-inset"
+                [value]="'item-1'"
+                rdxAccordionItem
+            >
+                <h3 class="flex" rdxAccordionHeader>
+                    <button
+                        class="demo-accordion-trigger flex h-12 w-full flex-1 items-center justify-between px-5 aria-disabled:opacity-60"
+                        type="button"
+                        rdxAccordionTrigger
+                    >
+                        Is it accessible?
+                    </button>
+                </h3>
+                <div
+                    class="demo-accordion-content [&[data-open][data-orientation=vertical]]:animate-accordion-down [&:not([data-open])[data-orientation=vertical]]:animate-accordion-up [&[data-open][data-orientation=horizontal]]:animate-accordion-right [&:not([data-open])[data-orientation=horizontal]]:animate-accordion-left overflow-hidden [&:not([data-open])[data-orientation=horizontal]]:w-0 [&:not([data-open])[data-orientation=vertical]]:h-0"
+                    *rdxAccordionPanelPresence
+                    rdxAccordionPanel
+                >
+                    <div class="px-5 py-4">Yes. It adheres to the WAI-ARIA design pattern.</div>
+                </div>
+            </div>
+            <div
+                class="border-border focus-within:ring-ring overflow-hidden border-b last:border-b-0 focus-within:relative focus-within:z-[1] focus-within:ring-2 focus-within:outline-none focus-within:ring-inset"
+                [value]="'item-2'"
+                rdxAccordionItem
+            >
+                <h3 class="flex" rdxAccordionHeader>
+                    <button
+                        class="demo-accordion-trigger flex h-12 w-full flex-1 items-center justify-between px-5 aria-disabled:opacity-60"
+                        type="button"
+                        rdxAccordionTrigger
+                    >
+                        Is it unstyled?
+                    </button>
+                </h3>
+                <div
+                    class="demo-accordion-content [&[data-open][data-orientation=vertical]]:animate-accordion-down [&:not([data-open])[data-orientation=vertical]]:animate-accordion-up [&[data-open][data-orientation=horizontal]]:animate-accordion-right [&:not([data-open])[data-orientation=horizontal]]:animate-accordion-left overflow-hidden [&:not([data-open])[data-orientation=horizontal]]:w-0 [&:not([data-open])[data-orientation=vertical]]:h-0"
+                    *rdxAccordionPanelPresence
+                    rdxAccordionPanel
+                >
+                    <div class="px-5 py-4">
+                        Yes. It's unstyled by default, giving you freedom over the look and feel.
+                    </div>
+                </div>
+            </div>
+            <div
+                class="border-border focus-within:ring-ring overflow-hidden border-b last:border-b-0 focus-within:relative focus-within:z-[1] focus-within:ring-2 focus-within:outline-none focus-within:ring-inset"
+                [value]="'item-3'"
+                rdxAccordionItem
+            >
+                <h3 class="flex" rdxAccordionHeader>
+                    <button
+                        class="demo-accordion-trigger flex h-12 w-full flex-1 items-center justify-between px-5 aria-disabled:opacity-60"
+                        type="button"
+                        rdxAccordionTrigger
+                    >
+                        Can it be animated?
+                    </button>
+                </h3>
+                <div
+                    class="demo-accordion-content [&[data-open][data-orientation=vertical]]:animate-accordion-down [&:not([data-open])[data-orientation=vertical]]:animate-accordion-up [&[data-open][data-orientation=horizontal]]:animate-accordion-right [&:not([data-open])[data-orientation=horizontal]]:animate-accordion-left overflow-hidden [&:not([data-open])[data-orientation=horizontal]]:w-0 [&:not([data-open])[data-orientation=vertical]]:h-0"
+                    *rdxAccordionPanelPresence
+                    rdxAccordionPanel
+                >
+                    <div class="px-5 py-4">Yes! You can animate the Accordion with CSS or JavaScript.</div>
+                </div>
             </div>
         </div>
-    </div>
-    <div [class]="a.item" [value]="'item-3'" rdxAccordionItem>
-        <h3 [class]="a.header" rdxAccordionHeader>
-            <button [class]="a.trigger" type="button" rdxAccordionTrigger>Can it be animated?</button>
-        </h3>
-        <div [class]="a.content" *rdxAccordionPanelPresence rdxAccordionPanel>
-            <div [class]="a.contentText">Yes! You can animate the Accordion with CSS or JavaScript.</div>
-        </div>
-    </div>
-</div>
+    `
+})
+export class AccordionDefaultStory {
+    readonly disabled = input(false);
+    readonly multiple = input(false);
+}
 ```
 
 The takeaway: when you need behavior that already exists, **compose it** instead of reimplementing

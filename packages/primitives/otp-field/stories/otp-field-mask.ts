@@ -1,17 +1,16 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { demoOtpField as otpFieldStyles } from '../../storybook/styles';
-import { RdxOtpFieldModule } from '../index';
+import { RdxOtpFieldInput, RdxOtpFieldRoot } from '@radix-ng/primitives/otp-field';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-otp-field-mask-example',
-    imports: [RdxOtpFieldModule],
+    imports: [RdxOtpFieldRoot, RdxOtpFieldInput],
     template: `
-        <div [class]="s.field">
-            <label [class]="s.label" for="masked-code">Private access code</label>
+        <div class="grid gap-1.5">
+            <label class="demo-label mb-2 block" for="masked-code">Private access code</label>
             <div
+                class="flex items-center gap-2"
                 id="masked-code"
-                [class]="s.root"
                 [length]="6"
                 [mask]="true"
                 [autoComplete]="'one-time-code'"
@@ -19,19 +18,35 @@ import { RdxOtpFieldModule } from '../index';
                 aria-label="Masked verification code"
                 rdxOtpFieldRoot
             >
-                <input [class]="s.slot" rdxOtpFieldInput />
-                <input [class]="s.slot" rdxOtpFieldInput />
-                <input [class]="s.slot" rdxOtpFieldInput />
-                <input [class]="s.slot" rdxOtpFieldInput />
-                <input [class]="s.slot" rdxOtpFieldInput />
-                <input [class]="s.slot" rdxOtpFieldInput />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
+                <input
+                    class="demo-otp-field-slot placeholder:text-muted-foreground demo-focus size-10 shrink-0"
+                    rdxOtpFieldInput
+                />
             </div>
-            <p [class]="s.description">
+            <p class="text-muted-foreground mt-2 text-sm">
                 Masking obscures the entered characters while keeping text input and autofill available.
             </p>
         </div>
     `
 })
-export class OtpFieldMaskExample {
-    protected readonly s = otpFieldStyles;
-}
+export class OtpFieldMaskExample {}

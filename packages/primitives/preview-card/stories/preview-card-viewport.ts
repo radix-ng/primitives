@@ -1,17 +1,32 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { previewCardImports } from '@radix-ng/primitives/preview-card';
-import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
+import {
+    RdxPreviewCardArrow,
+    RdxPreviewCardPopup,
+    RdxPreviewCardPortal,
+    RdxPreviewCardPositioner,
+    RdxPreviewCardRoot,
+    RdxPreviewCardTrigger,
+    RdxPreviewCardViewport
+} from '@radix-ng/primitives/preview-card';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-preview-card-viewport',
-    imports: [...previewCardImports],
+    imports: [
+        RdxPreviewCardRoot,
+        RdxPreviewCardTrigger,
+        RdxPreviewCardPortal,
+        RdxPreviewCardPositioner,
+        RdxPreviewCardPopup,
+        RdxPreviewCardArrow,
+        RdxPreviewCardViewport
+    ],
     template: `
         <ng-container #root="rdxPreviewCardRoot" rdxPreviewCardRoot>
             <p class="text-muted-foreground max-w-lg text-sm leading-6">
                 Compare
                 <a
-                    [class]="link"
+                    class="text-primary demo-focus font-medium underline underline-offset-4"
                     href="#"
                     payload="Typography arranges type for readable language."
                     rdxPreviewCardTrigger
@@ -19,10 +34,17 @@ import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
                     typography
                 </a>
                 ,
-                <a [class]="link" href="#" payload="Design shapes objects and systems." rdxPreviewCardTrigger>design</a>
+                <a
+                    class="text-primary demo-focus font-medium underline underline-offset-4"
+                    href="#"
+                    payload="Design shapes objects and systems."
+                    rdxPreviewCardTrigger
+                >
+                    design
+                </a>
                 , and
                 <a
-                    [class]="link"
+                    class="text-primary demo-focus font-medium underline underline-offset-4"
                     href="#"
                     payload="Art communicates ideas through creative work."
                     rdxPreviewCardTrigger
@@ -33,16 +55,16 @@ import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
             </p>
 
             <div
+                class="z-50 transition-[left,right,top,bottom] duration-200"
                 *rdxPreviewCardPortal
-                [class]="cn(p.positioner, 'transition-[left,right,top,bottom] duration-200')"
                 sideOffset="8"
                 rdxPreviewCardPositioner
             >
                 <div
-                    [class]="cn(p.popup, 'overflow-hidden transition-[width,height] duration-200')"
+                    class="demo-surface relative w-80 overflow-hidden p-4 transition-[width,height] duration-200"
                     rdxPreviewCardPopup
                 >
-                    <span [class]="p.arrow" rdxPreviewCardArrow></span>
+                    <span class="text-card demo-arrow my-px" rdxPreviewCardArrow></span>
                     <div rdxPreviewCardViewport>
                         <div class="grid gap-2">
                             <div class="bg-muted h-24 rounded-md"></div>
@@ -54,8 +76,4 @@ import { cn, demoFocusRing, demoPopover } from '../../storybook/styles';
         </ng-container>
     `
 })
-export class RdxPreviewCardViewportComponent {
-    protected readonly cn = cn;
-    protected readonly p = demoPopover;
-    protected readonly link = cn('font-medium text-primary underline underline-offset-4', demoFocusRing);
-}
+export class RdxPreviewCardViewportComponent {}

@@ -5,8 +5,7 @@ import { Select } from '@base-ui/react/select';
 import type { ReactNode } from 'react';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { demoSelect } from '../../../../../packages/primitives/storybook/styles';
-import '../../../../radix-storybook/.storybook/tailwind.css';
+import '../../../../radix-storybook/.storybook/main.css';
 import {
     changeOptions,
     fixtureConfig,
@@ -20,6 +19,20 @@ import {
 import { anchoredHeightClass } from './geometry';
 import { liveCommands, liveFormClass, liveHeightClass, liveItemClass, type LiveState } from './live';
 import { shellStyles } from './nested';
+const demoSelect = {
+    trigger:
+        'demo-select-trigger inline-flex min-h-9 items-center justify-between gap-2 px-3 py-1.5 data-[placeholder]:text-muted-foreground disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 data-[invalid]:border-destructive data-[invalid]:aria-invalid:ring-destructive/30 demo-focus',
+    icon: 'size-4 shrink-0',
+    arrow: 'text-popover demo-arrow my-px',
+    positioner: 'z-[100]',
+    popup: 'demo-select-popup min-w-[var(--anchor-width,10rem)] will-change-[opacity,transform]',
+    list: 'p-1',
+    item: 'demo-select-item relative flex min-h-7 items-center gap-2 ps-6 pe-8 data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground data-[disabled]:pointer-events-none data-[disabled]:text-muted-foreground data-[disabled]:opacity-50',
+    itemIndicator: 'absolute start-0 inline-flex w-6 items-center justify-center',
+    groupLabel: 'demo-select-group-label px-6',
+    separator: 'mx-1 my-1 h-px bg-border',
+    scrollButton: 'demo-select-scroll-button flex h-7 items-center justify-center'
+} as const;
 
 const config = fixtureConfig();
 document.documentElement.dir = config.dir;

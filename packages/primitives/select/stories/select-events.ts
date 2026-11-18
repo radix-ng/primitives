@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideChevronDown } from '@lucide/angular';
-import { demoSelect } from '../../storybook/styles';
 import {
     RdxSelectItem,
     RdxSelectItemIndicator,
@@ -14,7 +13,7 @@ import {
     RdxSelectTrigger,
     RdxSelectValue,
     RdxSelectValueChangeEvent
-} from '../index';
+} from '@radix-ng/primitives/select';
 
 interface SelectEventLogEntry {
     label: string;
@@ -52,20 +51,34 @@ interface SelectEventLogEntry {
                         (onValueChange)="handleValueChange($event)"
                         rdxSelectRoot
                     >
-                        <button class="w-full" [class]="s.trigger" aria-label="Select a framework" rdxSelectTrigger>
+                        <button
+                            class="demo-select-trigger data-[placeholder]:text-muted-foreground data-[invalid]:border-destructive data-[invalid]:aria-invalid:ring-destructive/30 demo-focus inline-flex min-h-9 w-full items-center justify-between gap-2 px-3 py-1.5 disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                            aria-label="Select a framework"
+                            rdxSelectTrigger
+                        >
                             <span #selectedValue="rdxSelectedValue" rdxSelectValue placeholder="Select a framework">
                                 {{ selectedValue.slotText() }}
                             </span>
-                            <svg [class]="s.icon" lucideChevronDown size="16" aria-hidden="true" />
+                            <svg class="size-4 shrink-0" lucideChevronDown size="16" aria-hidden="true" />
                         </button>
 
-                        <div *rdxSelectPortal [class]="s.positioner" sideOffset="6" rdxSelectPositioner>
-                            <div [class]="s.popup" rdxSelectPopup>
-                                <div [class]="s.list" rdxSelectList>
+                        <div class="z-[100]" *rdxSelectPortal sideOffset="6" rdxSelectPositioner>
+                            <div
+                                class="demo-select-popup min-w-[var(--anchor-width,10rem)] will-change-[opacity,transform]"
+                                rdxSelectPopup
+                            >
+                                <div class="p-1" rdxSelectList>
                                     @for (option of options; track option.value) {
-                                        <div [class]="s.item" [value]="option.value" rdxSelectItem>
-                                            <span [class]="s.itemIndicator" rdxSelectItemIndicator>
-                                                <svg [class]="s.icon" lucideCheck size="16" aria-hidden="true" />
+                                        <div
+                                            class="demo-select-item data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground data-[disabled]:text-muted-foreground relative flex min-h-7 items-center gap-2 ps-6 pe-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                            [value]="option.value"
+                                            rdxSelectItem
+                                        >
+                                            <span
+                                                class="absolute start-0 inline-flex w-6 items-center justify-center"
+                                                rdxSelectItemIndicator
+                                            >
+                                                <svg class="size-4 shrink-0" lucideCheck size="16" aria-hidden="true" />
                                             </span>
                                             <span rdxSelectItemText>{{ option.label }}</span>
                                         </div>
@@ -153,8 +166,6 @@ interface SelectEventLogEntry {
     `
 })
 export class SelectEvents {
-    protected readonly s = demoSelect;
-
     readonly open = signal(false);
     readonly value = signal<string | undefined>(undefined);
     readonly cancelNextOpen = signal(false);

@@ -1,7 +1,19 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
-import { navigationMenuImports, RdxNavigationMenuOpenChange } from '@radix-ng/primitives/navigation-menu';
-import { cn, demoNavigationMenu } from '../../storybook/styles';
+import {
+    RdxNavigationMenuContent,
+    RdxNavigationMenuIcon,
+    RdxNavigationMenuItem,
+    RdxNavigationMenuLink,
+    RdxNavigationMenuList,
+    RdxNavigationMenuOpenChange,
+    RdxNavigationMenuPopup,
+    RdxNavigationMenuPortal,
+    RdxNavigationMenuPositioner,
+    RdxNavigationMenuRoot,
+    RdxNavigationMenuTrigger,
+    RdxNavigationMenuViewport
+} from '@radix-ng/primitives/navigation-menu';
 
 /**
  * Nested inline submenus: a second level that stays in the same panel. Inside the outer Content we
@@ -12,14 +24,34 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-navigation-menu-nested-inline',
-    imports: [...navigationMenuImports, LucideChevronDown],
+    imports: [
+        RdxNavigationMenuRoot,
+        RdxNavigationMenuList,
+        RdxNavigationMenuItem,
+        RdxNavigationMenuTrigger,
+        RdxNavigationMenuIcon,
+        RdxNavigationMenuContent,
+        RdxNavigationMenuLink,
+        RdxNavigationMenuPortal,
+        RdxNavigationMenuPositioner,
+        RdxNavigationMenuPopup,
+        RdxNavigationMenuViewport,
+        LucideChevronDown
+    ],
     template: `
-        <nav [class]="m.root" rdxNavigationMenuRoot>
-            <ul [class]="m.list" rdxNavigationMenuList>
+        <nav class="relative flex justify-center" rdxNavigationMenuRoot>
+            <ul class="demo-surface flex list-none items-center gap-1 p-1" rdxNavigationMenuList>
                 <li rdxNavigationMenuItem value="browse">
-                    <button [class]="m.trigger" rdxNavigationMenuTrigger>
+                    <button
+                        class="demo-navigation-menu-trigger demo-label data-[popup-open]:bg-muted demo-focus flex h-9 items-center gap-1 px-3 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                        rdxNavigationMenuTrigger
+                    >
                         Browse
-                        <svg [class]="m.icon" rdxNavigationMenuIcon lucideChevronDown></svg>
+                        <svg
+                            class="size-3.5 shrink-0 transition-transform duration-200 data-[popup-open]:rotate-180"
+                            rdxNavigationMenuIcon
+                            lucideChevronDown
+                        ></svg>
                     </button>
 
                     <ng-container *rdxNavigationMenuContent>
@@ -38,7 +70,7 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                                 @for (cat of categories; track cat.value) {
                                     <li [value]="cat.value" rdxNavigationMenuItem>
                                         <button
-                                            [class]="cn(m.trigger, 'w-full justify-start')"
+                                            class="demo-navigation-menu-trigger demo-label data-[popup-open]:bg-muted demo-focus flex h-9 w-full items-center justify-start gap-1 px-3 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                                             rdxNavigationMenuTrigger
                                         >
                                             {{ cat.label }}
@@ -48,9 +80,15 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                                             <ul class="grid gap-1">
                                                 @for (link of cat.links; track link.title) {
                                                     <li>
-                                                        <a [class]="m.cardLink" rdxNavigationMenuLink href="#">
-                                                            <div [class]="m.cardHeading">{{ link.title }}</div>
-                                                            <p [class]="m.cardText">{{ link.text }}</p>
+                                                        <a
+                                                            class="demo-navigation-menu-card-link demo-focus block p-3 no-underline"
+                                                            rdxNavigationMenuLink
+                                                            href="#"
+                                                        >
+                                                            <div class="demo-label mb-1">{{ link.title }}</div>
+                                                            <p class="demo-navigation-menu-card-text">
+                                                                {{ link.text }}
+                                                            </p>
                                                         </a>
                                                     </li>
                                                 }
@@ -60,34 +98,45 @@ import { cn, demoNavigationMenu } from '../../storybook/styles';
                                 }
                             </ul>
 
-                            <div [class]="inlineViewport" rdxNavigationMenuViewport></div>
+                            <div
+                                class="[&>[data-current]]:animate-navigation-menu-content-in [&>[data-previous]]:animate-navigation-menu-content-out relative min-h-[180px] flex-1 overflow-hidden p-2 [&>[data-previous]]:absolute [&>[data-previous]]:inset-0 [&>[data-previous]]:p-2"
+                                rdxNavigationMenuViewport
+                            ></div>
                         </nav>
                     </ng-container>
                 </li>
 
                 <li rdxNavigationMenuItem>
-                    <a [class]="m.link" rdxNavigationMenuLink href="#">Pricing</a>
+                    <a
+                        class="demo-navigation-menu-trigger demo-label demo-focus flex h-9 items-center px-3 no-underline"
+                        rdxNavigationMenuLink
+                        href="#"
+                    >
+                        Pricing
+                    </a>
                 </li>
             </ul>
 
-            <div *rdxNavigationMenuPortal [class]="m.positioner" sideOffset="8" rdxNavigationMenuPositioner>
-                <div [class]="m.popup" rdxNavigationMenuPopup>
-                    <div [class]="m.viewport" rdxNavigationMenuViewport></div>
+            <div
+                class="z-50 data-[closed]:pointer-events-none"
+                *rdxNavigationMenuPortal
+                sideOffset="8"
+                rdxNavigationMenuPositioner
+            >
+                <div
+                    class="demo-surface data-[open]:animate-navigation-menu-popup-in data-[starting-style]:animate-navigation-menu-popup-in data-[ending-style]:animate-navigation-menu-popup-out relative origin-[var(--transform-origin)] p-0"
+                    rdxNavigationMenuPopup
+                >
+                    <div
+                        class="[&>[data-current]]:animate-navigation-menu-content-in [&>[data-previous]]:animate-navigation-menu-content-out relative block h-[var(--popup-height,auto)] w-[var(--popup-width,max-content)] overflow-hidden transition-[width,height] duration-200 [&>[data-previous]]:absolute [&>[data-previous]]:inset-0"
+                        rdxNavigationMenuViewport
+                    ></div>
                 </div>
             </div>
         </nav>
     `
 })
 export class RdxNavigationMenuNestedInlineComponent {
-    protected readonly cn = cn;
-    protected readonly m = demoNavigationMenu;
-
-    protected readonly inlineViewport = cn(
-        'relative min-h-[180px] flex-1 overflow-hidden p-2',
-        '[&>[data-current]]:animate-navigation-menu-content-in',
-        '[&>[data-previous]]:absolute [&>[data-previous]]:inset-0 [&>[data-previous]]:p-2 [&>[data-previous]]:animate-navigation-menu-content-out'
-    );
-
     protected readonly categories = [
         {
             value: 'learn',

@@ -1,7 +1,7 @@
 import { Button } from '@base-ui/react/button';
 import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import '../../../../radix-storybook/.storybook/tailwind.css';
+import '../../../../radix-storybook/.storybook/main.css';
 import { ReactAuthored } from './authored.react';
 import { config, installProbe, classes as s, type ButtonType } from './contract';
 import { ReactInteraction } from './interaction.react';

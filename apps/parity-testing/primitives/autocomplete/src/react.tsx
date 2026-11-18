@@ -1,7 +1,7 @@
 import { Autocomplete } from '@base-ui/react/autocomplete';
 import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import '../../../../radix-storybook/.storybook/tailwind.css';
+import '../../../../radix-storybook/.storybook/main.css';
 import { config, installProbe, classes as s } from './contract';
 import { ReactNavigation } from './navigation.react';
 import { ReactValueState } from './value.react';

@@ -53,6 +53,10 @@ test('Default provides separate copyable blocks for the component and Tailwind s
     await expect(code).toContainText('data-[starting-style]:animate-popover-popup-in');
     await expect(code).toContainText('data-[ending-style]:animate-popover-popup-out');
     await expect(code).not.toContainText('../../storybook');
+    await page
+        .locator('summary')
+        .filter({ hasText: /^demo-styles\.css$/ })
+        .click();
     const styles = page.locator('pre').filter({ hasText: '--animate-popover-popup-in:' });
     await expect(styles).toBeVisible();
     await expect(styles).toContainText('@layer components {');

@@ -1,7 +1,20 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { dialogImports } from '@radix-ng/primitives/dialog';
-import { cn, demoButton, demoCard, demoDialog } from '../../storybook/styles';
-import { _importsAutocomplete } from '../index';
+import {
+    RdxAutocompleteEmpty,
+    RdxAutocompleteGroup,
+    RdxAutocompleteGroupLabel,
+    RdxAutocompleteInput,
+    RdxAutocompleteItem,
+    RdxAutocompleteList,
+    RdxAutocompleteRoot
+} from '@radix-ng/primitives/autocomplete';
+import {
+    RdxDialogBackdrop,
+    RdxDialogPopup,
+    RdxDialogPortal,
+    RdxDialogRoot,
+    RdxDialogTrigger
+} from '@radix-ng/primitives/dialog';
 
 interface Item {
     value: string;
@@ -21,56 +34,97 @@ interface Group {
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-command-palette',
-    imports: [...dialogImports, _importsAutocomplete],
+    imports: [
+        RdxDialogRoot,
+        RdxDialogTrigger,
+        RdxDialogPortal,
+        RdxDialogBackdrop,
+        RdxDialogPopup,
+        RdxAutocompleteRoot,
+        RdxAutocompleteInput,
+        RdxAutocompleteList,
+        RdxAutocompleteItem,
+        RdxAutocompleteGroup,
+        RdxAutocompleteGroupLabel,
+        RdxAutocompleteEmpty
+    ],
     template: `
         <div [(open)]="open" rdxDialogRoot>
-            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open command palette</button>
+            <button class="demo-button demo-button-primary h-9 px-4" rdxDialogTrigger>Open command palette</button>
 
             <ng-template rdxDialogPortal>
-                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
+                <div
+                    class="bg-foreground/50 data-[open]:animate-dialog-overlay-in data-[closed]:animate-dialog-overlay-out fixed inset-0 z-50"
+                    rdxDialogBackdrop
+                ></div>
 
                 <div class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 pt-[12vh]">
-                    <div [class]="popup" rdxDialogPopup aria-label="Command palette">
+                    <div
+                        class="demo-surface relative flex w-[92vw] max-w-lg flex-col overflow-hidden p-0 focus:outline-none"
+                        rdxDialogPopup
+                        aria-label="Command palette"
+                    >
                         <div [(open)]="open" autoHighlight="always" rdxAutocompleteRoot>
                             <input
+                                class="border-border bg-background text-foreground placeholder:text-muted-foreground h-12 w-full shrink-0 border-b px-4 text-sm outline-none"
                                 #cmdInput
-                                [class]="input"
                                 rdxAutocompleteInput
                                 placeholder="Search for apps and commands…"
                                 aria-label="Command"
                             />
 
-                            <div [class]="list" rdxAutocompleteList aria-label="Commands">
+                            <div class="max-h-80 overflow-y-auto p-2" rdxAutocompleteList aria-label="Commands">
                                 @for (group of groups; track group.value) {
                                     <div class="mb-1" rdxAutocompleteGroup>
-                                        <div [class]="groupLabel" rdxAutocompleteGroupLabel>{{ group.value }}</div>
+                                        <div
+                                            class="text-muted-foreground px-2 py-1.5 text-xs font-medium"
+                                            rdxAutocompleteGroupLabel
+                                        >
+                                            {{ group.value }}
+                                        </div>
                                         @for (item of group.items; track item.value) {
                                             <div
-                                                [class]="itemClass"
+                                                class="data-[highlighted]:bg-muted grid cursor-default grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-sm px-2 py-2 text-sm outline-none select-none"
                                                 [value]="item"
                                                 [textValue]="item.label"
                                                 rdxAutocompleteItem
                                             >
                                                 <span class="truncate">{{ item.label }}</span>
-                                                <span [class]="badge">
+                                                <span class="text-muted-foreground shrink-0 text-xs">
                                                     {{ group.value === 'Suggestions' ? 'Application' : 'Command' }}
                                                 </span>
                                             </div>
                                         }
                                     </div>
                                 }
-                                <div [class]="empty" rdxAutocompleteEmpty>No results found.</div>
+                                <div class="text-muted-foreground px-2 py-8 text-center text-sm" rdxAutocompleteEmpty>
+                                    No results found.
+                                </div>
                             </div>
 
-                            <div [class]="footer">
+                            <div
+                                class="text-muted-foreground border-border flex shrink-0 items-center justify-between border-t px-4 py-2.5 text-xs"
+                            >
                                 <span class="flex items-center gap-1">
                                     Activate
-                                    <kbd [class]="kbd">Enter</kbd>
+                                    <kbd
+                                        class="border-border bg-muted inline-flex h-5 min-w-5 items-center justify-center rounded border px-1 font-mono text-[10px]"
+                                    >
+                                        Enter
+                                    </kbd>
                                 </span>
                                 <span class="flex items-center gap-1">
                                     Actions
-                                    <kbd [class]="kbd">Cmd</kbd>
-                                    <kbd [class]="kbd">K</kbd>
+                                    <kbd
+                                        class="border-border bg-muted inline-flex h-5 min-w-5 items-center justify-center rounded border px-1 font-mono text-[10px]"
+                                    >
+                                        Cmd
+                                    </kbd>
+                                    <kbd
+                                        class="border-border bg-muted inline-flex h-5 min-w-5 items-center justify-center rounded border px-1 font-mono text-[10px]"
+                                    >
+                                        K
+                                    </kbd>
                                 </span>
                             </div>
                         </div>
@@ -81,30 +135,6 @@ interface Group {
     `
 })
 export class AutocompleteCommandPalette {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly d = demoDialog;
-
-    protected readonly popup = cn(
-        demoCard,
-        'relative flex w-[92vw] max-w-lg flex-col overflow-hidden p-0 focus:outline-none'
-    );
-    protected readonly input = cn(
-        'border-border bg-background text-foreground placeholder:text-muted-foreground h-12 w-full shrink-0 border-b px-4 text-sm outline-none'
-    );
-    protected readonly list = 'max-h-80 overflow-y-auto p-2';
-    protected readonly groupLabel = 'text-muted-foreground px-2 py-1.5 text-xs font-medium';
-    protected readonly itemClass = cn(
-        'grid cursor-default select-none grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-sm px-2 py-2 text-sm outline-none',
-        'data-[highlighted]:bg-muted'
-    );
-    protected readonly badge = 'text-muted-foreground shrink-0 text-xs';
-    protected readonly empty = 'text-muted-foreground px-2 py-8 text-center text-sm';
-    protected readonly footer =
-        'text-muted-foreground border-border flex shrink-0 items-center justify-between border-t px-4 py-2.5 text-xs';
-    protected readonly kbd =
-        'border-border bg-muted inline-flex h-5 min-w-5 items-center justify-center rounded border px-1 font-mono text-[10px]';
-
     readonly open = signal(false);
 
     readonly groups: Group[] = [

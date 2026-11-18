@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { RdxFocusScope } from '../src/focus-scope';
+import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 
 const demoClasses = 'flex w-xl flex-col gap-4';
 const focusScopeClasses = 'border-border bg-card flex flex-col gap-3 rounded-xl border p-5 shadow-sm';

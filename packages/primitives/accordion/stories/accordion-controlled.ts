@@ -8,7 +8,6 @@ import {
     RdxAccordionTriggerDirective,
     RdxAccordionValueChangeEvent
 } from '@radix-ng/primitives/accordion';
-import { demoAccordion } from '../../storybook/styles';
 
 @Component({
     selector: 'accordion-controlled-example',
@@ -31,14 +30,32 @@ import { demoAccordion } from '../../storybook/styles';
                 />
                 Block changes
             </label>
-            <div [(value)]="selected" [class]="a.root" (onValueChange)="request($event)" rdxAccordionRoot>
+            <div
+                class="demo-accordion-root overflow-hidden"
+                [(value)]="selected"
+                (onValueChange)="request($event)"
+                rdxAccordionRoot
+            >
                 @for (item of items; track item) {
-                    <div [class]="a.item" [value]="item" rdxAccordionItem>
-                        <h3 [class]="a.header" rdxAccordionHeader>
-                            <button [class]="a.trigger" rdxAccordionTrigger>{{ item }}</button>
+                    <div
+                        class="border-border focus-within:ring-ring overflow-hidden border-b last:border-b-0 focus-within:relative focus-within:z-[1] focus-within:ring-2 focus-within:outline-none focus-within:ring-inset"
+                        [value]="item"
+                        rdxAccordionItem
+                    >
+                        <h3 class="flex" rdxAccordionHeader>
+                            <button
+                                class="demo-accordion-trigger flex h-12 w-full flex-1 items-center justify-between px-5 aria-disabled:opacity-60"
+                                rdxAccordionTrigger
+                            >
+                                {{ item }}
+                            </button>
                         </h3>
-                        <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
-                            <div [class]="a.contentText">Content for {{ item }}.</div>
+                        <div
+                            class="demo-accordion-content [&[data-open][data-orientation=vertical]]:animate-accordion-down [&:not([data-open])[data-orientation=vertical]]:animate-accordion-up [&[data-open][data-orientation=horizontal]]:animate-accordion-right [&:not([data-open])[data-orientation=horizontal]]:animate-accordion-left overflow-hidden [&:not([data-open])[data-orientation=horizontal]]:w-0 [&:not([data-open])[data-orientation=vertical]]:h-0"
+                            *rdxAccordionPanelPresence
+                            rdxAccordionPanel
+                        >
+                            <div class="px-5 py-4">Content for {{ item }}.</div>
                         </div>
                     </div>
                 }
@@ -51,7 +68,6 @@ import { demoAccordion } from '../../storybook/styles';
     `
 })
 export class AccordionControlledExample {
-    protected readonly a = demoAccordion;
     readonly items = ['First', 'Second'];
     readonly selected = signal<unknown[]>(['First']);
     readonly blocked = signal(false);

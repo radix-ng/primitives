@@ -1,6 +1,19 @@
 import { ChangeDetectionStrategy, Component, ElementRef, signal, viewChild } from '@angular/core';
-import { cn, demoCombobox, demoFocusRing } from '../../storybook/styles';
-import { _importsAutocomplete, type AutocompleteValueChangeDetails } from '../index';
+import {
+    RdxAutocompleteAnchor,
+    RdxAutocompleteEmpty,
+    RdxAutocompleteGroup,
+    RdxAutocompleteGroupLabel,
+    RdxAutocompleteInput,
+    RdxAutocompleteItem,
+    RdxAutocompletePopup,
+    RdxAutocompletePortal,
+    RdxAutocompletePositioner,
+    RdxAutocompleteRoot,
+    RdxAutocompleteRow,
+    RdxAutocompleteTrigger,
+    type AutocompleteValueChangeDetails
+} from '@radix-ng/primitives/autocomplete';
 
 interface Emoji {
     emoji: string;
@@ -32,7 +45,20 @@ function chunk<T>(items: T[], size: number): T[][] {
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'autocomplete-grid',
-    imports: [_importsAutocomplete],
+    imports: [
+        RdxAutocompleteRoot,
+        RdxAutocompleteAnchor,
+        RdxAutocompleteInput,
+        RdxAutocompleteTrigger,
+        RdxAutocompletePortal,
+        RdxAutocompletePositioner,
+        RdxAutocompletePopup,
+        RdxAutocompleteRow,
+        RdxAutocompleteItem,
+        RdxAutocompleteGroup,
+        RdxAutocompleteGroupLabel,
+        RdxAutocompleteEmpty
+    ],
     template: `
         <div class="relative flex w-64">
             <input
@@ -50,14 +76,27 @@ function chunk<T>(items: T[], size: number): T[][] {
                 grid
                 rdxAutocompleteRoot
             >
-                <button [class]="trigger" rdxAutocompleteTrigger rdxAutocompleteAnchor aria-label="Choose emoji">
+                <button
+                    class="border-border bg-background text-foreground hover:bg-muted data-[popup-open]:bg-muted demo-focus relative inline-flex size-9 items-center justify-center rounded-r-md border text-lg focus-visible:z-10"
+                    rdxAutocompleteTrigger
+                    rdxAutocompleteAnchor
+                    aria-label="Choose emoji"
+                >
                     😀
                 </button>
 
-                <div *rdxAutocompletePortal [class]="c.positioner" rdxAutocompletePositioner align="end">
-                    <div [class]="popup" rdxAutocompletePopup>
+                <div
+                    class="z-50 w-64 data-[closed]:pointer-events-none"
+                    *rdxAutocompletePortal
+                    rdxAutocompletePositioner
+                    align="end"
+                >
+                    <div
+                        class="border-border bg-popover text-popover-foreground z-50 mt-2 w-64 rounded-md border shadow-md data-[closed]:hidden"
+                        rdxAutocompletePopup
+                    >
                         <input
-                            [class]="input"
+                            class="border-border bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring h-9 w-full rounded-t-md border-b px-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-inset"
                             rdxAutocompleteInput
                             placeholder="Search emojis…"
                             aria-label="Search emojis"
@@ -65,13 +104,17 @@ function chunk<T>(items: T[], size: number): T[][] {
                         <div class="max-h-64 overflow-auto p-1">
                             @for (group of groups; track group.label) {
                                 <div rdxAutocompleteGroup>
-                                    <div [class]="c.groupLabel" rdxAutocompleteGroupLabel>
+                                    <div class="demo-menu-group-label px-2 py-1.5" rdxAutocompleteGroupLabel>
                                         {{ group.label }}
                                     </div>
                                     @for (row of group.rows; track $index) {
                                         <div class="grid grid-cols-5" rdxAutocompleteRow>
                                             @for (item of row; track item.emoji) {
-                                                <div [class]="cell" [textValue]="item.name" rdxAutocompleteItem>
+                                                <div
+                                                    class="data-[highlighted]:bg-muted flex h-10 cursor-default items-center justify-center rounded-sm text-xl outline-none data-[disabled]:opacity-50"
+                                                    [textValue]="item.name"
+                                                    rdxAutocompleteItem
+                                                >
                                                     {{ item.emoji }}
                                                 </div>
                                             }
@@ -80,7 +123,7 @@ function chunk<T>(items: T[], size: number): T[][] {
                                 </div>
                             }
                         </div>
-                        <div [class]="c.empty" rdxAutocompleteEmpty>No emoji found.</div>
+                        <div class="demo-combobox-empty data-[empty]:py-6" rdxAutocompleteEmpty>No emoji found.</div>
                     </div>
                 </div>
             </div>
@@ -88,29 +131,6 @@ function chunk<T>(items: T[], size: number): T[][] {
     `
 })
 export class AutocompleteGrid {
-    protected readonly c = demoCombobox;
-    protected readonly trigger = cn(
-        'border-border bg-background text-foreground relative inline-flex size-9 items-center justify-center rounded-r-md border text-lg',
-        'hover:bg-muted data-[popup-open]:bg-muted',
-        // The trigger is the focusable control here (`tabindex="0"`), so it carries the focus ring
-        // itself; `z-10` lifts it above the adjoining message input so the ring isn't clipped.
-        'focus-visible:z-10',
-        demoFocusRing
-    );
-    protected readonly popup = cn(
-        'border-border bg-popover text-popover-foreground z-50 mt-2 w-64 rounded-md border shadow-md',
-        'data-[closed]:hidden'
-    );
-    protected readonly input = cn(
-        'border-border bg-background text-foreground placeholder:text-muted-foreground h-9 w-full rounded-t-md border-b px-2 text-sm',
-        // Inset ring (no offset) so the search field's focus stays crisp against the popup's top edge.
-        'outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset'
-    );
-    protected readonly cell = cn(
-        'flex h-10 cursor-default items-center justify-center rounded-sm text-xl outline-none',
-        'data-[highlighted]:bg-muted data-[disabled]:opacity-50'
-    );
-
     protected readonly message = viewChild<ElementRef<HTMLInputElement>>('message');
 
     readonly search = signal('');

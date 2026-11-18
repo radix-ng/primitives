@@ -4,7 +4,7 @@ import {
     LucideChevronRight as ChevronRight,
     LucideDynamicIcon
 } from '@lucide/angular';
-import { RdxStepperModule } from '../index';
+import { RdxStepperModule } from '@radix-ng/primitives/stepper';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,

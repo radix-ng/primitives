@@ -1,18 +1,32 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { Side } from '@radix-ng/primitives/popper';
-import { previewCardImports } from '@radix-ng/primitives/preview-card';
-import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styles';
+import {
+    RdxPreviewCardArrow,
+    RdxPreviewCardPopup,
+    RdxPreviewCardPortal,
+    RdxPreviewCardPositioner,
+    RdxPreviewCardRoot,
+    RdxPreviewCardTrigger
+} from '@radix-ng/primitives/preview-card';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-preview-card-positioning',
-    imports: [...previewCardImports],
+    imports: [
+        RdxPreviewCardRoot,
+        RdxPreviewCardTrigger,
+        RdxPreviewCardPortal,
+        RdxPreviewCardPositioner,
+        RdxPreviewCardPopup,
+        RdxPreviewCardArrow
+    ],
     template: `
         <div class="grid gap-4">
             <div class="flex flex-wrap gap-2">
                 @for (option of sides; track option) {
                     <button
-                        [class]="cn(b.base, side() === option ? b.primary : b.outline, b.size.sm)"
+                        class="demo-button h-8 px-3 text-xs"
+                        [class]="side() === option ? 'demo-button-primary' : 'demo-button-outline'"
                         (click)="side.set(option)"
                         type="button"
                     >
@@ -22,17 +36,17 @@ import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styl
             </div>
 
             <ng-container rdxPreviewCardRoot>
-                <a [class]="link" href="#" rdxPreviewCardTrigger>Hover the positioned preview card</a>
-
-                <div
-                    *rdxPreviewCardPortal
-                    [class]="p.positioner"
-                    [side]="side()"
-                    sideOffset="8"
-                    rdxPreviewCardPositioner
+                <a
+                    class="text-primary demo-focus font-medium underline underline-offset-4"
+                    href="#"
+                    rdxPreviewCardTrigger
                 >
-                    <div [class]="p.popup" rdxPreviewCardPopup>
-                        <span [class]="p.arrow" rdxPreviewCardArrow></span>
+                    Hover the positioned preview card
+                </a>
+
+                <div class="z-50" *rdxPreviewCardPortal [side]="side()" sideOffset="8" rdxPreviewCardPositioner>
+                    <div class="demo-surface relative w-80 p-4" rdxPreviewCardPopup>
+                        <span class="text-card demo-arrow my-px" rdxPreviewCardArrow></span>
                         <p class="text-muted-foreground text-sm">
                             The positioner exposes placement attributes and CSS variables for styling.
                         </p>
@@ -45,8 +59,4 @@ import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styl
 export class RdxPreviewCardPositioningComponent {
     protected readonly sides: Side[] = ['top', 'right', 'bottom', 'left'];
     protected readonly side = signal<Side>('bottom');
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly p = demoPopover;
-    protected readonly link = cn('font-medium text-primary underline underline-offset-4', demoFocusRing);
 }

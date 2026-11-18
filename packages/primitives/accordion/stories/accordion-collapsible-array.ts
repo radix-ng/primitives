@@ -7,7 +7,6 @@ import {
     RdxAccordionRootDirective,
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
-import { cn, demoAccordion } from '../../storybook/styles';
 
 @Component({
     selector: 'accordion-collapsible-array-example',
@@ -21,14 +20,28 @@ import { cn, demoAccordion } from '../../storybook/styles';
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
-        <div [class]="cn(a.root, 'w-[300px]')" [defaultValue]="['item-1']" rdxAccordionRoot>
+        <div class="demo-accordion-root w-[300px] overflow-hidden" [defaultValue]="['item-1']" rdxAccordionRoot>
             @for (item of items; track item.id) {
-                <div [class]="a.item" [value]="item.id" rdxAccordionItem>
-                    <h3 [class]="a.header" rdxAccordionHeader>
-                        <button [class]="a.trigger" type="button" rdxAccordionTrigger>{{ item.title }}</button>
+                <div
+                    class="border-border focus-within:ring-ring overflow-hidden border-b last:border-b-0 focus-within:relative focus-within:z-[1] focus-within:ring-2 focus-within:outline-none focus-within:ring-inset"
+                    [value]="item.id"
+                    rdxAccordionItem
+                >
+                    <h3 class="flex" rdxAccordionHeader>
+                        <button
+                            class="demo-accordion-trigger flex h-12 w-full flex-1 items-center justify-between px-5 aria-disabled:opacity-60"
+                            type="button"
+                            rdxAccordionTrigger
+                        >
+                            {{ item.title }}
+                        </button>
                     </h3>
-                    <div *rdxAccordionPanelPresence [class]="a.content" rdxAccordionPanel>
-                        <div [class]="a.contentText">{{ item.content }}</div>
+                    <div
+                        class="demo-accordion-content [&[data-open][data-orientation=vertical]]:animate-accordion-down [&:not([data-open])[data-orientation=vertical]]:animate-accordion-up [&[data-open][data-orientation=horizontal]]:animate-accordion-right [&:not([data-open])[data-orientation=horizontal]]:animate-accordion-left overflow-hidden [&:not([data-open])[data-orientation=horizontal]]:w-0 [&:not([data-open])[data-orientation=vertical]]:h-0"
+                        *rdxAccordionPanelPresence
+                        rdxAccordionPanel
+                    >
+                        <div class="px-5 py-4">{{ item.content }}</div>
                     </div>
                 </div>
             }
@@ -36,9 +49,6 @@ import { cn, demoAccordion } from '../../storybook/styles';
     `
 })
 export class AccordionCollapsibleArrayExample {
-    protected readonly cn = cn;
-    protected readonly a = demoAccordion;
-
     readonly items = [
         { id: 'item-1', title: 'Is it accessible?', content: 'Yes. It adheres to the WAI-ARIA design pattern.' },
         {

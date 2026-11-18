@@ -1,13 +1,12 @@
 import { Component, Directive, inject, signal } from '@angular/core';
 import { RdxPortalPresence } from '@radix-ng/primitives/portal';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
-import { cn, demoButton } from '../../storybook/styles';
 
 @Directive({
     selector: 'ng-template[pendingPresencePortal]',
     hostDirectives: [{ directive: RdxPortalPresence, inputs: ['container'] }]
 })
-class PendingPresencePortal {}
+export class PendingPresencePortal {}
 
 @Component({
     selector: 'presence-pending-portal',
@@ -15,10 +14,14 @@ class PendingPresencePortal {}
     providers: [provideRdxPresenceContext(() => ({ present: inject(PresencePendingPortal).open }))],
     template: `
         <div class="flex flex-col items-center gap-4">
-            <button [class]="buttonClass" (click)="open.set(!open())" type="button">
+            <button class="demo-button demo-button-outline h-9 px-4" (click)="open.set(!open())" type="button">
                 {{ open() ? 'Unmount' : 'Mount' }}
             </button>
-            <button [class]="buttonClass" (click)="destinationReady.set(!destinationReady())" type="button">
+            <button
+                class="demo-button demo-button-outline h-9 px-4"
+                (click)="destinationReady.set(!destinationReady())"
+                type="button"
+            >
                 {{ destinationReady() ? 'Suspend destination' : 'Resolve destination' }}
             </button>
             <div
@@ -35,5 +38,4 @@ class PendingPresencePortal {}
 export class PresencePendingPortal {
     readonly open = signal(false);
     readonly destinationReady = signal(true);
-    readonly buttonClass = cn(demoButton.base, demoButton.outline, demoButton.size.md);
 }

@@ -1,44 +1,79 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
-import { createRdxPopoverHandle, popoverImports } from '@radix-ng/primitives/popover';
-import { cn, demoButton, demoPopover } from '../../storybook/styles';
+import {
+    createRdxPopoverHandle,
+    RdxPopoverArrow,
+    RdxPopoverClose,
+    RdxPopoverDescription,
+    RdxPopoverPopup,
+    RdxPopoverPortal,
+    RdxPopoverPositioner,
+    RdxPopoverRoot,
+    RdxPopoverTitle,
+    RdxPopoverTrigger
+} from '@radix-ng/primitives/popover';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-popover-detached',
-    imports: [...popoverImports, LucideX],
+    imports: [
+        RdxPopoverRoot,
+        RdxPopoverTrigger,
+        RdxPopoverPortal,
+        RdxPopoverPositioner,
+        RdxPopoverPopup,
+        RdxPopoverArrow,
+        RdxPopoverTitle,
+        RdxPopoverDescription,
+        RdxPopoverClose,
+        LucideX
+    ],
     template: `
         <div class="flex w-[min(640px,80vw)] flex-col items-center gap-8">
             <div class="flex w-full justify-between gap-4">
-                <button id="account" [class]="cn(b.base, b.outline, b.size.md)" [handle]="popover" rdxPopoverTrigger>
+                <button
+                    class="demo-button demo-button-outline h-9 px-4"
+                    id="account"
+                    [handle]="popover"
+                    rdxPopoverTrigger
+                >
                     Account trigger
                 </button>
 
-                <button id="billing" [class]="cn(b.base, b.outline, b.size.md)" [handle]="popover" rdxPopoverTrigger>
+                <button
+                    class="demo-button demo-button-outline h-9 px-4"
+                    id="billing"
+                    [handle]="popover"
+                    rdxPopoverTrigger
+                >
                     Billing trigger
                 </button>
             </div>
 
             <div class="flex flex-wrap justify-center gap-2">
-                <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="popover.open('account')">
+                <button class="demo-button demo-button-secondary h-8 px-3 text-xs" (click)="popover.open('account')">
                     Open account
                 </button>
-                <button [class]="cn(b.base, b.secondary, b.size.sm)" (click)="popover.open('billing')">
+                <button class="demo-button demo-button-secondary h-8 px-3 text-xs" (click)="popover.open('billing')">
                     Open billing
                 </button>
-                <button [class]="cn(b.base, b.ghost, b.size.sm)" (click)="popover.close()">Close</button>
+                <button class="demo-button demo-button-ghost h-8 px-3 text-xs" (click)="popover.close()">Close</button>
             </div>
 
             <ng-container [handle]="popover" rdxPopoverRoot>
-                <div *rdxPopoverPortal [class]="p.positioner" sideOffset="8" rdxPopoverPositioner>
-                    <div [class]="p.popup" rdxPopoverPopup>
-                        <span [class]="p.arrow" rdxPopoverArrow></span>
-                        <h2 [class]="p.title" rdxPopoverTitle>Detached handles</h2>
-                        <p [class]="p.description" rdxPopoverDescription>
+                <div class="z-50" *rdxPopoverPortal sideOffset="8" rdxPopoverPositioner>
+                    <div class="demo-surface relative w-80 p-4" rdxPopoverPopup>
+                        <span class="text-card demo-arrow my-px" rdxPopoverArrow></span>
+                        <h2 class="demo-popover-title" rdxPopoverTitle>Detached handles</h2>
+                        <p class="text-muted-foreground mt-1 text-sm" rdxPopoverDescription>
                             Both triggers live outside the root. Open another trigger to move this popup without closing
                             it first.
                         </p>
-                        <button [class]="p.close" aria-label="Close" rdxPopoverClose>
+                        <button
+                            class="demo-button demo-button-ghost absolute top-2 right-2 size-7 p-0"
+                            aria-label="Close"
+                            rdxPopoverClose
+                        >
                             <svg aria-hidden="true" lucideX size="14" />
                         </button>
                     </div>
@@ -48,8 +83,5 @@ import { cn, demoButton, demoPopover } from '../../storybook/styles';
     `
 })
 export class RdxPopoverDetachedComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly p = demoPopover;
     protected readonly popover = createRdxPopoverHandle();
 }

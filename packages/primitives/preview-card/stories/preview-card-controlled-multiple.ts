@@ -1,18 +1,37 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { previewCardImports } from '@radix-ng/primitives/preview-card';
-import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styles';
+import {
+    RdxPreviewCardArrow,
+    RdxPreviewCardPopup,
+    RdxPreviewCardPortal,
+    RdxPreviewCardPositioner,
+    RdxPreviewCardRoot,
+    RdxPreviewCardTrigger
+} from '@radix-ng/primitives/preview-card';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-preview-card-controlled-multiple',
-    imports: [...previewCardImports],
+    imports: [
+        RdxPreviewCardRoot,
+        RdxPreviewCardTrigger,
+        RdxPreviewCardPortal,
+        RdxPreviewCardPositioner,
+        RdxPreviewCardPopup,
+        RdxPreviewCardArrow
+    ],
     template: `
         <div class="grid gap-4">
             <div class="flex items-center gap-3">
-                <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="openFrom('design')" type="button">
+                <button
+                    class="demo-button demo-button-outline h-8 px-3 text-xs"
+                    (click)="openFrom('design')"
+                    type="button"
+                >
                     Open design
                 </button>
-                <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="open = false" type="button">Close</button>
+                <button class="demo-button demo-button-outline h-8 px-3 text-xs" (click)="open = false" type="button">
+                    Close
+                </button>
             </div>
 
             <ng-container
@@ -24,19 +43,41 @@ import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styl
             >
                 <p class="text-muted-foreground max-w-lg text-sm leading-6">
                     Discover
-                    <a id="typography" [class]="link" [payload]="cards.typography" href="#" rdxPreviewCardTrigger>
+                    <a
+                        class="text-primary demo-focus font-medium underline underline-offset-4"
+                        id="typography"
+                        [payload]="cards.typography"
+                        href="#"
+                        rdxPreviewCardTrigger
+                    >
                         typography
                     </a>
                     ,
-                    <a id="design" [class]="link" [payload]="cards.design" href="#" rdxPreviewCardTrigger>design</a>
+                    <a
+                        class="text-primary demo-focus font-medium underline underline-offset-4"
+                        id="design"
+                        [payload]="cards.design"
+                        href="#"
+                        rdxPreviewCardTrigger
+                    >
+                        design
+                    </a>
                     , or
-                    <a id="art" [class]="link" [payload]="cards.art" href="#" rdxPreviewCardTrigger>art</a>
+                    <a
+                        class="text-primary demo-focus font-medium underline underline-offset-4"
+                        id="art"
+                        [payload]="cards.art"
+                        href="#"
+                        rdxPreviewCardTrigger
+                    >
+                        art
+                    </a>
                     .
                 </p>
 
-                <div *rdxPreviewCardPortal [class]="p.positioner" sideOffset="8" rdxPreviewCardPositioner>
-                    <div [class]="p.popup" rdxPreviewCardPopup>
-                        <span [class]="p.arrow" rdxPreviewCardArrow></span>
+                <div class="z-50" *rdxPreviewCardPortal sideOffset="8" rdxPreviewCardPositioner>
+                    <div class="demo-surface relative w-80 p-4" rdxPreviewCardPopup>
+                        <span class="text-card demo-arrow my-px" rdxPreviewCardArrow></span>
                         <div class="grid gap-2">
                             <div class="bg-muted h-24 rounded-md"></div>
                             <p class="text-muted-foreground text-sm">{{ root.payload() }}</p>
@@ -49,12 +90,7 @@ import { cn, demoButton, demoFocusRing, demoPopover } from '../../storybook/styl
 })
 export class RdxPreviewCardControlledMultipleComponent {
     open = false;
-    triggerId: 'typography' | 'design' | 'art' | null = null;
-
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly p = demoPopover;
-    protected readonly link = cn('font-medium text-primary underline underline-offset-4', demoFocusRing);
+    triggerId: string | null = null;
     protected readonly cards = {
         typography: 'Typography arranges type to make written language clear and effective.',
         design: 'Design shapes the concept and structure of an object, process, or system.',

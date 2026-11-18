@@ -1,7 +1,16 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { LucideCircleCheck, LucideCircleX, LucideInfo } from '@lucide/angular';
-import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
-import { cn, demoButton, demoToast } from '../../storybook/styles';
+import {
+    provideRdxToastManager,
+    RdxToastClose,
+    RdxToastContent,
+    RdxToastDescription,
+    RdxToastManager,
+    RdxToastPortal,
+    RdxToastRoot,
+    RdxToastTitle,
+    RdxToastViewport
+} from '@radix-ng/primitives/toast';
 
 /**
  * `type` is a free-form category surfaced back on the toast object — branch on it in the template
@@ -11,36 +20,65 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'toast-types-example',
-    imports: [...toastImports, LucideCircleCheck, LucideCircleX, LucideInfo],
+    imports: [
+        RdxToastPortal,
+        RdxToastViewport,
+        RdxToastRoot,
+        RdxToastContent,
+        RdxToastTitle,
+        RdxToastDescription,
+        RdxToastClose,
+        LucideCircleCheck,
+        LucideCircleX,
+        LucideInfo
+    ],
     providers: [provideRdxToastManager()],
     template: `
         <div class="flex gap-2">
-            <button [class]="cn(b.base, b.outline, b.size.md)" (click)="success()">Success</button>
-            <button [class]="cn(b.base, b.outline, b.size.md)" (click)="error()">Error</button>
-            <button [class]="cn(b.base, b.outline, b.size.md)" (click)="info()">Info</button>
+            <button class="demo-button demo-button-outline h-9 px-4" (click)="success()">Success</button>
+            <button class="demo-button demo-button-outline h-9 px-4" (click)="error()">Error</button>
+            <button class="demo-button demo-button-outline h-9 px-4" (click)="info()">Info</button>
         </div>
 
         <div rdxToastPortal>
-            <div [class]="t.viewport" rdxToastViewport>
+            <div
+                class="fixed right-4 bottom-4 z-50 w-[360px] max-w-[calc(100vw-2rem)] outline-none [--toast-gap:0.75rem]"
+                rdxToastViewport
+            >
                 @for (toast of manager.toasts(); track toast.id) {
-                    <div [class]="t.root" [toast]="toast" rdxToastRoot>
-                        <div [class]="t.content" rdxToastContent>
+                    <div
+                        class="group data-[state=open]:animate-toast-in data-[state=closed]:animate-toast-out absolute right-0 bottom-0 [z-index:calc(50-var(--toast-index))] w-full origin-bottom [transform:translateY(calc(var(--toast-index)*-0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-[expanded]:[transform:translateY(calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1))] data-[expanded]:opacity-100 data-[front]:opacity-100"
+                        [toast]="toast"
+                        rdxToastRoot
+                    >
+                        <div
+                            class="demo-surface relative flex [transform:translate3d(var(--toast-swipe-movement-x,0px),var(--toast-swipe-movement-y,0px),0)] items-start gap-3 p-4 pr-9 shadow-lg [transition:var(--transition-demo-toast-swipe)] group-data-[swiping]:[transition:none]"
+                            rdxToastContent
+                        >
                             @switch (toast.type) {
                                 @case ('success') {
-                                    <svg [class]="cn(t.icon, 'text-foreground')" lucideCircleCheck></svg>
+                                    <svg class="text-foreground mt-0.5 size-5 shrink-0" lucideCircleCheck></svg>
                                 }
                                 @case ('error') {
-                                    <svg [class]="cn(t.icon, 'text-destructive')" lucideCircleX></svg>
+                                    <svg class="text-destructive mt-0.5 size-5 shrink-0" lucideCircleX></svg>
                                 }
                                 @default {
-                                    <svg [class]="cn(t.icon, 'text-muted-foreground')" lucideInfo></svg>
+                                    <svg class="text-muted-foreground mt-0.5 size-5 shrink-0" lucideInfo></svg>
                                 }
                             }
                             <div class="min-w-0 flex-1">
-                                <p [class]="t.title" rdxToastTitle>{{ toast.title }}</p>
-                                <p [class]="t.description" rdxToastDescription>{{ toast.description }}</p>
+                                <p class="demo-toast-title" rdxToastTitle>{{ toast.title }}</p>
+                                <p class="text-muted-foreground mt-1 text-sm" rdxToastDescription>
+                                    {{ toast.description }}
+                                </p>
                             </div>
-                            <button [class]="t.close" aria-label="Dismiss" rdxToastClose>✕</button>
+                            <button
+                                class="demo-button demo-button-ghost absolute top-2 right-2 size-6 p-0"
+                                aria-label="Dismiss"
+                                rdxToastClose
+                            >
+                                ✕
+                            </button>
                         </div>
                     </div>
                 }
@@ -50,9 +88,6 @@ import { cn, demoButton, demoToast } from '../../storybook/styles';
 })
 export class ToastTypesExample {
     protected readonly manager = inject(RdxToastManager);
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly t = demoToast;
 
     success(): void {
         this.manager.add({ type: 'success', title: 'Saved', description: 'Your changes are live.' });

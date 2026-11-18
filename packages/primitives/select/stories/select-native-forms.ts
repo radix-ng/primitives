@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RdxFieldError, RdxFieldLabel, RdxFieldRoot, RdxNgControlField } from '@radix-ng/primitives/field';
-import { cn, demoButton } from '../../storybook/styles';
 import { SelectTypedControl } from './select-typed-control';
 
 interface Country {
@@ -30,8 +29,14 @@ interface Country {
                     <p class="text-destructive text-xs" match="required" rdxFieldError>Choose a country.</p>
                 </div>
                 <div class="flex gap-2">
-                    <button [class]="submitClass" type="submit">Submit</button>
-                    <button [class]="resetClass" (click)="submitted.set('Not submitted')" type="reset">Reset</button>
+                    <button class="demo-button demo-button-primary h-9 px-4" type="submit">Submit</button>
+                    <button
+                        class="demo-button demo-button-outline h-9 px-4"
+                        (click)="submitted.set('Not submitted')"
+                        type="reset"
+                    >
+                        Reset
+                    </button>
                 </div>
             </form>
             <div class="grid gap-2" name="destinations" required rdxFieldRoot>
@@ -67,8 +72,6 @@ export class SelectNativeForms {
     readonly submitted = signal('Not submitted');
     readonly label = (country: Country) => country.name;
     readonly serialize = (country: Country) => country.code;
-    protected readonly submitClass = cn(demoButton.base, demoButton.primary, demoButton.size.md);
-    protected readonly resetClass = cn(demoButton.base, demoButton.outline, demoButton.size.md);
 
     submit(event: Event): void {
         event.preventDefault();

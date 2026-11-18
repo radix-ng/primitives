@@ -1,8 +1,15 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideChevronDown } from '@lucide/angular';
 import { RdxButtonDirective } from '@radix-ng/primitives/button';
-import { RdxMenuModule } from '@radix-ng/primitives/menu';
-import { cn, demoButton, demoMenu } from '../../storybook/styles';
+import {
+    RdxMenuItem,
+    RdxMenuPopup,
+    RdxMenuPortal,
+    RdxMenuPositioner,
+    RdxMenuRoot,
+    RdxMenuSeparator,
+    RdxMenuTrigger
+} from '@radix-ng/primitives/menu';
 
 /**
  * Split Button — a primary action joined to a menu of related actions.
@@ -14,35 +21,64 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
 @Component({
     selector: 'split-button-example',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [RdxButtonDirective, RdxMenuModule, LucideChevronDown],
+    imports: [
+        RdxButtonDirective,
+        RdxMenuRoot,
+        RdxMenuTrigger,
+        RdxMenuPortal,
+        RdxMenuPositioner,
+        RdxMenuPopup,
+        RdxMenuItem,
+        RdxMenuSeparator,
+        LucideChevronDown
+    ],
     template: `
         <div class="flex flex-col items-center gap-4">
             <div class="inline-flex rounded-md shadow-sm">
-                <button [class]="cn(b.base, b.primary, b.size.md, 'rounded-r-none')" (click)="run('Save')" rdxButton>
+                <button class="demo-button demo-button-primary h-9 rounded-r-none px-4" (click)="run('Save')" rdxButton>
                     Save
                 </button>
 
                 <ng-container rdxMenuRoot>
                     <button
-                        [class]="
-                            cn(b.base, b.primary, b.size.icon, 'border-primary-foreground/20 rounded-l-none border-l')
-                        "
+                        class="demo-button demo-button-primary border-primary-foreground/20 size-9 rounded-l-none border-l p-0"
                         aria-label="More save options"
                         rdxMenuTrigger
                     >
                         <svg lucideChevronDown size="16"></svg>
                     </button>
 
-                    <div *rdxMenuPortal [class]="m.positioner" sideOffset="6" align="end" rdxMenuPositioner>
-                        <div [class]="m.popup" rdxMenuPopup>
-                            <button [class]="m.item" (onSelect)="run('Save and duplicate')" rdxMenuItem>
+                    <div
+                        class="z-50 data-[closed]:pointer-events-none"
+                        *rdxMenuPortal
+                        sideOffset="6"
+                        align="end"
+                        rdxMenuPositioner
+                    >
+                        <div
+                            class="demo-menu-popup min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                            rdxMenuPopup
+                        >
+                            <button
+                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                (onSelect)="run('Save and duplicate')"
+                                rdxMenuItem
+                            >
                                 Save and duplicate
                             </button>
-                            <button [class]="m.item" (onSelect)="run('Save as template')" rdxMenuItem>
+                            <button
+                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                (onSelect)="run('Save as template')"
+                                rdxMenuItem
+                            >
                                 Save as template
                             </button>
-                            <div [class]="m.separator" rdxMenuSeparator></div>
-                            <button [class]="m.item" (onSelect)="run('Save and close')" rdxMenuItem>
+                            <div class="bg-border -mx-1 my-1 h-px" rdxMenuSeparator></div>
+                            <button
+                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                (onSelect)="run('Save and close')"
+                                rdxMenuItem
+                            >
                                 Save and close
                             </button>
                         </div>
@@ -58,10 +94,6 @@ import { cn, demoButton, demoMenu } from '../../storybook/styles';
     `
 })
 export class SplitButtonExample {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly m = demoMenu;
-
     protected readonly lastAction = signal('—');
 
     protected run(action: string): void {

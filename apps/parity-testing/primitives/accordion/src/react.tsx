@@ -1,6 +1,6 @@
 import { Accordion } from '@base-ui/react/accordion';
 import { createRoot } from 'react-dom/client';
-import '../../../../radix-storybook/.storybook/tailwind.css';
+import '../../../../radix-storybook/.storybook/main.css';
 import { ReactActivationAccordion } from './activation.react';
 import { installProbe, settings } from './contract';
 import { ReactIdentityAccordion } from './identity.react';

@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxCompositeItem, RdxCompositeRoot } from '@radix-ng/primitives/composite';
-import { cn, demoButton, demoInput } from '../../storybook/styles';
 
 @Component({
     selector: 'rdx-composite-default',
@@ -15,9 +14,25 @@ import { cn, demoButton, demoInput } from '../../storybook/styles';
                 highlightItemOnHover
                 rdxCompositeRoot
             >
-                <button [class]="itemClass" data-composite-item-active rdxCompositeItem>Overview</button>
-                <button [class]="itemClass" rdxCompositeItem>Metrics</button>
-                <button [class]="itemClass" rdxCompositeItem>Reports</button>
+                <button
+                    class="demo-button demo-button-outline data-[composite-item-active]:border-primary h-9 px-4"
+                    data-composite-item-active
+                    rdxCompositeItem
+                >
+                    Overview
+                </button>
+                <button
+                    class="demo-button demo-button-outline data-[composite-item-active]:border-primary h-9 px-4"
+                    rdxCompositeItem
+                >
+                    Metrics
+                </button>
+                <button
+                    class="demo-button demo-button-outline data-[composite-item-active]:border-primary h-9 px-4"
+                    rdxCompositeItem
+                >
+                    Reports
+                </button>
             </div>
 
             <div
@@ -27,20 +42,28 @@ import { cn, demoButton, demoInput } from '../../storybook/styles';
                 orientation="horizontal"
                 rdxCompositeRoot
             >
-                <button [class]="itemClass" rdxCompositeItem>Filter</button>
-                <input [class]="inputClass" rdxCompositeItem value="Search" />
-                <button [class]="itemClass" aria-disabled="true" rdxCompositeItem>Archive</button>
-                <button [class]="itemClass" rdxCompositeItem>Export</button>
+                <button
+                    class="demo-button demo-button-outline data-[composite-item-active]:border-primary h-9 px-4"
+                    rdxCompositeItem
+                >
+                    Filter
+                </button>
+                <input class="demo-input h-9 w-full max-w-40 px-3" rdxCompositeItem value="Search" />
+                <button
+                    class="demo-button demo-button-outline data-[composite-item-active]:border-primary h-9 px-4"
+                    aria-disabled="true"
+                    rdxCompositeItem
+                >
+                    Archive
+                </button>
+                <button
+                    class="demo-button demo-button-outline data-[composite-item-active]:border-primary h-9 px-4"
+                    rdxCompositeItem
+                >
+                    Export
+                </button>
             </div>
         </div>
     `
 })
-export class RdxCompositeDefaultComponent {
-    protected readonly itemClass = cn(
-        demoButton.base,
-        demoButton.outline,
-        demoButton.size.md,
-        'data-[composite-item-active]:border-primary'
-    );
-    protected readonly inputClass = cn(demoInput, 'max-w-40');
-}
+export class RdxCompositeDefaultComponent {}

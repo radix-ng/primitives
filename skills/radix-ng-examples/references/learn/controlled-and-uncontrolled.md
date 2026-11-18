@@ -30,41 +30,71 @@ handled. Try it:
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LucideX } from '@lucide/angular';
-import { dialogImports } from '@radix-ng/primitives/dialog';
-import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
+import {
+    RdxDialogBackdrop,
+    RdxDialogClose,
+    RdxDialogDescription,
+    RdxDialogPopup,
+    RdxDialogPortal,
+    RdxDialogRoot,
+    RdxDialogTitle,
+    RdxDialogTrigger
+} from '@radix-ng/primitives/dialog';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-default',
-    imports: [...dialogImports, LucideX],
+    imports: [
+        RdxDialogRoot,
+        RdxDialogTrigger,
+        RdxDialogPortal,
+        RdxDialogBackdrop,
+        RdxDialogPopup,
+        RdxDialogTitle,
+        RdxDialogDescription,
+        RdxDialogClose,
+        LucideX
+    ],
     template: `
         <div rdxDialogRoot>
-            <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Edit profile</button>
+            <button class="demo-button demo-button-primary h-9 px-4" rdxDialogTrigger>Edit profile</button>
 
             <ng-template rdxDialogPortal>
-                <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
+                <div
+                    class="bg-foreground/50 data-[open]:animate-dialog-overlay-in data-[closed]:animate-dialog-overlay-out fixed inset-0 z-50"
+                    rdxDialogBackdrop
+                ></div>
 
-                <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-                    <h2 [class]="d.title" rdxDialogTitle>Edit profile</h2>
-                    <p [class]="d.description" rdxDialogDescription>
+                <div
+                    class="demo-surface data-[open]:animate-dialog-popup-in data-[closed]:animate-dialog-popup-out fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 p-6 transition-[transform,scale] focus:outline-none data-[nested-dialog-open]:scale-[0.96]"
+                    rdxDialogPopup
+                >
+                    <h2 class="demo-dialog-title" rdxDialogTitle>Edit profile</h2>
+                    <p class="text-muted-foreground mt-1.5 text-sm" rdxDialogDescription>
                         Make changes to your profile here. Click save when you're done.
                     </p>
 
-                    <label [class]="d.field">
+                    <label class="demo-label mt-4 grid gap-1.5">
                         Name
-                        <input [class]="input" value="Pedro Duarte" />
+                        <input class="demo-input h-9 w-full px-3" value="Pedro Duarte" />
                     </label>
-                    <label [class]="d.field">
+                    <label class="demo-label mt-4 grid gap-1.5">
                         Username
-                        <input [class]="input" value="@peduarte" />
+                        <input class="demo-input h-9 w-full px-3" value="@peduarte" />
                     </label>
 
-                    <div [class]="d.footer">
-                        <button [class]="cn(b.base, b.outline, b.size.sm)" rdxDialogClose>Cancel</button>
-                        <button [class]="cn(b.base, b.primary, b.size.sm)" rdxDialogClose>Save changes</button>
+                    <div class="mt-6 flex justify-end gap-2">
+                        <button class="demo-button demo-button-outline h-8 px-3 text-xs" rdxDialogClose>Cancel</button>
+                        <button class="demo-button demo-button-primary h-8 px-3 text-xs" rdxDialogClose>
+                            Save changes
+                        </button>
                     </div>
 
-                    <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                    <button
+                        class="demo-button demo-button-ghost absolute top-3 right-3 size-7 p-0"
+                        aria-label="Close"
+                        rdxDialogClose
+                    >
                         <svg aria-hidden="true" lucideX size="16" />
                     </button>
                 </div>
@@ -72,12 +102,7 @@ import { cn, demoButton, demoDialog, demoInput } from '../../storybook/styles';
         </div>
     `
 })
-export class RdxDialogDefaultComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly d = demoDialog;
-    protected readonly input = demoInput;
-}
+export class RdxDialogDefaultComponent {}
 ```
 
 Need it to start open? Seed the **initial** state with the `default*` input and still stay
@@ -122,42 +147,72 @@ export class Profile {
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideX } from '@lucide/angular';
-import { dialogImports } from '@radix-ng/primitives/dialog';
-import { cn, demoButton, demoDialog } from '../../storybook/styles';
+import {
+    RdxDialogBackdrop,
+    RdxDialogClose,
+    RdxDialogDescription,
+    RdxDialogPopup,
+    RdxDialogPortal,
+    RdxDialogRoot,
+    RdxDialogTitle,
+    RdxDialogTrigger
+} from '@radix-ng/primitives/dialog';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-dialog-controlled',
-    imports: [...dialogImports, LucideX],
+    imports: [
+        RdxDialogRoot,
+        RdxDialogTrigger,
+        RdxDialogPortal,
+        RdxDialogBackdrop,
+        RdxDialogPopup,
+        RdxDialogTitle,
+        RdxDialogDescription,
+        RdxDialogClose,
+        LucideX
+    ],
     template: `
         <div class="flex flex-col items-center gap-4">
             <p class="text-muted-foreground text-xs">Dialog is {{ open() ? 'open' : 'closed' }}</p>
 
             <div class="flex gap-2">
-                <button [class]="cn(b.base, b.outline, b.size.sm)" (click)="open.set(true)">Open from outside</button>
+                <button class="demo-button demo-button-outline h-8 px-3 text-xs" (click)="open.set(true)">
+                    Open from outside
+                </button>
             </div>
 
             <div [(open)]="open" rdxDialogRoot>
-                <button [class]="cn(b.base, b.primary, b.size.md)" rdxDialogTrigger>Open dialog</button>
+                <button class="demo-button demo-button-primary h-9 px-4" rdxDialogTrigger>Open dialog</button>
 
                 <ng-template rdxDialogPortal>
-                    <div [class]="cn(d.backdrop, d.backdropAnimated)" rdxDialogBackdrop></div>
+                    <div
+                        class="bg-foreground/50 data-[open]:animate-dialog-overlay-in data-[closed]:animate-dialog-overlay-out fixed inset-0 z-50"
+                        rdxDialogBackdrop
+                    ></div>
 
-                    <div [class]="cn(d.popup, d.popupAnimated)" rdxDialogPopup>
-                        <h2 [class]="d.title" rdxDialogTitle>Controlled dialog</h2>
-                        <p [class]="d.description" rdxDialogDescription>
+                    <div
+                        class="demo-surface data-[open]:animate-dialog-popup-in data-[closed]:animate-dialog-popup-out fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 p-6 transition-[transform,scale] focus:outline-none data-[nested-dialog-open]:scale-[0.96]"
+                        rdxDialogPopup
+                    >
+                        <h2 class="demo-dialog-title" rdxDialogTitle>Controlled dialog</h2>
+                        <p class="text-muted-foreground mt-1.5 text-sm" rdxDialogDescription>
                             The open state is owned by the component and bound with
                             <code>[(open)]</code>
                             .
                         </p>
 
-                        <div [class]="d.footer">
-                            <button [class]="cn(b.base, b.primary, b.size.sm)" (click)="open.set(false)">
+                        <div class="mt-6 flex justify-end gap-2">
+                            <button class="demo-button demo-button-primary h-8 px-3 text-xs" (click)="open.set(false)">
                                 Close from outside
                             </button>
                         </div>
 
-                        <button [class]="d.close" aria-label="Close" rdxDialogClose>
+                        <button
+                            class="demo-button demo-button-ghost absolute top-3 right-3 size-7 p-0"
+                            aria-label="Close"
+                            rdxDialogClose
+                        >
                             <svg aria-hidden="true" lucideX size="16" />
                         </button>
                     </div>
@@ -167,9 +222,6 @@ import { cn, demoButton, demoDialog } from '../../storybook/styles';
     `
 })
 export class RdxDialogControlledComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly d = demoDialog;
     protected readonly open = signal(false);
 }
 ```

@@ -54,6 +54,7 @@ set `[nativeButton]="false"`; Enter and Space activate the control, with Space h
 
 ## Examples
 
+- [Default](../examples/toolbar--default.md)
 - [Vertical](../examples/toolbar--vertical.md)
 - [Disabled](../examples/toolbar--disabled.md)
 - [Using with Menu](../examples/toolbar--using-with-menu.md)

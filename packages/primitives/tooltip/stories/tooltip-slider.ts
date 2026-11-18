@@ -7,14 +7,23 @@ import {
     RdxSliderThumbInput,
     RdxSliderTrack
 } from '@radix-ng/primitives/slider';
-import { tooltipImports } from '@radix-ng/primitives/tooltip';
-import { demoTooltip } from '../../storybook/styles';
+import {
+    RdxTooltip,
+    RdxTooltipPopup,
+    RdxTooltipPortal,
+    RdxTooltipPositioner,
+    RdxTooltipTrigger
+} from '@radix-ng/primitives/tooltip';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'rdx-tooltip-slider',
     imports: [
-        ...tooltipImports,
+        RdxTooltip,
+        RdxTooltipPopup,
+        RdxTooltipPortal,
+        RdxTooltipPositioner,
+        RdxTooltipTrigger,
         RdxSliderRoot,
         RdxSliderControl,
         RdxSliderTrack,
@@ -39,14 +48,14 @@ import { demoTooltip } from '../../storybook/styles';
                         </div>
 
                         <div
+                            class="z-50"
                             *rdxTooltipPortal
-                            [class]="t.positioner"
                             sideOffset="8"
                             side="top"
                             updatePositionStrategy="always"
                             rdxTooltipPositioner
                         >
-                            <div [class]="t.popup" rdxTooltipPopup>Volume</div>
+                            <div class="demo-tooltip-popup relative max-w-72 px-3 py-1.5" rdxTooltipPopup>Volume</div>
                         </div>
                     </ng-container>
                 </div>
@@ -55,8 +64,6 @@ import { demoTooltip } from '../../storybook/styles';
     `
 })
 export class RdxTooltipSliderComponent {
-    protected readonly t = demoTooltip;
-
     readonly showTooltipState = signal(false);
 
     handlePointerDown = () => {

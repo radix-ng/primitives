@@ -7,7 +7,6 @@ import {
     RdxRadioItemDirective,
     RdxRadioItemInputDirective
 } from '@radix-ng/primitives/radio';
-import { cn, demoButton, demoRadio } from '../../storybook/styles';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -15,27 +14,34 @@ import { cn, demoButton, demoRadio } from '../../storybook/styles';
     template: `
         <form class="flex w-72 flex-col gap-4" (ngSubmit)="submit()">
             <div
+                class="flex flex-col gap-2.5"
                 [(ngModel)]="hotelRoom"
-                [class]="r.group"
                 name="hotelRoom"
                 rdxRadioRoot
                 required
                 aria-label="Hotel room"
             >
                 @for (room of rooms; track room) {
-                    <label [class]="r.row" rdxLabel>
-                        <span [class]="r.item" [value]="room" rdxRadioItem>
-                            <span [class]="r.indicator" rdxRadioIndicator></span>
+                    <label class="flex items-center gap-3" rdxLabel>
+                        <span
+                            class="demo-radio-item demo-focus flex size-6 items-center justify-center disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                            [value]="room"
+                            rdxRadioItem
+                        >
+                            <span
+                                class="after:bg-primary flex size-full items-center justify-center after:block after:size-2.5 after:rounded-full data-[state=unchecked]:hidden"
+                                rdxRadioIndicator
+                            ></span>
                             <input rdxRadioItemInput />
                         </span>
-                        <span [class]="r.label">
+                        <span class="demo-label">
                             {{ room }}
                         </span>
                     </label>
                 }
             </div>
 
-            <button [class]="cn(b.base, b.primary, b.size.md)" type="submit">Submit</button>
+            <button class="demo-button demo-button-primary h-9 px-4" type="submit">Submit</button>
 
             @if (submittedRoom) {
                 <p class="text-muted-foreground text-sm">
@@ -57,10 +63,6 @@ import { cn, demoButton, demoRadio } from '../../storybook/styles';
     ]
 })
 export class RadioTemplateDrivenFormsComponent {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly r = demoRadio;
-
     hotelRoom: string | undefined;
     submittedRoom: string | undefined;
     rooms = ['Default', 'Comfortable'];

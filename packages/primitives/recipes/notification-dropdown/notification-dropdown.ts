@@ -1,6 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { LucideBell, LucideCheckCheck } from '@lucide/angular';
-import { popoverImports } from '@radix-ng/primitives/popover';
+import {
+    RdxPopoverPopup,
+    RdxPopoverPortal,
+    RdxPopoverPositioner,
+    RdxPopoverRoot,
+    RdxPopoverTitle,
+    RdxPopoverTrigger
+} from '@radix-ng/primitives/popover';
 import {
     RdxScrollAreaContent,
     RdxScrollAreaRoot,
@@ -8,7 +15,6 @@ import {
     RdxScrollAreaThumb,
     RdxScrollAreaViewport
 } from '@radix-ng/primitives/scroll-area';
-import { cn, demoButton, demoCard, demoPopover } from '../../storybook/styles';
 
 interface Notification {
     id: number;
@@ -29,7 +35,12 @@ interface Notification {
     selector: 'notification-dropdown-example',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
-        ...popoverImports,
+        RdxPopoverRoot,
+        RdxPopoverTrigger,
+        RdxPopoverPortal,
+        RdxPopoverPositioner,
+        RdxPopoverPopup,
+        RdxPopoverTitle,
         RdxScrollAreaRoot,
         RdxScrollAreaViewport,
         RdxScrollAreaContent,
@@ -41,7 +52,7 @@ interface Notification {
     template: `
         <ng-container rdxPopoverRoot>
             <button
-                [class]="cn(b.base, b.outline, b.size.icon, 'relative')"
+                class="demo-button demo-button-outline relative size-9 p-0"
                 aria-label="Notifications"
                 rdxPopoverTrigger
             >
@@ -55,12 +66,15 @@ interface Notification {
                 }
             </button>
 
-            <div *rdxPopoverPortal [class]="p.positioner" sideOffset="8" align="end" rdxPopoverPositioner>
-                <div [class]="popup" rdxPopoverPopup>
+            <div class="z-50" *rdxPopoverPortal sideOffset="8" align="end" rdxPopoverPositioner>
+                <div
+                    class="demo-surface data-[open]:animate-popover-popup-in data-[starting-style]:animate-popover-popup-in data-[ending-style]:animate-popover-popup-out relative w-80 overflow-hidden"
+                    rdxPopoverPopup
+                >
                     <div class="border-border flex items-center justify-between border-b px-4 py-3">
-                        <h2 [class]="p.title" rdxPopoverTitle>Notifications</h2>
+                        <h2 class="demo-popover-title" rdxPopoverTitle>Notifications</h2>
                         <button
-                            [class]="cn(b.base, b.ghost, b.size.sm, 'gap-1.5 text-xs')"
+                            class="demo-button demo-button-ghost h-8 gap-1.5 px-3 text-xs"
                             [disabled]="unreadCount() === 0"
                             (click)="markAllRead()"
                         >
@@ -112,7 +126,9 @@ interface Notification {
                     </div>
 
                     <div class="border-border border-t px-2 py-2">
-                        <button [class]="cn(b.base, b.ghost, b.size.sm, 'w-full')">View all notifications</button>
+                        <button class="demo-button demo-button-ghost h-8 w-full px-3 text-xs">
+                            View all notifications
+                        </button>
                     </div>
                 </div>
             </div>
@@ -120,13 +136,6 @@ interface Notification {
     `
 })
 export class NotificationDropdownExample {
-    protected readonly cn = cn;
-    protected readonly b = demoButton;
-    protected readonly p = demoPopover;
-
-    /** Panel surface: a card with no padding so the header, list, and footer span full width. */
-    protected readonly popup = cn(demoCard, 'relative w-80 overflow-hidden', demoPopover.popupAnimated);
-
     protected readonly notifications = signal<Notification[]>([
         { id: 1, title: 'New comment', message: 'Alex commented on your pull request.', time: '2m ago', read: false },
         { id: 2, title: 'Build passed', message: 'CI finished for main in 3m 12s.', time: '10m ago', read: false },

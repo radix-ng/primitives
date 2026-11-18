@@ -1,11 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { LucideCheck, LucideDynamicIcon } from '@lucide/angular';
+import {
+    CheckedState,
+    RdxCheckboxButtonDirective,
+    RdxCheckboxIndicatorDirective,
+    RdxCheckboxInputDirective,
+    RdxCheckboxRootDirective
+} from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { demoCheckbox } from '../../storybook/styles';
-import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
-import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
-import { RdxCheckboxInputDirective } from '../src/checkbox-input';
-import { CheckedState, RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 interface Item {
     id: string;
@@ -38,9 +40,13 @@ interface Item {
                     (onCheckedChange)="toggleAll($event)"
                     rdxCheckboxRoot
                 >
-                    <button id="all" [class]="c.button" rdxCheckboxButton>
+                    <button
+                        class="demo-checkbox-button demo-focus flex size-6 items-center justify-center disabled:opacity-50 aria-disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                        id="all"
+                        rdxCheckboxButton
+                    >
                         <svg
-                            [class]="c.indicator"
+                            class="text-primary flex items-center"
                             [lucideIcon]="parentState() === 'indeterminate' ? 'minus' : 'check'"
                             rdxCheckboxIndicator
                             size="16"
@@ -55,8 +61,17 @@ interface Item {
                 @for (item of items(); track item.id) {
                     <div class="flex items-center gap-3">
                         <div [checked]="item.checked" (onCheckedChange)="toggleItem(item.id, $event)" rdxCheckboxRoot>
-                            <button [class]="c.button" [id]="item.id" rdxCheckboxButton>
-                                <svg [class]="c.indicator" rdxCheckboxIndicator size="16" lucideCheck />
+                            <button
+                                class="demo-checkbox-button demo-focus flex size-6 items-center justify-center disabled:opacity-50 aria-disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                                [id]="item.id"
+                                rdxCheckboxButton
+                            >
+                                <svg
+                                    class="text-primary flex items-center"
+                                    rdxCheckboxIndicator
+                                    size="16"
+                                    lucideCheck
+                                />
                             </button>
                             <input rdxCheckboxInput />
                         </div>
@@ -70,8 +85,6 @@ interface Item {
     `
 })
 export class CheckboxSelectAllExample {
-    protected readonly c = demoCheckbox;
-
     readonly items = signal<Item[]>([
         { id: 'apples', label: 'Apples', checked: true },
         { id: 'bananas', label: 'Bananas', checked: false },
