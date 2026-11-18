@@ -1,6 +1,10 @@
 import { computed, Directive, effect, ElementRef, inject, Injector } from '@angular/core';
 import { elementSize } from '@radix-ng/primitives/core';
-import { injectRdxDialogRootContext, RdxDialogPopup } from '@radix-ng/primitives/dialog';
+import {
+    injectRdxDialogRootContext,
+    RDX_DIALOG_OUTSIDE_PRESS_ENABLED,
+    RdxDialogPopup
+} from '@radix-ng/primitives/dialog';
 import { injectRdxDrawerRootContext } from './drawer-root';
 import { buildSnapEntries, dismissUnitVector, resolveSnapTarget } from './drawer-snap';
 import { RdxDrawerRelease, useDrawerSwipe } from './drawer-swipe';
@@ -30,6 +34,12 @@ function rootFontSize(): number {
 @Directive({
     selector: '[rdxDrawerPopup]',
     exportAs: 'rdxDrawerPopup',
+    providers: [
+        {
+            provide: RDX_DIALOG_OUTSIDE_PRESS_ENABLED,
+            useFactory: () => injectRdxDrawerRootContext().outsidePressEnabled
+        }
+    ],
     hostDirectives: [
         {
             directive: RdxDialogPopup,

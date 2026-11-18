@@ -98,3 +98,18 @@ See the
 [verification skill](../../../.agents/skills/radix-testing/SKILL.md),
 [matrix index](../../../docs/engineering/parity-matrices.md) and
 [upstream preparation guide](../../../docs/engineering/upstream-reference.md).
+
+## SwipeArea release
+
+A native drag can generate a click when the pointer is released, including when the drag travels
+past the resting Popup. Drawer suppresses outside-press dismissal during the opening swipe and
+through its trailing click. The next fresh press or pointerless activation can dismiss the drawer.
+Removing the SwipeArea during a drag settles the preview and restores outside dismissal.
+This follows the pinned SwipeArea policy. The browser checks cover a committed swipe, an early
+release and a deliberate outside click with an animated exit.
+[Pinned SwipeArea](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/drawer/swipe-area/DrawerSwipeArea.tsx#L136)
+· [Browser regression](../../../apps/visual-regression/tests/drawer.behavior.spec.ts)
+· [Drawer unit regressions](__tests__/drawer.spec.ts)
+
+The Drawer browser suite passed 26 checks per platform on macOS and Linux/arm64 across Chromium,
+Firefox and WebKit. Each run skipped the Android CloseWatcher case in WebKit.

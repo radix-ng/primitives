@@ -55,6 +55,7 @@ test.describe('Drawer swipe area', () => {
 
         await page.mouse.up();
 
+        await expect(popup).toHaveAttribute('data-open', '');
         await expect(popup).not.toHaveAttribute('data-swiping', '');
         // The settling transition can finish before a CI round trip observes its running state.
         // Verify that motion is configured and the drawer actually reaches its open position.
@@ -100,10 +101,12 @@ test.describe('Drawer swipe area', () => {
 
         await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
         await page.mouse.down();
-        await page.mouse.move(box!.x - 180, box!.y + box!.height / 2);
+        // Release past the popup's resting edge. The release click belongs to the swipe.
+        await page.mouse.move(box!.x - 400, box!.y + box!.height / 2);
         await page.mouse.up();
 
-        await expect(popup).toBeVisible();
+        await expect(popup).toHaveAttribute('data-open', '');
+        await expect(popup).not.toHaveAttribute('data-swiping', '');
         const exit = await holdExitAnimations(page, ['[rdxDrawerPopup]', '[rdxDrawerBackdrop]']);
         await viewport.click({ position: { x: 20, y: 20 } });
 

@@ -151,7 +151,9 @@ class NestedHostComponent {
     template: `
         <div #portalContainer data-testid="portal-container">
             <div [modal]="false" swipeDirection="right" rdxDrawerRoot>
-                <div data-testid="swipe-area" rdxDrawerSwipeArea></div>
+                @if (showSwipeArea()) {
+                    <div data-testid="swipe-area" rdxDrawerSwipeArea></div>
+                }
 
                 <ng-template [container]="portalContainer" rdxDrawerPortal>
                     <div rdxDrawerBackdrop></div>
@@ -163,7 +165,9 @@ class NestedHostComponent {
         </div>
     `
 })
-class LocalSwipeAreaHostComponent {}
+class LocalSwipeAreaHostComponent {
+    readonly showSwipeArea = signal(true);
+}
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -666,6 +670,54 @@ describe('Drawer structural portal', () => {
         expect(container.querySelector('[rdxDrawerPopup]')).not.toBeNull();
 
         fixture.destroy();
+    });
+
+    it.each(['pointer', 'keyboard'])(
+        'dismisses on a fresh %s activation after a swipe-open release',
+        async (activation) => {
+            const fixture = TestBed.createComponent(LocalSwipeAreaHostComponent);
+            fixture.detectChanges();
+
+            const container: HTMLElement = fixture.nativeElement.querySelector('[data-testid="portal-container"]');
+            const swipeArea: HTMLElement = container.querySelector('[rdxDrawerSwipeArea]')!;
+            swipeArea.dispatchEvent(pointer('pointerdown', { clientX: 100 }));
+            window.dispatchEvent(pointer('pointermove', { clientX: 60 }));
+            fixture.detectChanges();
+
+            window.dispatchEvent(pointer('pointerup', { clientX: 60 }));
+            fixture.detectChanges();
+            // RdxDismiss attaches its outside-press listeners on the next task.
+            await new Promise((resolve) => setTimeout(resolve, 0));
+            const outside: HTMLElement = container.querySelector('[rdxDrawerViewport]')!;
+            outside.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 1 }));
+            fixture.detectChanges();
+            expect(container.querySelector('[rdxDrawerPopup][data-open]')).not.toBeNull();
+
+            if (activation === 'pointer') outside.dispatchEvent(pointer('pointerdown', { clientX: 60 }));
+            outside.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: activation === 'pointer' ? 1 : 0 }));
+            fixture.detectChanges();
+            expect(container.querySelector('[rdxDrawerPopup][data-open]')).toBeNull();
+        }
+    );
+
+    it('resumes outside dismissal when the opening swipe area is removed mid-drag', async () => {
+        const fixture = TestBed.createComponent(LocalSwipeAreaHostComponent);
+        fixture.detectChanges();
+
+        const container: HTMLElement = fixture.nativeElement.querySelector('[data-testid="portal-container"]');
+        const swipeArea: HTMLElement = container.querySelector('[rdxDrawerSwipeArea]')!;
+        swipeArea.dispatchEvent(pointer('pointerdown', { clientX: 100 }));
+        window.dispatchEvent(pointer('pointermove', { clientX: 60 }));
+        fixture.detectChanges();
+        expect(container.querySelector('[rdxDrawerPopup]')).toHaveAttribute('data-swiping');
+
+        fixture.componentInstance.showSwipeArea.set(false);
+        fixture.detectChanges();
+        expect(container.querySelector('[rdxDrawerPopup]')).not.toHaveAttribute('data-swiping');
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        (container.querySelector('[rdxDrawerViewport]') as HTMLElement).click();
+        fixture.detectChanges();
+        expect(container.querySelector('[rdxDrawerPopup][data-open]')).toBeNull();
     });
 
     it('throws in dev mode when rdxDrawerPortal is used as an attribute instead of structurally', () => {

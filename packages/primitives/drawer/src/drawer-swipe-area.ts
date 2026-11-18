@@ -1,4 +1,4 @@
-import { booleanAttribute, computed, Directive, input, signal } from '@angular/core';
+import { booleanAttribute, computed, DestroyRef, Directive, inject, input, signal } from '@angular/core';
 import { BooleanInput } from '@radix-ng/primitives/core';
 import { injectRdxDialogRootContext } from '@radix-ng/primitives/dialog';
 import { usePointerDrag } from './drawer-pointer';
@@ -75,6 +75,11 @@ export class RdxDrawerSwipeArea {
     private distance = 0;
 
     constructor() {
+        // The pointer tracker discards the drag if its host disappears before release.
+        inject(DestroyRef).onDestroy(() => {
+            if (this.swiping()) this.drawerContext.setOpeningSwipe(false, Number.POSITIVE_INFINITY);
+        });
+
         usePointerDrag({
             canStart: () => !this.disabled() && !this.isOpen(),
             onStart: (event) => {
@@ -101,6 +106,7 @@ export class RdxDrawerSwipeArea {
             onEnd: (event, committed) => {
                 const keepOpen = committed && this.distance >= OPEN_THRESHOLD;
 
+                if (committed) this.drawerContext.guardOpeningSwipeRelease();
                 this.drawerContext.setOpeningSwipe(false, keepOpen ? Number.POSITIVE_INFINITY : this.distance);
 
                 if (!keepOpen) {

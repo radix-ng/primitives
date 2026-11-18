@@ -9,7 +9,7 @@ synchronizes the implementations.
 
 **185 scenarios, 535 passing comparisons and 20 capability skips** across Chromium, Firefox and WebKit.
 The latest complete run is Linux/arm64, 2026-11-18, against Base UI 1.9.0 at `cf696d6f6e08c699c5bda24d5a033430909f2285`.
-There is **one exact reviewed difference**, described below. Capability skips apply only to native
+There is **one reviewed visibility field**, scoped to Chromium and WebKit. Capability skips apply only to native
 `window.find()` reveal on Chromium and WebKit; their plain-HTML probes do not emit trusted `beforematch`.
 
 - Single/multiple array requests, switching siblings, Item-first/Root-second callback order and
@@ -110,16 +110,17 @@ React-only event extensions, controlled/multiple combinations or real devices/AT
 
 ## Search reveal difference
 
-The `search-fragment-keyframe` case reveals a confirmed same-task geometry defect in the pin:
-it suppresses keyframes after the browser has already measured/scrolled to the match. The revealed
-text remains outside the viewport in Chromium, Firefox and WebKit. Angular now suppresses both motion
-durations in `beforematch`, before native `hidden` removal. It restores both authored inline styles
-on close, refused controlled reveal, policy removal or destruction.
+The `search-fragment-keyframe` case exposes how the pin can suppress keyframes after the
+browser scrolls to the match. Chromium and WebKit leave the revealed text outside the viewport.
+Firefox has produced both outcomes with the same fixture. Angular suppresses both motion
+durations in `beforematch`, before native `hidden` removal, and restores the authored inline
+styles on close, refused controlled reveal, policy removal or destruction.
 
-`expected-differences.json` records only `browser match visibility.inViewport`: Angular `true`,
-React `false`, for that one scenario. Callback, attribute, lifetime and later-motion differences are
-not exempted. Same-task keyframe height is also asserted on Angular and retained as raw evidence for
-the pin; elapsed animation frames are not compared.
+`expected-differences.json` records the exact `browser match visibility.inViewport` pair
+(Angular `true`, React `false`) for Chromium and WebKit. Angular must still reveal the match in
+Firefox, and the report preserves the raw geometry for both fixtures. Callback, attribute,
+lifetime and later-motion checks still run on all engines. Same-task keyframe height is
+also asserted on Angular and recorded for the pin.
 
 Immediate motion suppression is asserted on Angular. The pin can also lose its one-shot suppression
 when its commit trails the reveal-revert decision in WebKit. Its duration, priority and running motion
@@ -127,9 +128,8 @@ are retained as raw observations. The driver finishes any remaining animations w
 on both fixtures before comparing settled reveal state; temporary open-cycle style values are excluded
 only from those two settled checkpoints. Authored values/priorities on refusal and later close remain
 paired assertions. Transition fragment visibility is asserted on Angular and retained as raw evidence
-for React, since a lost suppression flag can also change its scroll result. The keyframe fragment
-visibility difference and Firefox native-find visibility remain paired checks. This is not a
-certification of the pin's immediate motion sequencing.
+for React, since a lost suppression flag can also change its scroll result. Firefox native-find
+visibility remains a paired check.
 
 ## Other validation
 
@@ -182,10 +182,9 @@ The visibility observation allows one CSS pixel at the viewport edges, equally f
 Raw top/bottom/height, scroll offset, viewport, font readiness and tolerance are retained even if the
 assertion fails. No scroll position, event, primitive state or motion is changed by the observer.
 
-This tolerance preserves the existing keyframe reference defect: its match remains approximately
-78px above the viewport, so the same exact reviewed visibility difference still applies. No exception
-is added or broadened. Native `beforematch`, request/cancellation, retained input and later motion
-assertions remain in place. Browser zoom and unrelated geometry combinations remain outside scope.
+The approximately 78px keyframe miss observed in that run exceeds the new tolerance. Native
+`beforematch`, request/cancellation, retained input and later motion assertions remain in place.
+Browser zoom and unrelated geometry combinations remain outside scope.
 
 The complete Linux/arm64 suite passes 535 comparisons with 20 existing capability skips in Playwright
 1.60.0 Noble, Node 24.22.1, two workers and original timeouts. All 22 search scenarios pass twice in

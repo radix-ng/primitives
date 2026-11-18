@@ -2,6 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import {
     booleanAttribute,
     computed,
+    DestroyRef,
     Directive,
     effect,
     inject,
@@ -36,6 +37,10 @@ export interface RdxDrawerRootContext {
     openingSwipeDistance: Signal<number>;
     /** Starts or updates the SwipeArea reveal gesture. */
     setOpeningSwipe: (active: boolean, distance: number) => void;
+    /** @internal Whether outside presses may dismiss the composed Dialog popup. */
+    outsidePressEnabled: () => boolean;
+    /** @internal Suppresses the click synthesized by a completed opening gesture. */
+    guardOpeningSwipeRelease: () => void;
     /** Configured snap points (empty when the drawer has none). */
     snapPoints: Signal<readonly RdxDrawerSnapPoint[]>;
     /** Whether the drawer rests at discrete snap points. */
@@ -76,6 +81,8 @@ const context = (): RdxDrawerRootContext => {
             root.openingSwipeDistance.set(distance);
             root.openingSwipeActive.set(active);
         },
+        outsidePressEnabled: root.outsidePressEnabled,
+        guardOpeningSwipeRelease: () => root.guardOpeningSwipeRelease(),
         snapPoints: root.normalizedSnapPoints,
         hasSnapPoints: root.hasSnapPoints,
         activeSnapPoint: root.snapPoint,
@@ -122,6 +129,7 @@ export class RdxDrawerRoot {
     private readonly dialog = inject(RdxDialogRoot);
     private readonly document = inject(DOCUMENT);
     private readonly provider = inject(RdxDrawerProvider, { optional: true });
+    private openingSwipeRelease: AbortController | undefined;
 
     /** The popup's measured size (px) along its dismiss axis, reported by the popup. */
     readonly popupHeight = signal(0);
@@ -155,6 +163,8 @@ export class RdxDrawerRoot {
     /** Live SwipeArea reveal state; the popup converts distance into its measured-axis movement. */
     readonly openingSwipeActive = signal(false);
     readonly openingSwipeDistance = signal(0);
+    /** @internal */
+    readonly outsidePressEnabled = () => !this.openingSwipeActive() && !this.openingSwipeRelease;
 
     readonly normalizedSnapPoints = computed<readonly RdxDrawerSnapPoint[]>(() => this.snapPoints() ?? []);
     readonly hasSnapPoints = computed(() => this.normalizedSnapPoints().length > 0);
@@ -179,6 +189,8 @@ export class RdxDrawerRoot {
     }
 
     constructor() {
+        inject(DestroyRef).onDestroy(() => this.openingSwipeRelease?.abort());
+
         // Apply the default snap point when opening without one set. The active snap point is left
         // untouched on close: clearing it would clobber a controlled `[(snapPoint)]` binding, and an
         // uncontrolled drawer simply reopens where it was left.
@@ -248,6 +260,34 @@ export class RdxDrawerRoot {
                 );
             }
         });
+    }
+
+    /** @internal Resume dismissal at the next fresh press or pointerless activation. */
+    guardOpeningSwipeRelease(): void {
+        this.openingSwipeRelease?.abort();
+        const guard = new AbortController();
+        this.openingSwipeRelease = guard;
+        const options = { capture: true, signal: guard.signal };
+        const restore = () => {
+            guard.abort();
+            this.openingSwipeRelease = undefined;
+        };
+
+        this.document.addEventListener('pointerdown', restore, options);
+        this.document.addEventListener(
+            'click',
+            (event) => {
+                const pointerType = 'pointerType' in event ? event.pointerType : undefined;
+                if (
+                    event.detail === 0 ||
+                    (event.isTrusted && pointerType === '') ||
+                    (rdxPlatform.os.android && pointerType && event.buttons === 1)
+                ) {
+                    restore();
+                }
+            },
+            options
+        );
     }
 
     setActiveSnapPoint(value: RdxDrawerSnapPoint, emit: boolean) {

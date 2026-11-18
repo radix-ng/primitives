@@ -1,5 +1,15 @@
 [
     {
+        "browser": "chromium",
+        "scenario": "search-fragment-keyframe",
+        "checkpoint": "browser match visibility",
+        "field": "inViewport",
+        "category": "synchronous-keyframe-search-reveal",
+        "angular": true,
+        "react": false
+    },
+    {
+        "browser": "webkit",
         "scenario": "search-fragment-keyframe",
         "checkpoint": "browser match visibility",
         "field": "inViewport",

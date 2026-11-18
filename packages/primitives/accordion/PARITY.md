@@ -104,16 +104,17 @@ remains unverified.
 
 The G6 investigation confirmed a keyframe fragment-reveal defect in both implementations: suppressing
 motion after native match measurement can leave the revealed text outside the viewport. Angular now
-suppresses motion in the same `beforematch` task. The pin remains unmodified; one exact reviewed
-exception records only `search-fragment-keyframe` → `browser match visibility.inViewport` as Angular
-`true` / React `false`, across all three engines. Other attributes, requests, view state and later
-motion remain compared. Same-task keyframe height is asserted on Angular and retained as raw evidence
-for React. Immediate suppression is an Angular assertion: the pin can also lose its one-shot flag
+suppresses motion in the same `beforematch` task. The reviewed difference for
+`search-fragment-keyframe` → `browser match visibility.inViewport` records Angular
+`true` / React `false` in Chromium and WebKit. Firefox has observed both values on the pin with
+the same fixture. The Firefox case asserts Angular visibility and records both geometries.
+Attributes, requests, view state and later motion remain compared. Same-task keyframe height is
+asserted on Angular and retained as raw evidence for React. The pin can also lose its one-shot flag
 when its commit trails the reveal-revert decision in WebKit. Both fixtures receive the same animation
 finish action before settled reveal comparisons; temporary open-cycle duration/priority values stay
 in raw observations, while refusal and later-close restoration remain paired checks. Transition
-fragment visibility is asserted on Angular and retained as raw reference evidence; keyframe fragment
-and Firefox native-find visibility stay paired checks. The remaining combinations are unverified,
+fragment visibility is asserted on Angular and retained as raw reference evidence. Firefox
+native-find visibility stays a paired check. The remaining combinations are unverified,
 not inferred defects.
 
 Next implementation priorities are broader **G3/G7 nested composition and part replacement** and **G9 motion/hydration combinations**. G4 retains its live-host/native-ancestor/device limits; G1 retains its animated-exit/hydration limits; G6 retains the native-toolbar and search-composition limits; G9 retains its explicit motion/hydration limits.
@@ -152,8 +153,7 @@ exposed an overstrict fragment visibility observation in Linux WebKit. Native sc
 rounded while match rectangles keep fractional layout/font coordinates. A deliberately fractional
 search spacer reproduces both failures with a match top of -0.1796875 CSS px in macOS WebKit.
 The observer now allows one CSS pixel at the viewport edges and retains exact geometry on failure.
-The pin's approximately 78px keyframe miss remains outside that bound; its reviewed exception stays
-unchanged. Primitive runtime, native input and motion policies are unchanged.
+The pin's approximately 78px keyframe miss observed in that run remains outside that bound.
 
 The correction passes the complete 535-row Linux/arm64 suite (20 existing capability skips), two
 repetitions of every G6 search case across macOS engines (92 comparisons, 40 existing skips), all 96

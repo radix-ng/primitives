@@ -1,4 +1,14 @@
-import { afterNextRender, computed, DestroyRef, Directive, ElementRef, inject, Injector, output } from '@angular/core';
+import {
+    afterNextRender,
+    computed,
+    DestroyRef,
+    Directive,
+    ElementRef,
+    inject,
+    InjectionToken,
+    Injector,
+    output
+} from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
 import {
     RDX_FLOATING_REGISTRATION,
@@ -18,6 +28,9 @@ import { injectRdxDialogRootContext } from './dialog-root';
 /** Composite navigation keys a Dialog popup keeps to itself, so they never reach an enclosing Menu / Composite. */
 const COMPOSITE_KEYS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End']);
 const DIALOG_INTERNAL_BACKDROP_ATTR = 'data-rdx-dialog-internal-backdrop';
+
+/** @internal Per-popup dismissal gate for composed primitives that own an opening gesture. */
+export const RDX_DIALOG_OUTSIDE_PRESS_ENABLED = new InjectionToken<() => boolean>('RdxDialogOutsidePressEnabled');
 
 function isPrimaryOutsidePress(event: Event): boolean {
     if ('button' in event) return event.button === 0;
@@ -136,6 +149,8 @@ export class RdxDialogPopup {
     readonly closeAutoFocus = outputFromObservable(outputToObservable(this.focusScope.unmountAutoFocus));
 
     constructor() {
+        const outsidePressEnabled = inject(RDX_DIALOG_OUTSIDE_PRESS_ENABLED, { self: true, optional: true });
+
         // The popup element is this layer's floating element (inside-surface for containment checks).
         this.floatingContext.setFloatingElement(this.host);
 
@@ -173,7 +188,10 @@ export class RdxDialogPopup {
         new RdxDismiss(this.floatingContext, () => this.registration?.node() ?? null, {
             escapeKey: () => true,
             outsidePress: (event) =>
-                this.isTopmost() && !this.rootContext.disablePointerDismissal() && isPrimaryOutsidePress(event),
+                this.isTopmost() &&
+                !this.rootContext.disablePointerDismissal() &&
+                (outsidePressEnabled?.() ?? true) &&
+                isPrimaryOutsidePress(event),
             outsidePressEvent: () => {
                 const modal = this.rootContext.modal();
                 // Dialog's registered floating elements are Popup and any authored or internal backdrops.
