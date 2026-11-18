@@ -147,8 +147,14 @@ Setting the input to `null` releases the override and uses the internal selectio
 
 ### Detached triggers
 
-Create a shared handle with `createRdxDialogHandle()` when triggers live outside `rdxDialogRoot`. The
-handle also supports imperative `open(id)`, `toggle(id)`, and `close()`.
+Create a shared handle with `createRdxDialogHandle()` when triggers live outside `rdxDialogRoot`.
+`open(id)` selects a registered Trigger. `open(null)` opens without a Trigger and starts with an
+empty payload. An unknown ID also opens without a Trigger and produces a development warning.
+Use `openWithPayload(value)` to open without a Trigger and expose application data through the
+Root's `payload()` signal.
+
+`close()` dismisses the attached Dialog, and `toggle(id)` toggles it through a registered Trigger.
+Imperative calls take effect while a Root is attached to the handle.
 
 <Canvas of={Stories.Detached} />
 

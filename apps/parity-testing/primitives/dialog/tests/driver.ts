@@ -133,6 +133,8 @@ export class DialogDriver {
                         backgroundIsolated: backgroundInert || backgroundAriaHidden,
                         scrollLocked: [scrollingOverflow, documentOverflow].some((value) => value.includes('hidden')),
                         field: field?.value ?? null,
+                        payload: popup?.querySelector('[data-testid="payload"]')?.textContent?.trim() || null,
+                        handleOpen: window.dialogParity.readHandles?.() ?? [],
                         focus:
                             active?.dataset.testid ??
                             (active === document.body ? 'body' : (active?.tagName.toLowerCase() ?? null)),

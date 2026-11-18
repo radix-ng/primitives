@@ -93,7 +93,7 @@ and [store selectors](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda2
 
 - [Dialog unit tests](__tests__/dialog.spec.ts) cover initial defaults, parent refusal, delayed acceptance, two-way binding and cancellation.
 - [Dialog browser tests](../../../apps/visual-regression/tests/dialog.behavior.spec.ts) include a deferred open/close request with focus, Portal and scroll-lock observations.
-- The [pinned Dialog suite](../../../apps/parity-testing/primitives/dialog/README.md) compares 27 scenarios across Chromium, Firefox and WebKit. It covers open ownership, trigger registration, modal modes, nested dialogs and close lifetime.
+- The [pinned Dialog suite](../../../apps/parity-testing/primitives/dialog/README.md) compares 35 scenarios across Chromium, Firefox and WebKit. It covers open ownership, trigger registration, modal modes, nested dialogs, detached handles and close lifetime.
 - The [AOT hydration suite](../../../apps/radix-ssr-testing/hydration-audit/README.md) covers initially open Dialog in `eager-dialog`.
 
 The directive reference exposes effective `open()` as readonly. Set a bound value to drive a
@@ -222,5 +222,33 @@ remaining Dialog and returns focus to the Trigger in both frameworks.
 [Owner removal scenario](../../../apps/parity-testing/primitives/dialog/tests/scenarios.ts)
 · [Reviewed focus difference](../../../apps/parity-testing/primitives/dialog/expected-differences.json)
 
-Detached handles, custom focus targets, touch gestures, mixed Dialog variants and Portal destination
-changes remain pending paired checks.
+## Detached handles and payload ownership
+
+Eight [detached scenarios](../../../apps/parity-testing/primitives/dialog/tests/scenarios.ts) use
+Triggers outside Root and exercise the public handle operations against Base UI 1.9.0.
+
+- A named activation forwards the Trigger's live payload and exposes its Popup ARIA relationship.
+  Removing the active Trigger preserves its last payload and leaves the Popup open. A replacement
+  with the same ID supplies the current payload. Close details use a previously active Trigger
+  only if it is still connected.
+- Persistent triggers reconnect after Root remount. Calls before attachment and after removal are
+  ignored. Swapping the handle on a live Root preserves the view and transfers control to the
+  new handle. The prior handle reports closed and its close call has no effect.
+- `open(null)` and a missing ID open unassociated. `openWithPayload(value)` exposes application
+  data through `payload()` and stays unassociated as new triggers register. A later explicit open can
+  change ownership while the controlled Popup stays open. Refusing a close preserves its payload
+  and ownership.
+
+Angular exposes `isOpen()` as a signal. Base UI uses an `isOpen` getter. Angular uses the shared
+registry to attach external triggers to the current owner through Angular's view lifecycle.
+[Angular handle](src/dialog-handle.ts)
+· [Pinned Base UI handle](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/dialog/store/DialogHandle.ts)
+
+A new `open(null)` in Angular initializes an empty payload. The pinned store retains the previous
+session's Trigger payload, even though it opens unassociated. Angular reserves explicit application
+data for `openWithPayload(value)`. The suite records the payload at this checkpoint as a reviewed
+difference.
+[Payload checkpoint](../../../apps/parity-testing/primitives/dialog/expected-differences.json)
+
+Detached hydration and overlapping Dialog Roots, custom focus targets, touch gestures, mixed Dialog
+variants and Portal destination changes remain pending paired checks.

@@ -10,6 +10,7 @@ import {
     inject,
     Injector,
     input,
+    linkedSignal,
     output,
     Signal,
     signal,
@@ -112,7 +113,7 @@ export interface RdxDialogRootContext {
     open: (
         trigger?: HTMLElement,
         payload?: unknown,
-        triggerId?: string,
+        triggerId?: string | null,
         reason?: RdxDialogOpenChangeReason,
         event?: Event
     ) => void;
@@ -183,6 +184,13 @@ export class RdxDialogRoot {
 
     /** The active trigger ID after resolving the input and internal selection. */
     readonly triggerId = computed(() => this.triggerIdInput() ?? this.localTrigger().id ?? this.implicitTriggerId());
+    private readonly detachedTrigger = linkedSignal<
+        string | null,
+        { element: HTMLElement; payload: unknown } | undefined
+    >({
+        source: this.triggerId,
+        computation: () => undefined
+    });
 
     /** Accepted trigger requests. Supports `[(triggerId)]`. */
     readonly triggerIdChange = output<string | null>();
@@ -247,7 +255,10 @@ export class RdxDialogRoot {
     readonly triggers = computed(() => [
         ...new Set([...this.registeredTriggers().values()].map(({ element }) => element))
     ]);
-    readonly payload = computed(() => this.activeTrigger()?.payload);
+    readonly payload = computed(() => {
+        const active = this.activeTrigger();
+        return active ? active.payload : this.detachedTrigger()?.payload;
+    });
     readonly nestedOpenCount = computed(() => {
         let count = 0;
         for (const child of this.nestedChildren()) {
@@ -333,14 +344,15 @@ export class RdxDialogRoot {
     show(
         trigger = this.trigger(),
         payload?: unknown,
-        triggerId?: string,
+        triggerId?: string | null,
         reason: RdxDialogOpenChangeReason = 'none',
         event?: Event
     ) {
-        const selection = this.requestedTriggerSelection(trigger, payload, triggerId);
+        const requestedTrigger = triggerId === null ? undefined : trigger;
+        const selection = this.requestedTriggerSelection(requestedTrigger, payload, triggerId);
         const interactionType = this.consumeOpenInteractionType(event);
 
-        if (this.open()) {
+        if (this.open() && reason !== 'imperative-action') {
             if (selection) {
                 const previousId = this.triggerId();
                 this.localTrigger.set(selection);
@@ -354,7 +366,7 @@ export class RdxDialogRoot {
             true,
             reason,
             resolvedEvent,
-            trigger,
+            requestedTrigger,
             selection ? selection.id : this.triggerId()
         );
         this.onOpenChange.emit(change.payload);
@@ -382,7 +394,14 @@ export class RdxDialogRoot {
         }
 
         const resolvedEvent = event ?? new Event('dialog.open-change');
-        const change = this.createOpenChangeEvent(false, reason, resolvedEvent, this.trigger(), this.triggerId());
+        const trigger = this.trigger() ?? this.detachedTrigger()?.element;
+        const change = this.createOpenChangeEvent(
+            false,
+            reason,
+            resolvedEvent,
+            trigger?.isConnected ? trigger : undefined,
+            this.triggerId()
+        );
         this.onOpenChange.emit(change.payload);
 
         if (change.eventDetails.isCanceled()) {
@@ -416,6 +435,9 @@ export class RdxDialogRoot {
             this.pendingOpenChange = undefined;
             this.uncontrolledOpen.set(open);
             commit();
+        } else if (this.open() === open) {
+            this.pendingOpenChange = undefined;
+            commit();
         } else {
             this.pendingOpenChange = { open, commit };
         }
@@ -444,6 +466,10 @@ export class RdxDialogRoot {
         this.floatingContext.triggers.add(trigger);
 
         return () => {
+            if (this.registeredTriggers().get(id) === registration && this.mounted() && this.triggerId() === id) {
+                // Rendering remains owned by the open dialog when its active registration goes away.
+                this.detachedTrigger.set({ element: trigger, payload: payload() });
+            }
             this.registeredTriggers.update((triggers) => {
                 if (triggers.get(id) !== registration) return triggers;
                 const remaining = new Map(triggers);
@@ -468,7 +494,7 @@ export class RdxDialogRoot {
     private requestedTriggerSelection(
         trigger: HTMLElement | undefined,
         payload: unknown,
-        triggerId: string | undefined
+        triggerId: string | null | undefined
     ): RdxDialogTriggerSelection | undefined {
         if (triggerId === undefined && trigger === undefined && payload === undefined) return undefined;
         const id = triggerId ?? (trigger?.id || null);

@@ -7,8 +7,8 @@ pnpm test-parity dialog --project=webkit --grep 'non-modal|trap-focus'
 
 The suite exercises real Angular Dialog parts and Base UI React 1.9.0 at the workspace pin
 `cf696d6f6e08c699c5bda24d5a033430909f2285`.
-The 27 cases run in Chromium, Firefox and WebKit. `expected-differences.json` records the focus
-destination after an open nested branch is removed.
+The 35 cases run in Chromium, Firefox and WebKit. `expected-differences.json` records the focus
+destination after nested owner removal and the payload of a new unassociated open after a named session.
 
 | Area              | Cases | Behavior                                                                                                       |
 | ----------------- | ----- | -------------------------------------------------------------------------------------------------------------- |
@@ -16,6 +16,7 @@ destination after an open nested branch is removed.
 | Modal background  | 1     | Focus cycling, background isolation, scroll lock, outside press and restored background activation             |
 | Other modal modes | 7     | Non-modal Tab and pointer focus departure, press timing, `trap-focus`, authored Backdrop and dismissal opt-out |
 | Nested Dialogs    | 5     | Deepest dismissal, descendant counts, owner removal and a retained child with an animated exit                 |
+| Detached handles  | 8     | Named and unassociated opens, live payloads, Trigger and Root remount, handle swap and controlled refusal      |
 | Trigger identity  | 2     | Bound ID before the default, null fallback, active trigger removal and replacement                             |
 | Close lifetime    | 7     | Automatic and manual release, retained and disposable content, reopen, same-batch release and CSS motion       |
 
@@ -49,6 +50,12 @@ When the application removes two open nested layers together, Angular focuses th
 parent Popup using its focus recovery policy. Base UI focuses the parent's outside Trigger.
 The exception covers that single focus checkpoint. Both clear descendant styling and dismiss the
 remaining Dialog on Escape.
+
+The detached fixtures keep Trigger elements outside Root and call the public handle actions. They
+inspect live rendered payloads, each handle's open state, active Trigger relationships, native
+focus and callback details. Removal preserves the open dialog's payload. A replacement Trigger with
+the same ID supplies its current value. The swap waits until the second handle reports attachment
+before calling the first handle again.
 
 Both fixtures request changes through the public Dialog APIs. The CSS case finishes the running browser
 animation and waits for the public completion signal. See the

@@ -1,3 +1,11 @@
+export interface DetachedSettings {
+    secondary?: boolean;
+    initiallyDetached?: boolean;
+    swap?: boolean;
+    openId?: 'primary' | 'secondary' | 'missing';
+    controlled?: boolean;
+}
+
 interface Settings {
     open?: boolean;
     defaultOpen?: boolean;
@@ -13,6 +21,7 @@ interface Settings {
     disablePointerDismissal?: boolean;
     backdrop?: boolean;
     nested?: { grandchild?: boolean; keepMounted?: boolean; forceRender?: boolean; animate?: boolean };
+    detached?: DetachedSettings;
 }
 
 export const configurations = {
@@ -34,6 +43,14 @@ export const configurations = {
     'nested-depth': { nested: { grandchild: true } },
     'nested-remove': { nested: { grandchild: true } },
     'nested-retained-exit': { nested: { keepMounted: true, forceRender: true, animate: true } },
+    'detached-live-payload': { detached: { secondary: true } },
+    'detached-trigger-remount': { detached: { secondary: true, openId: 'secondary' } },
+    'detached-root-remount': { detached: { initiallyDetached: true } },
+    'detached-handle-swap': { detached: { secondary: true, swap: true } },
+    'detached-unassociated': { detached: {} },
+    'detached-missing-trigger': { detached: { openId: 'missing' } },
+    'detached-programmatic-payload': { detached: { openId: 'secondary', controlled: true } },
+    'detached-refused-close': { detached: { controlled: true } },
     'trigger-default-fallback': {
         defaultOpen: true,
         triggerId: 'secondary',
@@ -63,6 +80,7 @@ export interface Probe {
     nestedCompletions: { layer: NestedLayer; open: boolean }[];
     nativeEvents: { type: string; trusted: boolean; layer?: NestedLayer }[];
     activations: number;
+    readHandles?: () => boolean[];
 }
 
 declare global {

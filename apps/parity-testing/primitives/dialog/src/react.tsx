@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { classes, config, installProbe, type NestedLayer } from './contract';
+import { ReactDetachedDialog } from './detached.react';
 import './fixture.css';
 
 const settings = config();
@@ -144,4 +145,6 @@ function ReactDialog() {
     );
 }
 
-createRoot(document.getElementById('root')!).render(<ReactDialog />);
+createRoot(document.getElementById('root')!).render(
+    settings.detached ? <ReactDetachedDialog settings={settings.detached} /> : <ReactDialog />
+);

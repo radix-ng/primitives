@@ -3,6 +3,7 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { dialogImports, RdxDialogOpenChange, RdxDialogRoot } from '@radix-ng/primitives/dialog';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { classes, config, installProbe, type NestedLayer } from './contract';
+import { AngularDetachedDialog } from './detached.angular';
 import './fixture.css';
 
 @Component({
@@ -208,4 +209,6 @@ class AngularDialog {
     }
 }
 
-void bootstrapApplication(AngularDialog, { providers: [provideZonelessChangeDetection()] });
+void bootstrapApplication(config().detached ? AngularDetachedDialog : AngularDialog, {
+    providers: [provideZonelessChangeDetection()]
+});

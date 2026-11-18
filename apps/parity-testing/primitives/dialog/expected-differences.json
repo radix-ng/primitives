@@ -6,5 +6,13 @@
         "angular": "popup",
         "react": "primary",
         "category": "modal-focus-recovery-after-removal"
+    },
+    {
+        "scenario": "detached-unassociated",
+        "checkpoint": "new unassociated session after a named open",
+        "field": "payload",
+        "angular": null,
+        "react": "account",
+        "category": "payload-reset-on-unassociated-open"
     }
 ]

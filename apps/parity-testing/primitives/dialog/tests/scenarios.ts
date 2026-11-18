@@ -501,6 +501,273 @@ const nesting: Scenario[] = [
     }
 ];
 
+const secondaryOpen = { ...primaryOpen, expanded: ['secondary'], controls: ['secondary'] };
+const unassociatedOpen = { ...primaryOpen, expanded: [], controls: [], handleOpen: [true, false] };
+const imperativeOpen = { ...triggerOpen, reason: 'imperative-action', trigger: null };
+const imperativeClose = { ...escape, reason: 'imperative-action', trigger: null };
+
+const detachedHandles: Scenario[] = [
+    {
+        name: 'detached-live-payload',
+        async run(d) {
+            await d.open();
+            await d.checkpoint('detached account trigger owns the popup', {
+                ...primaryOpen,
+                handleOpen: [true, false],
+                payload: 'account',
+                changes: [triggerOpen]
+            });
+            await d.page.keyboard.press('F3');
+            await d.checkpoint('active payload reacts without a new request', {
+                ...primaryOpen,
+                payload: 'account updated',
+                changes: [triggerOpen],
+                completions: [true]
+            });
+            await d.page.keyboard.press('Escape');
+            await d.closed();
+            await d.checkpoint('Escape returns focus to the detached trigger', {
+                ...closed,
+                focus: 'primary',
+                handleOpen: [false, false],
+                changes: [triggerOpen, escape]
+            });
+            await d.open('secondary');
+            await d.checkpoint('second trigger forwards its own payload', {
+                ...secondaryOpen,
+                payload: 'billing updated',
+                changes: [triggerOpen, escape, { ...triggerOpen, trigger: 'secondary' }]
+            });
+        }
+    },
+    {
+        name: 'detached-trigger-remount',
+        async run(d) {
+            await d.page.keyboard.press('F8');
+            await d.opened();
+            const request = { ...triggerOpen, reason: 'imperative-action', trigger: 'secondary' };
+            await d.checkpoint('named imperative open resolves the detached trigger', {
+                ...secondaryOpen,
+                payload: 'billing',
+                changes: [request]
+            });
+            await d.page.keyboard.press('F5');
+            await expect(d.trigger('secondary')).toHaveCount(0);
+            await d.checkpoint('removed trigger loses its association while the popup stays open', {
+                open: true,
+                expanded: [],
+                controls: [],
+                focus: 'field',
+                payload: 'billing',
+                changes: [request]
+            });
+            await d.page.keyboard.press('F3');
+            await d.page.keyboard.press('F5');
+            await expect(d.trigger('secondary')).toHaveAttribute('aria-expanded', 'true');
+            await d.checkpoint('replacement with the same ID forwards its current payload', {
+                ...secondaryOpen,
+                payload: 'billing updated',
+                focus: 'field',
+                changes: [request],
+                completions: [true]
+            });
+        }
+    },
+    {
+        name: 'detached-root-remount',
+        async run(d) {
+            await d.trigger().press('Enter');
+            await d.page.keyboard.press('F8');
+            await d.page.keyboard.press('F9');
+            await d.page.keyboard.press('F10');
+            await d.checkpoint('calls made without a root do not queue requests', {
+                ...closed,
+                handleOpen: [false, false],
+                changes: [],
+                completions: []
+            });
+            await d.page.keyboard.press('F6');
+            await d.checkpoint('new root starts closed', { ...closed, handleOpen: [false, false], changes: [] });
+            await d.page.keyboard.press('F8');
+            await d.opened();
+            const request = { ...triggerOpen, reason: 'imperative-action' };
+            await d.checkpoint('persistent trigger resolves after attachment', {
+                ...primaryOpen,
+                payload: 'account',
+                changes: [request]
+            });
+            await d.page.keyboard.press('F6');
+            await expect(d.popup).toHaveCount(0);
+            await d.page.keyboard.press('F8');
+            await d.page.keyboard.press('F10');
+            await d.checkpoint('unmount drops the association', {
+                ...closed,
+                handleOpen: [false, false],
+                changes: [request]
+            });
+            await d.page.keyboard.press('F6');
+            await d.checkpoint('remounted root starts closed', { ...closed, changes: [request] });
+            await d.page.keyboard.press('F8');
+            await d.opened();
+            await d.checkpoint('imperative open resolves the persistent trigger again', {
+                ...primaryOpen,
+                payload: 'account',
+                changes: [request, request],
+                completions: [true, true]
+            });
+        }
+    },
+    {
+        name: 'detached-handle-swap',
+        async run(d) {
+            await d.open();
+            await d.checkpoint('first handle owns the live dialog', {
+                ...primaryOpen,
+                handleOpen: [true, false],
+                payload: 'account'
+            });
+            await d.field.fill('draft in live root');
+            await d.page.keyboard.press('F7');
+            await d.checkpoint('attachment moves to the second handle', {
+                open: true,
+                handleOpen: [false, true],
+                expanded: [],
+                controls: []
+            });
+            await d.page.keyboard.press('F4');
+            await d.checkpoint('swapping handle preserves the live view and retires old actions', {
+                open: true,
+                handleOpen: [false, true],
+                field: 'draft in live root',
+                payload: 'account',
+                expanded: [],
+                controls: [],
+                changes: [triggerOpen],
+                completions: [true]
+            });
+            await d.page.keyboard.press('F9');
+            await d.closed();
+            await d.checkpoint('new handle can close the same root', {
+                ...closed,
+                handleOpen: [false, false],
+                changes: [triggerOpen, { ...imperativeClose, trigger: 'primary' }],
+                completions: [true, false]
+            });
+            await d.open('secondary');
+            await d.checkpoint('new handle links its registered trigger', {
+                ...secondaryOpen,
+                handleOpen: [false, true],
+                payload: 'billing'
+            });
+        }
+    },
+    {
+        name: 'detached-unassociated',
+        async run(d) {
+            await d.page.getByTestId('outside').focus();
+            await d.page.keyboard.press('F2');
+            await d.opened();
+            await d.checkpoint('null opens without claiming the only trigger', {
+                ...unassociatedOpen,
+                payload: null,
+                changes: [imperativeOpen]
+            });
+            await d.page.keyboard.press('F9');
+            await d.closed();
+            await d.checkpoint('unassociated close returns to previous focus', {
+                ...closed,
+                focus: 'outside',
+                changes: [imperativeOpen, imperativeClose]
+            });
+            await d.open();
+            await d.checkpoint('normal trigger activation can claim the next session', {
+                ...primaryOpen,
+                payload: 'account'
+            });
+            await d.page.keyboard.press('Escape');
+            await d.closed();
+            await d.page.keyboard.press('F2');
+            await d.opened();
+            await d.checkpoint('new unassociated session after a named open', {
+                ...unassociatedOpen,
+                changes: [imperativeOpen, imperativeClose, triggerOpen, escape, imperativeOpen]
+            });
+        }
+    },
+    {
+        name: 'detached-missing-trigger',
+        async run(d) {
+            await d.page.keyboard.press('F8');
+            await d.opened();
+            await d.checkpoint('missing ID falls back to an unassociated open', {
+                ...unassociatedOpen,
+                payload: null,
+                changes: [imperativeOpen],
+                completions: [true]
+            });
+            await d.page.keyboard.press('Escape');
+            await d.closed();
+            await d.checkpoint('missing ID does not become a close trigger', {
+                ...closed,
+                changes: [imperativeOpen, { ...escape, trigger: null }]
+            });
+        }
+    },
+    {
+        name: 'detached-programmatic-payload',
+        async run(d) {
+            await d.page.keyboard.press('F10');
+            await d.opened();
+            await d.field.fill('user edit');
+            await d.checkpoint('explicit payload does not associate a trigger', {
+                ...unassociatedOpen,
+                payload: 'programmatic data',
+                changes: [imperativeOpen]
+            });
+            await d.page.keyboard.press('F5');
+            await expect(d.trigger('secondary')).toBeAttached();
+            await d.checkpoint('new trigger does not steal the explicit payload', {
+                ...unassociatedOpen,
+                payload: 'programmatic data',
+                changes: [imperativeOpen]
+            });
+            await d.page.keyboard.press('F8');
+            await d.checkpoint('imperative selection can move to an existing trigger without remounting', {
+                ...secondaryOpen,
+                payload: 'billing',
+                field: 'user edit',
+                changes: [imperativeOpen, { ...imperativeOpen, trigger: 'secondary' }],
+                completions: [true]
+            });
+            await d.page.keyboard.press('F10');
+            await d.checkpoint('a new explicit payload can release the current trigger', {
+                ...unassociatedOpen,
+                payload: 'programmatic data',
+                field: 'user edit',
+                changes: [imperativeOpen, { ...imperativeOpen, trigger: 'secondary' }, imperativeOpen],
+                completions: [true]
+            });
+        }
+    },
+    {
+        name: 'detached-refused-close',
+        async run(d) {
+            await d.page.keyboard.press('F10');
+            await d.opened();
+            await d.page.keyboard.press('F9');
+            await d.page.keyboard.press('F5');
+            await expect(d.trigger('secondary')).toBeAttached();
+            await d.checkpoint('refused close preserves the explicit payload and trigger state', {
+                ...unassociatedOpen,
+                focus: 'field',
+                payload: 'programmatic data',
+                changes: [imperativeOpen, imperativeClose],
+                completions: [true]
+            });
+        }
+    }
+];
+
 const retention: Scenario[] = (
     ['automatic-disposable', 'automatic-retained', 'held-disposable', 'held-retained'] as const
 ).map((name) => ({
@@ -587,4 +854,4 @@ const motion: Scenario[] = [
     }
 ];
 
-export const scenarios = [...ownership, ...modalModes, ...nesting, ...retention, ...motion];
+export const scenarios = [...ownership, ...modalModes, ...nesting, ...detachedHandles, ...retention, ...motion];
