@@ -228,9 +228,11 @@ gives you its **Anatomy**, **Examples**, and the **API Reference** (its inputs, 
 
 ## Tips for real projects
 
-- Keep repeated class strings in one place. This repo centralizes demo styles in
-  `packages/primitives/storybook/styles.ts` (`cn`, `demoButton`, `demoCard`, …) — do the same with
-  your own design tokens.
+- Keep repeated styles in one place: theme values in `@theme`, stable class combinations in a
+  shared `@layer components`, and typed dynamic variants with full Tailwind class names in TS.
+  This repo's `.demo-surface` is shared through the theme CSS; existing TS recipes live in
+  `packages/primitives/storybook/styles.ts`. Keep each demo's layout and state utilities visible
+  in its template.
 - Lead with **semantic tokens** (`bg-popover`, `border-border`, `text-muted-foreground`) so light
   and dark themes follow automatically.
 - Always associate labels with controls (`for`/`id`, or `rdxFieldLabel` inside `rdxFieldRoot`) — see

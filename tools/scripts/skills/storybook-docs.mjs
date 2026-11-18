@@ -263,6 +263,7 @@ const codeFence = ({ code, language }) => `\n\`\`\`${language}\n${code}\n\`\`\`\
 
 const replaceStorybookBlocks = (content, filePath) => {
     const storybookImports = getStorybookImports(content, filePath);
+    const rawImports = getRawImports(filePath, content);
     const metaAlias = content.match(/<Meta\b[^>]*\bof=\{(\w+)\}[^>]*\/>/)?.[1];
     const defaultAlias = metaAlias ?? storybookImports.keys().next().value;
     const resolveStoryCode = (alias, storyName) => {
@@ -276,6 +277,10 @@ const replaceStorybookBlocks = (content, filePath) => {
         .replace(/<Canvas\b[^>]*\bof=\{(\w+)\.(\w+)\}[^>]*\/>/g, (_match, alias, storyName) =>
             resolveStoryCode(alias, storyName)
         )
+        .replace(/<Source\b[^>]*\bcode=\{(\w+)\}[^>]*\/>/g, (block, name) => {
+            const source = rawImports.get(name);
+            return source ? codeFence(source) : block;
+        })
         .replace(/<(Canvas|Controls|ArgTypes)\b[^>]*\/>\n*/g, '');
 };
 

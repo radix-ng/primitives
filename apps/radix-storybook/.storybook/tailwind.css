@@ -30,28 +30,6 @@
     --color-gray-900: oklch(12% 5% 264deg / 90%);
     --color-gray-950: oklch(12% 5% 264deg / 95%);
 
-    /* Semantic colors shared by Tailwind demos */
-    --color-background: var(--background);
-    --color-foreground: var(--foreground);
-    --color-card: var(--card);
-    --color-card-foreground: var(--card-foreground);
-    --color-popover: var(--popover);
-    --color-popover-foreground: var(--popover-foreground);
-    --color-primary: var(--primary);
-    --color-primary-foreground: var(--primary-foreground);
-    --color-muted: var(--muted);
-    --color-muted-foreground: var(--muted-foreground);
-    --color-destructive: var(--destructive);
-    --color-destructive-foreground: var(--destructive-foreground);
-    --color-border: var(--border);
-    --color-ring: var(--ring);
-    --color-input: var(--border);
-    --color-accent: var(--muted);
-    --color-accent-foreground: var(--foreground);
-    /* Distinct accent for search-match highlighting (e.g. fuzzy results). Stays available in demos
-       (not reset in the [data-demo] block below), unlike the docs-only `--color-highlight`. */
-    --color-match: var(--match);
-
     /* Functional colors for the docs */
     --color-content: white;
     --color-popup: var(--popover);
@@ -129,8 +107,6 @@
 
     --animate-popover-in: popover-in 150ms ease-out;
     --animate-popover-out: popover-out 120ms ease-in forwards;
-    --animate-popover-popup-in: popover-popup-in 150ms ease-out;
-    --animate-popover-popup-out: popover-popup-out 120ms ease-in forwards;
     --animate-popover-viewport-in: popover-viewport-in 200ms ease-out;
     --animate-popover-viewport-out: popover-viewport-out 200ms ease-in forwards;
 
@@ -250,30 +226,6 @@
 
     to {
         opacity: 0;
-    }
-}
-
-@keyframes popover-popup-in {
-    from {
-        opacity: 0;
-        transform: translateY(-0.25rem) scale(0.98);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes popover-popup-out {
-    from {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-
-    to {
-        opacity: 0;
-        transform: translateY(-0.25rem) scale(0.98);
     }
 }
 
@@ -484,24 +436,6 @@
     }
 }
 
-:root {
-    --background: white;
-    --foreground: oklch(14.5% 1% 264deg);
-    --card: white;
-    --card-foreground: var(--foreground);
-    --popover: white;
-    --popover-foreground: var(--foreground);
-    --primary: oklch(20.5% 1% 264deg);
-    --primary-foreground: white;
-    --muted: oklch(96.5% 0.5% 264deg);
-    --muted-foreground: oklch(46% 1% 264deg);
-    --destructive: oklch(57.7% 0.245 27.325deg);
-    --destructive-foreground: white;
-    --border: oklch(90% 1% 264deg);
-    --ring: oklch(55% 1% 264deg);
-    --match: oklch(45% 50% 264deg);
-}
-
 :root[data-theme='dark'] {
     --color-gray-50: oklch(17% 0.25% 264deg);
     --color-gray-75: oklch(19% 0.5% 264deg); /* Not a Tailwind step, don't use it in the demos */
@@ -515,23 +449,6 @@
     --color-gray-800: oklch(93% 0.875% 264deg / 85%);
     --color-gray-900: oklch(95% 0.5% 264deg / 90%);
     --color-gray-950: oklch(94% 0.375% 264deg / 95%);
-
-    /* Semantic colors */
-    --background: oklch(14.5% 1% 264deg);
-    --foreground: oklch(96% 0.5% 264deg);
-    --card: oklch(18% 1% 264deg);
-    --card-foreground: var(--foreground);
-    --popover: oklch(18% 1% 264deg);
-    --popover-foreground: var(--foreground);
-    --primary: oklch(92% 0.5% 264deg);
-    --primary-foreground: oklch(18% 1% 264deg);
-    --muted: oklch(24% 1% 264deg);
-    --muted-foreground: oklch(70% 1% 264deg);
-    --destructive: oklch(70.4% 0.191 22.216deg);
-    --destructive-foreground: oklch(18% 1% 264deg);
-    --border: oklch(30% 1% 264deg);
-    --ring: oklch(65% 1% 264deg);
-    --match: oklch(69% 50% 264deg);
 
     /* Functional colors */
     --color-content: black;

@@ -20,9 +20,30 @@ existing links in Chromium, Firefox and WebKit, including the manager sidebar on
 
 ## Demo styling system
 
-**Source of truth:** `packages/primitives/storybook/styles.ts`
+The shared entry stylesheet is `apps/radix-storybook/.storybook/main.css`. Theme values belong
+in `@theme`. Use `@apply` in the shared `@layer components` for stable combinations that should
+change together. The `.demo-surface` rule lives in `demo-styles.css`. The existing
+`demoCard` export in `packages/primitives/storybook/styles.ts` is a compatibility alias for that
+class, also consumed by Playground through its shared stylesheet and TS re-export.
 
-Exports: `cn` (tailwind-merge helper), `demoFocusRing`, `demoButton`, `demoCard`, `demoInput`.
+Keep sizes, spacing, layout and state variants specific to a demo visible on its template elements.
+For example, Default Popover uses:
+
+```html
+<div
+  class="demo-surface data-[starting-style]:animate-popover-popup-in data-[ending-style]:animate-popover-popup-out relative w-80 p-4"
+  rdxPopoverPopup
+>
+  …
+</div>
+```
+
+The animation names and timings stay in `@theme`. Utilities override the components layer, so a
+consumer can use `bg-muted`, `border-transparent` or `shadow-none` on `.demo-surface` without
+depending on class-string order. `cn` only joins conditional strings; it does not merge conflicts.
+
+Other existing recipes remain in `packages/primitives/storybook/styles.ts` (`demoFocusRing`,
+`demoButton`, `demoInput`, etc.). This pilot migrates only `demoCard` and Default Popover.
 
 In standalone story components, expose constants and bind via `[class]`:
 
@@ -30,11 +51,29 @@ In standalone story components, expose constants and bind via `[class]`:
 - `protected readonly b = demoButton;`
 - Template: `<button [class]="cn(b.base, b.primary, b.size.md)">`
 
-Never inline long Tailwind class strings in templates — reference the shared constants.
+When a demo needs dynamic variants in TS, use typed parameters and complete class names so
+Tailwind can discover them. Do not construct fragments such as `` `w-${size}` ``:
+
+```ts
+type DemoSize = 'compact' | 'comfortable';
+const sizeClasses = {
+  compact: 'w-64 p-3',
+  comfortable: 'w-80 p-4'
+} as const satisfies Record<DemoSize, string>;
+const classesForSize = (size: DemoSize) => sizeClasses[size];
+```
+
+No story-local CSS files, component `styles` / `styleUrl`, inline `<style>` or `style="…"`.
+Use the shared demo shell in `packages/primitives/storybook/tailwind-demo.ts`.
+
+For a portable example, use public imports in the component source shown by **Show code**.
+Default Popover uses the shared `demo-styles.css`, which supplies the semantic colors,
+`.demo-surface` and popup animation tokens. Its MDX displays that stylesheet with a `?raw` import
+and a `Source` block alongside the component. The consumer docs generator exports both blocks.
 
 ## Semantic tokens (Tailwind v4)
 
-Defined in `apps/radix-storybook/.storybook/tailwind.css` (light + dark + `@theme`). Default Tailwind palettes are stripped inside `[data-demo="tailwind"]`.
+Defined in `apps/radix-storybook/.storybook/demo-styles.css` for light and dark themes.
 
 Use semantic tokens first, never raw palette colors:
 

@@ -1,10 +1,10 @@
 /**
  * Centralized demo styling for Storybook examples.
  *
- * These constants are the single source of truth for how primitive demos look,
- * so stories stay visually consistent instead of copy-pasting long Tailwind
- * class strings. They build **only** on the semantic tokens defined in
- * `apps/radix-storybook/.storybook/tailwind.css` (`bg-primary`,
+ * Shared recipes and variants keep primitive demos consistent. Stable surface
+ * styling lives in the shared theme's components layer; demo-specific layout
+ * and state utilities stay visible in templates. These recipes use the tokens in
+ * `apps/radix-storybook/.storybook/demo-styles.css` (`bg-primary`,
  * `text-primary-foreground`, `bg-muted`, `border-border`, `ring-ring`, …), so
  * they automatically respond to the Storybook light/dark theme toolbar.
  *
@@ -66,8 +66,8 @@ export const demoButton = {
     }
 } as const;
 
-/** Card / panel surface: popovers, list rows, content boxes. */
-export const demoCard = 'bg-card text-card-foreground border border-border rounded-md shadow-sm';
+/** Compatibility alias for the shared theme's card / panel surface. */
+export const demoCard = 'demo-surface';
 
 /**
  * Popup arrow recipe shared by tooltip / popover / menu / navigation-menu demos.

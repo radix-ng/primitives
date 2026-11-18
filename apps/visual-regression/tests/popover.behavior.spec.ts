@@ -1,4 +1,6 @@
 import { expect, Page, test } from '@playwright/test';
+import { expectDemoSurface } from '../helpers/demo-surface';
+import { holdExitAnimations } from '../helpers/exit-animations';
 
 /**
  * Behavioral checks for the structural `*rdxPopoverPortal` (ADR 0010) that need a real browser —
@@ -13,6 +15,60 @@ async function gotoStory(page: Page, storyId: string): Promise<void> {
 const trigger = '[rdxPopoverTrigger]';
 const positioner = '[rdxPopoverPositioner]';
 const popup = '[rdxPopoverPopup]';
+
+for (const theme of ['light', 'dark']) {
+    test(`Default surface, opening and real exit animation in the ${theme} theme`, async ({ page }) => {
+        await page.goto(`/iframe.html?id=primitives-popover--default&viewMode=story&globals=theme:${theme}`);
+        await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+        await page.getByRole('button', { name: 'Add details', exact: true }).click();
+        const surface = page.locator(popup);
+        await expect(surface).toBeVisible();
+        await expectDemoSurface(surface);
+        const exit = await holdExitAnimations(page, [popup], 'data-ending-style');
+        await page.getByRole('button', { name: 'Close', exact: true }).click();
+        await expect(surface).toHaveAttribute('data-ending-style', '');
+        await expect(surface).toHaveCSS('animation-name', 'popover-popup-out');
+        await expect.poll(exit.count).toBeGreaterThan(0);
+        await expect(page.locator(positioner)).toHaveCount(1);
+        await exit.finish();
+        await expect(surface).toHaveCount(0);
+        await expect(page.locator(positioner)).toHaveCount(0);
+    });
+}
+
+test('Default provides separate copyable blocks for the component and Tailwind styles', async ({
+    page,
+    context,
+    browserName
+}) => {
+    await page.goto('/iframe.html?id=primitives-popover--docs&viewMode=docs');
+    const toggle = page.getByRole('switch', { name: 'Show code' }).first();
+    const panelId = await toggle.getAttribute('aria-controls');
+    await toggle.click();
+    const code = page.locator(`[id="${panelId}"] pre`);
+    await expect(code).toBeVisible();
+    await expect(code).toContainText("from '@radix-ng/primitives/popover'");
+    await expect(code).toContainText('class="demo-surface');
+    await expect(code).toContainText('relative w-80 p-4');
+    await expect(code).toContainText('data-[starting-style]:animate-popover-popup-in');
+    await expect(code).toContainText('data-[ending-style]:animate-popover-popup-out');
+    await expect(code).not.toContainText('../../storybook');
+    const styles = page.locator('pre').filter({ hasText: '--animate-popover-popup-in:' });
+    await expect(styles).toBeVisible();
+    await expect(styles).toContainText('@layer components {');
+    await expect(styles).toContainText('.demo-surface {');
+    await expect(styles).toContainText('--color-card:');
+    await expect(styles).toContainText('@keyframes popover-popup-out');
+    if (browserName === 'chromium') {
+        await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+        const copyButtons = page.getByRole('button', { name: 'Copy code', exact: true });
+        await copyButtons.first().click();
+        await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toContain('class="demo-surface');
+        const stylesBlock = styles.locator('xpath=ancestor::*[.//button][1]');
+        await stylesBlock.getByRole('button', { name: 'Copy', exact: true }).click();
+        await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toContain('@layer components {');
+    }
+});
 
 test('Viewport retains its outgoing content through the popup CSS exit', async ({ page }) => {
     const errors: string[] = [];

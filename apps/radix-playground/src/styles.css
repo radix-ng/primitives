@@ -1,12 +1,9 @@
 /*
  * Playground global styles.
  *
- * The theme (semantic tokens, light/dark values, keyframes, demo utilities) is the SAME one the
- * Storybook demos use, so the playground stays visually identical to the docs site without
- * duplicating ~600 lines of token definitions. Single source of truth:
- *   apps/radix-storybook/.storybook/tailwind.css
+ * Storybook and Playground use the same Tailwind entry for tokens, keyframes and shared demo styles.
  */
-@import '../../radix-storybook/.storybook/tailwind.css';
+@import '../../radix-storybook/.storybook/main.css';
 
 /*
  * Tailwind v4 content sources.

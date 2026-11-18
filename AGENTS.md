@@ -39,7 +39,9 @@ Base UI is the primary API/behavior reference; Radix UI is secondary.
 - Use Tailwind v4 utilities directly in story templates and standalone story components.
 - Do not add story-local CSS files, Angular `styleUrl` / `styleUrls` / `styles`, inline `<style>` blocks, or `style="..."` attributes.
 - Use semantic tokens such as `bg-background`, `text-foreground`, `bg-muted`, `border-border`, and `text-primary-foreground`.
+- Theme values belong in the shared `@theme`. Stable class combinations that change together may live in the shared theme's `@layer components`; keep demo-specific layout and state utilities visible in templates.
 - Use `packages/primitives/storybook/tailwind-demo.ts` for the shared Storybook demo shell; reuse shared style constants for repeated patterns.
+- Dynamic variant selection in TS uses typed parameters and complete Tailwind class names. See [demo styling](docs/engineering/ux-guidelines.md#demo-styling-system) for the shared surface and source-preview contract.
 - If a demo cannot reasonably be expressed with Tailwind utilities, explain why and ask before adding CSS.
 
 ## Verification

@@ -9,22 +9,26 @@ Storybook lives entirely in the demos. This page is the single source of truth f
 look, so examples stay consistent instead of each story reinventing its own classes.
 
 Visual reference: [coss.com](https://coss.com/ui) (Base UI + Tailwind). The Storybook theme in
-`apps/radix-storybook/.storybook/tailwind.css` is already built on this token set.
+`apps/radix-storybook/.storybook/demo-styles.css` defines these tokens and their light and dark values.
 
 ## Rules
 
 1. **Use Tailwind v4 utilities** directly in templates. No story-local CSS files, no `styleUrl` /
    `styles`, no inline `<style>` or `style="…"`. (Documented exceptions: CSS custom properties for
    animation dimensions.)
-2. **Reuse the shared constants** from `packages/primitives/storybook/styles.ts` instead of
-   copy-pasting long class strings. If you find yourself writing the same button/card classes
-   twice, add or extend a constant there.
+2. **Keep shared styles in one place.** Theme values belong in `@theme`. Stable combinations of
+   classes that should change together may use `@apply` in the shared `@layer components`.
+   Keep sizes, spacing, layout and state utilities specific to an example visible in its template.
+   Existing shared recipes remain available from `packages/primitives/storybook/styles.ts`.
 3. **Reach for semantic tokens first** — `bg-background`, `text-foreground`, `bg-muted`,
    `bg-popover`, `border-border`, `text-primary-foreground`, `ring-ring`. Avoid raw Radix theme
    colors (`violet`, `mauve`, `black-a*`) or hard-coded `white`/`black` when a token exists. These
    tokens respond to the Storybook **theme toolbar** (light/dark), so demos work in both.
 4. **Wrap demos** with `tailwindDemoDecorator()` (or keep `data-demo="tailwind"` on the outermost
    container) so Tailwind preflight and the theme variables stay active.
+5. **Type dynamic variants in TS** and use full class names (for example, a typed map of
+   `compact: 'w-64 p-3'` and `comfortable: 'w-80 p-4'`). Tailwind cannot discover interpolated
+   fragments such as `w-${size}`.
 
 ## The style layer
 
@@ -35,9 +39,30 @@ Visual reference: [coss.com](https://coss.com/ui) (Base UI + Tailwind). The Stor
 | `cn(...)`       | Join conditional class strings, dropping falsy values.    |
 | `demoFocusRing` | Shared `focus-visible` ring matching the `--ring` token.  |
 | `demoButton`    | `base` + a `variant` + a `size` for buttons.              |
-| `demoCard`      | Card / panel surface (popovers, list rows, content boxes).|
+| `demoCard`      | Compatibility alias for the shared `.demo-surface` class. |
 | `demoInput`     | Text input surface.                                       |
 | `demoSelect`    | Select trigger, popup, list, items, indicators and icons.  |
+
+### Surfaces
+
+The common theme defines `.demo-surface` once, in `@layer components`, using semantic card,
+foreground and border tokens, rounding and a small shadow. Default Popover keeps its own details
+on the Popup:
+
+```html
+<div
+  rdxPopoverPopup
+  class="demo-surface relative w-80 p-4 data-[starting-style]:animate-popover-popup-in data-[ending-style]:animate-popover-popup-out"
+>…</div>
+```
+
+Utilities have priority over the components layer: `bg-muted`, `border-transparent` and
+`shadow-none` override the corresponding surface defaults regardless of class-string order.
+`cn` joins strings; it does not resolve conflicting utilities.
+
+Default Popover provides two copyable blocks. **Show code** provides the component with public
+imports. The CSS block supplies the tokens, surface and animations from `demo-styles.css`,
+which Storybook and Playground import through the same stylesheet.
 
 ### Buttons
 

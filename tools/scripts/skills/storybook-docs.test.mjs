@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { createMarkdownBundle } from './markdown-bundle.mjs';
 import { getStorybookDocs } from './storybook-docs.mjs';
@@ -36,4 +37,21 @@ test('composition examples export real source from the existing stories', () => 
     assert.match(menu.body, /createRdxDialogHandle/);
     assert.match(select.body, /select-focus-controls/);
     for (const { body } of [tabs, menu, select]) assert.doesNotMatch(body, /<Canvas\b/);
+});
+
+test('Popover Default exports a portable component and its shared stylesheet as separate blocks', () => {
+    const { files } = createMarkdownBundle(docs, { versionLine: 'Test version' });
+    const example = files.get('examples/popover--default.md');
+    const sharedStyles = readFileSync(
+        new URL('../../../apps/radix-storybook/.storybook/demo-styles.css', import.meta.url),
+        'utf8'
+    ).trim();
+    const [, defaultCode] = example.match(/```typescript\n([\s\S]*?)\n```/);
+    const [, stylesheet] = example.match(/```css\n([\s\S]*?)\n```/);
+    assert.equal(stylesheet, sharedStyles);
+    assert.match(defaultCode, /class="demo-surface [^"]*w-80 p-4"/);
+    assert.match(defaultCode, /data-\[starting-style\]:animate-popover-popup-in/);
+    assert.match(defaultCode, /data-\[ending-style\]:animate-popover-popup-out/);
+    assert.doesNotMatch(defaultCode, /from ['"]\.|\.\.\.popoverImports|@layer components/);
+    assert.doesNotMatch(example, /<Source\b/);
 });

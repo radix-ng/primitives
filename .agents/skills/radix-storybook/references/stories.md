@@ -64,7 +64,7 @@
 
 5. **Semantic tokens only** in templates: `bg-background`, `text-foreground`, `bg-muted`, `bg-popover`, `border-border`, `text-muted-foreground`, `text-primary-foreground`. No raw colors (`violet`, `mauve`, `white`, `black`).
 
-6. **Shared style constants** from `packages/primitives/storybook/styles.ts` (`cn`, `demoButton`, `demoMenu`, etc.). Extend `styles.ts` when a pattern recurs — don't inline long class strings.
+6. **Shared styles, visible demo details.** Theme values belong in `@theme`; stable combinations that change together may use the shared `@layer components` (the card surface is `.demo-surface`). Keep demo-specific layout and state utilities in templates. Existing TS recipes remain available from `packages/primitives/storybook/styles.ts`; dynamic variants use typed parameters and complete Tailwind class names. See [demo styling](../../../../docs/engineering/ux-guidelines.md#demo-styling-system).
 
 7. **Story order:** `Default` first, then state variants, then advanced examples.
 
@@ -78,7 +78,7 @@ When creating or rewriting primitive stories, follow this format by default:
 - Define `const source = (code: string) => ({ docs: { source: { code, language: 'typescript' } } });` when a story renders only a standalone component tag.
 - Define `const html = String.raw;`, `export default { title, decorators: [moduleMetadata({ imports: [...] }), tailwindDemoDecorator()] } as Meta;`, then `type Story = StoryObj;`.
 - Story order: `Default` first, then state variants (`Disabled`, `Readonly`, `Required`, etc.), then form/value examples (`ReactiveForms`, `TemplateDrivenForms`, `Validation`) and advanced examples.
-- `Default` should be a small inline template using shared style constants from `packages/primitives/storybook/styles.ts`; standalone component stories must set `parameters: source(rawSource)` so "Show code" displays the full source.
+- `Default` should be a small template using shared styles with demo-specific layout and states visible on its elements; standalone component stories must set `parameters: source(rawSource)` so "Show code" displays the full source.
 - For form controls, include form integration and controlled/template-driven examples when the primitive supports them. Prefer Checkbox/Radio/Switch stories as references.
 - In form stories and demos, every visible `<label>` for an interactive control must be explicitly associated with the control: use `for`/`id` for native controls, `htmlFor` when using `RdxLabelDirective`, or `rdxFieldLabel` when the control is inside `rdxFieldRoot`. Do not leave a visual label next to an input, checkbox, radio, or switch without a programmatic association.
 - Story export names should describe the behavior, not implementation details (`TemplateDrivenForms`, not `RadioGroupComponent`).
@@ -105,3 +105,4 @@ When creating or rewriting primitive stories, follow this format by default:
 
 - `*.ts?raw` is wired by the `rawTsPlugin` in `.storybook/main.ts` (the AnalogJS Angular plugin shadows Vite's built-in `?raw`); types come from `packages/primitives/storybook/raw.d.ts`. Inline-template stories (source lives in `.stories.ts`) don't need this.
 - Each story export gets `parameters: source(itsOwnRawFile)` — never point two story exports at one combined source file.
+- For portable examples with shared CSS, use public imports and follow [the Default Popover source pattern](../../../../docs/engineering/ux-guidelines.md#demo-styling-system).

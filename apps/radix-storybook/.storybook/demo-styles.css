@@ -1,0 +1,92 @@
+@theme {
+    /* Semantic colors shared by Tailwind demos */
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+    --color-border: var(--border);
+    --color-ring: var(--ring);
+    --color-input: var(--border);
+    --color-accent: var(--muted);
+    --color-accent-foreground: var(--foreground);
+    /* Distinct accent for search-match highlighting (e.g. fuzzy results). Stays available in demos
+       (not reset in the [data-demo] block below), unlike the docs-only `--color-highlight`. */
+    --color-match: var(--match);
+
+    --animate-popover-popup-in: popover-popup-in 150ms ease-out;
+    --animate-popover-popup-out: popover-popup-out 120ms ease-in forwards;
+}
+
+:root {
+    --background: white;
+    --foreground: oklch(14.5% 1% 264deg);
+    --card: white;
+    --card-foreground: var(--foreground);
+    --popover: white;
+    --popover-foreground: var(--foreground);
+    --primary: oklch(20.5% 1% 264deg);
+    --primary-foreground: white;
+    --muted: oklch(96.5% 0.5% 264deg);
+    --muted-foreground: oklch(46% 1% 264deg);
+    --destructive: oklch(57.7% 0.245 27.325deg);
+    --destructive-foreground: white;
+    --border: oklch(90% 1% 264deg);
+    --ring: oklch(55% 1% 264deg);
+    --match: oklch(45% 50% 264deg);
+}
+
+:root[data-theme='dark'] {
+    --background: oklch(14.5% 1% 264deg);
+    --foreground: oklch(96% 0.5% 264deg);
+    --card: oklch(18% 1% 264deg);
+    --card-foreground: var(--foreground);
+    --popover: oklch(18% 1% 264deg);
+    --popover-foreground: var(--foreground);
+    --primary: oklch(92% 0.5% 264deg);
+    --primary-foreground: oklch(18% 1% 264deg);
+    --muted: oklch(24% 1% 264deg);
+    --muted-foreground: oklch(70% 1% 264deg);
+    --destructive: oklch(70.4% 0.191 22.216deg);
+    --destructive-foreground: oklch(18% 1% 264deg);
+    --border: oklch(30% 1% 264deg);
+    --ring: oklch(65% 1% 264deg);
+    --match: oklch(69% 50% 264deg);
+}
+
+@layer components {
+    .demo-surface {
+        @apply bg-card text-card-foreground border-border rounded-md border shadow-sm;
+    }
+}
+
+@keyframes popover-popup-in {
+    from {
+        opacity: 0;
+        transform: translateY(-0.25rem) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes popover-popup-out {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(-0.25rem) scale(0.98);
+    }
+}

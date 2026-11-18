@@ -1,4 +1,5 @@
-import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
+import { ArgTypes, Canvas, Meta, Source } from '@storybook/addon-docs/blocks';
+import demoStylesSource from '../../../../apps/radix-storybook/.storybook/demo-styles.css?raw';
 import * as Stories from './popover.stories';
 import {
     RdxPopoverClose,
@@ -111,7 +112,17 @@ the positioner — use the explicit `<ng-template rdxPopoverPortal>` form (and t
 
 A form-like popup with an arrow, accessible title and description, and a close button.
 
+In an Angular app with Tailwind CSS v4, [install Radix NG](?path=/docs/overview-installation--docs)
+and add `@lucide/angular` for the icons. Copy the component from **Show code**, add
+`RdxPopoverDefaultComponent` to the parent component's `imports` and use `<rdx-popover-default />`
+in its template.
+
 <Canvas of={Stories.Default} />
+
+Add the CSS below after `@import 'tailwindcss';` in your global stylesheet. It supplies the semantic
+colors, shared surface and popup animations used by the component.
+
+<Source language="css" code={demoStylesSource} />
 
 ### Controlled
 
