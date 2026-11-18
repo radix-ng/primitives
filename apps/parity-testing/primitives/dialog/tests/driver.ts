@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 import type { Checkpoint } from '../../../shared/compare.ts';
-import type { CaseName, Probe } from '../src/contract';
+import { nestedLayers, type CaseName, type NestedLayer, type Probe } from '../src/contract';
 
 export class DialogDriver {
     readonly checkpoints: Checkpoint[] = [];
@@ -49,6 +49,18 @@ export class DialogDriver {
         await this.opened();
     }
 
+    async openNested(layer: NestedLayer) {
+        await this.trigger(`${layer}-trigger`).press('Enter');
+        await expect(this.page.getByTestId(`${layer}-field`)).toBeFocused();
+        await this.waitForNestedCompletion(layer, true);
+    }
+
+    async waitForNestedCompletion(layer: NestedLayer, open: boolean) {
+        await expect
+            .poll(() => this.page.evaluate(() => window.dialogParity.nestedCompletions.at(-1)))
+            .toEqual({ layer, open });
+    }
+
     async opened() {
         await expect(this.popup).toBeVisible();
         await expect(this.field).toBeFocused();
@@ -70,7 +82,7 @@ export class DialogDriver {
     }
 
     private async observe() {
-        return this.page.evaluate(async () => {
+        return this.page.evaluate(async (layers) => {
             function read() {
                 const popup = document.querySelector<HTMLElement>('[data-testid="popup"]');
                 const backdrop = document.querySelector<HTMLElement>('[data-testid="backdrop"]');
@@ -90,6 +102,17 @@ export class DialogDriver {
                 const backgroundAriaHidden = !!outside?.closest('[aria-hidden="true"]');
                 const scrollingOverflow = getComputedStyle(document.documentElement).overflow;
                 const documentOverflow = getComputedStyle(document.body).overflow;
+                const nested = layers.map((layer) => ({
+                    layer,
+                    popup: document.querySelector<HTMLElement>(`[data-testid="${layer}-popup"]`),
+                    backdrop: document.querySelector<HTMLElement>(`[data-testid="${layer}-backdrop"]`),
+                    trigger: document.querySelector<HTMLElement>(`[data-testid="${layer}-trigger"]`)
+                }));
+                const popups = [{ layer: 'root', popup }, ...nested];
+                const nestedCount = (element: HTMLElement | null) => {
+                    const value = element && getComputedStyle(element).getPropertyValue('--nested-dialogs').trim();
+                    return value ? Number(value) : null;
+                };
 
                 return {
                     state: {
@@ -115,12 +138,45 @@ export class DialogDriver {
                             (active === document.body ? 'body' : (active?.tagName.toLowerCase() ?? null)),
                         changes: window.dialogParity.changes,
                         completions: window.dialogParity.completions,
+                        openNestedLayers: nested
+                            .filter(({ popup }) => popup?.hasAttribute('data-open'))
+                            .map(({ layer }) => layer),
+                        mountedNestedLayers: nested.filter(({ popup }) => !!popup).map(({ layer }) => layer),
+                        visibleNestedLayers: nested.filter(({ popup }) => visibility(popup)).map(({ layer }) => layer),
+                        visibleNestedBackdrops: nested
+                            .filter(({ backdrop }) => visibility(backdrop))
+                            .map(({ layer }) => layer),
+                        nestedMarkers: nested
+                            .filter(({ popup }) => popup?.hasAttribute('data-nested'))
+                            .map(({ layer }) => layer),
+                        parentsWithOpenDescendants: popups
+                            .filter(({ popup }) => popup?.hasAttribute('data-nested-dialog-open'))
+                            .map(({ layer }) => layer),
+                        dialogCounts: popups.map(({ popup }) => nestedCount(popup)),
+                        linkedNestedTriggers: nested
+                            .filter(
+                                ({ popup, trigger }) =>
+                                    popup &&
+                                    trigger?.getAttribute('aria-expanded') === 'true' &&
+                                    trigger.getAttribute('aria-controls') === popup.id
+                            )
+                            .map(({ layer }) => layer),
+                        childField:
+                            document.querySelector<HTMLInputElement>('[data-testid="child-field"]')?.value ?? null,
+                        nestedChanges: window.dialogParity.nestedChanges,
+                        nestedCompletions: window.dialogParity.nestedCompletions,
                         activations: window.dialogParity.activations
                     },
                     raw: {
                         popup: popup?.outerHTML ?? null,
                         backdrop: backdrop?.outerHTML ?? null,
                         triggers: triggers.map((element) => element.outerHTML),
+                        nested: nested.map(({ layer, popup, backdrop, trigger }) => ({
+                            layer,
+                            popup: popup?.outerHTML ?? null,
+                            backdrop: backdrop?.outerHTML ?? null,
+                            trigger: trigger?.outerHTML ?? null
+                        })),
                         backgroundInert,
                         backgroundAriaHidden,
                         scrollingOverflow,
@@ -141,6 +197,6 @@ export class DialogDriver {
                 previous = current;
             }
             return snapshot;
-        });
+        }, nestedLayers);
     }
 }

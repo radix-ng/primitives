@@ -309,6 +309,198 @@ const modalModes: Scenario[] = [
     }
 ];
 
+const childOpen = { layer: 'child' as const, ...triggerOpen, trigger: 'child-trigger' };
+const grandchildOpen = { layer: 'grandchild' as const, ...triggerOpen, trigger: 'grandchild-trigger' };
+const childShown = {
+    ...primaryOpen,
+    openNestedLayers: ['child' as const],
+    visibleNestedLayers: ['child' as const],
+    linkedNestedTriggers: ['child' as const],
+    nestedMarkers: ['child' as const],
+    visibleNestedBackdrops: [],
+    parentsWithOpenDescendants: ['root'],
+    dialogCounts: [1, 0, null]
+};
+const childDismissed = {
+    ...primaryOpen,
+    openNestedLayers: [],
+    mountedNestedLayers: [],
+    visibleNestedLayers: [],
+    parentsWithOpenDescendants: [],
+    dialogCounts: [0, null, null],
+    focus: 'child-trigger'
+};
+
+const nesting: Scenario[] = [
+    {
+        name: 'nested-escape',
+        async run(d) {
+            await d.open();
+            await d.field.fill('outer draft');
+            await d.openNested('child');
+            await d.checkpoint('child traps focus with no second visible backdrop', {
+                ...childShown,
+                focus: 'child-field',
+                nestedChanges: [childOpen],
+                changes: [triggerOpen]
+            });
+            await d.page.keyboard.press('Tab');
+            await d.checkpoint('Tab stays inside the child dialog', { ...childShown, focus: 'child-close' });
+            await d.page.keyboard.press('Tab');
+            await d.checkpoint('child wrap bypasses the parent', { ...childShown, focus: 'child-field' });
+
+            await d.page.keyboard.press('Escape');
+            await d.waitForNestedCompletion('child', false);
+            await d.checkpoint('Escape dismisses only the child and restores its trigger', {
+                ...childDismissed,
+                field: 'outer draft',
+                nestedChanges: [childOpen, { layer: 'child', ...escape, trigger: 'child-trigger' }],
+                changes: [triggerOpen]
+            });
+            await d.page.keyboard.press('Escape');
+            await d.closed();
+            await d.checkpoint('next Escape dismisses the outer dialog', {
+                ...closed,
+                focus: 'primary',
+                changes: [triggerOpen, escape]
+            });
+        }
+    },
+    {
+        name: 'nested-outside-press',
+        async run(d) {
+            await d.open();
+            await d.openNested('child');
+            await d.pointerAt('outside');
+            await d.page.mouse.down();
+            await d.checkpoint('both remain open until click', { ...childShown, nestedChanges: [childOpen] });
+            await d.page.mouse.up();
+            await d.waitForNestedCompletion('child', false);
+            await d.checkpoint('first press dismisses only the child', {
+                ...childDismissed,
+                activations: 0,
+                changes: [triggerOpen],
+                nestedChanges: [childOpen, { layer: 'child', ...outsideClose, trigger: 'child-trigger' }]
+            });
+            await d.page.mouse.down();
+            await d.page.mouse.up();
+            await d.closed();
+            await d.checkpoint('next press dismisses the outer dialog', {
+                ...closed,
+                focus: 'primary',
+                activations: 0,
+                changes: [triggerOpen, outsideClose]
+            });
+        }
+    },
+    {
+        name: 'nested-depth',
+        async run(d) {
+            await d.open();
+            await d.openNested('child');
+            await d.openNested('grandchild');
+            await d.checkpoint('outer styles count both open descendants', {
+                ...primaryOpen,
+                focus: 'grandchild-field',
+                openNestedLayers: ['child', 'grandchild'],
+                visibleNestedLayers: ['child', 'grandchild'],
+                visibleNestedBackdrops: [],
+                nestedMarkers: ['child', 'grandchild'],
+                dialogCounts: [2, 1, 0],
+                parentsWithOpenDescendants: ['root', 'child'],
+                linkedNestedTriggers: ['child', 'grandchild'],
+                nestedChanges: [childOpen, grandchildOpen]
+            });
+            await d.page.getByTestId('grandchild-close').press('Enter');
+            await d.waitForNestedCompletion('grandchild', false);
+            await d.checkpoint('deepest Close updates both ancestors', { ...childShown, focus: 'grandchild-trigger' });
+            await d.page.getByTestId('child-close').press('Enter');
+            await d.waitForNestedCompletion('child', false);
+            await d.checkpoint('child Close clears the last descendant', {
+                ...childDismissed,
+                nestedChanges: [
+                    childOpen,
+                    grandchildOpen,
+                    { ...grandchildOpen, open: false, reason: 'close-press' },
+                    { ...childOpen, open: false, reason: 'close-press' }
+                ]
+            });
+        }
+    },
+    {
+        name: 'nested-remove',
+        async run(d) {
+            await d.open();
+            await d.openNested('child');
+            await d.openNested('grandchild');
+            await d.page.keyboard.press('F6');
+            await expect(d.page.getByTestId('child-trigger')).toHaveCount(0);
+            await d.checkpoint('owner removal clears descendant layers without a close request', {
+                ...primaryOpen,
+                dialogCounts: [0, null, null],
+                openNestedLayers: [],
+                mountedNestedLayers: [],
+                parentsWithOpenDescendants: [],
+                nestedChanges: [childOpen, grandchildOpen],
+                nestedCompletions: [
+                    { layer: 'child', open: true },
+                    { layer: 'grandchild', open: true }
+                ]
+            });
+            await d.page.keyboard.press('Escape');
+            await d.closed();
+            await d.checkpoint('remaining dialog can dismiss', {
+                ...closed,
+                focus: 'primary',
+                changes: [triggerOpen, escape]
+            });
+        }
+    },
+    {
+        name: 'nested-retained-exit',
+        async run(d) {
+            await d.open();
+            await d.openNested('child');
+            await d.page.getByTestId('child-field').fill('child edit');
+            await d.checkpoint('forceRender displays a second backdrop', {
+                ...childShown,
+                visibleNestedBackdrops: ['child']
+            });
+            await d.page.keyboard.press('Escape');
+            const child = d.page.getByTestId('child-popup');
+            await expect.poll(() => child.evaluate((element) => element.getAnimations().length)).toBeGreaterThan(0);
+            await d.checkpoint('logical close clears descendant styling during the exit', {
+                ...primaryOpen,
+                openNestedLayers: [],
+                mountedNestedLayers: ['child'],
+                visibleNestedLayers: ['child'],
+                visibleNestedBackdrops: ['child'],
+                parentsWithOpenDescendants: [],
+                dialogCounts: [0, 0, null],
+                nestedCompletions: [{ layer: 'child', open: true }]
+            });
+            await child.evaluate((element) => element.getAnimations().forEach((animation) => animation.finish()));
+            await d.waitForNestedCompletion('child', false);
+            await d.checkpoint('close completes once and retains the hidden form', {
+                ...childDismissed,
+                mountedNestedLayers: ['child'],
+                dialogCounts: [0, 0, null],
+                childField: 'child edit',
+                nestedCompletions: [
+                    { layer: 'child', open: true },
+                    { layer: 'child', open: false }
+                ]
+            });
+            await d.openNested('child');
+            await d.checkpoint('reopened retained child restores styling and draft', {
+                ...childShown,
+                visibleNestedBackdrops: ['child'],
+                childField: 'child edit'
+            });
+        }
+    }
+];
+
 const retention: Scenario[] = (
     ['automatic-disposable', 'automatic-retained', 'held-disposable', 'held-retained'] as const
 ).map((name) => ({
@@ -395,4 +587,4 @@ const motion: Scenario[] = [
     }
 ];
 
-export const scenarios = [...ownership, ...modalModes, ...retention, ...motion];
+export const scenarios = [...ownership, ...modalModes, ...nesting, ...retention, ...motion];

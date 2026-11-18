@@ -162,7 +162,7 @@ export class RdxDrawerRoot {
     /** Whether a drawer nested inside this one is open (reuses the dialog's nesting detection). */
     readonly nestedDrawerOpen = this.dialog.nestedDialogOpen;
     /** Number of open drawers nested inside this one. */
-    readonly nestedDrawerCount = this.dialog.nestedOpenCount.asReadonly();
+    readonly nestedDrawerCount = this.dialog.nestedOpenCount;
     /** The app-wide frontmost drawer's measured size (px); `0` without a provider. */
     readonly frontmostHeight = computed(() => this.provider?.frontmostHeight() ?? 0);
 

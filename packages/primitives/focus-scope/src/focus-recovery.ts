@@ -24,7 +24,7 @@ export function observeFocusRecovery(options: {
               view.getComputedStyle(element).visibility !== 'hidden'
             : element.getClientRects().length > 0 && view.getComputedStyle(element).visibility !== 'hidden');
     const schedule = () => {
-        if (!enabled() || frame !== undefined) return;
+        if (frame !== undefined) return;
         frame = view.requestAnimationFrame(() => {
             frame = undefined;
             const last = previous,
@@ -43,15 +43,17 @@ export function observeFocusRecovery(options: {
         const target = (event.composedPath()[0] ?? event.target) as HTMLElement | null;
         if (target && composedContains(container, target)) {
             previous = target;
-            schedule();
+            if (enabled()) schedule();
         }
     };
     const observer = new view.MutationObserver((records) => {
         const focused = previous;
-        if (!focused || !enabled()) return;
+        if (!focused) return;
         if (records.some((record) => [...record.removedNodes].some((node) => composedContains(node, focused))))
             moved = true;
-        if (moved || !visible(focused)) schedule();
+        // Removing a nested scope can resume this owner during cleanup. Confirm eligibility in
+        // the recovery frame, after the browser and the focus stack have processed the removal.
+        if (moved || (enabled() && !visible(focused))) schedule();
     });
     observer.observe(container, {
         childList: true,

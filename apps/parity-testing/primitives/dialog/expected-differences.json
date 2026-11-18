@@ -1,1 +1,10 @@
-[]
+[
+    {
+        "scenario": "nested-remove",
+        "checkpoint": "owner removal clears descendant layers without a close request",
+        "field": "focus",
+        "angular": "popup",
+        "react": "primary",
+        "category": "modal-focus-recovery-after-removal"
+    }
+]

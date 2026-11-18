@@ -93,7 +93,7 @@ and [store selectors](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda2
 
 - [Dialog unit tests](__tests__/dialog.spec.ts) cover initial defaults, parent refusal, delayed acceptance, two-way binding and cancellation.
 - [Dialog browser tests](../../../apps/visual-regression/tests/dialog.behavior.spec.ts) include a deferred open/close request with focus, Portal and scroll-lock observations.
-- The [pinned Dialog suite](../../../apps/parity-testing/primitives/dialog/README.md) compares 22 scenarios across Chromium, Firefox and WebKit. It covers open ownership, trigger registration, modal modes and close lifetime.
+- The [pinned Dialog suite](../../../apps/parity-testing/primitives/dialog/README.md) compares 27 scenarios across Chromium, Firefox and WebKit. It covers open ownership, trigger registration, modal modes, nested dialogs and close lifetime.
 - The [AOT hydration suite](../../../apps/radix-ssr-testing/hydration-audit/README.md) covers initially open Dialog in `eager-dialog`.
 
 The directive reference exposes effective `open()` as readonly. Set a bound value to drive a
@@ -201,5 +201,26 @@ keeps its DOM-based dismissal contract and leaves focus at the requested destina
 [Dialog browser regression](../../../apps/visual-regression/tests/dialog.behavior.spec.ts)
 · [Base UI focus-out handler](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/utils/popups/focus/FloatingFocusManager.tsx)
 
-Nested dismissal, detached handles, custom focus targets, touch gestures and Portal destination
+## Nested dismissal and descendant state
+
+Five [nested comparisons](../../../apps/parity-testing/primitives/dialog/tests/scenarios.ts) check
+deepest-first Escape and outside press, focus return to each surviving trigger, three-level Close,
+owner removal and a retained animated exit. They cover the computed `--nested-dialogs`,
+`data-nested`, `data-nested-dialog-open`, per-layer callbacks and visible Backdrops.
+
+The three-level case previously showed `[1, 1, 0]` because the outer Root counted its direct child.
+Each Root now derives its count from the open descendants registered through Angular DI and removes
+registrations on destruction. The fixture matches `[2, 1, 0]` when all layers are open. Counts clear
+on logical close while a retained child animates and its input value survives reopening.
+[Pinned nested-count regression](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/dialog/popup/DialogPopup.test.tsx)
+
+Removing an open branch previously left Angular focus on `body`. Focus recovery now evaluates the
+parent's eligibility after the nested focus scopes release it. Angular focuses the active parent
+Popup and preserves its `inert` background. Base UI 1.9.0 focuses the outside Trigger at that
+checkpoint. The comparison records this single focus difference. The next Escape closes the
+remaining Dialog and returns focus to the Trigger in both frameworks.
+[Owner removal scenario](../../../apps/parity-testing/primitives/dialog/tests/scenarios.ts)
+· [Reviewed focus difference](../../../apps/parity-testing/primitives/dialog/expected-differences.json)
+
+Detached handles, custom focus targets, touch gestures, mixed Dialog variants and Portal destination
 changes remain pending paired checks.

@@ -3,6 +3,7 @@ import {
     afterRenderEffect,
     booleanAttribute,
     computed,
+    DestroyRef,
     Directive,
     effect,
     ElementRef,
@@ -101,7 +102,7 @@ export interface RdxDialogRootContext {
     /** Whether this dialog is nested in another; constant, fixed at construction. */
     nested: boolean;
     nestedDialogOpen: Signal<boolean>;
-    /** Number of currently-open dialogs nested directly inside this one (Base UI `--nested-dialogs`). */
+    /** Number of open descendant dialogs (Base UI `--nested-dialogs`). */
     nestedOpenCount: Signal<number>;
     setTitleId: (id: string | undefined) => void;
     setDescriptionId: (id: string | undefined) => void;
@@ -141,6 +142,7 @@ export const [injectRdxDialogRootContext, provideRdxDialogRootContext] = createC
 export class RdxDialogRoot {
     private readonly injector = inject(Injector);
     private readonly parentRoot = inject(RdxDialogRoot, { optional: true, skipSelf: true });
+    private readonly nestedChildren = signal<ReadonlySet<RdxDialogRoot>>(new Set());
     private readonly variant = inject(RDX_DIALOG_VARIANT);
     private readonly registeredTriggers = signal<ReadonlyMap<string, RdxDialogRegisteredTrigger>>(new Map());
     private readonly localTrigger = signal<RdxDialogTriggerSelection>({ id: null });
@@ -246,7 +248,13 @@ export class RdxDialogRoot {
         ...new Set([...this.registeredTriggers().values()].map(({ element }) => element))
     ]);
     readonly payload = computed(() => this.activeTrigger()?.payload);
-    readonly nestedOpenCount = signal(0);
+    readonly nestedOpenCount = computed(() => {
+        let count = 0;
+        for (const child of this.nestedChildren()) {
+            if (child.open()) count += 1 + child.nestedOpenCount();
+        }
+        return count;
+    });
     readonly openInteractionType = signal<RdxInteractionType>(null);
     readonly closeInteractionType = signal<RdxInteractionType>(null);
     private readonly pendingTriggerOpenInteractionType = signal<RdxInteractionType>(null);
@@ -280,6 +288,9 @@ export class RdxDialogRoot {
     });
 
     constructor() {
+        const unregister = this.parentRoot?.registerNestedChild(this);
+        if (unregister) inject(DestroyRef).onDestroy(unregister);
+
         // Keep the floating context's reference element in sync with the active trigger.
         effect(() => this.floatingContext.setReferenceElement(this.trigger() ?? null));
 
@@ -307,15 +318,6 @@ export class RdxDialogRoot {
             this.pendingOpenChange = undefined;
             if (pending?.open === open) {
                 pending.commit();
-            }
-        });
-
-        // Report nested open state to the parent dialog so it can apply data-nested-dialog-open.
-        effect((onCleanup) => {
-            const open = this.open();
-
-            if (open && this.parentRoot) {
-                onCleanup(untracked(() => this.parentRoot!.openNestedChild()));
             }
         });
 
@@ -452,10 +454,15 @@ export class RdxDialogRoot {
         };
     }
 
-    /** Increments the nested-open counter and returns a release callback that decrements it. */
-    openNestedChild() {
-        this.nestedOpenCount.update((count) => count + 1);
-        return () => this.nestedOpenCount.update((count) => count - 1);
+    private registerNestedChild(child: RdxDialogRoot): () => void {
+        this.nestedChildren.update((children) => new Set(children).add(child));
+        return () => {
+            this.nestedChildren.update((children) => {
+                const remaining = new Set(children);
+                remaining.delete(child);
+                return remaining;
+            });
+        };
     }
 
     private requestedTriggerSelection(
@@ -524,7 +531,7 @@ function contextFor(root: RdxDialogRoot): RdxDialogRootContext {
         closeInteractionType: root.closeInteractionType.asReadonly(),
         nested: root.nested,
         nestedDialogOpen: root.nestedDialogOpen,
-        nestedOpenCount: root.nestedOpenCount.asReadonly(),
+        nestedOpenCount: root.nestedOpenCount,
         setTitleId: (id: string | undefined) => root.titleId.set(id),
         setDescriptionId: (id: string | undefined) => root.descriptionId.set(id),
         registerTransitionElement: (element) => root.registerTransitionElement(element),

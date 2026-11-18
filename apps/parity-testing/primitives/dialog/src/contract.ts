@@ -12,6 +12,7 @@ interface Settings {
     modal?: false | 'trap-focus';
     disablePointerDismissal?: boolean;
     backdrop?: boolean;
+    nested?: { grandchild?: boolean; keepMounted?: boolean; forceRender?: boolean; animate?: boolean };
 }
 
 export const configurations = {
@@ -28,6 +29,11 @@ export const configurations = {
     'trap-focus-pointer': { modal: 'trap-focus' },
     'trap-focus-dismissal-disabled': { modal: 'trap-focus', disablePointerDismissal: true },
     'trap-focus-authored-backdrop': { modal: 'trap-focus', backdrop: true },
+    'nested-escape': { nested: {} },
+    'nested-outside-press': { nested: {} },
+    'nested-depth': { nested: { grandchild: true } },
+    'nested-remove': { nested: { grandchild: true } },
+    'nested-retained-exit': { nested: { keepMounted: true, forceRender: true, animate: true } },
     'trigger-default-fallback': {
         defaultOpen: true,
         triggerId: 'secondary',
@@ -45,12 +51,17 @@ export const configurations = {
 } satisfies Record<string, Settings>;
 
 export type CaseName = keyof typeof configurations;
+export const nestedLayers = ['child', 'grandchild'] as const;
+export type NestedLayer = (typeof nestedLayers)[number];
+type Change = { open: boolean; reason: string; trigger: string | null; canceled: boolean };
 
 export interface Probe {
     reference: { commit: string; packageVersion: string; digest: string };
-    changes: { open: boolean; reason: string; trigger: string | null; canceled: boolean }[];
+    changes: Change[];
     completions: boolean[];
-    nativeEvents: { type: string; trusted: boolean }[];
+    nestedChanges: (Change & { layer: NestedLayer })[];
+    nestedCompletions: { layer: NestedLayer; open: boolean }[];
+    nativeEvents: { type: string; trusted: boolean; layer?: NestedLayer }[];
     activations: number;
 }
 
@@ -72,15 +83,26 @@ export function installProbe() {
         reference: __PARITY_REFERENCE__,
         changes: [],
         completions: [],
+        nestedChanges: [],
+        nestedCompletions: [],
         nativeEvents: [],
         activations: 0
     };
     window.dialogParity = probe;
     return {
         probe,
-        change(open: boolean, reason: string, event: Event, trigger: Element | undefined, canceled: boolean) {
-            probe.changes.push({ open, reason, trigger: trigger?.getAttribute('data-testid') ?? null, canceled });
-            probe.nativeEvents.push({ type: event.type, trusted: event.isTrusted });
+        change(
+            open: boolean,
+            reason: string,
+            event: Event,
+            trigger: Element | undefined,
+            canceled: boolean,
+            layer?: NestedLayer
+        ) {
+            const change = { open, reason, trigger: trigger?.getAttribute('data-testid') ?? null, canceled };
+            if (layer) probe.nestedChanges.push({ layer, ...change });
+            else probe.changes.push(change);
+            probe.nativeEvents.push({ type: event.type, trusted: event.isTrusted, layer });
         }
     };
 }
