@@ -73,13 +73,17 @@ are permitted; changed observable behavior needs evidence or an explicitly revie
   cover replacement ownership, metadata changes, wrapper moves, reconnection and disposal.
   The registry is shared with Combobox/Autocomplete. Roving tabindex and
   `aria-activedescendant` remain distinct. [ADR 0086](../../../docs/adr/0086-shared-element-registry.md).
-- Named browser regression files: [composite.behavior.spec.ts](../../../apps/visual-regression/tests/composite.behavior.spec.ts). Scenario scope and freshness still need review; none was run by this inventory.
+- The [Composite browser case](../../../apps/visual-regression/tests/composite.behavior.spec.ts)
+  passed in Chromium, Firefox and WebKit on 2026-11-18. A tracked reversal retains the active tab stop
+  and the next arrow follows the updated native order. The [Combobox consumer](../combobox/PARITY.md#selection-query-and-open-cases)
+  verifies the same registry under input-owned focus.
 - No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
 - No conventional same-family SSR page was found; inspect shared SSR/hydration fixtures for applicable cases. No SSR/hydration result is claimed here.
 
-No runtime suite was executed for this initial matrix sweep. Complete focused state/DI units,
-native/layout browser cases and SSR/hydration checks before promoting rows; add a paired pinned
-fixture before certifying equivalent observable behavior. See the
+The pinned [internal CompositeList](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/internals/composite/list/CompositeList.tsx)
+also observes DOM moves for automatic item order. Keep Angular's generation-checked registration and
+view lifecycle described in ADR 0086. The verified reorder behavior leaves controlled highlight
+requests and other composition policies as separate matrix items. See the
 [verification skill](../../../.agents/skills/radix-testing/SKILL.md),
 [matrix index](../../../docs/engineering/parity-matrices.md) and
 [upstream preparation guide](../../../docs/engineering/upstream-reference.md).

@@ -104,6 +104,8 @@ describe('Toolbar', () => {
         expect(buttons()[0].getAttribute('data-orientation')).toBe('vertical');
 
         const separator = fixture.debugElement.query(By.css('[rdxToolbarSeparator]')).nativeElement as HTMLElement;
+        expect(separator.getAttribute('role')).toBe('separator');
+        expect(separator.getAttribute('aria-orientation')).toBe('horizontal');
         expect(separator.getAttribute('data-orientation')).toBe('horizontal');
     });
 
@@ -137,6 +139,8 @@ describe('Toolbar separator', () => {
         fixture.detectChanges();
 
         const separator = fixture.debugElement.query(By.css('[rdxToolbarSeparator]')).nativeElement as HTMLElement;
+        expect(separator.getAttribute('role')).toBe('separator');
+        expect(separator.getAttribute('aria-orientation')).toBe('vertical');
         expect(separator.getAttribute('data-orientation')).toBe('vertical');
     });
 });

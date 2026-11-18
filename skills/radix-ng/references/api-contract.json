@@ -3077,8 +3077,8 @@
             {
               "name": "direction",
               "type": "Direction | undefined",
-              "default": "'ltr'",
-              "description": "The reading direction for descendant primitives."
+              "default": "undefined",
+              "description": "The reading direction for descendant primitives. Falls back to `dir`, then to the\nenclosing direction provider. The unconfigured application default is LTR."
             },
             {
               "name": "dir",
@@ -8074,8 +8074,7 @@
             {
               "name": "orientation",
               "type": "Orientation",
-              "default": "DEFAULT_ORIENTATION",
-              "description": "Orientation of the separator, can be either 'horizontal' or 'vertical'."
+              "description": "The separator orientation. Defaults to the Stepper orientation."
             }
           ],
           "outputs": []

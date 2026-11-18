@@ -84,8 +84,7 @@
         {
           "name": "orientation",
           "type": "Orientation",
-          "default": "DEFAULT_ORIENTATION",
-          "description": "Orientation of the separator, can be either 'horizontal' or 'vertical'."
+          "description": "The separator orientation. Defaults to the Stepper orientation."
         }
       ],
       "outputs": []

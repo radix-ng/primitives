@@ -137,3 +137,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0085](0085-hydration-owned-identity-and-view-ranges.md)                     | Accepted               | Recover view-owned IDs and move managed physical ranges during hydration             |
 | [0086](0086-shared-element-registry.md)                                      | Accepted               | Share element registration and document order across navigation models               |
 | [0087](0087-accordion-whole-panel-presence.md)                               | Accepted               | Own complete Accordion Panel views through structural presence                       |
+| [0088](0088-inherit-primitive-direction-through-di.md)                       | Accepted               | Inherit primitive direction through Angular DI                                       |

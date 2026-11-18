@@ -26,9 +26,12 @@ composition bases, guards and internal helpers are not thereby promoted to stabl
 | [`RdxStepperIndicatorDirective`](src/stepper-indicator.directive.ts)     | `[rdxStepperIndicator]`     | No direct signal input/model/output declaration.                                          |
 | [`RdxStepperItemDirective`](src/stepper-item.directive.ts)               | `[rdxStepperItem]`          | `step`, `disabled`, `completed`                                                           |
 | [`RdxStepperRootDirective`](src/stepper-root.directive.ts)               | `[rdxStepperRoot]`          | `defaultValue`, `value` (model), `linear`, `dir`, `orientation`, `onValueChange` (output) |
-| [`RdxStepperSeparatorDirective`](src/stepper-separator.directive.ts)     | `[rdxStepperSeparator]`     | No direct signal input/model/output declaration.                                          |
+| [`RdxStepperSeparatorDirective`](src/stepper-separator.directive.ts)     | `[rdxStepperSeparator]`     | `orientation`                                                                             |
 | [`RdxStepperTitleDirective`](src/stepper-title.directive.ts)             | `[rdxStepperTitle]`         | No direct signal input/model/output declaration.                                          |
 | [`RdxStepperTriggerDirective`](src/stepper-trigger.directive.ts)         | `button[rdxStepperTrigger]` | No direct signal input/model/output declaration.                                          |
+
+Separator follows Root orientation by default. An explicit Separator `orientation` overrides the
+Root, and clearing it restores the reactive fallback. See the [Stepper unit regression](__tests__/stepper.spec.ts).
 
 Inherited classes and composed directives may add state/API. Follow those sources when completing
 the comparison; similar part names or selector counts do not prove the same contract.

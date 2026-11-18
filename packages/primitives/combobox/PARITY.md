@@ -114,12 +114,14 @@ exposes a computed `filteredItems()`. Compare grouped/server-filtered options an
 keyboard/highlight behavior before settling on the Angular API shape. Existing [Combobox browser cases](../../../apps/visual-regression/tests/combobox.behavior.spec.ts)
 exercise tracked reorder, option identity, disabled metadata, input focus and
 `aria-activedescendant`. [Shared-engine units](__tests__/ordered-collection.spec.ts)
-exercise wrapper moves with retained options.
+exercise wrapper moves with retained options. On 2026-11-18, Chromium, Firefox and WebKit preserved
+input focus and the active option ID immediately after reversal, then navigated in the new order.
+This confirms the registry-backed behavior described in [ADR 0086](../../../docs/adr/0086-shared-element-registry.md).
 
 ## Evidence inventory and next checks
 
 - [Local unit files](__tests__): **26 files discovered**; not a passing-test count.
-- Named browser regression files: [combobox.behavior.spec.ts](../../../apps/visual-regression/tests/combobox.behavior.spec.ts). Scenario scope and freshness still need review; none was run by this inventory.
+- [Combobox browser tests](../../../apps/visual-regression/tests/combobox.behavior.spec.ts) passed 30/30 in the 2026-11-18 desktop run, including tracked reorder.
 - No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
 - [SSR consumer page](../../../apps/radix-ssr-testing/src/app/components/combobox/page.ts) exists. Its presence does not prove initial-state, lifecycle or hydration equivalence; inspect actual assertions.
 

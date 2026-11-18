@@ -8,15 +8,15 @@ import { Orientation, RdxSeparatorRootDirective } from '../src/separator.directi
     imports: [RdxSeparatorRootDirective]
 })
 class TestHostComponent {
-    orientation: Orientation = 'horizontal';
+    orientation: Orientation | undefined = 'horizontal';
 }
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
-    template: '<span rdxSeparatorRoot></span>',
+    template: '<hr rdxSeparatorRoot orientation="vertical" />',
     imports: [RdxSeparatorRootDirective]
 })
-class SpanHostComponent {}
+class HrHostComponent {}
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -60,11 +60,13 @@ describe('SeparatorDirective', () => {
         fixture.componentInstance.orientation = 'vertical';
         fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
+        expect(element.getAttribute('aria-orientation')).toBe('vertical');
         expect(element.getAttribute('data-orientation')).toBe('vertical');
 
         fixture.componentInstance.orientation = 'horizontal';
         fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
+        expect(element.getAttribute('aria-orientation')).toBe('horizontal');
         expect(element.getAttribute('data-orientation')).toBe('horizontal');
     });
 
@@ -77,13 +79,27 @@ describe('SeparatorDirective', () => {
         expect(defaultElement.getAttribute('data-orientation')).toBe('horizontal');
     });
 
-    it('should support non-div host elements', () => {
-        const spanFixture = TestBed.createComponent(SpanHostComponent);
-        const spanElement: HTMLElement = spanFixture.nativeElement.querySelector('span');
+    it('restores the horizontal default when the bound orientation is cleared', () => {
+        fixture.componentInstance.orientation = 'vertical';
+        fixture.detectChanges();
+        expect(element.getAttribute('data-orientation')).toBe('vertical');
 
-        spanFixture.detectChanges();
+        fixture.componentInstance.orientation = undefined;
+        fixture.changeDetectorRef.markForCheck();
+        fixture.detectChanges();
+        expect(element.getAttribute('role')).toBe('separator');
+        expect(element.getAttribute('aria-orientation')).toBe('horizontal');
+        expect(element.getAttribute('data-orientation')).toBe('horizontal');
+    });
 
-        expect(spanElement.getAttribute('role')).toBe('separator');
-        expect(spanElement.getAttribute('data-orientation')).toBe('horizontal');
+    it('supports an authored native horizontal rule with explicit orientation', () => {
+        const hrFixture = TestBed.createComponent(HrHostComponent);
+        const hr: HTMLElement = hrFixture.nativeElement.querySelector('hr');
+
+        hrFixture.detectChanges();
+
+        expect(hr.getAttribute('role')).toBe('separator');
+        expect(hr.getAttribute('aria-orientation')).toBe('vertical');
+        expect(hr.getAttribute('data-orientation')).toBe('vertical');
     });
 });

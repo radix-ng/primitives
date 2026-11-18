@@ -76,8 +76,19 @@ are permitted; changed observable behavior needs evidence or an explicitly revie
   cleans up its owned nodes; destroying a block while its lazy import is pending can leave Angular
   unstable. [ADR 0085](../../../docs/adr/0085-hydration-owned-identity-and-view-ranges.md).
 
-The hydration results above describe the recorded Angular regression scenarios. Use paired
-scenarios to evaluate shared popup behavior against the pin. See the
+The 2026-11-18 audit passed 45 AOT cases in each of Chromium, Firefox and WebKit on Angular 22.0.2.
+The [runner](../../../apps/radix-ssr-testing/hydration-audit/run.ts) checks server node identity,
+stable IDs and ARIA targets, once-only event replay, and retargeting before and after hydration.
+Destroying the owner or closing the Portal during a gated import left zero probe roots and no new
+child instances. The ordinary `@if` control retained its dehydrated probe. All three cancellation
+cases left `ApplicationRef.isStable` false in each engine, and all remained interactive. Retargeting
+without destruction hydrated the same nodes at the new destination and reached stability.
+
+The pinned [Combobox Portal](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/combobox/portal/ComboboxPortal.tsx)
+renders a portal wrapper under the chosen container. Angular preserves the declaration-owned view
+by moving the physical range. Keep that contract for hydration and native state. The cancellation
+control isolates Angular's pending hydration task from Portal cleanup. Paired comparisons of other
+popup behaviors remain separate. See the
 [verification skill](../../../.agents/skills/radix-testing/SKILL.md),
 [matrix index](../../../docs/engineering/parity-matrices.md) and
 [upstream preparation guide](../../../docs/engineering/upstream-reference.md).

@@ -53,11 +53,11 @@ boundaries explicitly instead of converting all models to readonly inputs.
 “Source” identifies a local implementation fact. “Compare/verify/audit” is pending work. Priorities
 describe the target work, not a certificate or a reproduced defect count.
 
-| Area                         | Current observation / required target comparison                                                                                                                                                                                                                                                                                                                                                                                                  | Priority |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| Direction ownership          | [Angular DI](src/direction-provider.ts) resolves `direction`, then the Angular `dir` input alias, then the parent signal. This configures primitive behavior. Native `dir` or CSS direction controls visual layout.                                                                                                                                                                                                                               | N/A      |
-| Inheritance                  | Under a parent providing RTL, a nested provider with an omitted direction inherits RTL in Angular. [The pinned provider](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/direction-provider/DirectionProvider.tsx) resolves its omitted prop to LTR. Compare a reactive parent update, an explicit nested override and projected/portalled consumers to decide the intended inheritance contract. | P2       |
-| Native versus logical layout | Pair a keyboard or positioning check with an independent native direction assertion. Exercise an explicitly authored native direction and the Angular input alias as separate cases.                                                                                                                                                                                                                                                              | P2       |
+| Area                         | Current observation / required target comparison                                                                                                                                                                                                                                                                                                                                                                                                            | Priority |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| Direction ownership          | [Angular DI](src/direction-provider.ts) resolves `direction`, then the Angular `dir` input alias, then the parent signal. This configures primitive behavior. Native `dir` or CSS direction controls visual layout.                                                                                                                                                                                                                                         | N/A      |
+| Inheritance                  | Under a parent providing RTL, a nested provider with an omitted direction inherits RTL in Angular. [The pinned provider](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/direction-provider/DirectionProvider.tsx) resolves its omitted prop to LTR. Retain reactive inheritance as an Angular contract. [ADR 0088](../../../docs/adr/0088-inherit-primitive-direction-through-di.md) records the decision. | P2       |
+| Native versus logical layout | The portalled Composite follows declaration DI for ArrowRight even under a native LTR container. The provider leaves DOM direction to the consumer.                                                                                                                                                                                                                                                                                                         | P2       |
 
 Also compare the actual emitted per-part attributes/CSS variables with both the pinned declaration
 files and runtime state mapping. Check native hosts, event reasons/details/default prevention,
@@ -66,14 +66,16 @@ are permitted; changed observable behavior needs evidence or an explicitly revie
 
 ## Evidence inventory and next checks
 
-- [Local unit files](__tests__): **1 file discovered**; not a passing-test count.
+- [Direction Provider units](__tests__/direction-provider.spec.ts) cover the global default, DI
+  configuration, nested omission under RTL, explicit LTR and a live parent update. The portalled
+  Composite moves focus leftward on ArrowRight in RTL and rightward after the parent changes to LTR.
+  The native destination remains `dir="ltr"` in both cases.
 - No same-family named browser behavior file was found. Cross-family consumer or shared-mechanism checks may exist; locate them before claiming absence or coverage.
 - No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
 - No conventional same-family SSR page was found; inspect shared SSR/hydration fixtures for applicable cases. No SSR/hydration result is claimed here.
 
-No runtime suite was executed for this initial matrix sweep. Complete focused state/DI units,
-native/layout browser cases and SSR/hydration checks before promoting rows; add a paired pinned
-fixture before certifying equivalent observable behavior. See the
+The 2026-11-18 audit verifies DI and actual DOM focus in Angular unit tests, with a source comparison
+against the pin. CSS layout geometry and popup positioning are outside this check. See the
 [verification skill](../../../.agents/skills/radix-testing/SKILL.md),
 [matrix index](../../../docs/engineering/parity-matrices.md) and
 [upstream preparation guide](../../../docs/engineering/upstream-reference.md).

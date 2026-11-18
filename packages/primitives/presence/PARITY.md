@@ -69,14 +69,22 @@ are permitted; changed observable behavior needs evidence or an explicitly revie
 - [Shared render lifecycle units](../core/__tests__/render-lifecycle.spec.ts) cover holds,
   interrupted exits and release. [Portal Presence units](../portal/__tests__/portal-presence.spec.ts)
   exercise structural views and scope cleanup.
-- Named browser regression files: [presence-waapi.behavior.spec.ts](../../../apps/visual-regression/tests/presence-waapi.behavior.spec.ts). Scenario scope and freshness still need review; none was run by this inventory.
+- [Presence directive tests](__test__/presence.directive.spec.ts) exercise view creation, destruction,
+  interrupted exits and the last participating animation. The [Accordion consumer](../accordion/__tests__/accordion-panel-presence.spec.ts)
+  counts actual child construction and destruction and checks retained subscriptions and native fields
+  under `keepMounted`.
+- [Presence browser regressions](../../../apps/visual-regression/tests/presence-waapi.behavior.spec.ts)
+  passed all 42 runs across Chromium, Firefox and WebKit on 2026-11-18. These exercise real CSS
+  transitions and WAAPI, retained node identity on reopen, and replacement motion.
 - No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
 - [The shared AOT hydration suite](../../../apps/radix-ssr-testing/hydration-audit/README.md) exercises
   structural Presence in Tabs and retained versus recreated children in Accordion.
 
-No runtime suite was executed for this initial matrix sweep. Complete focused state/DI units,
-native/layout browser cases and SSR/hydration checks before promoting rows; add a paired pinned
-fixture before certifying equivalent observable behavior. See the
+The pinned [exit hook](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/internals/useUnmountAfterClose.ts)
+waits for motion and guards completion per close. Angular retains the whole embedded view across
+interruptions as described in ADR 0084. Core lifecycle tests verify the close callback fires once
+after the final participant. The browser suite verifies that actual motion governs removal.
+See the
 [verification skill](../../../.agents/skills/radix-testing/SKILL.md),
 [matrix index](../../../docs/engineering/parity-matrices.md) and
 [upstream preparation guide](../../../docs/engineering/upstream-reference.md).

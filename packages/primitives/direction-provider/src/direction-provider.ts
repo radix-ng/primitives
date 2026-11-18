@@ -41,9 +41,8 @@ export class RdxDirectionProvider {
     private readonly parentDirection = inject(RDX_DIRECTION, { skipSelf: true });
 
     /**
-     * The reading direction for descendant primitives.
-     *
-     * @defaultValue 'ltr'
+     * The reading direction for descendant primitives. Falls back to `dir`, then to the
+     * enclosing direction provider. The unconfigured application default is LTR.
      */
     readonly directionInput = input<Direction | undefined>(undefined, { alias: 'direction' });
 

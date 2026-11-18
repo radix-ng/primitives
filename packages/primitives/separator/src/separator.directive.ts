@@ -4,6 +4,10 @@ const DEFAULT_ORIENTATION = 'horizontal';
 
 export type Orientation = 'horizontal' | 'vertical';
 
+function resolveOrientation(orientation: Orientation | undefined): Orientation {
+    return orientation ?? DEFAULT_ORIENTATION;
+}
+
 export interface SeparatorProps {
     /**
      * Either `vertical` or `horizontal`. Defaults to `horizontal`.
@@ -34,7 +38,9 @@ export class RdxSeparatorRootDirective {
      * @defaultValue 'horizontal'
      * @group Props
      */
-    readonly orientation = input<Orientation>(DEFAULT_ORIENTATION);
+    readonly orientation = input<Orientation, Orientation | undefined>(DEFAULT_ORIENTATION, {
+        transform: resolveOrientation
+    });
 
     protected readonly orientationState = linkedSignal(this.orientation);
 

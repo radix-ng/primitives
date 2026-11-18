@@ -53,11 +53,11 @@ boundaries explicitly instead of converting all models to readonly inputs.
 “Source” identifies a local implementation fact. “Compare/verify/audit” is pending work. Priorities
 describe the target work, not a certificate or a reproduced defect count.
 
-| Area                 | Current observation / required target comparison                                                                                                                                                                                                                                                                                              | Priority |
-| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| Readonly semantics   | The two public surfaces expose orientation configuration. Angular's `linkedSignal` also accepts a composed orientation override from Stepper or Toolbar via `updateOrientation()`.                                                                                                                                                            | N/A      |
-| Native accessibility | [Angular](src/separator.directive.ts) and [Base UI](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/separator/Separator.tsx) both set `role=separator`, `aria-orientation` and `data-orientation`. Compare both orientations on the default div and on authored native hosts, including `hr`. | P2       |
-| Reactive changes     | Check direct orientation updates, Stepper orientation changes and Toolbar's inherited fallback, then verify the three host attributes continue to reflect the chosen orientation.                                                                                                                                                             | P2       |
+| Area                 | Current observation / required target comparison                                                                                                                                                                                                                                                                                                               | Priority |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| Readonly semantics   | The two public surfaces expose orientation configuration. Angular's `linkedSignal` also accepts a composed orientation override from Stepper or Toolbar via `updateOrientation()`.                                                                                                                                                                             | N/A      |
+| Native accessibility | [Angular](src/separator.directive.ts) and [Base UI](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/separator/Separator.tsx) both set `role=separator`, `aria-orientation` and `data-orientation`. The unit suite checks both orientations on a div and the explicit vertical orientation on an authored `hr`. | P2       |
+| Reactive changes     | Direct updates change both orientation attributes together. Toolbar defaults to the opposite of its Root orientation as in Base UI. Stepper defaults to its Root orientation. An explicit separator orientation takes priority in either composition.                                                                                                          | P2       |
 
 Also compare the actual emitted per-part attributes/CSS variables with both the pinned declaration
 files and runtime state mapping. Check native hosts, event reasons/details/default prevention,
@@ -66,14 +66,24 @@ are permitted; changed observable behavior needs evidence or an explicitly revie
 
 ## Evidence inventory and next checks
 
-- [Local unit files](__tests__): **1 file discovered**; not a passing-test count.
+- [Separator units](__tests__/separator.directive.spec.ts) verify the default, a reactive change and a
+  native `hr`. Clearing a bound orientation restores both horizontal attributes.
+  [Toolbar units](../toolbar/__tests__/toolbar.spec.ts) verify reactive fallback and
+  an explicit orientation. [Stepper units](../stepper/__tests__/stepper.spec.ts) verify explicit
+  orientation, clearing the override and following the Root again.
 - No same-family named browser behavior file was found. Cross-family consumer or shared-mechanism checks may exist; locate them before claiming absence or coverage.
 - No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
 - [SSR consumer page](../../../apps/radix-ssr-testing/src/app/components/separator/page.ts) exists. Its presence does not prove initial-state, lifecycle or hydration equivalence; inspect actual assertions.
 
-No runtime suite was executed for this initial matrix sweep. Complete focused state/DI units,
-native/layout browser cases and SSR/hydration checks before promoting rows; add a paired pinned
-fixture before certifying equivalent observable behavior. See the
+The 2026-11-18 audit compared the source at the pin and ran these Angular units. Both public
+Separator APIs expose `orientation` with a horizontal default for omitted or undefined values. Neither declares a
+`decorative` prop. Angular uses the consumer's host through an attribute directive.
+Base UI Toolbar passes an explicit orientation through to Separator. The pin has no Stepper.
+Before this audit, binding `undefined` removed the direct Separator's orientation attributes,
+and a Stepper Root could overwrite its separator's explicit input. Both regressions failed
+before the fixes. Separator now normalizes undefined at the input boundary, and Stepper
+resolves its explicit input before the Root fallback.
+See the
 [verification skill](../../../.agents/skills/radix-testing/SKILL.md),
 [matrix index](../../../docs/engineering/parity-matrices.md) and
 [upstream preparation guide](../../../docs/engineering/upstream-reference.md).

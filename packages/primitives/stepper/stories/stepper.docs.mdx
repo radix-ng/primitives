@@ -2,6 +2,7 @@ import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as Stories from './stepper.stories';
 import { RdxStepperRootDirective } from '../src/stepper-root.directive';
 import { RdxStepperItemDirective } from '../src/stepper-item.directive';
+import { RdxStepperSeparatorDirective } from '../src/stepper-separator.directive';
 
 <Meta title="Primitives/Stepper" />
 
@@ -71,6 +72,13 @@ setStep(change: RdxStepperValueChangeEvent) {
 The step item component.
 
 <ArgTypes of={RdxStepperItemDirective} />
+
+### Separator
+
+`RdxStepperSeparatorDirective` separates steps. Apply it to a `<div>` or `<hr>`. It follows the
+Stepper orientation by default. Supply `orientation` to override it for this separator.
+
+<ArgTypes of={RdxStepperSeparatorDirective} />
 
 ## Data attributes
 

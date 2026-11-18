@@ -1,18 +1,26 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import type { Orientation } from '@radix-ng/primitives/separator';
 import { vi } from 'vitest';
 import { RdxStepperItemDirective } from '../src/stepper-item.directive';
 import { RdxStepperRootDirective, RdxStepperValueChangeEvent } from '../src/stepper-root.directive';
+import { RdxStepperSeparatorDirective } from '../src/stepper-separator.directive';
 import { RdxStepperTriggerDirective } from '../src/stepper-trigger.directive';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [RdxStepperRootDirective, RdxStepperItemDirective, RdxStepperTriggerDirective],
+    imports: [
+        RdxStepperRootDirective,
+        RdxStepperItemDirective,
+        RdxStepperTriggerDirective,
+        RdxStepperSeparatorDirective
+    ],
     template: `
-        <div [(value)]="value" (onValueChange)="onValueChange($event)" rdxStepperRoot>
+        <div [(value)]="value" [orientation]="orientation()" (onValueChange)="onValueChange($event)" rdxStepperRoot>
             <div [step]="1" rdxStepperItem>
                 <button rdxStepperTrigger>One</button>
+                <hr [orientation]="separatorOrientation()" rdxStepperSeparator />
             </div>
             <div [step]="2" rdxStepperItem>
                 <button rdxStepperTrigger>Two</button>
@@ -22,6 +30,8 @@ import { RdxStepperTriggerDirective } from '../src/stepper-trigger.directive';
 })
 class StepperHost {
     value = 1;
+    readonly orientation = signal<Orientation>('horizontal');
+    readonly separatorOrientation = signal<Orientation | undefined>('vertical');
     onValueChange = vi.fn<(change: RdxStepperValueChangeEvent) => void>();
 }
 
@@ -60,5 +70,28 @@ describe('RdxStepper', () => {
         expect(host.value).toBe(1);
         expect(buttons[0].closest('[rdxStepperItem]')?.getAttribute('data-state')).toBe('active');
         expect(buttons[1].closest('[rdxStepperItem]')?.getAttribute('data-state')).toBe('inactive');
+    });
+
+    it('honors the separator orientation override and resumes following the root when cleared', () => {
+        const separator: HTMLElement = fixture.nativeElement.querySelector('hr');
+        const expectOrientation = (orientation: Orientation) => {
+            expect(separator.getAttribute('role')).toBe('separator');
+            expect(separator.getAttribute('aria-orientation')).toBe(orientation);
+            expect(separator.getAttribute('data-orientation')).toBe(orientation);
+        };
+
+        expectOrientation('vertical');
+        host.orientation.set('vertical');
+        host.separatorOrientation.set('horizontal');
+        fixture.detectChanges();
+        expectOrientation('horizontal');
+
+        host.separatorOrientation.set(undefined);
+        fixture.detectChanges();
+        expectOrientation('vertical');
+
+        host.orientation.set('horizontal');
+        fixture.detectChanges();
+        expectOrientation('horizontal');
     });
 });

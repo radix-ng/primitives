@@ -106,8 +106,8 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-All primitives that read direction inherit this value unless they receive a local `[dir]` override or a
-nearer direction provider.
+Primitives that read direction inherit this value. An explicit subtree direction or local primitive
+`[dir]` input can override it.
 
 ### Subtree direction
 
@@ -119,8 +119,9 @@ nearer direction provider.
 </section>
 ```
 
-`rdxDirectionProvider` controls primitive behavior. Use the native `dir` attribute or CSS direction when
-the DOM itself should render right-to-left.
+A nested provider with no direction follows its parent provider, including later updates. Portalled
+primitives keep their declaration's direction for keyboard behavior. Use native `dir` or CSS
+direction at the DOM destination for right-to-left layout.
 
 ### DI direction
 

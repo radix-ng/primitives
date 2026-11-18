@@ -25,6 +25,7 @@ test('combobox follows tracked DOM moves and updated metadata while retaining na
     await input.press('ArrowDown');
     await expect(highlighted).toHaveText('Apple');
     const original = await options.elementHandles();
+    const appleId = await options.first().getAttribute('id');
     const grapeId = await options.nth(2).getAttribute('id');
 
     await page.getByRole('button', { name: 'Reverse order' }).click();
@@ -35,6 +36,7 @@ test('combobox follows tracked DOM moves and updated metadata while retaining na
         ).toBe(true);
     }
     await expect(highlighted).toHaveText('Apple');
+    await expect(input).toHaveAttribute('aria-activedescendant', appleId!);
     await expect(input).toBeFocused();
     await input.press('ArrowDown');
     await expect(highlighted).toHaveText('Grape');
