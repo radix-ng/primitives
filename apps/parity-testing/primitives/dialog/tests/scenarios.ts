@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import type { CaseName } from '../src/contract';
 import type { DialogDriver } from './driver';
+import { touchScenarios } from './touch.scenarios';
 
 const closed = { open: false, mounted: false, visible: false, expanded: [] };
 const primaryOpen = {
@@ -1027,6 +1028,7 @@ export const scenarios = [
     ...nesting,
     ...detachedHandles,
     ...focusTargets,
+    ...touchScenarios,
     ...retention,
     ...motion
 ];

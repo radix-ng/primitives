@@ -19,6 +19,16 @@ import { injectRdxDialogRootContext } from './dialog-root';
 const COMPOSITE_KEYS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End']);
 const DIALOG_INTERNAL_BACKDROP_ATTR = 'data-rdx-dialog-internal-backdrop';
 
+function isPrimaryOutsidePress(event: Event): boolean {
+    if ('button' in event) return event.button === 0;
+    if (!('touches' in event)) return true;
+
+    const touch = event as TouchEvent;
+    return touch.type === 'touchend'
+        ? touch.touches.length === 0 && touch.changedTouches.length === 1
+        : touch.touches.length === 1;
+}
+
 /**
  * A container for the dialog contents.
  *
@@ -163,9 +173,7 @@ export class RdxDialogPopup {
         new RdxDismiss(this.floatingContext, () => this.registration?.node() ?? null, {
             escapeKey: () => true,
             outsidePress: (event) =>
-                this.isTopmost() &&
-                !this.rootContext.disablePointerDismissal() &&
-                (!('button' in event) || event.button === 0),
+                this.isTopmost() && !this.rootContext.disablePointerDismissal() && isPrimaryOutsidePress(event),
             outsidePressEvent: () => {
                 const modal = this.rootContext.modal();
                 // Dialog's registered floating elements are Popup and any authored or internal backdrops.

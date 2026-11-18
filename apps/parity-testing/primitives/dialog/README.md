@@ -2,12 +2,12 @@
 
 ```bash
 pnpm test-parity dialog
-pnpm test-parity dialog --project=webkit --grep 'non-modal|trap-focus'
+pnpm test-parity dialog --grep touch-
 ```
 
 The suite exercises real Angular Dialog parts and Base UI React 1.9.0 at the workspace pin
 `cf696d6f6e08c699c5bda24d5a033430909f2285`.
-The 43 cases run in Chromium, Firefox and WebKit. `expected-differences.json` records the focus
+The suite has 55 cases and reports native-input capability skips by engine. `expected-differences.json` records the focus
 destination after nested owner removal and the payload of a new unassociated open after a named session.
 
 | Area              | Cases | Behavior                                                                                                       |
@@ -19,6 +19,7 @@ destination after nested owner removal and the payload of a new unassociated ope
 | Detached handles  | 8     | Named and unassociated opens, live payloads, Trigger and Root remount, handle swap and controlled refusal      |
 | Trigger identity  | 2     | Bound ID before the default, null fallback, active trigger removal and replacement                             |
 | Focus targets     | 8     | Explicit and default focus, callback results, interaction type, Trigger removal and retained exits             |
+| Touch             | 12    | Native taps, focus policy, scroll, pointer dismissal, cancellation and two-contact gestures                    |
 | Close lifetime    | 7     | Automatic and manual release, retained and disposable content, reopen, same-batch release and CSS motion       |
 
 Checkpoints compare actual browser focus and visibility, mounted content, native form values, resolved
@@ -63,6 +64,13 @@ destinations and callback interaction types, including the `true`, `null`, `fals
 policies. The retained Popup compares focus during a real CSS animation, after completion, and on
 reopen with the same draft value. An additional case removes the active Trigger before closing to
 the explicit final target.
+
+Touch fixtures use Playwright touch contexts for taps and Chromium CDP for panning, cancellation
+and two-contact input. They retain trusted events, native click pointer types and active/released
+contact counts. The browser checks cover initial focus, backdrop dismissal and click-through,
+scrolling inside and outside the Popup, canceled contact and partial release of a two-finger
+gesture. Seven cases run in Chromium and WebKit. Five gesture cases run in Chromium. Firefox touch
+and WebKit gestures are explicit capability skips.
 
 Both fixtures request changes through the public Dialog APIs. The CSS case finishes the running browser
 animation and waits for the public completion signal. See the

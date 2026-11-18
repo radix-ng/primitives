@@ -7,6 +7,7 @@ export interface DetachedSettings {
 }
 
 type FocusMode = 'elements' | 'disabled' | 'callback' | 'undefined' | 'null';
+type TouchMode = 'tap' | 'popup-pan' | 'page-pan' | 'cancel' | 'multitouch';
 
 interface Settings {
     open?: boolean;
@@ -25,6 +26,7 @@ interface Settings {
     nested?: { grandchild?: boolean; keepMounted?: boolean; forceRender?: boolean; animate?: boolean };
     detached?: DetachedSettings;
     focus?: FocusMode;
+    touch?: TouchMode;
 }
 
 export const configurations = {
@@ -62,6 +64,18 @@ export const configurations = {
     'focus-null-policy': { focus: 'null' },
     'focus-retained-exit': { focus: 'callback', keepMounted: true, animate: true },
     'focus-trigger-removed': { focus: 'callback' },
+    'touch-default-focus': { touch: 'tap' },
+    'touch-focus-policy': { touch: 'tap', focus: 'callback' },
+    'touch-outside-modal': { touch: 'tap' },
+    'touch-outside-internal-backdrop': { touch: 'tap', backdrop: false },
+    'touch-outside-nonmodal': { touch: 'tap', modal: false },
+    'touch-outside-trap-focus': { touch: 'tap', modal: 'trap-focus' },
+    'touch-dismissal-disabled': { touch: 'tap', modal: 'trap-focus', disablePointerDismissal: true },
+    'touch-pan-popup': { touch: 'popup-pan' },
+    'touch-pan-outside-nonmodal': { touch: 'page-pan', modal: false },
+    'touch-pan-outside-modal': { touch: 'page-pan' },
+    'touch-cancel-outside': { touch: 'cancel', modal: 'trap-focus' },
+    'touch-multitouch-outside': { touch: 'multitouch', modal: false },
     'trigger-default-fallback': {
         defaultOpen: true,
         triggerId: 'secondary',
@@ -93,6 +107,14 @@ export interface Probe {
     nativeEvents: { type: string; trusted: boolean; layer?: NestedLayer }[];
     activations: number;
     focusPolicies: { phase: FocusPhase; interaction: string | null }[];
+    touchEvents: {
+        type: string;
+        trusted: boolean;
+        pointerType: string | null;
+        touches: number | null;
+        changedTouches: number | null;
+        target: string | null;
+    }[];
     readHandles?: () => boolean[];
 }
 
@@ -109,6 +131,10 @@ export function config(): Settings {
     return configurations[name as CaseName];
 }
 
+export function touchMode(name: string): TouchMode | undefined {
+    return Object.hasOwn(configurations, name) ? (configurations[name as CaseName] as Settings).touch : undefined;
+}
+
 export function installProbe() {
     const probe: Probe = {
         reference: __PARITY_REFERENCE__,
@@ -118,9 +144,41 @@ export function installProbe() {
         nestedCompletions: [],
         nativeEvents: [],
         activations: 0,
-        focusPolicies: []
+        focusPolicies: [],
+        touchEvents: []
     };
     window.dialogParity = probe;
+    if (config().touch) {
+        for (const type of [
+            'touchstart',
+            'touchmove',
+            'touchend',
+            'touchcancel',
+            'pointerdown',
+            'pointercancel',
+            'mousedown',
+            'click'
+        ]) {
+            document.addEventListener(
+                type,
+                (event) => {
+                    const touch = 'touches' in event ? (event as TouchEvent) : undefined;
+                    probe.touchEvents.push({
+                        type,
+                        trusted: event.isTrusted,
+                        pointerType: event instanceof PointerEvent ? event.pointerType : null,
+                        touches: touch?.touches.length ?? null,
+                        changedTouches: touch?.changedTouches.length ?? null,
+                        target:
+                            event.target instanceof Element
+                                ? (event.target.closest('[data-testid]')?.getAttribute('data-testid') ?? null)
+                                : null
+                    });
+                },
+                { capture: true, passive: true }
+            );
+        }
+    }
     return {
         probe,
         change(
@@ -149,7 +207,7 @@ export function chooseFocus(
     probe.focusPolicies.push({ phase, interaction });
     if (mode === 'undefined') return undefined;
     if (mode === 'null') return null;
-    if (phase === 'initial' && interaction === 'mouse') return true;
+    if (phase === 'initial' && (interaction === 'mouse' || interaction === 'touch')) return true;
     return target;
 }
 

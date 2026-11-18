@@ -36,12 +36,21 @@ export class DialogDriver {
         return this.page.getByTestId(id);
     }
 
-    async pointerAt(testId: string) {
+    async pointAt(testId: string) {
         const box = await this.page.getByTestId(testId).boundingBox();
         if (!box) throw new Error(`Missing layout for ${testId}`);
-        const point = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+        return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+    }
+
+    async pointerAt(testId: string) {
+        const point = await this.pointAt(testId);
         await this.page.mouse.move(point.x, point.y);
         return point;
+    }
+
+    async tap(testId: string) {
+        const { x, y } = await this.pointAt(testId);
+        await this.page.touchscreen.tap(Math.round(x), Math.round(y));
     }
 
     async open(id = 'primary', focus = 'field') {

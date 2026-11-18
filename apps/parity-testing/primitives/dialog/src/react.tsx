@@ -101,7 +101,7 @@ function ReactDialog() {
                 : undefined;
 
     return (
-        <main className="flex gap-2">
+        <main className={settings.touch === 'page-pan' ? 'flex min-h-[1200px] items-start gap-2' : 'flex gap-2'}>
             <button className={classes.trigger} data-testid="outside" onClick={() => trace.probe.activations++}>
                 Outside
             </button>
@@ -161,6 +161,11 @@ function ReactDialog() {
                         <Dialog.Title>Example dialog</Dialog.Title>
                         <Dialog.Description>Test a draft edit.</Dialog.Description>
                         <input className={classes.input} defaultValue="draft" data-testid="field" aria-label="Draft" />
+                        {settings.touch === 'popup-pan' && (
+                            <div className="h-32 touch-pan-y overflow-y-auto" data-testid="popup-scroll">
+                                <div className="h-96">Scrollable dialog content</div>
+                            </div>
+                        )}
                         {settings.nested && showNested && <NestedDialog layer="child" />}
                         <Dialog.Close ref={closeRef} className={classes.trigger} data-testid="close">
                             Close
@@ -171,7 +176,10 @@ function ReactDialog() {
             {settings.modal !== undefined && (
                 <>
                     <input className={classes.input} data-testid="outside-field" aria-label="Outside field" />
-                    <div className="size-16" data-testid="outside-surface" />
+                    <div
+                        className={settings.touch === 'multitouch' ? 'size-16 touch-none' : 'size-16'}
+                        data-testid="outside-surface"
+                    />
                 </>
             )}
         </main>

@@ -96,7 +96,7 @@ and [store selectors](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda2
 
 - [Dialog unit tests](__tests__/dialog.spec.ts) cover initial defaults, parent refusal, delayed acceptance, two-way binding and cancellation.
 - [Dialog browser tests](../../../apps/visual-regression/tests/dialog.behavior.spec.ts) include a deferred open/close request with focus, Portal and scroll-lock observations.
-- The [pinned Dialog suite](../../../apps/parity-testing/primitives/dialog/README.md) compares 43 scenarios across Chromium, Firefox and WebKit. It covers open ownership, trigger registration, modal modes, nested dialogs, detached handles, configurable focus and close lifetime.
+- The [pinned Dialog suite](../../../apps/parity-testing/primitives/dialog/README.md) runs 55 scenarios across Chromium, Firefox and WebKit. It covers open ownership, modal modes, nested dialogs, detached handles, configurable focus, touch and close lifetime.
 - The [AOT hydration suite](../../../apps/radix-ssr-testing/hydration-audit/README.md) covers initially open Dialog in `eager-dialog`.
 
 The directive reference exposes effective `open()` as readonly. Set a bound value to drive a
@@ -269,5 +269,30 @@ results, and an explicit final target after the Trigger is removed. The retained
 final focus waits for the actual CSS exit, the draft survives, and the initial callback runs again
 on reopen. The shared manager reuses the current policy result when render-time focus needs a retry.
 
-Detached hydration and overlapping Dialog Roots, touch gestures, mixed Dialog variants and Portal
-destination changes remain pending paired checks.
+## Touch interaction
+
+Twelve [touch scenarios](../../../apps/parity-testing/primitives/dialog/tests/touch.scenarios.ts)
+use browser-delivered input. A tap focuses the Popup by default. An initial focus policy returning
+`true` selects the first tabbable control. The callback trace records the native interaction type
+for activation and dismissal. macOS WebKit sends a `mouse` compatibility click for Close after a
+trusted touch pointerdown in this emulation.
+
+A modal outside tap dismisses through an owned backdrop and consumes background activation.
+Backdrop-free non-modal and `trap-focus` dialogs allow the same tap to activate the background.
+`disablePointerDismissal` keeps a `trap-focus` dialog open while the background receives the tap.
+The scroll checks cover a native pan inside the Popup, modal background scroll locking, and a
+background pan that scrolls and dismisses a non-modal dialog. Canceling a touch leaves the dialog
+open.
+
+Angular previously closed on `touchmove` while two contacts were active. Dialog now requires a
+single contact for outside dismissal and checks on `touchend` that one finger lifted and no active
+contacts remain. The test records the native contact counts during movement and partial release.
+A fresh single tap still dismisses the dialog.
+[Pinned Dialog dismissal policy](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/dialog/root/useDialogRoot.ts)
+
+Seven tap cases run in Chromium and WebKit. Five native gesture cases use Chromium CDP. Firefox
+touch contexts and WebKit pan, cancellation and multi-contact automation are recorded as capability
+skips. Physical-device gesture and soft-keyboard behavior remain outside these emulated checks.
+
+Detached hydration and overlapping Dialog Roots, mixed Dialog variants and Portal destination
+changes remain pending paired checks.

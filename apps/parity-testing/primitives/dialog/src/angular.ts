@@ -12,7 +12,7 @@ import './fixture.css';
     imports: [dialogImports],
     host: { '(document:keydown)': 'command($event)' },
     template: `
-        <main class="flex gap-2">
+        <main [class]="settings.touch === 'page-pan' ? 'flex min-h-[1200px] items-start gap-2' : 'flex gap-2'">
             <button
                 [class]="styles.trigger"
                 (click)="trace.probe.activations = trace.probe.activations + 1"
@@ -60,6 +60,11 @@ import './fixture.css';
                         <h2 rdxDialogTitle>Example dialog</h2>
                         <p rdxDialogDescription>Test a draft edit.</p>
                         <input [class]="styles.input" value="draft" data-testid="field" aria-label="Draft" />
+                        @if (settings.touch === 'popup-pan') {
+                            <div class="h-32 touch-pan-y overflow-y-auto" data-testid="popup-scroll">
+                                <div class="h-96">Scrollable dialog content</div>
+                            </div>
+                        }
                         @if (settings.nested; as nested) {
                             @if (showNested()) {
                                 <div
@@ -158,7 +163,11 @@ import './fixture.css';
             </div>
             @if (settings.modal !== undefined) {
                 <input [class]="styles.input" data-testid="outside-field" aria-label="Outside field" />
-                <div class="size-16" data-testid="outside-surface"></div>
+                <div
+                    class="size-16"
+                    [class.touch-none]="settings.touch === 'multitouch'"
+                    data-testid="outside-surface"
+                ></div>
             }
         </main>
     `
