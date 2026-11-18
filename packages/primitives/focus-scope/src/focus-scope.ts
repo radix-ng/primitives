@@ -147,7 +147,7 @@ export class RdxFocusScope {
                             const target = getEventTarget(event) as HTMLElement | null;
                             if (composedContains(container, target)) {
                                 this.lastFocusedElement.set(target);
-                            } else {
+                            } else if (!target || !this.config.isBoundaryGuard?.(target)) {
                                 focus(this.lastFocusedElement(), { select: true });
                             }
                         };
@@ -172,7 +172,10 @@ export class RdxFocusScope {
 
                             // If the focus has moved to an actual legitimate element (`relatedTarget !== null`)
                             // that is outside the container, we move focus to the last valid focused element inside.
-                            if (!composedContains(container, relatedTarget)) {
+                            if (
+                                !composedContains(container, relatedTarget) &&
+                                !this.config.isBoundaryGuard?.(relatedTarget)
+                            ) {
                                 focus(this.lastFocusedElement(), { select: true });
                             }
                         };

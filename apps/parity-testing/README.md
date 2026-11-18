@@ -5,7 +5,8 @@ sources. These are regression checks with reviewed differences, not full parity 
 [Select](primitives/select/README.md), [Popover](primitives/popover/README.md),
 [Menu](primitives/menu/README.md), [Context Menu](primitives/context-menu/README.md),
 [Menubar](primitives/menubar/README.md), [Tabs](primitives/tabs/README.md),
-[Button](primitives/button/README.md) and [Autocomplete](primitives/autocomplete/README.md) have independent suites.
+[Button](primitives/button/README.md), [Autocomplete](primitives/autocomplete/README.md) and
+[Dialog](primitives/dialog/README.md) have independent suites.
 The [coverage matrix](COVERAGE.md) distinguishes pinned comparisons from Angular regression checks.
 
 ## Structure
@@ -57,6 +58,7 @@ pnpm test-parity menubar         # native opening, roving and sibling ownership
 pnpm test-parity tabs            # initial selection, null/default values and notifications
 pnpm test-parity button          # native/custom hosts, keyboard phases, disabled and forms
 pnpm test-parity autocomplete    # initial/default state, navigation, read-only and value/query/preview
+pnpm test-parity dialog          # open ownership, focus, trigger identity and Portal lifetime
 pnpm test-parity:select          # convenience alias
 pnpm test-parity select --project=webkit # one engine
 pnpm parity:build select         # type-check/build one suite without running browsers

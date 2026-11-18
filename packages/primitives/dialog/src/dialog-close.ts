@@ -9,6 +9,7 @@ import { injectRdxDialogRootContext } from './dialog-root';
     exportAs: 'rdxDialogClose',
     host: {
         type: 'button',
+        tabindex: '0',
         '(click)': 'rootContext.close("close-press", $event)'
     }
 })

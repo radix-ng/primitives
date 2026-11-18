@@ -313,6 +313,32 @@ describe('RdxFloatingFocusManager (skeleton)', () => {
         expect(document.activeElement).toBe(first);
     });
 
+    it('lets owned boundary guards wrap focus while trapping unrelated guards', async () => {
+        const fixture = TestBed.createComponent(ManagerHost);
+        fixture.componentInstance.modal.set(true);
+        fixture.autoDetectChanges();
+        await flush();
+
+        const { nativeElement: scope } = fixture.componentInstance.scope();
+        const { nativeElement: first } = fixture.componentInstance.a();
+        const { nativeElement: last } = fixture.componentInstance.b();
+        const before = scope.previousElementSibling as HTMLElement;
+        const after = scope.nextElementSibling as HTMLElement;
+        const unrelated = document.createElement('span');
+        unrelated.setAttribute(FOCUS_GUARD_ATTR, '');
+        unrelated.tabIndex = 0;
+        document.body.append(unrelated);
+        appended.push(unrelated);
+
+        first.focus();
+        before.focus();
+        expect(document.activeElement).toBe(last);
+        after.focus();
+        expect(document.activeElement).toBe(first);
+        unrelated.focus();
+        expect(document.activeElement).toBe(first);
+    });
+
     it('deactivates a retained child scope and resumes its parent', async () => {
         const fixture = TestBed.createComponent(RetainedChildHost);
         fixture.autoDetectChanges();

@@ -9,6 +9,8 @@ export type RdxFocusScopeConfig = {
     loop?: Signal<boolean>;
     /** Stop keyboard/programmatic trapping at logical close while retaining unmount/return-focus ownership. */
     trapActive?: () => boolean;
+    /** Let the manager's own boundary guards redirect focus into the scope. */
+    isBoundaryGuard?: (element: HTMLElement) => boolean;
     /** Default fallback target, guarded unless the return policy explicitly requests it. */
     defaultReturnFocus?: () => HTMLElement | null | undefined;
     /** Owner reference used when the preferred pre-open target was body or was removed. */

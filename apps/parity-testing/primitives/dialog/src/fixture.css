@@ -1,0 +1,12 @@
+[data-motion][data-ending-style] {
+    animation: parity-dialog-exit 8s linear both;
+}
+@keyframes parity-dialog-exit {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}

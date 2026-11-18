@@ -367,6 +367,8 @@ export class RdxFloatingFocusManager {
         // in its queued post-unmount microtask, resolving `returnFocus` against the close interaction.
         this.focusScopeConfig.returnFocus = () => this.resolveReturnFocusTarget();
         this.focusScopeConfig.trapActive = () => this.isFloatingOpen();
+        this.focusScopeConfig.isBoundaryGuard = (element) =>
+            resolveFocusGuardOwner(element) === this.host && element.getAttribute('data-type') === 'inside';
         this.focusScopeConfig.defaultReturnFocus = () => {
             const target = this.config?.defaultReturnFocus?.();
             if (target !== undefined) return target;

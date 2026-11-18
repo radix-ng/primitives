@@ -87,13 +87,13 @@ and [store selectors](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda2
 | Late default                              | Uncontrolled Roots consume the first `defaultOpen`, including `false`. Later default changes leave the state unchanged.                                                                           | Verified initial true without an open request, and later true after the initial false.                                                                                                   |
 | Parent keeps false after clicking Trigger | Root reports `onOpenChange` and, after cancellation checks, `openChange`. Until the parent supplies the requested value, the Portal, focus and scroll lock follow the previously committed state. | Unit and browser cases cover ignored open and close requests followed by parent acceptance. Unit coverage also verifies that the latest trigger request supplies metadata on acceptance. |
 | Active trigger default                    | A supplied ID wins over the initial default. Null releases the override. The default remains an initial snapshot.                                                                                 | Cases cover default Account versus controlled Billing, late defaults, live payloads and the last committed internal ID after release.                                                    |
-| Whole-view retention and manual unmount   | Portal retains the Angular view when requested. Root exposes `unmount()` for a held close.                                                                                                        | Confirm the [close-lifetime increment](#close-lifetime-increment) against the pinned Portal and Root contracts.                                                                          |
+| Whole-view retention and manual unmount   | Portal retains the Angular view when requested. Root exposes `unmount()` for a held close.                                                                                                        | The [pinned suite](../../../apps/parity-testing/primitives/dialog/README.md) checks retained and disposable Portal views, including release, reopen and motion.                          |
 
 ## Evidence inventory and next checks
 
 - [Dialog unit tests](__tests__/dialog.spec.ts) cover initial defaults, parent refusal, delayed acceptance, two-way binding and cancellation.
 - [Dialog browser tests](../../../apps/visual-regression/tests/dialog.behavior.spec.ts) include a deferred open/close request with focus, Portal and scroll-lock observations.
-- No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
+- The [pinned Dialog suite](../../../apps/parity-testing/primitives/dialog/README.md) compares 15 scenarios across Chromium, Firefox and WebKit. It covers open ownership, trigger registration, modal background behavior and close lifetime.
 - The [AOT hydration suite](../../../apps/radix-ssr-testing/hydration-audit/README.md) covers initially open Dialog in `eager-dialog`.
 
 The directive reference exposes effective `open()` as readonly. Set a bound value to drive a
@@ -104,7 +104,6 @@ The open-state regressions failed against the earlier model implementation and p
 ownership contract. Verification passed 77 Dialog/AlertDialog/Drawer units, 101 browser runs
 (one existing Android capability skip), and the `eager-dialog` hydration case in each desktop
 engine. The targeted Menu run passed 108 pinned comparisons and 12 Portal consumer regressions.
-Dedicated paired Dialog coverage remains pending.
 See the
 [verification skill](../../../.agents/skills/radix-testing/SKILL.md),
 [matrix index](../../../docs/engineering/parity-matrices.md) and
@@ -155,10 +154,28 @@ passes one retention signal through the Presence context.
 
 [Unit regressions](__tests__/dialog.spec.ts) cover completion and native form identity. The
 [browser regressions](../../../apps/visual-regression/tests/dialog.behavior.spec.ts) exercise
-manual release, hidden retained content, real CSS exits and focus. Dedicated paired Dialog cases
-are still pending.
+manual release, hidden retained content, real CSS exits and focus. The
+[pinned lifetime cases](../../../apps/parity-testing/primitives/dialog/tests/scenarios.ts) also compare
+draft preservation, completion order and reopening against Base UI.
 
 Verification passed 157 units, 107 browser cases with one existing Android capability skip,
 108 pinned Menu comparisons and 12 Portal consumer checks. The AOT suite passed all 135 cases
 across the three desktop engines. WebKit passed on a separate run after the original runner
 stalled creating a new page.
+
+## Modal keyboard and background isolation
+
+The [pinned modal case](../../../apps/parity-testing/primitives/dialog/tests/scenarios.ts) exposed
+two macOS WebKit differences. Ordinary Tab skipped Close, which Base UI renders with explicit
+`tabindex="0"`. Angular now supplies that static default, which authors can override. Option+Tab
+reached Close but failed to wrap because the focus scope intercepted the transfer to its boundary
+guard. The scope now lets its own registered guards finish the focus transfer. The
+[focus manager regression](../floating-focus-manager/__tests__/floating-focus-manager.spec.ts)
+also checks that an unrelated guard cannot take focus outside the scope.
+
+The modal comparison checks focus cycling, background isolation, scroll lock and outside press.
+Angular uses `inert` for background isolation as described in
+[ADR 0017](../../../docs/adr/0017-floating-focus-manager.md). The pinned React runtime uses
+`aria-hidden`. The suite records both attributes and compares the observable keyboard and pointer
+behavior. Non-modal and `trap-focus` modes, nested dismissal, detached handles, custom focus targets
+and Portal destination changes remain pending paired checks.
