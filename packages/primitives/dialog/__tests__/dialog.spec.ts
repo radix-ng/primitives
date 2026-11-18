@@ -185,6 +185,36 @@ class MultipleTriggersHostComponent {
 }
 
 @Component({
+    imports: [dialogImports],
+    template: `
+        <div
+            [open]="open()"
+            [triggerId]="triggerId()"
+            [defaultTriggerId]="defaultTriggerId()"
+            (triggerIdChange)="requests.push($event)"
+            rdxDialogRoot
+        >
+            <button id="account" [payload]="accountPayload()" rdxDialogTrigger>Account</button>
+            @if (showBilling()) {
+                <button id="billing" payload="billing data" rdxDialogTrigger>Billing</button>
+            }
+            <div *rdxDialogPortal rdxDialogPopup>
+                <h2 rdxDialogTitle>Details</h2>
+                <button rdxDialogClose>Close</button>
+            </div>
+        </div>
+    `
+})
+class TriggerOwnershipHostComponent {
+    readonly open = signal(true);
+    readonly triggerId = signal<string | null | undefined>(undefined);
+    readonly defaultTriggerId = signal<string | null>(null);
+    readonly showBilling = signal(true);
+    readonly accountPayload = signal('account data');
+    readonly requests: (string | null)[] = [];
+}
+
+@Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPopup],
     template: `
@@ -684,7 +714,7 @@ describe('Dialog', () => {
         multiFixture.destroy();
     });
 
-    it('clears the active trigger when a controlled triggerId is reset to null', () => {
+    it('falls back to the last used trigger when the controlled ID becomes null', () => {
         const multiFixture = TestBed.createComponent(MultipleTriggersHostComponent);
         multiFixture.detectChanges();
 
@@ -697,9 +727,110 @@ describe('Dialog', () => {
         multiFixture.changeDetectorRef.markForCheck();
         multiFixture.detectChanges();
 
-        // No trigger is active anymore, so neither button reports itself as expanded.
-        expect(two.getAttribute('aria-expanded')).toBe('false');
+        expect(two.getAttribute('aria-expanded')).toBe('true');
         multiFixture.destroy();
+    });
+
+    it('gives an explicit trigger ID priority over the initial default without emitting a request', async () => {
+        const controlled = TestBed.createComponent(TriggerOwnershipHostComponent);
+        const host = controlled.componentInstance;
+        host.triggerId.set('billing');
+        host.defaultTriggerId.set('account');
+        await controlled.whenStable();
+        const root = controlled.debugElement.query(By.directive(RdxDialogRoot)).injector.get(RdxDialogRoot);
+
+        expect(root.triggerId()).toBe('billing');
+        expect(root.trigger()?.id).toBe('billing');
+        expect(root.payload()).toBe('billing data');
+        expect(host.requests).toEqual([]);
+
+        host.triggerId.set(null);
+        await controlled.whenStable();
+        expect(root.triggerId()).toBe('account');
+        expect(root.payload()).toBe('account data');
+        controlled.destroy();
+    });
+
+    it('ignores a late trigger default and leaves an ambiguous programmatic open unassociated', async () => {
+        const controlled = TestBed.createComponent(TriggerOwnershipHostComponent);
+        await controlled.whenStable();
+        const root = controlled.debugElement.query(By.directive(RdxDialogRoot)).injector.get(RdxDialogRoot);
+        controlled.componentInstance.defaultTriggerId.set('billing');
+        await controlled.whenStable();
+
+        expect(root.triggerId()).toBeNull();
+        expect(root.trigger()).toBeUndefined();
+        expect(popup()).not.toBeNull();
+        expect(controlled.componentInstance.requests).toEqual([]);
+        controlled.destroy();
+    });
+
+    it('retains the implicit sole trigger association when a second trigger registers', async () => {
+        const controlled = TestBed.createComponent(TriggerOwnershipHostComponent);
+        const host = controlled.componentInstance;
+        host.showBilling.set(false);
+        await controlled.whenStable();
+        const root = controlled.debugElement.query(By.directive(RdxDialogRoot)).injector.get(RdxDialogRoot);
+        const original = root.trigger();
+        expect(original?.id).toBe('account');
+
+        host.showBilling.set(true);
+        await controlled.whenStable();
+        expect(root.trigger()).toBe(original);
+        expect(root.triggerId()).toBe('account');
+        expect(host.requests).toEqual([]);
+        controlled.destroy();
+    });
+
+    it('honors a refused trigger request and derives payload from the accepted ID', async () => {
+        const controlled = TestBed.createComponent(TriggerOwnershipHostComponent);
+        const host = controlled.componentInstance;
+        host.open.set(false);
+        host.triggerId.set('billing');
+        await controlled.whenStable();
+        const account: HTMLButtonElement = controlled.nativeElement.querySelector('#account');
+        const root = controlled.debugElement.query(By.directive(RdxDialogRoot)).injector.get(RdxDialogRoot);
+
+        account.click();
+        await controlled.whenStable();
+        host.open.set(true);
+        await controlled.whenStable();
+        expect(host.requests).toEqual(['account']);
+        expect(account.getAttribute('aria-expanded')).toBe('false');
+        expect(root.trigger()?.id).toBe('billing');
+        expect(root.payload()).toBe('billing data');
+
+        host.triggerId.set(null);
+        host.accountPayload.set('updated data');
+        await controlled.whenStable();
+        expect(account.getAttribute('aria-expanded')).toBe('true');
+        expect(root.payload()).toBe('updated data');
+        expect(host.requests).toEqual(['account']);
+        controlled.destroy();
+    });
+
+    it('keeps an open dialog associated with a removed ID until its replacement registers', async () => {
+        const controlled = TestBed.createComponent(TriggerOwnershipHostComponent);
+        const host = controlled.componentInstance;
+        host.defaultTriggerId.set('billing');
+        await controlled.whenStable();
+        const root = controlled.debugElement.query(By.directive(RdxDialogRoot)).injector.get(RdxDialogRoot);
+        const initial = root.trigger();
+
+        host.showBilling.set(false);
+        await controlled.whenStable();
+        expect(root.open()).toBe(true);
+        expect(root.triggerId()).toBe('billing');
+        expect(root.trigger()).toBeUndefined();
+        expect(controlled.nativeElement.querySelector('#account').getAttribute('aria-expanded')).toBe('false');
+        expect(host.requests).toEqual([]);
+
+        host.showBilling.set(true);
+        await controlled.whenStable();
+        expect(root.trigger()?.id).toBe('billing');
+        expect(root.trigger()).not.toBe(initial);
+        expect(root.payload()).toBe('billing data');
+        controlled.destroy();
     });
 
     it('controls a dialog from detached triggers through a handle', () => {

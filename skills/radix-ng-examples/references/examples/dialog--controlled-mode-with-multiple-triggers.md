@@ -5,6 +5,9 @@
 > Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
 Bind both `[(open)]` and `[(triggerId)]` to choose which trigger is active from component state.
+With a one-way `[triggerId]` binding, the supplied ID stays active until the parent updates it.
+Setting the input to `null` releases the override and uses the internal selection.
+`defaultTriggerId` seeds that internal selection once.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';

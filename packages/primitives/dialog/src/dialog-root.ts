@@ -1,4 +1,5 @@
 import {
+    afterRenderEffect,
     booleanAttribute,
     computed,
     DestroyRef,
@@ -7,7 +8,6 @@ import {
     ElementRef,
     inject,
     input,
-    model,
     output,
     Signal,
     signal,
@@ -59,6 +59,11 @@ export interface RdxDialogOpenChange {
 interface RdxDialogRegisteredTrigger {
     element: HTMLElement;
     payload: () => unknown;
+}
+
+interface RdxDialogTriggerSelection {
+    id: string | null;
+    fallback?: { element: HTMLElement | undefined; payload: unknown };
 }
 
 const transformModal = (value: BooleanInput | 'trap-focus'): RdxDialogModal =>
@@ -133,8 +138,8 @@ export class RdxDialogRoot {
     private readonly destroyRef = inject(DestroyRef);
     private readonly parentRoot = inject(RdxDialogRoot, { optional: true, skipSelf: true });
     private readonly variant = inject(RDX_DIALOG_VARIANT);
-    private hasAppliedDefaultTriggerId = false;
-    private readonly registeredTriggers = new Map<string, RdxDialogRegisteredTrigger>();
+    private readonly registeredTriggers = signal<ReadonlyMap<string, RdxDialogRegisteredTrigger>>(new Map());
+    private readonly localTrigger = signal<RdxDialogTriggerSelection>({ id: null });
     private readonly uncontrolledOpen = signal(false);
     // Keep the latest request's metadata until the controlled input commits it.
     private pendingOpenChange: { open: boolean; commit: () => void } | undefined;
@@ -168,8 +173,21 @@ export class RdxDialogRoot {
 
     /**
      * ID of the trigger associated with a controlled dialog.
+     * Null or undefined falls back to the internally selected trigger.
      */
-    readonly triggerId = model<string | null>(null);
+    readonly triggerIdInput = input<string | null>(undefined, { alias: 'triggerId' });
+
+    private readonly implicitTriggerId = computed(() => {
+        if (!this.open() || this.localTrigger().fallback) return null;
+        const registered = this.registeredTriggers();
+        return registered.size === 1 ? (registered.keys().next().value ?? null) : null;
+    });
+
+    /** The active trigger ID after resolving the input and internal selection. */
+    readonly triggerId = computed(() => this.triggerIdInput() ?? this.localTrigger().id ?? this.implicitTriggerId());
+
+    /** Accepted trigger requests. Supports `[(triggerId)]`. */
+    readonly triggerIdChange = output<string | null>();
 
     /**
      * ID of the trigger associated with an initially open uncontrolled dialog.
@@ -208,9 +226,18 @@ export class RdxDialogRoot {
     readonly contentId = injectId('rdx-dialog-content-');
     readonly titleId = signal<string | undefined>(undefined);
     readonly descriptionId = signal<string | undefined>(undefined);
-    readonly trigger = signal<HTMLElement | undefined>(undefined);
-    readonly triggers = signal<HTMLElement[]>([]);
-    readonly payload = signal<unknown>(undefined);
+    private readonly activeTrigger = computed(() => {
+        const id = this.triggerId();
+        const registered = id === null ? undefined : this.registeredTriggers().get(id);
+        if (registered) return { element: registered.element, payload: registered.payload() };
+        const local = this.localTrigger();
+        return id === local.id ? local.fallback : undefined;
+    });
+    readonly trigger = computed(() => this.activeTrigger()?.element);
+    readonly triggers = computed(() => [
+        ...new Set([...this.registeredTriggers().values()].map(({ element }) => element))
+    ]);
+    readonly payload = computed(() => this.activeTrigger()?.payload);
     readonly nestedOpenCount = signal(0);
     readonly openInteractionType = signal<RdxInteractionType>(null);
     readonly closeInteractionType = signal<RdxInteractionType>(null);
@@ -253,20 +280,18 @@ export class RdxDialogRoot {
             }
         });
 
-        watch([], () => this.uncontrolledOpen.set(this.defaultOpen()));
-
-        effect(() => {
-            const defaultTriggerId = this.defaultTriggerId();
-
-            if (!this.hasAppliedDefaultTriggerId && defaultTriggerId !== null) {
-                this.hasAppliedDefaultTriggerId = true;
-                this.triggerId.set(defaultTriggerId);
-            }
+        watch([], () => {
+            this.localTrigger.set({ id: this.defaultTriggerId() });
+            this.uncontrolledOpen.set(this.defaultOpen());
         });
 
-        effect(() => {
-            const triggerId = this.triggerId();
-            untracked(() => this.syncTriggerId(triggerId));
+        afterRenderEffect({
+            read: () => {
+                if (this.triggerIdInput() != null || this.localTrigger().id !== null) return;
+                // Child views may register separately during a render. Latch only a settled lone trigger.
+                const id = this.implicitTriggerId();
+                if (id !== null) this.localTrigger.set({ id });
+            }
         });
 
         let previousOpen = this.open();
@@ -308,43 +333,42 @@ export class RdxDialogRoot {
         reason: RdxDialogOpenChangeReason = 'none',
         event?: Event
     ) {
-        const shouldAdoptPayload = trigger !== undefined || payload !== undefined;
+        const selection = this.requestedTriggerSelection(trigger, payload, triggerId);
         const interactionType = this.consumeOpenInteractionType(event);
 
         if (this.open()) {
-            if (trigger) {
-                this.trigger.set(trigger);
+            if (selection) {
+                const previousId = this.triggerId();
+                this.localTrigger.set(selection);
+                if (selection.id !== previousId) this.triggerIdChange.emit(selection.id);
             }
-
-            if (triggerId !== undefined) {
-                this.triggerId.set(triggerId);
-            }
-
-            // Only adopt the payload when a trigger context is actually provided, so a bare
-            // imperative re-show on an already-open dialog doesn't clobber the live payload.
-            if (shouldAdoptPayload) {
-                this.payload.set(payload);
-            }
-
             return;
         }
 
         const resolvedEvent = event ?? new Event('dialog.open-change');
-        const change = this.createOpenChangeEvent(true, reason, resolvedEvent, trigger, triggerId ?? this.triggerId());
+        const change = this.createOpenChangeEvent(
+            true,
+            reason,
+            resolvedEvent,
+            trigger,
+            selection ? selection.id : this.triggerId()
+        );
         this.onOpenChange.emit(change.payload);
 
         if (change.eventDetails.isCanceled()) {
             return;
         }
 
-        this.acceptOpenRequest(true, () => {
-            this.openInteractionType.set(interactionType);
-            if (trigger) this.trigger.set(trigger);
-            if (triggerId !== undefined) this.triggerId.set(triggerId);
-            if (shouldAdoptPayload) this.payload.set(payload);
-            this.preventUnmountOnClose.set(false);
-            this.floatingContext.events.emit('openchange', { open: true, reason, event: resolvedEvent });
-        });
+        this.acceptOpenRequest(
+            true,
+            () => {
+                this.openInteractionType.set(interactionType);
+                if (selection) this.localTrigger.set(selection);
+                this.preventUnmountOnClose.set(false);
+                this.floatingContext.events.emit('openchange', { open: true, reason, event: resolvedEvent });
+            },
+            selection?.id
+        );
     }
 
     close(reason: RdxDialogOpenChangeReason = 'none', event?: Event) {
@@ -369,7 +393,8 @@ export class RdxDialogRoot {
         });
     }
 
-    private acceptOpenRequest(open: boolean, commit: () => void) {
+    private acceptOpenRequest(open: boolean, commit: () => void, requestedTriggerId?: string | null) {
+        const changesTrigger = requestedTriggerId !== undefined && requestedTriggerId !== this.triggerId();
         if (this.openInput() === undefined) {
             this.pendingOpenChange = undefined;
             this.uncontrolledOpen.set(open);
@@ -377,6 +402,7 @@ export class RdxDialogRoot {
         } else {
             this.pendingOpenChange = { open, commit };
         }
+        if (changesTrigger) this.triggerIdChange.emit(requestedTriggerId);
         this.openChange.emit(open);
     }
 
@@ -394,38 +420,20 @@ export class RdxDialogRoot {
     }
 
     registerTrigger(id: string, trigger: HTMLElement, payload: () => unknown) {
-        this.registeredTriggers.set(id, { element: trigger, payload });
-        this.triggers.update((triggers) => (triggers.includes(trigger) ? triggers : [...triggers, trigger]));
+        const registration = { element: trigger, payload };
+        this.registeredTriggers.update((triggers) => new Map(triggers).set(id, registration));
         // Bridge into the floating context's trigger registry — the new dismissal/focus engines read it
         // for inside-element checks (a press/focus on the trigger counts as inside, ADR 0015 §2).
         this.floatingContext.triggers.add(trigger);
 
-        if (this.triggerId() === id || (!this.trigger() && this.triggerId() === null)) {
-            this.trigger.set(trigger);
-            this.payload.set(payload());
-        }
-
         return () => {
-            if (this.registeredTriggers.get(id)?.element === trigger) {
-                this.registeredTriggers.delete(id);
-            }
-
-            this.triggers.update((triggers) => triggers.filter((candidate) => candidate !== trigger));
+            this.registeredTriggers.update((triggers) => {
+                if (triggers.get(id) !== registration) return triggers;
+                const remaining = new Map(triggers);
+                remaining.delete(id);
+                return remaining;
+            });
             this.floatingContext.triggers.delete(trigger);
-
-            if (!this.destroyRef.destroyed && this.trigger() === trigger) {
-                const next = this.registeredTriggers.entries().next().value;
-
-                if (this.triggerId() !== null) {
-                    this.triggerId.set(next?.[0] ?? null);
-                }
-
-                this.trigger.set(next?.[1].element);
-                this.payload.set(next?.[1].payload());
-
-                // Intentionally do NOT close when the last trigger unregisters (unlike popover):
-                // a controlled / imperatively-opened dialog must survive its trigger unmounting.
-            }
         };
     }
 
@@ -435,20 +443,17 @@ export class RdxDialogRoot {
         return () => this.nestedOpenCount.update((count) => count - 1);
     }
 
-    private syncTriggerId(triggerId: string | null) {
-        if (triggerId === null) {
-            // Controlled triggerId cleared: drop the active trigger so stale state doesn't linger.
-            this.trigger.set(undefined);
-            this.payload.set(undefined);
-            return;
-        }
-
-        const trigger = this.registeredTriggers.get(triggerId);
-
-        if (trigger && trigger.element !== this.trigger()) {
-            this.trigger.set(trigger.element);
-            this.payload.set(trigger.payload());
-        }
+    private requestedTriggerSelection(
+        trigger: HTMLElement | undefined,
+        payload: unknown,
+        triggerId: string | undefined
+    ): RdxDialogTriggerSelection | undefined {
+        if (triggerId === undefined && trigger === undefined && payload === undefined) return undefined;
+        const id = triggerId ?? (trigger?.id || null);
+        const registered = id === null ? undefined : this.registeredTriggers().get(id);
+        // Read live payloads from registered triggers and keep only explicit external context here.
+        if (registered && (!trigger || registered.element === trigger)) return { id };
+        return { id, fallback: { element: trigger, payload } };
     }
 
     private createOpenChangeEvent(
@@ -499,9 +504,9 @@ function contextFor(root: RdxDialogRoot): RdxDialogRootContext {
         disablePointerDismissal: root.effectiveDisablePointerDismissal,
         role: root.role,
         transitionStatus: root.transitionStatus,
-        trigger: root.trigger.asReadonly(),
-        triggers: root.triggers.asReadonly(),
-        payload: root.payload.asReadonly(),
+        trigger: root.trigger,
+        triggers: root.triggers,
+        payload: root.payload,
         openInteractionType: root.openInteractionType.asReadonly(),
         closeInteractionType: root.closeInteractionType.asReadonly(),
         nested: root.nested,

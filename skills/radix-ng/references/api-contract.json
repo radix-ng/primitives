@@ -303,8 +303,8 @@
             {
               "name": "triggerId",
               "type": "string | null",
-              "default": "null",
-              "description": "ID of the trigger associated with a controlled dialog."
+              "default": "undefined",
+              "description": "ID of the trigger associated with a controlled dialog.\nNull or undefined falls back to the internally selected trigger."
             },
             {
               "name": "defaultTriggerId",
@@ -323,6 +323,11 @@
               "name": "openChange",
               "type": "boolean",
               "description": "Accepted open requests. Supports two-way binding to the controlled input."
+            },
+            {
+              "name": "triggerIdChange",
+              "type": "string | null",
+              "description": "Accepted trigger requests. Supports `[(triggerId)]`."
             },
             {
               "name": "onOpenChange",
@@ -3003,8 +3008,8 @@
             {
               "name": "triggerId",
               "type": "string | null",
-              "default": "null",
-              "description": "ID of the trigger associated with a controlled dialog."
+              "default": "undefined",
+              "description": "ID of the trigger associated with a controlled dialog.\nNull or undefined falls back to the internally selected trigger."
             }
           ],
           "outputs": [
@@ -3022,6 +3027,11 @@
               "name": "openChange",
               "type": "boolean",
               "description": "Accepted open requests. Supports two-way binding to the controlled input."
+            },
+            {
+              "name": "triggerIdChange",
+              "type": "string | null",
+              "description": "Accepted trigger requests. Supports `[(triggerId)]`."
             }
           ],
           "twoWay": [
@@ -3344,8 +3354,8 @@
             {
               "name": "triggerId",
               "type": "string | null",
-              "default": "null",
-              "description": "ID of the trigger associated with a controlled dialog."
+              "default": "undefined",
+              "description": "ID of the trigger associated with a controlled dialog.\nNull or undefined falls back to the internally selected trigger."
             },
             {
               "name": "defaultTriggerId",
@@ -3381,6 +3391,11 @@
               "name": "openChange",
               "type": "boolean",
               "description": "Accepted open requests. Supports two-way binding to the controlled input."
+            },
+            {
+              "name": "triggerIdChange",
+              "type": "string | null",
+              "description": "Accepted trigger requests. Supports `[(triggerId)]`."
             },
             {
               "name": "onOpenChange",

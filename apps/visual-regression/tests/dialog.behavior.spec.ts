@@ -49,6 +49,28 @@ test('controlled open requests leave focus and scroll locking with the rendered 
     await expect(open).toBeFocused();
 });
 
+test('controlled trigger ID selects the owning trigger and preserves focus return', async ({ page }) => {
+    await gotoStory(page, 'primitives-dialog--controlled-multiple');
+    const account = page.getByRole('button', { name: 'Account', exact: true });
+    const billing = page.getByRole('button', { name: 'Billing', exact: true });
+    const dialog = page.getByRole('dialog', { name: 'Billing' });
+
+    await billing.focus();
+    await billing.press('Enter');
+    await expect(dialog).toBeVisible();
+    await expect(billing).toHaveAttribute('aria-controls', (await dialog.getAttribute('id'))!);
+    await expect(account).toHaveAttribute('aria-expanded', 'false');
+
+    await page.keyboard.press('Escape');
+    await expect(dialog).toHaveCount(0);
+    await expect(billing).toBeFocused();
+
+    await page.getByRole('button', { name: 'Open billing externally' }).click();
+    await expect(dialog).toBeVisible();
+    await expect(billing).toHaveAttribute('aria-expanded', 'true');
+    await expect(account).toHaveAttribute('aria-expanded', 'false');
+});
+
 test.describe('Dialog structural portal', () => {
     test('teleports backdrop and popup directly into <body> with no wrapper element', async ({ page }) => {
         await gotoStory(page, 'primitives-dialog--default');

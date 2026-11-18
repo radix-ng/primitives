@@ -21,18 +21,18 @@ Source of truth: [entry barrel](index.ts). These are directly exported decorated
 claim that inherited/host-directive APIs or every upstream prop have already been compared. Exported
 composition bases, guards and internal helpers are not thereby promoted to stable public widget parts.
 
-| Angular declaration                                  | Selector / role                      | Direct input/model/output declarations                                                                                                                                                                |
-| ---------------------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`RdxDialogBackdrop`](src/dialog-backdrop.ts)        | `[rdxDialogBackdrop]`                | `forceRender`                                                                                                                                                                                         |
-| [`RdxDialogClose`](src/dialog-close.ts)              | `button[rdxDialogClose]`             | No direct signal input/model/output declaration.                                                                                                                                                      |
-| [`RdxDialogDescription`](src/dialog-description.ts)  | `[rdxDialogDescription]`             | No direct signal input/model/output declaration.                                                                                                                                                      |
-| [`RdxDialogPopup`](src/dialog-popup.ts)              | `[rdxDialogPopup]`                   | `escapeKeyDown` (output), `pointerDownOutside` (output), `focusOutside` (output), `interactOutside` (output)                                                                                          |
-| [`RdxDialogPortal`](src/dialog-portal.ts)            | `ng-template[rdxDialogPortal]`       | `container`                                                                                                                                                                                           |
-| [`RdxDialogPortalMisuseGuard`](src/dialog-portal.ts) | `[rdxDialogPortal]:not(ng-template)` | No direct signal input/model/output declaration.                                                                                                                                                      |
-| [`RdxDialogRoot`](src/dialog-root.ts)                | `[rdxDialogRoot]`                    | `open` (input), `openChange` (output), `defaultOpen`, `triggerId` (model), `defaultTriggerId`, `modal`, `disablePointerDismissal`, `handle`, `onOpenChange` (output), `onOpenChangeComplete` (output) |
-| [`RdxDialogTitle`](src/dialog-title.ts)              | `[rdxDialogTitle]`                   | No direct signal input/model/output declaration.                                                                                                                                                      |
-| [`RdxDialogTrigger`](src/dialog-trigger.ts)          | `button[rdxDialogTrigger]`           | `handle`, `payload`, `id`, `disabled`                                                                                                                                                                 |
-| [`RdxDialogViewport`](src/dialog-viewport.ts)        | `[rdxDialogViewport]`                | No direct signal input/model/output declaration.                                                                                                                                                      |
+| Angular declaration                                  | Selector / role                      | Direct input/model/output declarations                                                                                                                                                                                            |
+| ---------------------------------------------------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`RdxDialogBackdrop`](src/dialog-backdrop.ts)        | `[rdxDialogBackdrop]`                | `forceRender`                                                                                                                                                                                                                     |
+| [`RdxDialogClose`](src/dialog-close.ts)              | `button[rdxDialogClose]`             | No direct signal input/model/output declaration.                                                                                                                                                                                  |
+| [`RdxDialogDescription`](src/dialog-description.ts)  | `[rdxDialogDescription]`             | No direct signal input/model/output declaration.                                                                                                                                                                                  |
+| [`RdxDialogPopup`](src/dialog-popup.ts)              | `[rdxDialogPopup]`                   | `escapeKeyDown` (output), `pointerDownOutside` (output), `focusOutside` (output), `interactOutside` (output)                                                                                                                      |
+| [`RdxDialogPortal`](src/dialog-portal.ts)            | `ng-template[rdxDialogPortal]`       | `container`                                                                                                                                                                                                                       |
+| [`RdxDialogPortalMisuseGuard`](src/dialog-portal.ts) | `[rdxDialogPortal]:not(ng-template)` | No direct signal input/model/output declaration.                                                                                                                                                                                  |
+| [`RdxDialogRoot`](src/dialog-root.ts)                | `[rdxDialogRoot]`                    | `open` (input), `openChange` (output), `defaultOpen`, `triggerId` (input), `triggerIdChange` (output), `defaultTriggerId`, `modal`, `disablePointerDismissal`, `handle`, `onOpenChange` (output), `onOpenChangeComplete` (output) |
+| [`RdxDialogTitle`](src/dialog-title.ts)              | `[rdxDialogTitle]`                   | No direct signal input/model/output declaration.                                                                                                                                                                                  |
+| [`RdxDialogTrigger`](src/dialog-trigger.ts)          | `button[rdxDialogTrigger]`           | `handle`, `payload`, `id`, `disabled`                                                                                                                                                                                             |
+| [`RdxDialogViewport`](src/dialog-viewport.ts)        | `[rdxDialogViewport]`                | No direct signal input/model/output declaration.                                                                                                                                                                                  |
 
 Inherited classes and composed directives may add state/API. Follow those sources when completing
 the comparison; similar part names or selector counts do not prove the same contract.
@@ -44,10 +44,10 @@ distinguishes controlled UI requests, editable form models, readonly configurati
 and derived/render state. Local writes to required form models are legitimate Angular behavior.
 For strict controlled UI state, a request must not mutate the effective value before parent acceptance.
 
-| State field / source                            | Current declaration           | Ownership review                                                                                                             |
-| ----------------------------------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| [`RdxDialogRoot.open`](src/dialog-root.ts)      | Readonly effective signal     | The `open` input owns controlled rendering. `openChange` reports requests after cancellation checks and supports `[(open)]`. |
-| [`RdxDialogRoot.triggerId`](src/dialog-root.ts) | `model<string \| null>(null)` | Define parent-owned UI requests separately from accepted/effective state; no form-model exemption is implied.                |
+| State field / source                            | Current declaration       | Ownership review                                                                                                                            |
+| ----------------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`RdxDialogRoot.open`](src/dialog-root.ts)      | Readonly effective signal | The `open` input owns controlled rendering. `openChange` reports requests after cancellation checks and supports `[(open)]`.                |
+| [`RdxDialogRoot.triggerId`](src/dialog-root.ts) | Readonly effective signal | A supplied string overrides internal selection. Null or undefined falls back to that selection. `triggerIdChange` supports `[(triggerId)]`. |
 
 | Declared default / source                              | Declaration                           | Required comparison                                                                                                                                         |
 | ------------------------------------------------------ | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -64,11 +64,11 @@ boundaries explicitly instead of converting all models to readonly inputs.
 “Source” identifies a local implementation fact. “Compare/verify/audit” is pending work. Priorities
 describe the target work, not a certificate or a reproduced defect count.
 
-| Area                        | Current observation / required target comparison                                                                                                                                                 | Priority |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
-| Open/default ownership      | Controlled false and initial-only `defaultOpen` are verified. Trigger-ID defaults remain a separate case. See [ownership and lifetime cases](#ownership-and-lifetime-cases).                     | P1       |
-| Request versus actual state | Effective open state controls focus, Portal lifetime and body scroll lock. Trigger-ID ownership remains separate.                                                                                | P1       |
-| Popup lifetime              | Compare modal/non-modal and nested focus, native close/trigger buttons, handles/trigger IDs, retained/manual exits, Portal ranges and hydration. AlertDialog/Drawer delegate into this contract. | P2       |
+| Area                        | Current observation / required target comparison                                                                                                                                                 | Priority        |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------- |
+| Open/default ownership      | Controlled values and initial-only defaults for open state and trigger identity are covered below.                                                                                               | Verified        |
+| Request versus actual state | Effective open state owns focus, Portal lifetime and scroll locking. The resolved trigger ID owns the registered trigger, its payload and trigger ARIA.                                          | Verified subset |
+| Popup lifetime              | Compare modal/non-modal and nested focus, native close/trigger buttons, handles/trigger IDs, retained/manual exits, Portal ranges and hydration. AlertDialog/Drawer delegate into this contract. | P2              |
 
 Also compare the actual emitted per-part attributes/CSS variables with both the pinned declaration
 files and runtime state mapping. Check native hosts, event reasons/details/default prevention,
@@ -86,7 +86,7 @@ and [store selectors](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda2
 | Controlled false with default true        | `[open]="false" [defaultOpen]="true"` stays closed without an initial request.                                                                                                                    | Verified trigger `aria-expanded=false`, popup absence and no scroll lock.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Late default                              | Uncontrolled Roots consume the first `defaultOpen`, including `false`. Later default changes leave the state unchanged.                                                                           | Verified initial true without an open request, and later true after the initial false.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | Parent keeps false after clicking Trigger | Root reports `onOpenChange` and, after cancellation checks, `openChange`. Until the parent supplies the requested value, the Portal, focus and scroll lock follow the previously committed state. | Unit and browser cases cover ignored open and close requests followed by parent acceptance. Unit coverage also verifies that the latest trigger request supplies metadata on acceptance.                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Active trigger default                    | Source: a first non-null `defaultTriggerId` can seed the local model.                                                                                                                             | With two triggers, an explicit ID `b` takes precedence over default `a`. Check the active trigger, its payload and focus return. Test omitted ID, late defaults and explicit `null` separately. The pin uses `null` as a fallback to internal active identity.                                                                                                                                                                                                                                                                                                                               |
+| Active trigger default                    | A supplied ID wins over the initial default. Null releases the override. The default remains an initial snapshot.                                                                                 | Cases cover default Account versus controlled Billing, late defaults, live payloads and the last committed internal ID after release.                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | Whole-view retention and manual unmount   | Source: [Portal](src/dialog-portal.ts) exposes `container`. [Root](src/dialog-root.ts) honors `preventUnmountOnClose()` through its `present` signal.                                             | [Pinned Portal](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/dialog/portal/DialogPortal.tsx) adds `keepMounted`. [Pinned Root](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/dialog/root/DialogRoot.tsx) exposes manual release through `actionsRef.unmount()`. Compare child initialization/disposal, deferred completion, canceled close and reopening during a hold. [Popover](../popover/PARITY.md#close-lifecycle-increment) covers these behaviors on the shared popup lifecycle. |
 
 ## Evidence inventory and next checks
@@ -99,7 +99,7 @@ and [store selectors](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda2
 The directive reference exposes effective `open()` as readonly. Set a bound value to drive a
 controlled Dialog, or use `show()` and `close()` for imperative requests. The latest accepted-request
 metadata takes effect when the parent commits the matching state. `[(open)]` accepts the request
-via its ordinary output binding. Trigger-ID ownership and manual Portal release remain separate.
+via its ordinary output binding. Manual Portal release remains separate.
 The open-state regressions failed against the earlier model implementation and pass with the new
 ownership contract. Verification passed 77 Dialog/AlertDialog/Drawer units, 101 browser runs
 (one existing Android capability skip), and the `eager-dialog` hydration case in each desktop
@@ -109,3 +109,25 @@ See the
 [verification skill](../../../.agents/skills/radix-testing/SKILL.md),
 [matrix index](../../../docs/engineering/parity-matrices.md) and
 [upstream preparation guide](../../../docs/engineering/upstream-reference.md).
+
+## Trigger identity increment
+
+The [pinned selector](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/utils/popups/store.ts)
+resolves the supplied ID before the internal selection. Angular uses that same precedence.
+`triggerIdChange` reports accepted trigger requests independently of the `openChange` output.
+The effective `triggerId()`, registered trigger and payload are readonly. Explicit parent selection,
+initial defaults and registration changes do not emit trigger requests.
+
+A programmatic open with two triggers and no ID stays unassociated. A lone trigger is claimed
+after Angular has rendered the registration set. The computed fallback also supports initial
+SSR markup. Removing an active registration preserves its ID and the open dialog. Re-registering
+that ID restores the element association. The registry supplies live payloads for named triggers.
+
+[Dialog units](__tests__/dialog.spec.ts) compare default precedence, late updates, refused
+requests, null fallback, registration and payload. The
+[controlled multiple-trigger browser case](../../../apps/visual-regression/tests/dialog.behavior.spec.ts)
+checks trigger ARIA, keyboard focus return and an externally supplied ID.
+
+Five trigger identity scenarios failed before the fix. Verification passes 82 family units,
+104 browser runs with one existing Android capability skip, the `eager-dialog` hydration case in
+each desktop engine, 108 pinned Menu comparisons and 12 Portal consumer regressions.

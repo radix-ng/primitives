@@ -47,7 +47,7 @@ For strict controlled UI state, a request must not mutate the effective value be
 [Alert Dialog Root](src/alert-dialog-root.ts) exposes the composed Dialog inputs `open`,
 `defaultOpen`, `triggerId`, `defaultTriggerId` and `handle`, and the outputs `openChange`,
 `triggerIdChange`, `onOpenChange` and `onOpenChangeComplete`. Its exported `open` and
-`triggerId` refer to Dialog’s effective open signal and trigger ID model. The variant fixes the role, modality
+`triggerId` refer to Dialog’s readonly effective state signals. The variant fixes the role, modality
 and outside-pointer dismissal policy.
 
 ## Family-specific comparison matrix
@@ -55,11 +55,11 @@ and outside-pointer dismissal policy.
 “Source” identifies a local implementation fact. “Compare/verify/audit” is pending work. Priorities
 describe the target work, not a certificate or a reproduced defect count.
 
-| Area              | Current observation / required target comparison                                                                                                                                                                           | Priority |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| Delegated state   | AlertDialog forwards Dialog’s readonly controlled `open` input and `openChange` requests. Dialog’s initial-only default and parent-owned rendering apply through the composition. Alert-specific paired cases remain open. | P1       |
-| Alert interaction | Compare mandatory alert-dialog role, modal isolation, cancel/confirm actions, outside dismissal and Escape against AlertDialog rather than assuming ordinary Dialog behavior.                                              | P1       |
-| Composed lifetime | Compare native action buttons, focus return, nested dialogs, complete Portal views and retained/manual exits with the delegated Dialog implementation.                                                                     | P2       |
+| Area              | Current observation / required target comparison                                                                                                                                                                                      | Priority |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| Delegated state   | AlertDialog forwards Dialog’s readonly controlled `open` input and `openChange` requests. Dialog’s initial-only defaults and parent-owned open and trigger ID apply through the composition. Alert-specific paired cases remain open. | P1       |
+| Alert interaction | Compare mandatory alert-dialog role, modal isolation, cancel/confirm actions, outside dismissal and Escape against AlertDialog rather than assuming ordinary Dialog behavior.                                                         | P1       |
+| Composed lifetime | Compare native action buttons, focus return, nested dialogs, complete Portal views and retained/manual exits with the delegated Dialog implementation.                                                                                | P2       |
 
 Also compare the actual emitted per-part attributes/CSS variables with both the pinned declaration
 files and runtime state mapping. Check native hosts, event reasons/details/default prevention,
