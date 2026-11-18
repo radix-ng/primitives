@@ -71,7 +71,7 @@ const DIALOG_INTERNAL_BACKDROP_ATTR = 'data-rdx-dialog-internal-backdrop';
                 // `preventUnmountOnClose()` cycle after the exit transition — matching Base UI's
                 // `FloatingFocusManager disabled={!mounted}` (NOT `open`) for scope/return-focus.
                 // Trapping, marker and isolation are additionally gated on logical `open`.
-                enabled: () => rootContext.present(),
+                enabled: () => rootContext.mounted(),
                 restoreFocus: () => 'popup',
                 openInteractionType: () => rootContext.openInteractionType(),
                 closeInteractionType: () => rootContext.closeInteractionType(),
@@ -80,6 +80,7 @@ const DIALOG_INTERNAL_BACKDROP_ATTR = 'data-rdx-dialog-internal-backdrop';
         })
     ],
     host: {
+        '[hidden]': '!rootContext.mounted()',
         '[attr.role]': 'rootContext.role',
         '[attr.aria-modal]': 'rootContext.modal() === true ? "true" : undefined',
         '[attr.aria-describedby]': 'rootContext.descriptionId()',
@@ -146,7 +147,7 @@ export class RdxDialogPopup {
             setupInternalBackdrop(this.host, injector, {
                 marker: DIALOG_INTERNAL_BACKDROP_ATTR,
                 isOpen: () => this.rootContext.isOpen(),
-                shouldRender: () => this.rootContext.modal() === true,
+                shouldRender: () => this.rootContext.mounted() && this.rootContext.modal() === true,
                 cutout: () => this.host.closest('[rdxDialogViewport]'),
                 passThrough: () => this.host.closest('[rdxDialogViewport]') !== null
             })

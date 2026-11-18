@@ -72,6 +72,39 @@ test('controlled trigger ID selects the owning trigger and preserves focus retur
 });
 
 test.describe('Dialog structural portal', () => {
+    test('manual release hides retained content and reopening preserves the draft', async ({ page }) => {
+        await gotoStory(page, 'primitives-dialog--manual-close');
+        const retained = page.locator(popup);
+        const keepMounted = page.getByRole('checkbox', { name: 'Keep draft mounted' });
+        const opener = page.getByRole('button', { name: 'Open editor' });
+        const finish = page.getByRole('button', { name: 'Finish close' });
+        const draft = retained.getByRole('textbox', { name: 'Draft' });
+
+        await keepMounted.check();
+        await expect(retained).toBeAttached();
+        await expect(retained).toBeHidden();
+        await opener.click();
+        await draft.fill('remember this');
+        const original = await draft.elementHandle();
+
+        await retained.getByRole('button', { name: 'Close editor' }).click();
+        await expect(retained).toHaveAttribute('data-closed', '');
+        await expect(retained).toBeVisible();
+        await expect(page.locator('html[data-rdx-scroll-locked]')).toHaveCount(0);
+        await finish.click();
+        await expect(retained).toBeAttached();
+        await expect(retained).toBeHidden();
+        await expect(finish).toHaveCount(0);
+
+        await opener.click();
+        await expect(draft).toHaveValue('remember this');
+        expect(await draft.evaluate((element, previous) => element === previous, original)).toBe(true);
+        await retained.getByRole('button', { name: 'Close editor' }).click();
+        await finish.click();
+        await keepMounted.uncheck();
+        await expect(retained).toHaveCount(0);
+    });
+
     test('teleports backdrop and popup directly into <body> with no wrapper element', async ({ page }) => {
         await gotoStory(page, 'primitives-dialog--default');
 

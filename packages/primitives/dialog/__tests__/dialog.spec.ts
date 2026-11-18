@@ -128,11 +128,17 @@ class NoBackdropHostComponent {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPopup, RdxDialogClose],
     template: `
-        <div [(open)]="open" (onOpenChange)="handleOpenChange($event)" rdxDialogRoot>
+        <div
+            [(open)]="open"
+            (onOpenChange)="handleOpenChange($event)"
+            (onOpenChangeComplete)="recordCompletion($event)"
+            rdxDialogRoot
+        >
             <button rdxDialogTrigger>Open</button>
-            <ng-template rdxDialogPortal>
+            <ng-template [keepMounted]="keepMounted()" rdxDialogPortal>
                 <div rdxDialogPopup>
                     Popup
+                    <input aria-label="Notes" />
                     <button rdxDialogClose>Close</button>
                 </div>
             </ng-template>
@@ -145,6 +151,12 @@ class DialogCancelableHostComponent {
     cancelNextClose = false;
     preventUnmountOnNextClose = false;
     readonly changes: RdxDialogOpenChange[] = [];
+    readonly keepMounted = signal(false);
+    readonly completions: { open: boolean; mounted: boolean }[] = [];
+
+    recordCompletion(open: boolean) {
+        this.completions.push({ open, mounted: popup() !== null });
+    }
 
     handleOpenChange(change: RdxDialogOpenChange) {
         if (change.open && this.cancelNextOpen) {
@@ -515,6 +527,87 @@ describe('Dialog', () => {
         expect(popup()).toBeNull();
 
         preventFixture.destroy();
+    });
+
+    it('releases a held close exactly once and completes after removing the portal', async () => {
+        const held = TestBed.createComponent(DialogCancelableHostComponent);
+        await held.whenStable();
+        const root = held.debugElement.query(By.directive(RdxDialogRoot)).injector.get(RdxDialogRoot);
+        const host = held.componentInstance;
+        const opener: HTMLButtonElement = held.nativeElement.querySelector('[rdxDialogTrigger]');
+        opener.click();
+        await held.whenStable();
+        const original = popup();
+
+        host.preventUnmountOnNextClose = true;
+        root.close();
+        await held.whenStable();
+        expect(root.open()).toBe(false);
+        expect(popup()).toBe(original);
+        expect(host.completions.filter(({ open }) => !open)).toEqual([]);
+        expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
+
+        root.unmount();
+        root.unmount();
+        await held.whenStable();
+        expect(popup()).toBeNull();
+        expect(host.completions.filter(({ open }) => !open)).toEqual([{ open: false, mounted: false }]);
+        held.destroy();
+    });
+
+    it('retains hidden content with keepMounted across a manual release', async () => {
+        const retained = TestBed.createComponent(DialogCancelableHostComponent);
+        const host = retained.componentInstance;
+        host.keepMounted.set(true);
+        await retained.whenStable();
+        const root = retained.debugElement.query(By.directive(RdxDialogRoot)).injector.get(RdxDialogRoot);
+        const original = popup()!;
+        const notes = original.querySelector('input')!;
+        expect(original.hidden).toBe(true);
+
+        root.show();
+        await retained.whenStable();
+        expect(original.hidden).toBe(false);
+        notes.value = 'draft';
+
+        host.preventUnmountOnNextClose = true;
+        root.close();
+        await retained.whenStable();
+        expect(original.hidden).toBe(false);
+        root.unmount();
+        await retained.whenStable();
+        expect(popup()).toBe(original);
+        expect(original.hidden).toBe(true);
+        expect(host.completions.filter(({ open }) => !open)).toEqual([{ open: false, mounted: true }]);
+        root.show();
+        await retained.whenStable();
+        expect(original.querySelector('input')).toBe(notes);
+        expect(notes.value).toBe('draft');
+        retained.destroy();
+    });
+
+    it('supports close and unmount in one controlled update and ignores unmount when reopened', async () => {
+        const held = TestBed.createComponent(DialogCancelableHostComponent);
+        await held.whenStable();
+        const root = held.debugElement.query(By.directive(RdxDialogRoot)).injector.get(RdxDialogRoot);
+        const host = held.componentInstance;
+        root.show();
+        await held.whenStable();
+        host.preventUnmountOnNextClose = true;
+        root.close();
+        root.unmount();
+        await held.whenStable();
+        expect(popup()).toBeNull();
+        expect(host.completions.filter(({ open }) => !open)).toEqual([{ open: false, mounted: false }]);
+
+        root.show();
+        await held.whenStable();
+        const original = popup();
+        root.unmount();
+        await held.whenStable();
+        expect(popup()).toBe(original);
+        expect(root.open()).toBe(true);
+        held.destroy();
     });
 
     it('does not close on outside pointerdown when disablePointerDismissal is set', async () => {

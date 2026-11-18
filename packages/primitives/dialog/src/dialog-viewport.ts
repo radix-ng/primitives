@@ -12,6 +12,7 @@ import { injectRdxDialogRootContext } from './dialog-root';
     exportAs: 'rdxDialogViewport',
     host: {
         role: 'presentation',
+        '[hidden]': '!rootContext.mounted()',
         '[style.pointer-events]': 'rootContext.isOpen() ? null : "none"',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
         '[attr.data-ending-style]': 'rootContext.transitionStatus() === "ending" ? "" : undefined',

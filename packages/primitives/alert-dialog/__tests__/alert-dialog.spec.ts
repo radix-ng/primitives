@@ -31,7 +31,7 @@ import { axe } from 'jest-axe';
         <div [(open)]="open" (onOpenChange)="changes.push($event.reason)" rdxAlertDialogRoot>
             <button rdxAlertDialogTrigger>Delete</button>
 
-            <ng-template rdxAlertDialogPortal>
+            <ng-template [keepMounted]="keepMounted" rdxAlertDialogPortal>
                 <div rdxAlertDialogBackdrop></div>
                 <div rdxAlertDialogPopup>
                     <h2 rdxAlertDialogTitle>Are you sure?</h2>
@@ -44,6 +44,7 @@ import { axe } from 'jest-axe';
 })
 class TestHostComponent {
     open = false;
+    keepMounted = false;
     readonly changes: string[] = [];
 }
 
@@ -82,6 +83,19 @@ describe('AlertDialog', () => {
     afterEach(() => {
         fixture.destroy();
         document.body.style.overflow = '';
+    });
+
+    it('forwards Portal retention to the composed Dialog', () => {
+        fixture.componentInstance.keepMounted = true;
+        fixture.changeDetectorRef.markForCheck();
+        fixture.detectChanges();
+        const original = popup();
+        expect(original?.hidden).toBe(true);
+
+        trigger.click();
+        fixture.detectChanges();
+        expect(popup()).toBe(original);
+        expect(original?.hidden).toBe(false);
     });
 
     it('exports parts via alertDialogImports', () => {

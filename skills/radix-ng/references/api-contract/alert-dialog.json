@@ -81,6 +81,11 @@
           "name": "container",
           "type": "RdxPortalContainer",
           "description": "Optional HTML element or ShadowRoot target, including same-origin iframe elements or ElementRef\nwrappers. Defaults to `document.body`. Declared here (and\nforwarded to the composed {@link RdxPortalPresence}) so that the drawer and alert-dialog portals\ncan re-expose it through their own `hostDirectives`."
+        },
+        {
+          "name": "keepMounted",
+          "default": "false",
+          "description": "Keep the portal's Angular children mounted and hidden while closed."
         }
       ],
       "outputs": []

@@ -173,6 +173,11 @@ export class RdxDrawerRoot {
     /** Payload of the active trigger. */
     readonly payload = this.dialog.payload;
 
+    /** Finish a pending close after an external animation. */
+    unmount(): void {
+        this.dialog.unmount();
+    }
+
     constructor() {
         // Apply the default snap point when opening without one set. The active snap point is left
         // untouched on close: clearing it would clobber a controlled `[(snapPoint)]` binding, and an

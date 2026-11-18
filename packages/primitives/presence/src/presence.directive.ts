@@ -11,6 +11,8 @@ export type RdxPresenceContext = {
     present: Signal<boolean>;
     /** A semantic owner supplies the lifetime; the structural directive only renders its view. */
     renderLifecycle?: RdxRenderLifecycle;
+    /** A composed Portal can supply retention through its own public input. */
+    keepMounted?: Signal<boolean>;
     skipExitAnimation?: Signal<boolean>;
     registerPresence?: (presence: RdxPopupPresenceRegistration) => () => void;
 };

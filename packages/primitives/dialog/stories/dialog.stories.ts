@@ -16,6 +16,8 @@ import { RdxDialogFromMenuComponent } from './dialog-from-menu';
 import fromMenuSource from './dialog-from-menu?raw';
 import { RdxDialogInsideScrollComponent } from './dialog-inside-scroll';
 import insideScrollSource from './dialog-inside-scroll?raw';
+import { RdxDialogManualCloseComponent } from './dialog-manual-close';
+import manualCloseSource from './dialog-manual-close?raw';
 import { RdxDialogMultipleTriggersComponent } from './dialog-multiple-triggers';
 import multipleTriggersSource from './dialog-multiple-triggers?raw';
 import { RdxDialogNestedComponent } from './dialog-nested';
@@ -50,6 +52,7 @@ export default {
                 RdxDialogDefaultComponent,
                 RdxDialogControlledComponent,
                 RdxDialogDeferredOpenComponent,
+                RdxDialogManualCloseComponent,
                 RdxDialogNonModalComponent,
                 RdxDialogTrapFocusComponent,
                 RdxDialogWithoutDismissComponent,
@@ -94,6 +97,16 @@ export const DeferredOpen: Story = {
     render: () => ({
         template: html`
             <rdx-dialog-deferred-open />
+        `
+    })
+};
+
+export const ManualClose: Story = {
+    tags: ['!visual'],
+    parameters: source(manualCloseSource),
+    render: () => ({
+        template: html`
+            <rdx-dialog-manual-close />
         `
     })
 };

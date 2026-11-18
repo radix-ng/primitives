@@ -15,7 +15,7 @@ import { injectRdxDialogRootContext } from './dialog-root';
     exportAs: 'rdxDialogBackdrop',
     host: {
         role: 'presentation',
-        '[hidden]': 'rootContext.nested && !forceRender()',
+        '[hidden]': '!rootContext.mounted() || (rootContext.nested && !forceRender())',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
         '[attr.data-ending-style]': 'rootContext.transitionStatus() === "ending" ? "" : undefined',
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',

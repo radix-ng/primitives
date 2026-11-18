@@ -99,6 +99,15 @@ and is read once when the Root initializes.
 
 <Canvas of={Stories.DeferredOpen} />
 
+### Manual close and retained content
+
+Call `eventDetails.preventUnmountOnClose()` in `onOpenChange` to hold the closing view while an
+external animation runs. Call `root.unmount()` from the exported Root when that animation ends.
+`onOpenChangeComplete(false)` fires once. Bind `[keepMounted]` on Portal to keep the child views
+and their state. The Popup, Backdrop and Viewport are hidden once closing completes.
+
+<Canvas of={Stories.ManualClose} />
+
 ### Non-modal
 
 Set `[modal]="false"` to keep document scrolling and outside pointer interactions available. There is

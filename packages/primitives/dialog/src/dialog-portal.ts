@@ -1,4 +1,4 @@
-import { Directive, input, isDevMode } from '@angular/core';
+import { booleanAttribute, Directive, inject, input, isDevMode } from '@angular/core';
 import { rdxDevError } from '@radix-ng/primitives/core';
 import { RdxPortalContainer, RdxPortalPresence } from '@radix-ng/primitives/portal';
 import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
@@ -19,7 +19,12 @@ import { injectRdxDialogRootContext } from './dialog-root';
     providers: [
         provideRdxPresenceContext(() => {
             const root = injectRdxDialogRootContext();
-            return { present: root.present, renderLifecycle: root.renderLifecycle };
+            return {
+                present: root.present,
+                renderLifecycle: root.renderLifecycle,
+                registerPresence: root.registerPresence,
+                keepMounted: inject(RdxDialogPortal).keepMounted
+            };
         })
     ]
 })
@@ -31,6 +36,9 @@ export class RdxDialogPortal {
      * can re-expose it through their own `hostDirectives`.
      */
     readonly container = input<RdxPortalContainer>();
+
+    /** Keep the portal's Angular children mounted and hidden while closed. */
+    readonly keepMounted = input(false, { transform: booleanAttribute });
 }
 
 /**

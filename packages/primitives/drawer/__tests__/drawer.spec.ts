@@ -49,7 +49,7 @@ import { vi } from 'vitest';
             <button rdxDrawerTrigger>Open</button>
             <div rdxDrawerSwipeArea></div>
 
-            <ng-template rdxDrawerPortal>
+            <ng-template [keepMounted]="keepMounted" rdxDrawerPortal>
                 <div rdxDrawerBackdrop></div>
                 <div rdxDrawerPopup>
                     <h2 rdxDrawerTitle>Title</h2>
@@ -63,6 +63,7 @@ import { vi } from 'vitest';
 })
 class TestHostComponent {
     open = false;
+    keepMounted = false;
     modal: boolean | 'trap-focus' = true;
     swipeDirection: 'up' | 'down' | 'left' | 'right' = 'down';
     readonly changes: string[] = [];
@@ -327,6 +328,19 @@ describe('Drawer', () => {
     afterEach(() => {
         fixture.destroy();
         document.body.style.overflow = '';
+    });
+
+    it('forwards Portal retention to the composed Dialog', () => {
+        fixture.componentInstance.keepMounted = true;
+        fixture.changeDetectorRef.markForCheck();
+        fixture.detectChanges();
+        const original = popup();
+        expect(original?.hidden).toBe(true);
+
+        trigger.click();
+        fixture.detectChanges();
+        expect(popup()).toBe(original);
+        expect(original?.hidden).toBe(false);
     });
 
     it('exports parts via drawerImports', () => {

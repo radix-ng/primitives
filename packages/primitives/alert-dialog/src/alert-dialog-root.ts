@@ -36,4 +36,9 @@ export class RdxAlertDialogRoot {
     readonly triggerId = this.dialog.triggerId;
     /** Payload of the active trigger. */
     readonly payload = this.dialog.payload;
+
+    /** Finish a pending close after an external animation. */
+    unmount(): void {
+        this.dialog.unmount();
+    }
 }

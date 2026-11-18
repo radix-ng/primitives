@@ -241,6 +241,8 @@ Drawer composes the corresponding Dialog parts and adds the gesture hooks below.
 `RdxDrawerRoot` composes `RdxDialogRoot` (proxying `[open]`, `[defaultOpen]`, `[modal]`,
 `[disablePointerDismissal]`, `[handle]`, `[triggerId]`) and adds `[swipeDirection]`. Open-state outputs
 `onOpenChange` / `onOpenChangeComplete` come from the dialog.
+The exported Root exposes `unmount()` to finish a manually held close.
+Bind `[keepMounted]` on `rdxDrawerPortal` to retain the hidden view and its state.
 
 <ArgTypes of={RdxDrawerRoot} />
 

@@ -1,12 +1,13 @@
 import {
+    afterNextRender,
     afterRenderEffect,
     booleanAttribute,
     computed,
-    DestroyRef,
     Directive,
     effect,
     ElementRef,
     inject,
+    Injector,
     input,
     output,
     Signal,
@@ -24,8 +25,9 @@ import {
     provideFloatingTree,
     RdxCancelableChangeEventDetails,
     RdxFloatingRootContext,
+    RdxPopupLifecycle,
     RdxTransitionStatus,
-    useRenderLifecycle,
+    usePopupLifecycle,
     watch
 } from '@radix-ng/primitives/core';
 import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
@@ -81,7 +83,9 @@ export interface RdxDialogRootContext {
     descriptionId: Signal<string | undefined>;
     isOpen: Signal<boolean>;
     present: Signal<boolean>;
+    mounted: Signal<boolean>;
     renderLifecycle: RdxRenderLifecycle;
+    registerPresence: RdxPopupLifecycle['registerPresence'];
     /** Effective modality (the variant can pin this to `true`). */
     modal: Signal<RdxDialogModal>;
     /** Effective outside-press / focus-out dismissal flag (the variant can force it on). */
@@ -135,7 +139,7 @@ export const [injectRdxDialogRootContext, provideRdxDialogRootContext] = createC
     ]
 })
 export class RdxDialogRoot {
-    private readonly destroyRef = inject(DestroyRef);
+    private readonly injector = inject(Injector);
     private readonly parentRoot = inject(RdxDialogRoot, { optional: true, skipSelf: true });
     private readonly variant = inject(RDX_DIALOG_VARIANT);
     private readonly registeredTriggers = signal<ReadonlyMap<string, RdxDialogRegisteredTrigger>>(new Map());
@@ -143,14 +147,6 @@ export class RdxDialogRoot {
     private readonly uncontrolledOpen = signal(false);
     // Keep the latest request's metadata until the controlled input commits it.
     private pendingOpenChange: { open: boolean; commit: () => void } | undefined;
-
-    private readonly transition = useRenderLifecycle((open) => this.emitOpenChangeComplete(open), {
-        open: () => this.open()
-    });
-    readonly transitionStatus = this.transition.status;
-    /** @internal Shared render owner for structural Portal/Presence. */
-    readonly renderLifecycle = this.transition;
-    readonly registerTransitionElement = this.transition.registerElement;
 
     /**
      * Controlled open state. Leave undefined to let the dialog own its state.
@@ -223,6 +219,18 @@ export class RdxDialogRoot {
      */
     readonly onOpenChangeComplete = output<boolean>();
 
+    private readonly lifecycle = usePopupLifecycle(
+        this.open,
+        (open) => this.onOpenChangeComplete.emit(open),
+        'RdxDialogRoot'
+    );
+    readonly transitionStatus = this.lifecycle.status;
+    /** @internal Shared render owner for structural Portal/Presence. */
+    readonly renderLifecycle = this.lifecycle.renderLifecycle;
+    /** @internal Register an owned Portal view for close completion. */
+    readonly registerPresence = this.lifecycle.registerPresence;
+    readonly registerTransitionElement = this.lifecycle.registerElement;
+
     readonly contentId = injectId('rdx-dialog-content-');
     readonly titleId = signal<string | undefined>(undefined);
     readonly descriptionId = signal<string | undefined>(undefined);
@@ -241,10 +249,11 @@ export class RdxDialogRoot {
     readonly nestedOpenCount = signal(0);
     readonly openInteractionType = signal<RdxInteractionType>(null);
     readonly closeInteractionType = signal<RdxInteractionType>(null);
-    private readonly preventUnmountOnClose = signal(false);
     private readonly pendingTriggerOpenInteractionType = signal<RdxInteractionType>(null);
 
-    readonly present = computed(() => this.open() || this.preventUnmountOnClose());
+    readonly present = this.lifecycle.present;
+    /** Whether the popup is shown, including motion and manually held exits. */
+    readonly mounted = computed(() => this.present() || this.renderLifecycle.mounted());
 
     /** Whether this dialog is rendered inside another dialog. Fixed at construction. */
     readonly nested = !!this.parentRoot;
@@ -274,12 +283,6 @@ export class RdxDialogRoot {
         // Keep the floating context's reference element in sync with the active trigger.
         effect(() => this.floatingContext.setReferenceElement(this.trigger() ?? null));
 
-        effect(() => {
-            if (this.open() && this.preventUnmountOnClose()) {
-                this.preventUnmountOnClose.set(false);
-            }
-        });
-
         watch([], () => {
             this.localTrigger.set({ id: this.defaultTriggerId() });
             this.uncontrolledOpen.set(this.defaultOpen());
@@ -305,7 +308,6 @@ export class RdxDialogRoot {
             if (pending?.open === open) {
                 pending.commit();
             }
-            this.transition.start(open);
         });
 
         // Report nested open state to the parent dialog so it can apply data-nested-dialog-open.
@@ -364,7 +366,7 @@ export class RdxDialogRoot {
             () => {
                 this.openInteractionType.set(interactionType);
                 if (selection) this.localTrigger.set(selection);
-                this.preventUnmountOnClose.set(false);
+                change.commit();
                 this.floatingContext.events.emit('openchange', { open: true, reason, event: resolvedEvent });
             },
             selection?.id
@@ -388,9 +390,22 @@ export class RdxDialogRoot {
         const interactionType = getInteractionTypeFromEvent(event);
         this.acceptOpenRequest(false, () => {
             this.closeInteractionType.set(interactionType);
-            this.preventUnmountOnClose.set(change.shouldPreventUnmountOnClose());
+            change.commit();
             this.floatingContext.events.emit('openchange', { open: false, reason, event: resolvedEvent });
         });
+    }
+
+    /**
+     * Finish a pending close after an external animation. A call while open applies only
+     * if the draft close commits by the next render.
+     */
+    unmount(): void {
+        if (this.open()) {
+            // A controlled parent can close and call unmount before Angular applies the input.
+            afterNextRender(() => this.lifecycle.unmount(), { injector: this.injector });
+            return;
+        }
+        this.lifecycle.unmount();
     }
 
     private acceptOpenRequest(open: boolean, commit: () => void, requestedTriggerId?: string | null) {
@@ -464,10 +479,12 @@ export class RdxDialogRoot {
         triggerId: string | null
     ) {
         const change = createCancelableChangeEventDetails(reason, event, trigger);
+        const transaction = this.lifecycle.prepareOpenChange(open, event);
+        change.eventDetails.preventUnmountOnClose = transaction.preventUnmountOnClose;
 
         return {
             eventDetails: change.eventDetails,
-            shouldPreventUnmountOnClose: change.shouldPreventUnmountOnClose,
+            commit: transaction.commit,
             payload: {
                 open,
                 triggerId,
@@ -477,12 +494,6 @@ export class RdxDialogRoot {
                 eventDetails: change.eventDetails
             } satisfies RdxDialogOpenChange
         };
-    }
-
-    private emitOpenChangeComplete(open: boolean) {
-        if (!this.destroyRef.destroyed) {
-            this.onOpenChangeComplete.emit(open);
-        }
     }
 
     private consumeOpenInteractionType(event?: Event): RdxInteractionType {
@@ -499,7 +510,9 @@ function contextFor(root: RdxDialogRoot): RdxDialogRootContext {
         descriptionId: root.descriptionId.asReadonly(),
         isOpen: root.open,
         present: root.present,
+        mounted: root.mounted,
         renderLifecycle: root.renderLifecycle,
+        registerPresence: root.registerPresence,
         modal: root.effectiveModal,
         disablePointerDismissal: root.effectiveDisablePointerDismissal,
         role: root.role,

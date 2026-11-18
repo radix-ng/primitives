@@ -12,7 +12,7 @@ import { RdxDialogPortal } from '@radix-ng/primitives/dialog';
 @Directive({
     selector: 'ng-template[rdxDrawerPortal]',
     exportAs: 'rdxDrawerPortal',
-    hostDirectives: [{ directive: RdxDialogPortal, inputs: ['container'] }]
+    hostDirectives: [{ directive: RdxDialogPortal, inputs: ['container', 'keepMounted'] }]
 })
 export class RdxDrawerPortal {}
 

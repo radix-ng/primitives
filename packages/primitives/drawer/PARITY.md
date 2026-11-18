@@ -54,6 +54,8 @@ For strict controlled UI state, a request must not mutate the effective value be
 `defaultTriggerId`, `handle`, `modal` and `disablePointerDismissal`, as well as its
 `openChange`, `triggerIdChange`, `onOpenChange` and `onOpenChangeComplete` outputs.
 The [Dialog ownership cases](../dialog/PARITY.md#ownership-and-lifetime-cases) apply to those forwarded bindings.
+Drawer Portal and Root also expose `keepMounted` and `unmount()` through the
+[Dialog close lifecycle](../dialog/PARITY.md#close-lifetime-increment).
 
 | State field / source                            | Current declaration                       | Ownership review                                                                                              |
 | ----------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------- |

@@ -95,6 +95,7 @@ export function usePresence(
         );
     }
 
+    const keepMounted = context.keepMounted ?? options.keepMounted ?? (() => false);
     const destroyView = () => {
         // Angular can destroy attached boundary views before this declaring directive's DestroyRef
         // runs. Retain the last observed roots for that path, including unclaimed dehydrated DOM.
@@ -116,7 +117,7 @@ export function usePresence(
         () => {
             const suspended = options.suspended?.() ?? false;
             const present = context.present();
-            const shouldRender = !suspended && (present || lifecycle.mounted() || (options.keepMounted?.() ?? false));
+            const shouldRender = !suspended && (present || lifecycle.mounted() || keepMounted());
             untracked(() => {
                 if (shouldRender && !view) {
                     start = createViewAnchor(container);
@@ -136,7 +137,7 @@ export function usePresence(
     afterEveryRender(() => untracked(refreshNodes));
     const unregister = context.registerPresence?.({
         mounted: mounted.asReadonly(),
-        keepMounted: options.keepMounted ?? (() => false),
+        keepMounted,
         suspended: options.suspended,
         pendingExit: () => lifecycle.isExitPending
     });

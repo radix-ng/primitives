@@ -130,6 +130,8 @@ inputs: `handle`, `payload`, `id`, and `disabled`. See the Dialog reference for 
 
 These are thin wrappers around the matching dialog parts and read their behavior from context. See the
 Dialog docs for their full reference.
+Portal exposes `[keepMounted]` to retain the closed view. The exported Root exposes `unmount()`
+to finish a manually held close.
 
 ## Data attributes
 
