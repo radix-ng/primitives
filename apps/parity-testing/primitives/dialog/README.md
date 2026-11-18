@@ -7,7 +7,7 @@ pnpm test-parity dialog --project=webkit --grep 'non-modal|trap-focus'
 
 The suite exercises real Angular Dialog parts and Base UI React 1.9.0 at the workspace pin
 `cf696d6f6e08c699c5bda24d5a033430909f2285`.
-The 35 cases run in Chromium, Firefox and WebKit. `expected-differences.json` records the focus
+The 43 cases run in Chromium, Firefox and WebKit. `expected-differences.json` records the focus
 destination after nested owner removal and the payload of a new unassociated open after a named session.
 
 | Area              | Cases | Behavior                                                                                                       |
@@ -18,6 +18,7 @@ destination after nested owner removal and the payload of a new unassociated ope
 | Nested Dialogs    | 5     | Deepest dismissal, descendant counts, owner removal and a retained child with an animated exit                 |
 | Detached handles  | 8     | Named and unassociated opens, live payloads, Trigger and Root remount, handle swap and controlled refusal      |
 | Trigger identity  | 2     | Bound ID before the default, null fallback, active trigger removal and replacement                             |
+| Focus targets     | 8     | Explicit and default focus, callback results, interaction type, Trigger removal and retained exits             |
 | Close lifetime    | 7     | Automatic and manual release, retained and disposable content, reopen, same-batch release and CSS motion       |
 
 Checkpoints compare actual browser focus and visibility, mounted content, native form values, resolved
@@ -56,6 +57,12 @@ inspect live rendered payloads, each handle's open state, active Trigger relatio
 focus and callback details. Removal preserves the open dialog's payload. A replacement Trigger with
 the same ID supplies its current value. The swap waits until the second handle reports attachment
 before calling the first handle again.
+
+The focus cases use `initialFocus` and `finalFocus` on the public Popup. They retain native focus
+destinations and callback interaction types, including the `true`, `null`, `false`, and `undefined`
+policies. The retained Popup compares focus during a real CSS animation, after completion, and on
+reopen with the same draft value. An additional case removes the active Trigger before closing to
+the explicit final target.
 
 Both fixtures request changes through the public Dialog APIs. The CSS case finishes the running browser
 animation and waits for the public completion signal. See the

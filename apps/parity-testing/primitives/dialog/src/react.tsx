@@ -2,7 +2,7 @@ import { Dialog } from '@base-ui/react/dialog';
 import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../../../../radix-storybook/.storybook/tailwind.css';
-import { classes, config, installProbe, type NestedLayer } from './contract';
+import { chooseFocus, classes, config, installProbe, type NestedLayer } from './contract';
 import { ReactDetachedDialog } from './detached.react';
 import './fixture.css';
 
@@ -58,20 +58,24 @@ function ReactDialog() {
     const [triggerId, setTriggerId] = useState(settings.triggerId);
     const [secondary, setSecondary] = useState(!!settings.multiple);
     const [showNested, setShowNested] = useState(true);
+    const [showPrimary, setShowPrimary] = useState(true);
     const actions = useRef<Dialog.Root.Actions>(null);
+    const closeRef = useRef<HTMLButtonElement>(null);
+    const finalTarget = useRef<HTMLInputElement>(null);
     const requested = useRef<boolean | undefined>(undefined);
     const cancelNextOpen = useRef(!!settings.cancelOpen);
     const holdNextClose = useRef(!!settings.hold);
 
     useEffect(() => {
         const command = (event: KeyboardEvent) => {
-            if (!['F2', 'F3', 'F4', 'F5', 'F6', 'F9', 'F10'].includes(event.key)) return;
+            if (!['F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F9', 'F10'].includes(event.key)) return;
             event.preventDefault();
             if (event.key === 'F2' && requested.current !== undefined) setOpen(requested.current);
             if (event.key === 'F3') setDefaultOpen((open) => !open);
             if (event.key === 'F4') setTriggerId(null);
             if (event.key === 'F5') setSecondary((present) => !present);
             if (event.key === 'F6') setShowNested((present) => !present);
+            if (event.key === 'F7') setShowPrimary((present) => !present);
             if (event.key === 'F10') actions.current?.close();
             if (event.key === 'F9' || event.key === 'F10') actions.current?.unmount();
         };
@@ -79,11 +83,36 @@ function ReactDialog() {
         return () => document.removeEventListener('keydown', command);
     }, []);
 
+    const initialFocus: Dialog.Popup.Props['initialFocus'] =
+        settings.focus === 'elements'
+            ? closeRef
+            : settings.focus === 'disabled'
+              ? false
+              : settings.focus
+                ? (interaction) => chooseFocus(trace.probe, settings.focus, 'initial', interaction, closeRef.current)
+                : undefined;
+    const finalFocus: Dialog.Popup.Props['finalFocus'] =
+        settings.focus === 'elements'
+            ? finalTarget
+            : settings.focus === 'disabled'
+              ? false
+              : settings.focus
+                ? (interaction) => chooseFocus(trace.probe, settings.focus, 'final', interaction, finalTarget.current)
+                : undefined;
+
     return (
         <main className="flex gap-2">
             <button className={classes.trigger} data-testid="outside" onClick={() => trace.probe.activations++}>
                 Outside
             </button>
+            {settings.focus && (
+                <input
+                    ref={finalTarget}
+                    className={classes.input}
+                    data-testid="final-target"
+                    aria-label="Return target"
+                />
+            )}
             <Dialog.Root
                 actionsRef={actions}
                 open={open}
@@ -108,9 +137,11 @@ function ReactDialog() {
                 }}
                 onOpenChangeComplete={(open) => trace.probe.completions.push(open)}
             >
-                <Dialog.Trigger className={classes.trigger} id="primary" data-testid="primary">
-                    Primary
-                </Dialog.Trigger>
+                {showPrimary && (
+                    <Dialog.Trigger className={classes.trigger} id="primary" data-testid="primary">
+                        Primary
+                    </Dialog.Trigger>
+                )}
                 {secondary && (
                     <Dialog.Trigger className={classes.trigger} id="secondary" data-testid="secondary">
                         Secondary
@@ -122,6 +153,8 @@ function ReactDialog() {
                     )}
                     <Dialog.Popup
                         className={classes.popup}
+                        initialFocus={initialFocus}
+                        finalFocus={finalFocus}
                         data-motion={settings.animate ? '' : undefined}
                         data-testid="popup"
                     >
@@ -129,7 +162,7 @@ function ReactDialog() {
                         <Dialog.Description>Test a draft edit.</Dialog.Description>
                         <input className={classes.input} defaultValue="draft" data-testid="field" aria-label="Draft" />
                         {settings.nested && showNested && <NestedDialog layer="child" />}
-                        <Dialog.Close className={classes.trigger} data-testid="close">
+                        <Dialog.Close ref={closeRef} className={classes.trigger} data-testid="close">
                             Close
                         </Dialog.Close>
                     </Dialog.Popup>

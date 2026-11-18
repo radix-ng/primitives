@@ -252,6 +252,17 @@ It reads everything from context and exposes no inputs.
 
 `RdxDialogPopup` owns dialog semantics, dismissal events, scroll locking, and focus lifecycle events.
 
+Bind `[initialFocus]` to choose where focus lands on open and `[finalFocus]` to choose where it
+returns after the close transition. Both accept an element, a callback that receives the
+interaction type, `true` for the standard target, or `false` to skip the focus move. A callback
+can return `null` for the standard target or `undefined` to skip the move. An omitted binding
+uses the Dialog default.
+
+Initial focus normally goes to the first tabbable element, with the Popup as a fallback. An omitted
+`initialFocus` on a touch open chooses the Popup. The default final target is the opener or the
+previously focused element. An explicit final target also works if the Trigger is removed while
+the dialog is open.
+
 For controls rendered outside the popup DOM but belonging to the dialog (such as an external
 scrollbar), bind `[getInsideElements]` to a getter returning those native elements. They remain
 interactive during modal background isolation. Also apply `rdxFloatingInside` to prevent their

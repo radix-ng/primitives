@@ -2921,7 +2921,20 @@
             "RdxFloatingNodeRegistration",
             "RdxFloatingFocusManager"
           ],
-          "inputs": [],
+          "inputs": [
+            {
+              "name": "initialFocus",
+              "type": "RdxInitialFocus | undefined",
+              "default": "undefined",
+              "description": "Where focus goes when the popup opens (ADR 0017 §2)."
+            },
+            {
+              "name": "finalFocus",
+              "type": "RdxReturnFocus | undefined",
+              "default": "undefined",
+              "description": "Where focus returns when the popup closes (ADR 0017 §2)."
+            }
+          ],
           "outputs": [
             {
               "name": "escapeKeyDown",

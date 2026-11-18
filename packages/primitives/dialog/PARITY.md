@@ -37,6 +37,9 @@ composition bases, guards and internal helpers are not thereby promoted to stabl
 Inherited classes and composed directives may add state/API. Follow those sources when completing
 the comparison; similar part names or selector counts do not prove the same contract.
 
+Popup exposes `initialFocus` and `finalFocus` through the shared focus manager. See the
+[focus target contract](#initial-and-final-focus).
+
 ## State ownership and defaults
 
 Ownership class for this entry: **UI request/controlled state**. The [shared contract](../../../docs/engineering/state-ownership.md)
@@ -93,7 +96,7 @@ and [store selectors](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda2
 
 - [Dialog unit tests](__tests__/dialog.spec.ts) cover initial defaults, parent refusal, delayed acceptance, two-way binding and cancellation.
 - [Dialog browser tests](../../../apps/visual-regression/tests/dialog.behavior.spec.ts) include a deferred open/close request with focus, Portal and scroll-lock observations.
-- The [pinned Dialog suite](../../../apps/parity-testing/primitives/dialog/README.md) compares 35 scenarios across Chromium, Firefox and WebKit. It covers open ownership, trigger registration, modal modes, nested dialogs, detached handles and close lifetime.
+- The [pinned Dialog suite](../../../apps/parity-testing/primitives/dialog/README.md) compares 43 scenarios across Chromium, Firefox and WebKit. It covers open ownership, trigger registration, modal modes, nested dialogs, detached handles, configurable focus and close lifetime.
 - The [AOT hydration suite](../../../apps/radix-ssr-testing/hydration-audit/README.md) covers initially open Dialog in `eager-dialog`.
 
 The directive reference exposes effective `open()` as readonly. Set a bound value to drive a
@@ -250,5 +253,21 @@ data for `openWithPayload(value)`. The suite records the payload at this checkpo
 difference.
 [Payload checkpoint](../../../apps/parity-testing/primitives/dialog/expected-differences.json)
 
-Detached hydration and overlapping Dialog Roots, custom focus targets, touch gestures, mixed Dialog
-variants and Portal destination changes remain pending paired checks.
+## Initial and final focus
+
+Popup exposes both bindings through `RdxFloatingFocusManager`. Angular accepts native elements and
+callbacks in place of React ref objects. `true` and a callback result of `null` select the standard
+target. `false` and a callback result of `undefined` suppress the focus move. Omitting a binding
+keeps the Dialog default.
+[Angular Popup](src/dialog-popup.ts)
+· [Pinned Popup props](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/dialog/popup/DialogPopup.tsx)
+
+The eight [focus scenarios](../../../apps/parity-testing/primitives/dialog/tests/scenarios.ts)
+compare real focus destinations and when callbacks run. They cover explicit elements, suppressed
+focus in non-modal mode, keyboard and mouse interaction types, default and suppressed callback
+results, and an explicit final target after the Trigger is removed. The retained case checks that
+final focus waits for the actual CSS exit, the draft survives, and the initial callback runs again
+on reopen. The shared manager reuses the current policy result when render-time focus needs a retry.
+
+Detached hydration and overlapping Dialog Roots, touch gestures, mixed Dialog variants and Portal
+destination changes remain pending paired checks.

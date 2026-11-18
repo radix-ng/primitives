@@ -56,7 +56,10 @@ const DIALOG_INTERNAL_BACKDROP_ATTR = 'data-rdx-dialog-internal-backdrop';
     exportAs: 'rdxDialogPopup',
     hostDirectives: [
         RdxFloatingNodeRegistration,
-        { directive: RdxFloatingFocusManager, inputs: ['getInsideElements'] }
+        {
+            directive: RdxFloatingFocusManager,
+            inputs: ['getInsideElements', 'initialFocus', 'returnFocus: finalFocus']
+        }
     ],
     providers: [
         provideFloatingFocusManagerConfig(() => {

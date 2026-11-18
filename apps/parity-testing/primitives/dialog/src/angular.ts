@@ -1,8 +1,9 @@
-import { Component, provideZonelessChangeDetection, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, provideZonelessChangeDetection, signal, viewChild } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { dialogImports, RdxDialogOpenChange, RdxDialogRoot } from '@radix-ng/primitives/dialog';
+import type { RdxInitialFocus, RdxInteractionType, RdxReturnFocus } from '@radix-ng/primitives/floating-focus-manager';
 import '../../../../radix-storybook/.storybook/tailwind.css';
-import { classes, config, installProbe, type NestedLayer } from './contract';
+import { chooseFocus, classes, config, installProbe, type NestedLayer } from './contract';
 import { AngularDetachedDialog } from './detached.angular';
 import './fixture.css';
 
@@ -19,6 +20,9 @@ import './fixture.css';
             >
                 Outside
             </button>
+            @if (settings.focus) {
+                <input #focusReturn [class]="styles.input" data-testid="final-target" aria-label="Return target" />
+            }
             <div
                 [open]="open()"
                 [defaultOpen]="defaultOpen()"
@@ -31,7 +35,11 @@ import './fixture.css';
                 (onOpenChangeComplete)="trace.probe.completions.push($event)"
                 rdxDialogRoot
             >
-                <button id="primary" [class]="styles.trigger" rdxDialogTrigger data-testid="primary">Primary</button>
+                @if (showPrimary()) {
+                    <button id="primary" [class]="styles.trigger" rdxDialogTrigger data-testid="primary">
+                        Primary
+                    </button>
+                }
                 @if (secondary()) {
                     <button id="secondary" [class]="styles.trigger" rdxDialogTrigger data-testid="secondary">
                         Secondary
@@ -43,6 +51,8 @@ import './fixture.css';
                     }
                     <div
                         [class]="styles.popup"
+                        [initialFocus]="initialFocus(close)"
+                        [finalFocus]="finalFocus()"
                         [attr.data-motion]="settings.animate ? '' : null"
                         rdxDialogPopup
                         data-testid="popup"
@@ -142,7 +152,7 @@ import './fixture.css';
                                 </div>
                             }
                         }
-                        <button [class]="styles.trigger" rdxDialogClose data-testid="close">Close</button>
+                        <button #close [class]="styles.trigger" rdxDialogClose data-testid="close">Close</button>
                     </div>
                 </ng-template>
             </div>
@@ -162,10 +172,56 @@ class AngularDialog {
     protected readonly triggerId = signal(this.settings.triggerId);
     protected readonly secondary = signal(!!this.settings.multiple);
     protected readonly showNested = signal(true);
+    protected readonly showPrimary = signal(true);
     private readonly root = viewChild.required(RdxDialogRoot);
+    private readonly focusClose = viewChild<ElementRef<HTMLButtonElement>>('close');
+    private readonly focusReturn = viewChild<ElementRef<HTMLInputElement>>('focusReturn');
     private requested: boolean | undefined;
     private cancelNextOpen = !!this.settings.cancelOpen;
     private holdNextClose = !!this.settings.hold;
+
+    private readonly initialPolicy = (interaction: RdxInteractionType) =>
+        chooseFocus(
+            this.trace.probe,
+            this.settings.focus,
+            'initial',
+            interaction,
+            this.focusClose()?.nativeElement ?? null
+        );
+    private readonly finalPolicy = (interaction: RdxInteractionType) =>
+        chooseFocus(
+            this.trace.probe,
+            this.settings.focus,
+            'final',
+            interaction,
+            this.focusReturn()?.nativeElement ?? null
+        );
+
+    protected initialFocus(close: HTMLElement): RdxInitialFocus {
+        switch (this.settings.focus) {
+            case 'elements':
+                return close;
+            case 'disabled':
+                return false;
+            case undefined:
+                return undefined;
+            default:
+                return this.initialPolicy;
+        }
+    }
+
+    protected finalFocus(): RdxReturnFocus {
+        switch (this.settings.focus) {
+            case 'elements':
+                return this.focusReturn()?.nativeElement;
+            case 'disabled':
+                return false;
+            case undefined:
+                return undefined;
+            default:
+                return this.finalPolicy;
+        }
+    }
 
     protected change(change: RdxDialogOpenChange): void {
         const { open, eventDetails } = change;
@@ -197,13 +253,14 @@ class AngularDialog {
     }
 
     protected command(event: KeyboardEvent): void {
-        if (!['F2', 'F3', 'F4', 'F5', 'F6', 'F9', 'F10'].includes(event.key)) return;
+        if (!['F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F9', 'F10'].includes(event.key)) return;
         event.preventDefault();
         if (event.key === 'F2' && this.requested !== undefined) this.open.set(this.requested);
         if (event.key === 'F3') this.defaultOpen.update((open) => !open);
         if (event.key === 'F4') this.triggerId.set(null);
         if (event.key === 'F5') this.secondary.update((present) => !present);
         if (event.key === 'F6') this.showNested.update((present) => !present);
+        if (event.key === 'F7') this.showPrimary.update((present) => !present);
         if (event.key === 'F10') this.root().close('imperative-action');
         if (event.key === 'F9' || event.key === 'F10') this.root().unmount();
     }

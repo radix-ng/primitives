@@ -768,6 +768,173 @@ const detachedHandles: Scenario[] = [
     }
 ];
 
+const keyboardInitial = { phase: 'initial' as const, interaction: 'keyboard' };
+const keyboardFinal = { phase: 'final' as const, interaction: 'keyboard' };
+const mouseInitial = { phase: 'initial' as const, interaction: 'mouse' };
+const mouseFinal = { phase: 'final' as const, interaction: 'mouse' };
+
+const focusTargets: Scenario[] = [
+    {
+        name: 'focus-elements',
+        async run(d) {
+            await d.open('primary', 'close');
+            await d.checkpoint('explicit initial target receives focus', { ...primaryOpen, focus: 'close' });
+            await d.page.keyboard.press('Escape');
+            await d.closed();
+            await expect(d.page.getByTestId('final-target')).toBeFocused();
+            await d.checkpoint('explicit final target receives focus', { ...closed, focus: 'final-target' });
+        }
+    },
+    {
+        name: 'focus-disabled',
+        async run(d) {
+            await d.open('primary', 'primary');
+            await d.checkpoint('initial false leaves focus on the trigger', { ...nonModalOpen, focus: 'primary' });
+            await d.field.press('Escape');
+            await d.closed();
+            await d.checkpoint('final false leaves native focus after removal', { ...closed, focus: 'body' });
+        }
+    },
+    {
+        name: 'focus-keyboard-policy',
+        async run(d) {
+            await d.open('primary', 'close');
+            await d.checkpoint('keyboard open calls the initial policy once', {
+                ...primaryOpen,
+                focus: 'close',
+                focusPolicies: [keyboardInitial]
+            });
+            await d.page.keyboard.press('Escape');
+            await d.closed();
+            await expect(d.page.getByTestId('final-target')).toBeFocused();
+            await d.checkpoint('Escape calls the final policy once', {
+                ...closed,
+                focus: 'final-target',
+                focusPolicies: [keyboardInitial, keyboardFinal]
+            });
+        }
+    },
+    {
+        name: 'focus-pointer-policy',
+        async run(d) {
+            await d.trigger().click();
+            await d.opened();
+            await d.checkpoint('mouse open with true takes the first tabbable element', {
+                ...primaryOpen,
+                focus: 'field',
+                focusPolicies: [mouseInitial]
+            });
+            await d.page.getByTestId('close').click();
+            await d.closed();
+            await expect(d.page.getByTestId('final-target')).toBeFocused();
+            await d.checkpoint('mouse Close selects the final target', {
+                ...closed,
+                focus: 'final-target',
+                focusPolicies: [mouseInitial, mouseFinal]
+            });
+        }
+    },
+    {
+        name: 'focus-undefined-policy',
+        async run(d) {
+            await d.open('primary', 'primary');
+            await d.checkpoint('undefined from initial callback keeps focus', {
+                ...nonModalOpen,
+                focus: 'primary',
+                focusPolicies: [keyboardInitial]
+            });
+            await d.field.press('Escape');
+            await d.closed();
+            await d.checkpoint('undefined from final callback leaves focus to the browser', {
+                ...closed,
+                focus: 'body',
+                focusPolicies: [keyboardInitial, keyboardFinal]
+            });
+        }
+    },
+    {
+        name: 'focus-null-policy',
+        async run(d) {
+            await d.open();
+            await d.checkpoint('null from initial callback selects the default', {
+                ...primaryOpen,
+                focus: 'field',
+                focusPolicies: [keyboardInitial]
+            });
+            await d.page.keyboard.press('Escape');
+            await d.closed();
+            await expect(d.trigger()).toBeFocused();
+            await d.checkpoint('null from final callback selects the default', {
+                ...closed,
+                focus: 'primary',
+                focusPolicies: [keyboardInitial, keyboardFinal]
+            });
+        }
+    },
+    {
+        name: 'focus-retained-exit',
+        async run(d) {
+            await d.open('primary', 'close');
+            await d.field.fill('retained draft');
+            await d.page.keyboard.press('Tab');
+            await expect(d.page.getByTestId('close')).toBeFocused();
+            await d.page.keyboard.press('Escape');
+            await expect.poll(() => d.popup.evaluate((el) => el.getAnimations().length)).toBeGreaterThan(0);
+            await d.checkpoint('exit animation keeps focus in the retained view', {
+                open: false,
+                mounted: true,
+                visible: true,
+                ending: true,
+                focus: 'close',
+                focusPolicies: [keyboardInitial],
+                completions: [true]
+            });
+            await d.popup.evaluate((el) => el.getAnimations().forEach((animation) => animation.finish()));
+            await d.closed(true);
+            await expect(d.page.getByTestId('final-target')).toBeFocused();
+            await d.checkpoint('final target receives focus after exit completes', {
+                open: false,
+                mounted: true,
+                visible: false,
+                focus: 'final-target',
+                focusPolicies: [keyboardInitial, keyboardFinal],
+                completions: [true, false]
+            });
+            await d.open('primary', 'close');
+            await d.checkpoint('reopen applies initial focus to the retained view', {
+                ...primaryOpen,
+                field: 'retained draft',
+                focus: 'close',
+                focusPolicies: [keyboardInitial, keyboardFinal, keyboardInitial],
+                completions: [true, false, true]
+            });
+        }
+    },
+    {
+        name: 'focus-trigger-removed',
+        async run(d) {
+            await d.open('primary', 'close');
+            await d.page.keyboard.press('F7');
+            await expect(d.trigger()).toHaveCount(0);
+            await d.checkpoint('focus stays in the popup after trigger removal', {
+                open: true,
+                expanded: [],
+                focus: 'close',
+                focusPolicies: [keyboardInitial]
+            });
+            await d.page.keyboard.press('Escape');
+            await d.closed();
+            await expect(d.page.getByTestId('final-target')).toBeFocused();
+            await d.checkpoint('explicit final target works with no surviving trigger', {
+                ...closed,
+                focus: 'final-target',
+                changes: [triggerOpen, { ...escape, trigger: null }],
+                focusPolicies: [keyboardInitial, keyboardFinal]
+            });
+        }
+    }
+];
+
 const retention: Scenario[] = (
     ['automatic-disposable', 'automatic-retained', 'held-disposable', 'held-retained'] as const
 ).map((name) => ({
@@ -854,4 +1021,12 @@ const motion: Scenario[] = [
     }
 ];
 
-export const scenarios = [...ownership, ...modalModes, ...nesting, ...detachedHandles, ...retention, ...motion];
+export const scenarios = [
+    ...ownership,
+    ...modalModes,
+    ...nesting,
+    ...detachedHandles,
+    ...focusTargets,
+    ...retention,
+    ...motion
+];

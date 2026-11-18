@@ -44,9 +44,9 @@ export class DialogDriver {
         return point;
     }
 
-    async open(id = 'primary') {
+    async open(id = 'primary', focus = 'field') {
         await this.trigger(id).press('Enter');
-        await this.opened();
+        await this.opened(focus);
     }
 
     async openNested(layer: NestedLayer) {
@@ -61,9 +61,9 @@ export class DialogDriver {
             .toEqual({ layer, open });
     }
 
-    async opened() {
+    async opened(focus = 'field') {
         await expect(this.popup).toBeVisible();
-        await expect(this.field).toBeFocused();
+        await expect(this.page.getByTestId(focus)).toBeFocused();
         await expect.poll(() => this.page.evaluate(() => window.dialogParity.completions.at(-1))).toBe(true);
     }
 
@@ -138,6 +138,7 @@ export class DialogDriver {
                         focus:
                             active?.dataset.testid ??
                             (active === document.body ? 'body' : (active?.tagName.toLowerCase() ?? null)),
+                        focusPolicies: window.dialogParity.focusPolicies,
                         changes: window.dialogParity.changes,
                         completions: window.dialogParity.completions,
                         openNestedLayers: nested

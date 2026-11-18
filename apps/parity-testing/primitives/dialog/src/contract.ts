@@ -6,6 +6,8 @@ export interface DetachedSettings {
     controlled?: boolean;
 }
 
+type FocusMode = 'elements' | 'disabled' | 'callback' | 'undefined' | 'null';
+
 interface Settings {
     open?: boolean;
     defaultOpen?: boolean;
@@ -22,6 +24,7 @@ interface Settings {
     backdrop?: boolean;
     nested?: { grandchild?: boolean; keepMounted?: boolean; forceRender?: boolean; animate?: boolean };
     detached?: DetachedSettings;
+    focus?: FocusMode;
 }
 
 export const configurations = {
@@ -51,6 +54,14 @@ export const configurations = {
     'detached-missing-trigger': { detached: { openId: 'missing' } },
     'detached-programmatic-payload': { detached: { openId: 'secondary', controlled: true } },
     'detached-refused-close': { detached: { controlled: true } },
+    'focus-elements': { focus: 'elements' },
+    'focus-disabled': { focus: 'disabled', modal: false, disablePointerDismissal: true },
+    'focus-keyboard-policy': { focus: 'callback' },
+    'focus-pointer-policy': { focus: 'callback' },
+    'focus-undefined-policy': { focus: 'undefined', modal: false, disablePointerDismissal: true },
+    'focus-null-policy': { focus: 'null' },
+    'focus-retained-exit': { focus: 'callback', keepMounted: true, animate: true },
+    'focus-trigger-removed': { focus: 'callback' },
     'trigger-default-fallback': {
         defaultOpen: true,
         triggerId: 'secondary',
@@ -71,6 +82,7 @@ export type CaseName = keyof typeof configurations;
 export const nestedLayers = ['child', 'grandchild'] as const;
 export type NestedLayer = (typeof nestedLayers)[number];
 type Change = { open: boolean; reason: string; trigger: string | null; canceled: boolean };
+type FocusPhase = 'initial' | 'final';
 
 export interface Probe {
     reference: { commit: string; packageVersion: string; digest: string };
@@ -80,6 +92,7 @@ export interface Probe {
     nestedCompletions: { layer: NestedLayer; open: boolean }[];
     nativeEvents: { type: string; trusted: boolean; layer?: NestedLayer }[];
     activations: number;
+    focusPolicies: { phase: FocusPhase; interaction: string | null }[];
     readHandles?: () => boolean[];
 }
 
@@ -104,7 +117,8 @@ export function installProbe() {
         nestedChanges: [],
         nestedCompletions: [],
         nativeEvents: [],
-        activations: 0
+        activations: 0,
+        focusPolicies: []
     };
     window.dialogParity = probe;
     return {
@@ -123,6 +137,20 @@ export function installProbe() {
             probe.nativeEvents.push({ type: event.type, trusted: event.isTrusted, layer });
         }
     };
+}
+
+export function chooseFocus(
+    probe: Probe,
+    mode: FocusMode | undefined,
+    phase: FocusPhase,
+    interaction: string | null,
+    target: HTMLElement | null
+) {
+    probe.focusPolicies.push({ phase, interaction });
+    if (mode === 'undefined') return undefined;
+    if (mode === 'null') return null;
+    if (phase === 'initial' && interaction === 'mouse') return true;
+    return target;
 }
 
 export const classes = {

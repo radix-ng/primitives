@@ -66,17 +66,16 @@ export type RdxInteractionType = 'mouse' | 'touch' | 'pen' | 'keyboard' | '' | n
 /** A focus target: an element, a getter, `null`, or `undefined` from a policy callback. */
 export type RdxFocusTarget = HTMLElement | (() => HTMLElement | null) | null | undefined;
 
-/** `initialFocus` policy (ADR 0017 §2) — a target, `false`, or an open-interaction callback. */
-export type RdxInitialFocus =
-    | RdxFocusTarget
-    | false
-    | ((openInteractionType: RdxInteractionType) => RdxFocusTarget | false);
-
-/** `returnFocus` policy (ADR 0017 §2) — a target/boolean or a callback receiving the **close** interaction type. */
-export type RdxReturnFocus =
+type FocusPolicy =
     | RdxFocusTarget
     | boolean
-    | ((closeInteractionType: RdxInteractionType) => RdxFocusTarget | boolean | undefined);
+    | ((interactionType: RdxInteractionType) => RdxFocusTarget | boolean | void);
+
+/** Initial focus target or policy receiving the open interaction type. */
+export type RdxInitialFocus = FocusPolicy;
+
+/** `returnFocus` policy (ADR 0017 §2) — a target/boolean or a callback receiving the **close** interaction type. */
+export type RdxReturnFocus = FocusPolicy;
 
 /** Normalizes a DOM event into Base UI-like interaction intent for focus policy decisions. */
 export function getInteractionTypeFromEvent(event?: Event): RdxInteractionType {
@@ -121,9 +120,8 @@ export function resolveFocusTarget(target: RdxFocusTarget): HTMLElement | null |
 export function resolveInitialFocus(
     policy: RdxInitialFocus,
     openInteractionType: RdxInteractionType
-): HTMLElement | null | false | undefined {
-    const resolved = typeof policy === 'function' ? policy(openInteractionType) : policy;
-    return resolved === false ? false : resolveFocusTarget(resolved);
+): HTMLElement | null | boolean | undefined {
+    return resolveFocusPolicy(policy, openInteractionType);
 }
 
 /**
@@ -134,7 +132,12 @@ export function resolveReturnFocus(
     policy: RdxReturnFocus,
     closeInteractionType: RdxInteractionType
 ): HTMLElement | boolean | null | undefined {
-    const resolved = typeof policy === 'function' ? policy(closeInteractionType) : policy;
+    return resolveFocusPolicy(policy, closeInteractionType);
+}
+
+function resolveFocusPolicy(policy: FocusPolicy, interactionType: RdxInteractionType) {
+    const resolved = typeof policy === 'function' ? policy(interactionType) : policy;
+    if (resolved === undefined) return undefined;
     return typeof resolved === 'boolean' ? resolved : resolveFocusTarget(resolved);
 }
 
@@ -301,7 +304,7 @@ export class RdxFloatingFocusManager {
         () => this.closeOnFocusOut() ?? this.config?.closeOnFocusOut?.() ?? true
     );
     readonly effectiveInitialFocus = computed(() =>
-        this.initialFocus() !== undefined ? this.initialFocus()! : (this.config?.initialFocus?.() ?? null)
+        this.initialFocus() !== undefined ? this.initialFocus() : this.config?.initialFocus?.()
     );
     readonly effectiveReturnFocus = computed(() =>
         this.returnFocus() !== undefined ? this.returnFocus()! : (this.config?.returnFocus?.() ?? true)
@@ -476,6 +479,25 @@ export class RdxFloatingFocusManager {
         });
     }
 
+    private openingFocus?: {
+        policy: RdxInitialFocus;
+        interaction: RdxInteractionType;
+        target: HTMLElement | null | false | undefined;
+    };
+
+    private resolveInitialTarget() {
+        const policy = this.effectiveInitialFocus();
+        const interaction = this.effectiveOpenInteractionType();
+        const cached = this.openingFocus;
+        if (cached && policy === cached.policy && interaction === cached.interaction) return cached.target;
+
+        const resolved =
+            policy === undefined ? this.defaultInitialFocus(interaction) : resolveInitialFocus(policy, interaction);
+        const target = resolved === true ? null : resolved;
+        this.openingFocus = { policy, interaction, target };
+        return target;
+    }
+
     /**
      * Initial-focus orchestration (ADR 0017 §2). The manager owns the focus *policy*; it intercepts the
      * composed {@link RdxFocusScope}'s preventable `mountAutoFocus` (its designed extension point) and
@@ -487,11 +509,8 @@ export class RdxFloatingFocusManager {
         const focusScope = inject(RdxFocusScope);
 
         focusScope.mountAutoFocus.subscribe((event) => {
-            const interactionType = this.effectiveOpenInteractionType();
-            const target =
-                resolveInitialFocus(this.effectiveInitialFocus(), interactionType) ??
-                this.defaultInitialFocus(interactionType);
-            if (target === false) {
+            const target = this.resolveInitialTarget();
+            if (target === false || target === undefined) {
                 event.preventDefault();
                 return;
             }
@@ -560,12 +579,12 @@ export class RdxFloatingFocusManager {
 
     /**
      * Manager-owned post-open fallback. Some popup types open from a trigger event that fired before the
-     * manager existed, and some policies resolve their final target only after a couple of renders. Re-run
-     * the initial-focus policy for a few animation frames while the popup is open so the target can settle.
+     * manager existed, and some targets are ready only after rendering. Retry focusing for a few frames.
      */
     private wireInitialFocusFallback(): void {
         effect((onCleanup) => {
             if (!this.effectiveEnabled() || !this.isFloatingOpen() || !this.scopeReady()) {
+                this.openingFocus = undefined;
                 return;
             }
 
@@ -588,17 +607,15 @@ export class RdxFloatingFocusManager {
                 // A delayed layout retry must not undo a deliberate focus move to another control.
                 if (activeElement && activeElement !== ownerDocument.body && activeElement !== origin) return;
 
-                const interactionType = this.effectiveOpenInteractionType();
-                const resolved = resolveInitialFocus(this.effectiveInitialFocus(), interactionType);
-                if (resolved === false) {
+                const resolved = this.resolveInitialTarget();
+                if (resolved === false || resolved === undefined) {
                     return;
                 }
 
                 // A retained scope may stay active through an interrupted exit, so it will not
                 // emit mountAutoFocus again. Reuse its native first-tabbable default on reopen.
                 enableFocusInside(popup);
-                const target =
-                    resolved ?? this.defaultInitialFocus(interactionType) ?? getTabbableCandidates(popup)[0] ?? popup;
+                const target = resolved ?? getTabbableCandidates(popup)[0] ?? popup;
                 if (activeElement !== target) {
                     target.focus({ preventScroll: true });
                 }
