@@ -182,16 +182,35 @@ export const searchScenarios = Object.entries(cases)
                 );
                 expect(await panel.evaluate((node: HTMLElement) => node.getBoundingClientRect().height)).toBe(80);
                 if (s.search!.source !== 'event') {
-                    const inViewport = () =>
+                    const matchGeometry = () =>
                         page.locator('#a-match').evaluate((node) => {
                             const rect = node.getBoundingClientRect();
-                            return rect.top >= 0 && rect.bottom <= innerHeight;
+                            // Native fragment scrolling rounds offsets while DOMRect keeps
+                            // fractional font/layout coordinates. Allow one CSS pixel at edges.
+                            const roundingTolerance = 1;
+                            return {
+                                top: rect.top,
+                                bottom: rect.bottom,
+                                height: rect.height,
+                                viewport: innerHeight,
+                                scrollY,
+                                fonts: document.fonts.status,
+                                roundingTolerance,
+                                inViewport:
+                                    rect.top >= -roundingTolerance && rect.bottom <= innerHeight + roundingTolerance
+                            };
                         });
+                    let geometry = await matchGeometry();
+                    const inViewport = async () => (geometry = await matchGeometry()).inViewport;
                     // The pin suppresses keyframes after native fragment measurement, which
                     // leaves its match outside the viewport. Keep this exact reviewed difference.
                     const keyframeFragment = s.search!.source === 'fragment' && s.search!.motion === 'keyframe';
-                    if (d.framework === 'angular' || s.search!.source === 'find' || keyframeFragment) {
-                        await expect.poll(inViewport).toBe(d.framework === 'angular' || !keyframeFragment);
+                    try {
+                        if (d.framework === 'angular' || s.search!.source === 'find' || keyframeFragment) {
+                            await expect.poll(inViewport).toBe(d.framework === 'angular' || !keyframeFragment);
+                        }
+                    } finally {
+                        d.measurements.push({ name: 'browser match geometry', state: geometry });
                     }
                     await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(0);
                     const visibility = { inViewport: await inViewport() };

@@ -92,7 +92,7 @@ pnpm agents:check
 
 The [suite README](../../../apps/parity-testing/primitives/accordion/README.md) records scope and results:
 **185 scenarios / 535 passing comparisons / 20 capability skips** across Chromium, Firefox and WebKit
-on macOS/arm64; **80 Accordion + 16 Collapsible passing units**, with no skipped construction placeholders.
+in the latest complete Linux/arm64 run; **80 Accordion + 16 Collapsible passing units**, with no skipped construction placeholders. The preceding G1/G4 increments established the complete macOS/arm64 run.
 The G1 and G4 increments rerun the complete paired suite, 80 Accordion units, Angular fixture compilation/production build, focused lint/formatting and `agents:check`. G6 also reran the Collapsible units and library build.
 The preceding lifetime/motion increment also passed **three focused SSR tests**, **six client hydration
 checks**, **twelve Storybook behavior checks**, SSR/Storybook builds and consumer generation.
@@ -144,3 +144,18 @@ activation; non-native hosts still activate on an unprevented keyup, matching th
 release behavior. A plain-HTML anchor probe establishes each engine's trusted Enter-repeat policy
 independently; its counts and key targets are retained in raw observations. These cases introduce
 no differential exceptions or primitive runtime changes.
+
+## Native fragment viewport precision
+
+CI [44297021305](https://github.com/radix-ng/primitives/actions/runs/44297021305/job/134777095901)
+exposed an overstrict fragment visibility observation in Linux WebKit. Native scroll offsets can be
+rounded while match rectangles keep fractional layout/font coordinates. A deliberately fractional
+search spacer reproduces both failures with a match top of -0.1796875 CSS px in macOS WebKit.
+The observer now allows one CSS pixel at the viewport edges and retains exact geometry on failure.
+The pin's approximately 78px keyframe miss remains outside that bound; its reviewed exception stays
+unchanged. Primitive runtime, native input and motion policies are unchanged.
+
+The correction passes the complete 535-row Linux/arm64 suite (20 existing capability skips), two
+repetitions of every G6 search case across macOS engines (92 comparisons, 40 existing skips), all 96
+Accordion/Collapsible units and focused build/lint/stylelint/formatting/contributor checks. See the
+[regression evidence](../../../apps/parity-testing/primitives/accordion/README.md#native-fragment-scroll-rounding).

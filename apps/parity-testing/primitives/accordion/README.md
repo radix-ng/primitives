@@ -7,8 +7,8 @@ synchronizes the implementations.
 
 ## Current scope
 
-**185 scenarios, 535 passing comparisons and 20 capability skips** across Chromium, Firefox and WebKit on macOS/arm64,
-2026-11-18, against Base UI 1.9.0 at `cf696d6f6e08c699c5bda24d5a033430909f2285`.
+**185 scenarios, 535 passing comparisons and 20 capability skips** across Chromium, Firefox and WebKit.
+The latest complete run is Linux/arm64, 2026-11-18, against Base UI 1.9.0 at `cf696d6f6e08c699c5bda24d5a033430909f2285`.
 There is **one exact reviewed difference**, described below. Capability skips apply only to native
 `window.find()` reveal on Chromium and WebKit; their plain-HTML probes do not emit trusted `beforematch`.
 
@@ -167,3 +167,28 @@ current scope.
 node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=reverse-accordion-presence
 node apps/radix-ssr-testing/hydration-audit/audit.mjs --skip-build --case=eager-accordion-retained
 ```
+
+## Native fragment scroll rounding
+
+CI [44297021305](https://github.com/radix-ng/primitives/actions/runs/44297021305/job/134777095901)
+failed both fragment search cases in Linux WebKit after the panel had successfully opened with
+motion suppressed. The trace places the revealed text at the viewport edge with integer scroll
+position 1291, but the old visibility assertion required an exact nonnegative fractional DOMRect top.
+The original artifact is retained in `dist/ci-44297021305/accordion/results/`.
+
+The search fixture now deliberately uses a 1200.5px spacer. With the old assertion, both cases fail
+on macOS WebKit: the correctly revealed match starts at -0.1796875 CSS px after native scroll rounding.
+The visibility observation allows one CSS pixel at the viewport edges, equally for both fixtures.
+Raw top/bottom/height, scroll offset, viewport, font readiness and tolerance are retained even if the
+assertion fails. No scroll position, event, primitive state or motion is changed by the observer.
+
+This tolerance preserves the existing keyframe reference defect: its match remains approximately
+78px above the viewport, so the same exact reviewed visibility difference still applies. No exception
+is added or broadened. Native `beforematch`, request/cancellation, retained input and later motion
+assertions remain in place. Browser zoom and unrelated geometry combinations remain outside scope.
+
+The complete Linux/arm64 suite passes 535 comparisons with 20 existing capability skips in Playwright
+1.60.0 Noble, Node 24.22.1, two workers and original timeouts. All 22 search scenarios pass twice in
+three macOS engines: 92 comparisons and 40 existing capability skips. Angular fixture AOT/production
+build, 96 Accordion/Collapsible units, focused lint/stylelint/formatting and contributor checks pass.
+Before/after reports are retained under `dist/ci-44297021305/accordion/` and the normal suite output.

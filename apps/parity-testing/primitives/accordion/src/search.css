@@ -1,5 +1,6 @@
 .search-spacer {
-    height: 1200px;
+    /* Exercise integer native scrolling against fractional target geometry. */
+    height: 1200.5px;
 }
 
 .search-panel {
