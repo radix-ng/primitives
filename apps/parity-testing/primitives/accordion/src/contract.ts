@@ -1,4 +1,7 @@
+import { identityKinds, type IdentityKind } from './identity.contract';
+
 export interface Settings {
+    identity?: IdentityKind;
     search?: { motion: 'transition' | 'keyframe'; source: 'event' | 'find' | 'fragment' };
     acceptControlled?: boolean;
     motion?:
@@ -72,6 +75,11 @@ export const cases: Record<string, Settings> = {
     'authored-ids': { authored: true },
     'authored-submit': { submit: true }
 };
+for (const identity of identityKinds) {
+    for (const multiple of identity === 'mode' ? [true] : [false, true]) {
+        cases[`identity-${identity}-${multiple ? 'multiple' : 'single'}`] = { identity, multiple };
+    }
+}
 for (const motion of ['transition', 'keyframe'] as const) {
     for (const source of ['event', 'find'] as const) {
         for (const [decision, settings] of Object.entries<Settings>({

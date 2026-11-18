@@ -2,13 +2,14 @@ import { expect, test } from '@playwright/test';
 import { createParityRunner } from '../../../shared/run-scenario.ts';
 import { cases } from '../src/contract';
 import { AccordionDriver } from './driver';
+import { identityScenarios } from './identity.scenarios';
 import { lifecycleScenarios } from './lifecycle.scenarios';
 import { motionScenarios } from './motion.scenarios';
 import { searchCapability } from './search-capability';
 import { searchScenarios } from './search.scenarios';
 
 const scenarios = Object.entries(cases)
-    .filter(([, settings]) => !settings.lifetime && !settings.motion && !settings.search)
+    .filter(([, settings]) => !settings.lifetime && !settings.motion && !settings.search && !settings.identity)
     .map(([name, settings]) => ({
         name,
         async run(driver: AccordionDriver) {
@@ -57,7 +58,13 @@ const scenarios = Object.entries(cases)
             }
         }
     }));
-const allScenarios = [...scenarios, ...lifecycleScenarios, ...motionScenarios, ...searchScenarios];
+const allScenarios = [
+    ...scenarios,
+    ...lifecycleScenarios,
+    ...motionScenarios,
+    ...searchScenarios,
+    ...identityScenarios
+];
 const run = createParityRunner({
     differences: new URL('../expected-differences.json', import.meta.url),
     scenarios: allScenarios,

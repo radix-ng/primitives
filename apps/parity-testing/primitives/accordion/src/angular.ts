@@ -11,6 +11,7 @@ import {
 } from '@radix-ng/primitives/accordion';
 import '../../../../radix-storybook/.storybook/tailwind.css';
 import { installProbe, settings } from './contract';
+import { AngularIdentityAccordion } from './identity.angular';
 import { AngularLifecycleAccordion } from './lifecycle.angular';
 import { AngularMotionAccordion } from './motion.angular';
 import { AngularSearchAccordion } from './search.angular';
@@ -92,13 +93,15 @@ class AngularAccordion {
     readonly probe = installProbe(this.s);
 }
 void bootstrapApplication(
-    settings().search
-        ? AngularSearchAccordion
-        : settings().motion
-          ? AngularMotionAccordion
-          : settings().lifetime
-            ? AngularLifecycleAccordion
-            : AngularAccordion,
+    settings().identity
+        ? AngularIdentityAccordion
+        : settings().search
+          ? AngularSearchAccordion
+          : settings().motion
+            ? AngularMotionAccordion
+            : settings().lifetime
+              ? AngularLifecycleAccordion
+              : AngularAccordion,
     {
         providers: [provideZonelessChangeDetection()]
     }
