@@ -74,6 +74,7 @@ custom portal target).
 
 - [Default](../examples/dialog--default.md)
 - [Controlled](../examples/dialog--controlled.md)
+- [Deferred requests](../examples/dialog--deferred-requests.md)
 - [Non-modal](../examples/dialog--non-modal.md)
 - [Trap focus only](../examples/dialog--trap-focus-only.md)
 - [Without pointer dismissal](../examples/dialog--without-pointer-dismissal.md)

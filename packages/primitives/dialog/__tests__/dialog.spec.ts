@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import {
@@ -66,7 +66,7 @@ class TestHostComponent {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxDialogRoot, RdxDialogTrigger, RdxDialogPortal, RdxDialogPopup],
     template: `
-        <div [defaultOpen]="true" rdxDialogRoot>
+        <div [defaultOpen]="defaultOpen()" (openChange)="requests.push($event)" rdxDialogRoot>
             <button rdxDialogTrigger>Open</button>
             <ng-template rdxDialogPortal>
                 <div rdxDialogPopup>Popup</div>
@@ -74,7 +74,38 @@ class TestHostComponent {
         </div>
     `
 })
-class DefaultOpenHostComponent {}
+class DefaultOpenHostComponent {
+    readonly defaultOpen = signal(true);
+    readonly requests: boolean[] = [];
+}
+
+@Component({
+    imports: [dialogImports],
+    template: `
+        <div
+            [open]="open()"
+            [defaultOpen]="defaultOpen()"
+            (openChange)="requests.push($event)"
+            (onOpenChange)="changes.push($event)"
+            (onOpenChangeComplete)="completed.push($event)"
+            rdxDialogRoot
+        >
+            <button id="first" rdxDialogTrigger>First</button>
+            <button id="second" rdxDialogTrigger>Second</button>
+            <div *rdxDialogPortal data-test-portal rdxDialogPopup>
+                <h2 rdxDialogTitle>Policy</h2>
+                <button rdxDialogClose>Close</button>
+            </div>
+        </div>
+    `
+})
+class OneWayDialogHostComponent {
+    readonly open = signal(false);
+    readonly defaultOpen = signal(false);
+    readonly requests: boolean[] = [];
+    readonly changes: RdxDialogOpenChange[] = [];
+    readonly completed: boolean[] = [];
+}
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -533,10 +564,77 @@ describe('Dialog', () => {
 
         expect(defaultOpenTrigger.getAttribute('aria-expanded')).toBe('true');
         expect(document.body.querySelector('[rdxDialogPopup]')).not.toBeNull();
+        expect(defaultOpenFixture.componentInstance.requests).toEqual([]);
         defaultOpenFixture.destroy();
     });
 
-    it('supports controlled open via the model', () => {
+    it('ignores later defaults after initializing a closed uncontrolled dialog', async () => {
+        const defaults = TestBed.createComponent(DefaultOpenHostComponent);
+        defaults.componentInstance.defaultOpen.set(false);
+        await defaults.whenStable();
+        defaults.componentInstance.defaultOpen.set(true);
+        await defaults.whenStable();
+
+        expect(popup()).toBeNull();
+        expect(defaults.componentInstance.requests).toEqual([]);
+        defaults.destroy();
+    });
+
+    it('honors a controlled false over a true default without emitting an open request', async () => {
+        const controlled = TestBed.createComponent(OneWayDialogHostComponent);
+        const host = controlled.componentInstance;
+        host.defaultOpen.set(true);
+        await controlled.whenStable();
+
+        expect(controlled.nativeElement.querySelector('#first').getAttribute('aria-expanded')).toBe('false');
+        expect(popup()).toBeNull();
+        expect(host.requests).toEqual([]);
+        expect(host.changes).toEqual([]);
+        expect(host.completed).toEqual([]);
+        controlled.destroy();
+    });
+
+    it('waits for the parent before opening or closing and adopts only the latest trigger request', async () => {
+        const controlled = TestBed.createComponent(OneWayDialogHostComponent);
+        const host = controlled.componentInstance;
+        await controlled.whenStable();
+        const first: HTMLButtonElement = controlled.nativeElement.querySelector('#first');
+        const second: HTMLButtonElement = controlled.nativeElement.querySelector('#second');
+        const root = controlled.debugElement.query(By.directive(RdxDialogRoot)).injector.get(RdxDialogRoot);
+
+        first.click();
+        second.click();
+        await controlled.whenStable();
+        expect(root.open()).toBe(false);
+        expect(root.trigger()).not.toBe(second);
+        expect(popup()).toBeNull();
+        expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
+        expect(host.requests).toEqual([true, true]);
+        expect(host.changes.map((change) => change.trigger)).toEqual([first, second]);
+        expect(host.completed).toEqual([]);
+
+        host.open.set(true);
+        await controlled.whenStable();
+        expect(popup()).not.toBeNull();
+        expect(second.getAttribute('aria-expanded')).toBe('true');
+        expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(true);
+
+        popup()?.querySelector<HTMLButtonElement>('button')?.click();
+        await controlled.whenStable();
+        expect(root.open()).toBe(true);
+        expect(popup()).not.toBeNull();
+        expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(true);
+        expect(host.requests).toEqual([true, true, false]);
+
+        host.open.set(false);
+        await controlled.whenStable();
+        expect(popup()).toBeNull();
+        expect(document.documentElement.hasAttribute('data-rdx-scroll-locked')).toBe(false);
+        expect(host.requests).toEqual([true, true, false]);
+        controlled.destroy();
+    });
+
+    it('supports parent updates through two-way binding', () => {
         fixture.componentInstance.open = true;
         fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();

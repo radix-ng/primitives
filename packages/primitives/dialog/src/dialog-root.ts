@@ -25,7 +25,8 @@ import {
     RdxCancelableChangeEventDetails,
     RdxFloatingRootContext,
     RdxTransitionStatus,
-    useRenderLifecycle
+    useRenderLifecycle,
+    watch
 } from '@radix-ng/primitives/core';
 import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxDialogHandle } from './dialog-handle';
@@ -62,6 +63,10 @@ interface RdxDialogRegisteredTrigger {
 
 const transformModal = (value: BooleanInput | 'trap-focus'): RdxDialogModal =>
     value === 'trap-focus' ? value : booleanAttribute(value);
+
+function transformOpen(value: BooleanInput): boolean | undefined {
+    return value === undefined ? undefined : booleanAttribute(value);
+}
 
 const context = () => contextFor(inject(RdxDialogRoot));
 
@@ -128,9 +133,11 @@ export class RdxDialogRoot {
     private readonly destroyRef = inject(DestroyRef);
     private readonly parentRoot = inject(RdxDialogRoot, { optional: true, skipSelf: true });
     private readonly variant = inject(RDX_DIALOG_VARIANT);
-    private hasAppliedDefaultOpen = false;
     private hasAppliedDefaultTriggerId = false;
     private readonly registeredTriggers = new Map<string, RdxDialogRegisteredTrigger>();
+    private readonly uncontrolledOpen = signal(false);
+    // Keep the latest request's metadata until the controlled input commits it.
+    private pendingOpenChange: { open: boolean; commit: () => void } | undefined;
 
     private readonly transition = useRenderLifecycle((open) => this.emitOpenChangeComplete(open), {
         open: () => this.open()
@@ -141,9 +148,18 @@ export class RdxDialogRoot {
     readonly registerTransitionElement = this.transition.registerElement;
 
     /**
-     * Whether the dialog is currently open.
+     * Controlled open state. Leave undefined to let the dialog own its state.
      */
-    readonly open = model(false);
+    readonly openInput = input<boolean | undefined, BooleanInput>(undefined, {
+        alias: 'open',
+        transform: transformOpen
+    });
+
+    /** Whether the dialog is currently open. */
+    readonly open = computed(() => this.openInput() ?? this.uncontrolledOpen());
+
+    /** Accepted open requests. Supports two-way binding to the controlled input. */
+    readonly openChange = output<boolean>();
 
     /**
      * Whether the dialog is initially open.
@@ -237,16 +253,7 @@ export class RdxDialogRoot {
             }
         });
 
-        let previousOpen = this.open();
-
-        effect(() => {
-            const defaultOpen = this.defaultOpen();
-
-            if (!this.hasAppliedDefaultOpen && defaultOpen) {
-                this.hasAppliedDefaultOpen = true;
-                this.open.set(defaultOpen);
-            }
-        });
+        watch([], () => this.uncontrolledOpen.set(this.defaultOpen()));
 
         effect(() => {
             const defaultTriggerId = this.defaultTriggerId();
@@ -262,13 +269,18 @@ export class RdxDialogRoot {
             untracked(() => this.syncTriggerId(triggerId));
         });
 
-        effect(() => {
-            const open = this.open();
+        let previousOpen = this.open();
+        watch([this.open, this.openInput], ([open, supplied]) => {
+            if (supplied === undefined) this.pendingOpenChange = undefined;
+            if (open === previousOpen) return;
 
-            if (open !== previousOpen) {
-                previousOpen = open;
-                untracked(() => this.transition.start(open));
+            previousOpen = open;
+            const pending = this.pendingOpenChange;
+            this.pendingOpenChange = undefined;
+            if (pending?.open === open) {
+                pending.commit();
             }
+            this.transition.start(open);
         });
 
         // Report nested open state to the parent dialog so it can apply data-nested-dialog-open.
@@ -297,6 +309,7 @@ export class RdxDialogRoot {
         event?: Event
     ) {
         const shouldAdoptPayload = trigger !== undefined || payload !== undefined;
+        const interactionType = this.consumeOpenInteractionType(event);
 
         if (this.open()) {
             if (trigger) {
@@ -324,26 +337,18 @@ export class RdxDialogRoot {
             return;
         }
 
-        this.openInteractionType.set(this.consumeOpenInteractionType(event));
-
-        if (trigger) {
-            this.trigger.set(trigger);
-        }
-
-        if (triggerId !== undefined) {
-            this.triggerId.set(triggerId);
-        }
-
-        if (shouldAdoptPayload) {
-            this.payload.set(payload);
-        }
-
-        this.preventUnmountOnClose.set(false);
-        this.open.set(true);
-        this.floatingContext.events.emit('openchange', { open: true, reason, event: change.eventDetails.event });
+        this.acceptOpenRequest(true, () => {
+            this.openInteractionType.set(interactionType);
+            if (trigger) this.trigger.set(trigger);
+            if (triggerId !== undefined) this.triggerId.set(triggerId);
+            if (shouldAdoptPayload) this.payload.set(payload);
+            this.preventUnmountOnClose.set(false);
+            this.floatingContext.events.emit('openchange', { open: true, reason, event: resolvedEvent });
+        });
     }
 
     close(reason: RdxDialogOpenChangeReason = 'none', event?: Event) {
+        this.pendingTriggerOpenInteractionType.set(null);
         if (!this.open()) {
             return;
         }
@@ -356,11 +361,23 @@ export class RdxDialogRoot {
             return;
         }
 
-        this.pendingTriggerOpenInteractionType.set(null);
-        this.closeInteractionType.set(getInteractionTypeFromEvent(event));
-        this.preventUnmountOnClose.set(change.shouldPreventUnmountOnClose());
-        this.open.set(false);
-        this.floatingContext.events.emit('openchange', { open: false, reason, event: change.eventDetails.event });
+        const interactionType = getInteractionTypeFromEvent(event);
+        this.acceptOpenRequest(false, () => {
+            this.closeInteractionType.set(interactionType);
+            this.preventUnmountOnClose.set(change.shouldPreventUnmountOnClose());
+            this.floatingContext.events.emit('openchange', { open: false, reason, event: resolvedEvent });
+        });
+    }
+
+    private acceptOpenRequest(open: boolean, commit: () => void) {
+        if (this.openInput() === undefined) {
+            this.pendingOpenChange = undefined;
+            this.uncontrolledOpen.set(open);
+            commit();
+        } else {
+            this.pendingOpenChange = { open, commit };
+        }
+        this.openChange.emit(open);
     }
 
     toggle(triggerId: string, trigger: HTMLElement, payload?: unknown, event = new Event('dialog.open-change')) {

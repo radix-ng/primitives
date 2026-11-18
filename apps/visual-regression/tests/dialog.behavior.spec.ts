@@ -17,6 +17,38 @@ const trigger = '[rdxDialogTrigger]';
 const backdrop = '[rdxDialogBackdrop]';
 const popup = '[rdxDialogPopup]';
 
+test('controlled open requests leave focus and scroll locking with the rendered dialog state', async ({ page }) => {
+    await gotoStory(page, 'primitives-dialog--deferred-open');
+    const open = page.getByRole('button', { name: 'Open dialog' });
+    const dialog = page.getByRole('dialog', { name: 'Review the request' });
+    const lock = page.locator('html[data-rdx-scroll-locked]');
+
+    await expect(open).toHaveAttribute('aria-expanded', 'false');
+    await open.focus();
+    await open.press('Enter');
+    await expect(page.getByRole('button', { name: 'Apply open request' })).toBeEnabled();
+    await expect(open).toBeFocused();
+    await expect(open).toHaveAttribute('aria-expanded', 'false');
+    await expect(dialog).toHaveCount(0);
+    await expect(lock).toHaveCount(0);
+
+    await page.getByRole('button', { name: 'Apply open request' }).click();
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('button', { name: 'Request close' })).toBeFocused();
+    await expect(lock).toHaveCount(1);
+
+    await dialog.getByRole('button', { name: 'Request close' }).click();
+    const applyClose = dialog.getByRole('button', { name: 'Apply close request' });
+    await expect(applyClose).toBeEnabled();
+    await expect(dialog).toBeVisible();
+    await expect(lock).toHaveCount(1);
+    await applyClose.click();
+
+    await expect(dialog).toHaveCount(0);
+    await expect(lock).toHaveCount(0);
+    await expect(open).toBeFocused();
+});
+
 test.describe('Dialog structural portal', () => {
     test('teleports backdrop and popup directly into <body> with no wrapper element', async ({ page }) => {
         await gotoStory(page, 'primitives-dialog--default');

@@ -8,6 +8,8 @@ import controlledMultipleSource from './dialog-controlled-multiple?raw';
 import controlledSource from './dialog-controlled?raw';
 import { RdxDialogDefaultComponent } from './dialog-default';
 import defaultSource from './dialog-default?raw';
+import { RdxDialogDeferredOpenComponent } from './dialog-deferred-open';
+import deferredOpenSource from './dialog-deferred-open?raw';
 import { RdxDialogDetachedComponent } from './dialog-detached';
 import detachedSource from './dialog-detached?raw';
 import { RdxDialogFromMenuComponent } from './dialog-from-menu';
@@ -47,6 +49,7 @@ export default {
             imports: [
                 RdxDialogDefaultComponent,
                 RdxDialogControlledComponent,
+                RdxDialogDeferredOpenComponent,
                 RdxDialogNonModalComponent,
                 RdxDialogTrapFocusComponent,
                 RdxDialogWithoutDismissComponent,
@@ -81,6 +84,16 @@ export const Controlled: Story = {
     render: () => ({
         template: html`
             <rdx-dialog-controlled />
+        `
+    })
+};
+
+export const DeferredOpen: Story = {
+    tags: ['!visual'],
+    parameters: source(deferredOpenSource),
+    render: () => ({
+        template: html`
+            <rdx-dialog-deferred-open />
         `
     })
 };

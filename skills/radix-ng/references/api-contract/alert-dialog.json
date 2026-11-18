@@ -103,8 +103,9 @@
       "inputs": [
         {
           "name": "open",
-          "default": "false",
-          "description": "Whether the dialog is currently open."
+          "type": "boolean | undefined",
+          "default": "undefined",
+          "description": "Controlled open state. Leave undefined to let the dialog own its state."
         },
         {
           "name": "defaultOpen",
@@ -131,6 +132,11 @@
         }
       ],
       "outputs": [
+        {
+          "name": "openChange",
+          "type": "boolean",
+          "description": "Accepted open requests. Supports two-way binding to the controlled input."
+        },
         {
           "name": "onOpenChange",
           "type": "RdxDialogOpenChange",

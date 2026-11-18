@@ -43,7 +43,7 @@ and follow its links to the other Agents guides.
 addressed by the component slug and the kebab-cased example name. Cheaper than re-reading the whole
 component doc.
 
-Total: **304 examples** across **44 components**.
+Total: **305 examples** across **44 components**.
 
 ## Components
 
@@ -59,7 +59,7 @@ Total: **304 examples** across **44 components**.
 - **[Context Menu](./references/components/context-menu.md)** — A menu that appears at the pointer on right click (or touch long-press), built on the Menu primitive. _(6 examples)_
 - **[Cropper](./references/components/cropper.md)** — Headless component for interactive image cropping — inspired by the experience on [X](https://x.com/). _(2 examples)_
 - **[Date Field](./references/components/date-field.md)** — Enables users to input specific dates within a designated field. _(2 examples)_
-- **[Dialog](./references/components/dialog.md)** — A window overlaid on the page, rendering the content underneath inert. _(14 examples)_
+- **[Dialog](./references/components/dialog.md)** — A window overlaid on the page, rendering the content underneath inert. _(15 examples)_
 - **[Drawer](./references/components/drawer.md)** — An edge-anchored sheet that opens over the page and dismisses with a swipe. _(12 examples)_
 - **[Editable](./references/components/editable.md)** — An inline text field that swaps a read-only preview for an editable input. _(2 examples)_
 - **[Field](./references/components/field.md)** — Groups a control with accessible label, description, error message, and field state. _(4 examples)_
