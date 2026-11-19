@@ -30593,6 +30593,7 @@ A named group submits the value of its mounted, enabled selected item. Add
 visible radio. Use `form="form-id"` on the group to associate it with a form elsewhere on
 the page. Click, keyboard selection and Angular Forms work with or without item inputs.
 See [Field composition](components/radio.md#field-composition) for shared form state and label wiring.
+See [Option values](components/radio.md#option-values) for numbers, objects and arrays.
 
 The item can attach to any element. When the host is a native `<button>` it is detected automatically:
 `type="button"` and the native `disabled` attribute are applied for you — there is no `nativeButton`
@@ -30651,6 +30652,47 @@ Use `[(value)]` when binding the editable model directly. Use `ngModel`, a React
 or Signal Forms when a form owns the value. A native form reset restores the initial selection of
 a standalone group. A connected `NgControl` uses its own reset baseline, and Signal Forms
 `reset()` uses the field's reset contract. A parent-owned selection stays in effect on native reset.
+
+## Option values
+
+Give each item a distinct value. Numbers and strings are separate values, and objects and arrays
+compare by reference. Reuse the same object or array in the item binding and the selected value.
+`null` represents no selection. Use `[value]` for a value with a type other than string.
+
+```ts
+import { Component, signal } from '@angular/core';
+import { RdxRadioGroupDirective, RdxRadioItemDirective } from '@radix-ng/primitives/radio';
+
+interface StorageOption {
+    id: string;
+    label: string;
+}
+
+@Component({
+    selector: 'storage-options',
+    imports: [RdxRadioGroupDirective, RdxRadioItemDirective],
+    template: `
+        <div [controlledValue]="selected()" (onValueChange)="selected.set($event.value)" rdxRadioRoot aria-label="Storage">
+            @for (option of options; track option.id) {
+                <button [value]="option" rdxRadioItem>{{ option.label }}</button>
+            }
+        </div>
+    `
+})
+export class StorageOptions {
+    protected readonly options: StorageOption[] = [
+        { id: 'standard', label: 'Standard' },
+        { id: 'premium', label: 'Premium' }
+    ];
+    protected readonly selected = signal<StorageOption | null>(this.options[0] ?? null);
+}
+```
+
+The Angular form model and `onValueChange` retain the original value.
+Use `RdxRadioValueChangeEvent<StorageOption>` when annotating an object-valued handler.
+A native form submits one entry for the selection. Strings pass through, and other values
+are serialized as JSON where possible. Two distinct items can produce the same submitted string.
+Give independent groups separate form owners or distinct names if they use native radio inputs.
 
 ## Selection ownership and change events
 

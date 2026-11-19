@@ -1,4 +1,5 @@
 export const cases = {
+    'eager-radio': { kind: 'radio', placement: 'eager' },
     'reverse-accordion-presence': { kind: 'accordion', placement: 'reverse' },
     'eager-accordion-retained': { kind: 'accordion', placement: 'eager', retain: true },
     'eager-inline': { kind: 'inline', placement: 'eager' },
@@ -52,6 +53,7 @@ export interface Settings {
     name: CaseName;
     kind:
         | 'accordion'
+        | 'radio'
         | 'inline'
         | 'attribute'
         | 'structural'

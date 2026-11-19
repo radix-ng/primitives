@@ -13,6 +13,7 @@ export interface Settings {
     readOnly?: boolean;
     forms?: 'external-required' | 'eligible-items' | 'field-labels' | 'field-state';
     indicator?: 'unmount' | 'keep-mounted' | 'no-motion';
+    collection?: 'identity' | 'live';
 }
 
 export const cases = {
@@ -49,7 +50,9 @@ export const cases = {
     'forms-field-state': { forms: 'field-state' },
     'indicator-unmount': { indicator: 'unmount', defaultValue: 'standard' },
     'indicator-keep-mounted': { indicator: 'keep-mounted', defaultValue: 'standard' },
-    'indicator-no-motion': { indicator: 'no-motion', defaultValue: 'standard' }
+    'indicator-no-motion': { indicator: 'no-motion', defaultValue: 'standard' },
+    'collection-identity': { collection: 'identity' },
+    'collection-live': { collection: 'live' }
 } satisfies Record<string, Settings>;
 
 export const options = [
@@ -57,6 +60,16 @@ export const options = [
     { value: 'standard', label: 'Standard' },
     { value: 'compact', label: 'Compact' }
 ] as const;
+
+export const collectionOptions = [
+    { id: 'text', value: '1' },
+    { id: 'number', value: 1 },
+    { id: 'object', value: { value: 7, label: 'Storage' } },
+    { id: 'other-object', value: { value: 7, label: 'Storage' } },
+    { id: 'array', value: ['a', 'b'] }
+];
+
+export type CollectionValue = (typeof collectionOptions)[number]['value'];
 
 export interface Probe {
     reference: { commit: string; packageVersion: string; digest: string };

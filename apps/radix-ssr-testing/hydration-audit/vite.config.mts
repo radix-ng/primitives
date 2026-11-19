@@ -20,11 +20,18 @@ export default defineConfig({
             generateBundle() {
                 const runtime = [
                     'packages/primitives/core/src/id-generator.ts',
+                    'packages/primitives/core/src/item-helpers.ts',
                     'packages/primitives/accordion/src/accordion-root.directive.ts',
                     'packages/primitives/accordion/src/accordion-item.directive.ts',
                     'packages/primitives/accordion/src/accordion-panel.directive.ts',
                     'packages/primitives/accordion/src/accordion-panel-presence.directive.ts',
                     'packages/primitives/accordion/src/accordion-trigger.directive.ts',
+                    'packages/primitives/radio/src/radio-root.directive.ts',
+                    'packages/primitives/radio/src/radio-field.ts',
+                    'packages/primitives/radio/src/radio-item.directive.ts',
+                    'packages/primitives/radio/src/radio-item-input.directive.ts',
+                    'packages/primitives/radio/src/radio-indicator.directive.ts',
+                    'packages/primitives/radio/src/radio-indicator-presence.directive.ts',
                     'packages/primitives/collapsible/src/collapsible-root.directive.ts',
                     'packages/primitives/collapsible/src/collapsible-panel.directive.ts',
                     'packages/primitives/collapsible/src/collapsible-panel-owner-context.ts',
@@ -39,9 +46,15 @@ export default defineConfig({
                     'packages/primitives/floating-focus-manager/src/floating-focus-manager.ts',
                     'packages/primitives/floating-focus-manager/src/trigger-interaction.ts'
                 ];
-                const fixture = ['app.ts', 'lazy-view.ts', 'settings.ts', 'client.ts', 'server.ts', 'index.html'].map(
-                    (file) => `apps/radix-ssr-testing/hydration-audit/${file}`
-                );
+                const fixture = [
+                    'app.ts',
+                    'lazy-view.ts',
+                    'radio-view.ts',
+                    'settings.ts',
+                    'client.ts',
+                    'server.ts',
+                    'index.html'
+                ].map((file) => `apps/radix-ssr-testing/hydration-audit/${file}`);
                 const hashes = (files: string[]) =>
                     Object.fromEntries(
                         files.map((file) => [file, createHash('sha256').update(readFileSync(file)).digest('hex')])

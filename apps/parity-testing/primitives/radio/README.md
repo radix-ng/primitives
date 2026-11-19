@@ -29,13 +29,18 @@ unchecked views and unmounting without motion. They assert the transient hooks a
 same node during exit reversal. An already completed exit creates a new node on selection unless
 the view is retained.
 
+Two G6 scenarios cover values whose identities differ despite identical serialized strings,
+object and array serialization, group isolation across form owners, tracked reorder, focused
+node identity and healing an orphaned selection by restoring its option value. The Angular-only
+[hydration audit](../../../radix-ssr-testing/hydration-audit/README.md) covers eager hydration.
+
 The initial Chromium run reproduced Angular's late-default and explicit-null defects. The full suite
-now passes **102 comparisons** with no expected-difference entries. Callback value and reason
+now passes **108 comparisons** with no expected-difference entries. Callback value and reason
 participate in comparison. Event type/trust and native input/change notifications are retained as raw
 observations. Angular assertions check that controlled requests emit no native edit notifications
 and that an accepted editable click with an authored input emits one of each.
 
 Open scope includes paired browser reset, dynamic form ownership, Fieldset legends, validation timing,
-live collection and host changes, and client hydration. The
+additional host and collection combinations, and deferred hydration. The
 [Radio matrix](../../../../packages/primitives/radio/PARITY.md) distinguishes Angular-only form and
 SSR evidence from paired results. Reports live under `dist/parity-testing/radio/results/`.

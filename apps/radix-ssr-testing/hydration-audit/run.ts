@@ -24,12 +24,51 @@ async function snapshot(page: Page) {
             .filter((id) => id.startsWith('audit-field-') || id.startsWith('authored-field-') || id.startsWith('rdx-'));
         const detachedTrigger = document.querySelector('[data-detached-dialog-trigger]');
         const detachedPopup = document.querySelector('[data-detached-dialog-popup]');
+        const radioForm = document.querySelector<HTMLFormElement>('[data-radio-audit]');
+        const radioGroup = radioForm?.querySelector('[role="radiogroup"]');
         return {
             ready: window.portalHydrationAudit?.ready ?? false,
             stable: window.portalHydrationAudit?.stable,
             errors: window.portalHydrationAudit?.errors ?? [],
             constructed: window.portalHydrationAudit?.constructed ?? [],
             duplicateIds: ids.filter((id, index) => ids.indexOf(id) !== index),
+            radio: radioForm
+                ? {
+                      nodes: Object.fromEntries(
+                          [...radioForm.querySelectorAll<HTMLElement>('[data-radio-node]')].map((node) => [
+                              node.dataset.radioNode!,
+                              {
+                                  id: node.id,
+                                  reused: window.auditServerNodes?.['radio:' + node.dataset.radioNode] === node
+                              }
+                          ])
+                      ),
+                      selection: radioGroup?.querySelector<HTMLElement>('[aria-checked="true"]')?.dataset.radioNode,
+                      tabStop: radioGroup?.querySelector<HTMLElement>('[tabindex="0"]')?.dataset.radioNode,
+                      focus: active?.getAttribute('data-radio-node'),
+                      submitted: new FormData(radioForm).getAll('plan'),
+                      requests: Number(radioForm.querySelector('output')?.textContent),
+                      labels: ['a', 'b'].every((choice) => {
+                          const item = radioForm.querySelector(`[data-radio-node="${choice}"]`);
+                          const label = radioForm.querySelector<HTMLLabelElement>(
+                              `[data-radio-node="label-${choice}"]`
+                          );
+                          return (
+                              label?.id &&
+                              item?.getAttribute('aria-labelledby') === label.id &&
+                              label.control === radioForm.querySelector(`[data-radio-node="input-${choice}"]`)
+                          );
+                      }),
+                      groupLabel: document.getElementById(radioGroup?.getAttribute('aria-labelledby') ?? '')
+                          ?.textContent,
+                      groupDescription: document.getElementById(radioGroup?.getAttribute('aria-describedby') ?? '')
+                          ?.textContent,
+                      ending: [...radioForm.querySelectorAll<HTMLElement>('[data-radio-node][data-ending-style]')].map(
+                          (dot) => dot.dataset.radioNode
+                      ),
+                      starting: !!radioForm.querySelector('[data-radio-node][data-starting-style]')
+                  }
+                : undefined,
             detachedDialog: detachedTrigger
                 ? {
                       open: document.querySelector('audit-detached-dialog')?.getAttribute('data-dialog-open'),
@@ -114,6 +153,95 @@ interface Observation {
     scriptRequests: string[];
     document?: string;
     frameworkLimits?: string[];
+}
+
+async function checkRadioHydration(
+    page: Page,
+    observation: Observation,
+    record: (label: string) => Promise<Snapshot>,
+    release: () => void
+) {
+    const checks = observation.checks;
+    const alpha = page.getByRole('radio', { name: 'Alpha' });
+    const beta = page.getByRole('radio', { name: 'Beta' });
+    const alphaDot = page.locator('[data-radio-node="dot-a"]');
+    const betaDot = page.locator('[data-radio-node="dot-b"]');
+    await page.evaluate(() => {
+        for (const node of document.querySelectorAll<HTMLElement>('[data-radio-node]')) {
+            window.auditServerNodes!['radio:' + node.dataset.radioNode] = node;
+        }
+    });
+    await beta.focus({ timeout: 5000 });
+    const before = (await record('selected radio and retained indicator in server DOM')).radio;
+    checks.serverRelationships = Boolean(
+        before?.labels && before.groupLabel === 'Plan' && before.groupDescription === 'Choose one plan.'
+    );
+    checks.serverIndicatorsSettled = Boolean(
+        before?.nodes['dot-a'] && before.nodes['dot-b'] && !before.starting && before.ending.length === 0
+    );
+    checks.serverSelection = before?.selection === 'b' && before.submitted.join() === 'b' && before.requests === 0;
+
+    release();
+    await page.waitForFunction(() => window.portalHydrationAudit?.ready, undefined, { timeout: 5000 });
+    const hydrated = await record('claimed nodes and IDs after hydration');
+    const boot = hydrated.radio;
+    checks.claimedServerNodes = Boolean(
+        boot &&
+        before &&
+        Object.entries(before.nodes).every(([key, node]) => boot.nodes[key]?.reused && boot.nodes[key].id === node.id)
+    );
+    checks.hydratedRelationships = Boolean(
+        boot?.labels &&
+        boot.groupLabel === before?.groupLabel &&
+        boot.groupDescription === before?.groupDescription &&
+        hydrated.duplicateIds.length === 0
+    );
+    checks.hydratedSelectionAndFocus =
+        before?.focus === 'b' &&
+        boot?.focus === 'b' &&
+        boot.tabStop === 'b' &&
+        boot.selection === 'b' &&
+        boot.submitted.join() === 'b' &&
+        boot.requests === 0 &&
+        !boot.starting &&
+        boot.ending.length === 0;
+
+    await beta.press('ArrowRight');
+    await betaDot.and(page.locator('[data-ending-style]')).waitFor({ timeout: 5000 });
+    const exiting = (await record('keyboard selection after hydration holds exit')).radio;
+    checks.keyboardAndExit =
+        exiting?.focus === 'a' &&
+        exiting.selection === 'a' &&
+        exiting.requests === 1 &&
+        exiting.submitted.join() === 'a' &&
+        exiting.ending.includes('dot-b') &&
+        !!exiting.nodes['dot-b']?.reused &&
+        !!exiting.nodes['dot-a']?.reused;
+
+    await alpha.press('ArrowRight');
+    await alphaDot.evaluate((dot) => dot.getAnimations().forEach((animation) => animation.finish()));
+    const reversed = (await record('keyboard re-selection preserves the outgoing server node')).radio;
+    checks.interruptedExit =
+        reversed?.focus === 'b' &&
+        reversed.selection === 'b' &&
+        reversed.requests === 2 &&
+        !!reversed.nodes['dot-b']?.reused &&
+        !reversed.ending.includes('dot-b');
+
+    await beta.press('ArrowRight');
+    await betaDot.and(page.locator('[data-ending-style]')).waitFor({ timeout: 5000 });
+    await betaDot.evaluate((dot) => dot.getAnimations().forEach((animation) => animation.finish()));
+    await betaDot.waitFor({ state: 'detached', timeout: 5000 });
+    await page.locator('[data-radio-node="label-b"]').click();
+    const final = (await record('native label reactivates the radio and recreates its indicator')).radio;
+    checks.labelRecreatesIndicator =
+        final?.selection === 'b' &&
+        final.requests === 4 &&
+        final.submitted.join() === 'b' &&
+        !!final.nodes['dot-b'] &&
+        !final.nodes['dot-b'].reused &&
+        !!final.nodes['input-b']?.reused &&
+        !!final.nodes['dot-a']?.reused;
 }
 
 async function checkDetachedDialogHydration(
@@ -267,6 +395,10 @@ try {
             });
             if (settings.placement === 'detached-trigger') {
                 await checkDetachedDialogHydration(page, observation, record, release);
+                continue;
+            }
+            if (settings.kind === 'radio') {
+                await checkRadioHydration(page, observation, record, release);
                 continue;
             }
             const editedBefore = await page.locator('[data-probe="first"] input').isVisible();

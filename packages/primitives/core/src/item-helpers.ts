@@ -43,14 +43,14 @@ export function itemToStringLabel(value: unknown): string {
  */
 export function itemToStringValue(value: unknown): string {
     if (value !== null && typeof value === 'object' && 'value' in value && 'label' in value) {
-        return serializeValue((value as { value: unknown }).value);
+        return serializeItemValue((value as { value: unknown }).value);
     }
 
-    return serializeValue(value);
+    return serializeItemValue(value);
 }
 
-/** Base UI-compatible serialization fallback for native form values. */
-function serializeValue(value: unknown): string {
+/** @internal Serializes one item without interpreting an object or array as a collection entry. */
+export function serializeItemValue(value: unknown): string {
     if (isNullish(value)) {
         return '';
     }

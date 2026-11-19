@@ -19,7 +19,7 @@ import { injectRadioRootContext } from './radio-root.directive';
 export interface RadioItemContext {
     id: Signal<string>;
     field: RdxFieldRootContext | null;
-    value: Signal<string>;
+    value: Signal<unknown>;
     checkedState: Signal<boolean>;
     disabledState: Signal<boolean>;
     readonlyState: Signal<boolean>;
@@ -87,7 +87,7 @@ export const [injectRadioItemContext, provideRadioItemContext] = createContext<R
         '(focus)': 'onFocus($event)'
     }
 })
-export class RdxRadioItemDirective {
+export class RdxRadioItemDirective<Value = string> {
     private readonly rootContext = injectRadioRootContext();
     private readonly compositeItem = inject(RdxCompositeItem, { self: true });
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -96,7 +96,7 @@ export class RdxRadioItemDirective {
     readonly field = injectFieldRootContext(true);
     protected readonly itemField = this.field === this.rootContext.field ? null : this.field;
 
-    readonly value = input.required<string>();
+    readonly value = input.required<Value>();
 
     readonly id = input(injectId('rdx-radio-item-'));
 
@@ -135,7 +135,10 @@ export class RdxRadioItemDirective {
 
     readonly requiredState = computed(() => this.rootContext.required() || this.required());
 
-    readonly checkedState = computed(() => this.rootContext.value() === this.value());
+    readonly checkedState = computed(() => {
+        const value = this.value();
+        return value != null && this.rootContext.value() === value;
+    });
 
     protected readonly radioTabIndex = computed(() => {
         const authored = this.compositeItem.tabIndexInput();
@@ -187,7 +190,9 @@ export class RdxRadioItemDirective {
     /** @ignore */
     requestSelection(event?: Event): boolean {
         if (this.disabledState() || this.readonlyState()) return false;
-        return this.rootContext.select(this.value(), event, 'none', this.elementRef.nativeElement);
+        const value = this.value();
+        if (value == null) return false;
+        return this.rootContext.select(value, event, 'none', this.elementRef.nativeElement);
     }
 
     protected handleClick(event: MouseEvent): void {

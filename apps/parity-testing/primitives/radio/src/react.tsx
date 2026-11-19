@@ -3,6 +3,7 @@ import { Radio } from '@base-ui/react/radio';
 import { RadioGroup } from '@base-ui/react/radio-group';
 import { useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import { ReactRadioCollection } from './collection.react';
 import { config, installProbe, options } from './contract';
 import { ReactRadioForms } from './forms.react';
 
@@ -107,5 +108,11 @@ function ReactRadio() {
 }
 
 createRoot(document.getElementById('root')!).render(
-    settings.forms ? <ReactRadioForms mode={settings.forms} /> : <ReactRadio />
+    settings.collection ? (
+        <ReactRadioCollection />
+    ) : settings.forms ? (
+        <ReactRadioForms mode={settings.forms} />
+    ) : (
+        <ReactRadio />
+    )
 );

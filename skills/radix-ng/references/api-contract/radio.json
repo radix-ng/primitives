@@ -87,7 +87,7 @@
         },
         {
           "name": "value",
-          "type": "string",
+          "type": "Value",
           "required": true
         }
       ],
@@ -115,12 +115,12 @@
         },
         {
           "name": "controlledValue",
-          "type": "string | null",
+          "type": "Value | null",
           "description": "Parent-owned selection. A defined value, including null, takes precedence over the editable model."
         },
         {
           "name": "defaultValue",
-          "type": "string",
+          "type": "Value",
           "description": "Initial selection when neither a value binding nor an Angular form supplies one."
         },
         {
@@ -154,9 +154,9 @@
         },
         {
           "name": "value",
-          "type": "string | null",
+          "type": "Value | null",
           "default": "null",
-          "description": "The editable form value. Use a string identifier for each option and null for no selection.\nAccepts local edits and connects to Angular Forms or `[(value)]`."
+          "description": "The editable form value. Use a unique value per option and null for no selection.\nObject and array values are compared by reference.\nAccepts local edits and connects to Angular Forms or `[(value)]`."
         },
         {
           "name": "dirty",
@@ -192,7 +192,7 @@
       "outputs": [
         {
           "name": "onValueChange",
-          "type": "RdxRadioValueChangeEvent",
+          "type": "RdxRadioValueChangeEvent<Value>",
           "description": "Event handler called when the value changes."
         },
         {

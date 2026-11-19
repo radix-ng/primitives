@@ -16,6 +16,19 @@
                     opacity: 1;
                 }
             }
+            .audit-radio-indicator {
+                display: inline-block;
+                width: 10px;
+                height: 10px;
+            }
+            .audit-radio-indicator[data-ending-style] {
+                animation: radio-audit-exit 1s linear both paused;
+            }
+            @keyframes radio-audit-exit {
+                to {
+                    opacity: 0;
+                }
+            }
         </style>
     </head>
     <body>

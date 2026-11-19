@@ -58,6 +58,7 @@ import {
 } from '@radix-ng/primitives/select';
 import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 import { LazyPortalView } from './lazy-view';
+import { RadioAuditView } from './radio-view';
 import { AuditProbe, Settings } from './settings';
 
 export const SETTINGS = new InjectionToken<Settings>('Portal hydration audit settings');
@@ -156,6 +157,7 @@ export class HydrationProbe {
         RdxPortal,
         AuditPortal,
         HydrationProbe,
+        RadioAuditView,
         RdxPopoverRoot,
         RdxPopoverTrigger,
         RdxPopoverPortal,
@@ -164,6 +166,9 @@ export class HydrationProbe {
     ],
     template: `
         @switch (state.settings.kind) {
+            @case ('radio') {
+                <audit-radio-view />
+            }
             @case ('accordion') {
                 <section [attr.data-widget]="name()">
                     <div [defaultValue]="['one']" [keepMounted]="state.settings.retain ?? false" rdxAccordionRoot>

@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import type { Checkpoint } from '../../../shared/compare.ts';
 import { createParityRunner } from '../../../shared/run-scenario.ts';
-import { cases, options, type Probe, type Settings } from '../src/contract';
+import { cases, collectionOptions, options, type Probe, type Settings } from '../src/contract';
 
 class RadioDriver {
     readonly checkpoints: Checkpoint[] = [];
@@ -19,6 +19,7 @@ class RadioDriver {
     }
 
     get group() {
+        if (this.settings.collection) return this.page.getByRole('radiogroup', { name: 'Primary' });
         return this.page.getByRole('radiogroup');
     }
 
@@ -26,7 +27,8 @@ class RadioDriver {
         this.settings = cases[name as keyof typeof cases];
         this.nativeButton = this.settings.nativeButton ?? false;
         await this.page.goto('/' + this.framework + '.html?case=' + name);
-        await expect(this.group.getByRole('radio')).toHaveCount(this.settings.forms ? 2 : options.length);
+        const count = this.settings.collection ? collectionOptions.length : this.settings.forms ? 2 : options.length;
+        await expect(this.group.getByRole('radio')).toHaveCount(count);
         this.metadata = await this.page.evaluate(() => window.radioParity.reference);
     }
 
@@ -81,6 +83,68 @@ class RadioDriver {
         await expect.poll(read, name).toEqual({ focus, tabStops: tabStop === null ? [] : [tabStop] });
         this.checkpoints.push({ name, state: await read() });
     }
+}
+
+async function collectionScenario(driver: RadioDriver, mode: NonNullable<Settings['collection']>) {
+    const { page, group } = driver;
+    const read = () =>
+        group.evaluate((root) => ({
+            order: [...root.querySelectorAll<HTMLElement>('[role="radio"]')].map((item) => item.dataset.testid),
+            checked: [...root.querySelectorAll<HTMLElement>('[aria-checked="true"]')].map(
+                (item) => item.dataset.testid
+            ),
+            submitted: new FormData(root.closest('form')!).getAll('choice'),
+            separateForm: new FormData(document.querySelector<HTMLFormElement>('#secondary')!).getAll('choice'),
+            requests: Number(root.closest('form')?.querySelector('output')?.textContent)
+        }));
+    let order = collectionOptions.map(({ id }) => id);
+    const checkpoint = async (name: string, checked: string | null, submitted: string[], requests: number) => {
+        await expect.poll(read, name).toEqual({
+            order,
+            checked: checked === null ? [] : [checked],
+            submitted,
+            separateForm: ['1'],
+            requests
+        });
+        driver.checkpoints.push({ name, state: await read() });
+        expect(driver.errors).toEqual([]);
+    };
+    await checkpoint('string selected initially', 'text', ['1'], 0);
+    const number = group.getByTestId('number');
+    await number.click();
+    await checkpoint('number and string serialize the same but have distinct identities', 'number', ['1'], 1);
+
+    if (mode === 'identity') {
+        const serialized = JSON.stringify(collectionOptions[2].value);
+        await group.getByTestId('object').click();
+        await checkpoint('object serializes without losing its wrapper', 'object', [serialized], 2);
+        await group.getByTestId('other-object').click();
+        await checkpoint('equal object content does not select two items', 'other-object', [serialized], 3);
+        await group.getByTestId('array').click();
+        await checkpoint('array-valued item submits one entry', 'array', ['["a","b"]'], 4);
+        return;
+    }
+
+    await number.evaluate((element) => element.setAttribute('data-original', ''));
+    await number.focus();
+    await page
+        .getByRole('button', { name: 'Reverse options' })
+        .evaluate((element: HTMLButtonElement) => element.click());
+    order = [...order].reverse();
+    await checkpoint('tracked move keeps selection and serialization', 'number', ['1'], 1);
+    await expect(number).toHaveAttribute('data-original', '');
+    await expect(number).toBeFocused();
+
+    const mutate = page.getByRole('button', { name: 'Change number value' });
+    await mutate.evaluate((element: HTMLButtonElement) => element.click());
+    await checkpoint('changing an item value leaves the current selection orphaned', null, [], 1);
+    await expect(number).toHaveAttribute('data-original', '');
+    await mutate.evaluate((element: HTMLButtonElement) => element.click());
+    await checkpoint('restoring the item value restores the selection', 'number', ['1'], 1);
+
+    await number.press('ArrowDown');
+    await expect(group.getByTestId('text')).toBeFocused();
+    await checkpoint('arrows follow the reordered DOM', 'text', ['1'], 2);
 }
 
 async function formsScenario(driver: RadioDriver, mode: NonNullable<Settings['forms']>) {
@@ -381,6 +445,7 @@ const scenarios = Object.entries(cases).map(([name, settings]) => ({
     async run(driver: RadioDriver) {
         if ('forms' in settings) return formsScenario(driver, settings.forms);
         if ('indicator' in settings) return indicatorScenario(driver, settings.indicator);
+        if ('collection' in settings) return collectionScenario(driver, settings.collection);
         if ('keyboard' in settings) return keyboardScenario(driver, settings);
         if ('response' in settings) {
             await driver.checkpoint('parent value owns the group', settings.value);

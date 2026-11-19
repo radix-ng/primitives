@@ -682,3 +682,43 @@ describe('RdxRadioGroup with Signal Forms', () => {
         expect(group.getAttribute('data-touched')).toBeNull();
     });
 });
+
+@Component({
+    imports: [FormField, RdxRadioGroupDirective, RdxRadioItemDirective],
+    template: `
+        <form>
+            <div [formField]="fields.plan" rdxRadioRoot name="plan">
+                <button [value]="standard" rdxRadioItem>Standard</button>
+                <button [value]="premium" rdxRadioItem>Premium</button>
+            </div>
+        </form>
+    `
+})
+class RadioObjectFormHost {
+    readonly standard = { id: 1 };
+    readonly premium = { id: 2 };
+    readonly model = signal<{ plan: { id: number } | null }>({ plan: this.standard });
+    readonly fields = form(this.model);
+}
+
+it('keeps object identity in Signal Forms and serializes only the native form entry', async () => {
+    const fixture = TestBed.createComponent(RadioObjectFormHost);
+    const host = fixture.componentInstance;
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const form = fixture.debugElement.query(By.css('form')).nativeElement as HTMLFormElement;
+    const premium = fixture.debugElement.queryAll(By.css('button'))[1].nativeElement as HTMLButtonElement;
+
+    premium.click();
+    fixture.detectChanges();
+
+    expect(host.model().plan).toBe(host.premium);
+    expect(premium.getAttribute('aria-checked')).toBe('true');
+    expect([...new FormData(form).values()]).toEqual(['{"id":2}']);
+
+    host.fields().reset({ plan: host.standard });
+    fixture.detectChanges();
+
+    expect(host.model().plan).toBe(host.standard);
+    expect([...new FormData(form).values()]).toEqual(['{"id":1}']);
+});

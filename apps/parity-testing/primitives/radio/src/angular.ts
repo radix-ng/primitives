@@ -9,6 +9,7 @@ import {
     RdxRadioItemInputDirective,
     type RdxRadioValueChangeEvent
 } from '@radix-ng/primitives/radio';
+import { AngularRadioCollection } from './collection.angular';
 import { config, installProbe, options } from './contract';
 import { AngularRadioForms } from './forms.angular';
 
@@ -144,6 +145,8 @@ class AngularRadio {
     }
 }
 
-void bootstrapApplication(config().forms ? AngularRadioForms : AngularRadio, {
+const settings = config();
+const fixture = settings.collection ? AngularRadioCollection : settings.forms ? AngularRadioForms : AngularRadio;
+void bootstrapApplication(fixture, {
     providers: [provideZonelessChangeDetection()]
 });

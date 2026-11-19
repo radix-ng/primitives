@@ -1,4 +1,5 @@
 import { computed, DestroyRef, Directive, ElementRef, inject, input } from '@angular/core';
+import { serializeItemValue } from '@radix-ng/primitives/core';
 import { injectRadioItemContext } from './radio-item.directive';
 import { injectRadioRootContext } from './radio-root.directive';
 
@@ -42,7 +43,7 @@ export class RdxRadioItemInputDirective {
 
     readonly name = computed(() => this.rootContext.name());
     readonly form = computed(() => this.rootContext.form());
-    readonly value = computed(() => this.itemContext.value() ?? undefined);
+    readonly value = computed(() => serializeItemValue(this.itemContext.value()));
     readonly checked = computed(() => this.itemContext.checkedState());
     readonly required = computed(() => this.itemContext.requiredState());
     readonly disabled = computed(() => this.itemContext.disabledState());
