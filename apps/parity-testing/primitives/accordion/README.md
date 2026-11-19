@@ -110,17 +110,16 @@ React-only event extensions, controlled/multiple combinations or real devices/AT
 
 ## Search reveal evidence
 
-The `search-fragment-keyframe` case exposes how the pin can suppress keyframes after the
-browser scrolls to the match. Firefox and WebKit have each produced both visibility outcomes.
-The Linux/x64 WebKit run measured the React target at 3 CSS px from the viewport top.
-Earlier WebKit runs measured it about 78 CSS px above the viewport.
-[CI job](https://github.com/radix-ng/primitives/actions/runs/44388577699/job/135100245985)
-· [Geometry report and trace](https://github.com/radix-ng/primitives/actions/runs/44388577699/artifacts/14471345920)
+The pin can run its opening keyframe during native fragment measurement. Firefox and WebKit
+have each produced both visibility outcomes. The Linux/x64 Chromium trace captured the pin's
+opening keyframe and a settled React target 1290.5 CSS px below the viewport top with `scrollY = 0`.
+[WebKit geometry report](https://github.com/radix-ng/primitives/actions/runs/44388577699/artifacts/14471345920)
+· [Chromium geometry report and trace](https://github.com/radix-ng/primitives/actions/runs/44514514117/artifacts/14526160516)
 
-Both fragment cases require native scroll on both fixtures and viewport visibility on Angular.
-The report preserves both geometries across engines. The callbacks, trusted `beforematch`,
-attributes, lifetime and later motion remain verified on both fixtures. Native-find visibility
-is still compared.
+Both fragment cases require native scroll and viewport visibility on Angular. The transition case
+also requires native scroll on React. React keyframe fragment geometry is recorded as evidence.
+Both fixtures must still emit a trusted `beforematch`, open the requested panel, preserve its view
+and animate subsequent user toggles. Native-find visibility is compared on both fixtures.
 
 Angular suppresses both motion durations in `beforematch`, before native `hidden` removal. It
 restores the authored inline styles on close, refused controlled reveal, policy removal or destruction.

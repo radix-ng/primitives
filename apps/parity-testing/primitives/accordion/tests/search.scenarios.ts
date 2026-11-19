@@ -204,9 +204,11 @@ export const searchScenarios = Object.entries(cases)
                     const observeGeometry = async () => (geometry = await matchGeometry());
                     const nativeFind = s.search!.source === 'find';
                     try {
-                        await expect.poll(async () => (await observeGeometry()).scrollY).toBeGreaterThan(0);
-                        // The pin can commit motion suppression on either side of fragment
-                        // measurement. Keep its fragment geometry as evidence across browsers.
+                        // The pin's opening keyframe can clip the fragment target during native
+                        // measurement. Chromium can leave scrollY at zero even after beforematch.
+                        if (d.framework === 'angular' || nativeFind || s.search!.motion === 'transition') {
+                            await expect.poll(async () => (await observeGeometry()).scrollY).toBeGreaterThan(0);
+                        }
                         if (d.framework === 'angular' || nativeFind) {
                             await expect.poll(async () => (await observeGeometry()).inViewport).toBe(true);
                         }

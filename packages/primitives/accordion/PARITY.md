@@ -103,10 +103,11 @@ independent of either fixture: installed Chromium/WebKit `window.find()` does no
 remains unverified.
 
 Suppressing motion after native fragment measurement can leave the revealed text outside the
-viewport. Angular suppresses motion in the same `beforematch` task. The pin has produced both
-keyframe visibility outcomes in Firefox and WebKit. The fragment cases require viewport visibility
-on Angular and native scroll on both fixtures. Their reports preserve the measured geometry in every
-engine. Native-find visibility, attributes, requests, view state and later motion remain compared.
+viewport. Angular suppresses motion in the same `beforematch` task, and both fragment cases require
+native scroll and viewport visibility on Angular. The pin has produced both keyframe visibility
+outcomes in Firefox and WebKit and has opened a keyframe panel without scrolling in Chromium.
+The transition case requires native scroll on React, and the keyframe case records React geometry.
+Native-find visibility, attributes, requests, view state and later motion remain compared.
 Same-task keyframe height is asserted on Angular and recorded for React. The fixtures finish
 remaining animations before comparing settled reveal state. Duration and priority during reveal stay
 in raw observations. Refusal and later-close style restoration remain paired checks.
