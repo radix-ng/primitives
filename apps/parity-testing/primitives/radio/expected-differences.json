@@ -1,1 +1,102 @@
-[]
+[
+    {
+        "scenario": "reset-editable",
+        "checkpoint": "accepted",
+        "field": "selection",
+        "angular": "alpha",
+        "react": "beta",
+        "category": "native-reset-selection"
+    },
+    {
+        "scenario": "reset-editable",
+        "checkpoint": "accepted",
+        "field": "field",
+        "angular": {
+            "filled": true,
+            "touched": false,
+            "dirty": false,
+            "focused": false,
+            "error": ""
+        },
+        "react": {
+            "filled": true,
+            "touched": true,
+            "dirty": true,
+            "focused": true,
+            "error": "Density is unavailable"
+        },
+        "category": "native-reset-field-state"
+    },
+    {
+        "scenario": "reset-parent-owned",
+        "checkpoint": "accepted",
+        "field": "checked",
+        "angular": "b",
+        "react": "a",
+        "category": "native-reset-checked-input"
+    },
+    {
+        "scenario": "reset-parent-owned",
+        "checkpoint": "accepted",
+        "field": "submitted",
+        "angular": ["b"],
+        "react": ["a"],
+        "category": "native-reset-form-data"
+    },
+    {
+        "scenario": "reset-parent-owned",
+        "checkpoint": "accepted",
+        "field": "field",
+        "angular": {
+            "filled": true,
+            "touched": false,
+            "dirty": false,
+            "focused": false,
+            "error": ""
+        },
+        "react": {
+            "filled": true,
+            "touched": true,
+            "dirty": true,
+            "focused": true,
+            "error": "Density is unavailable"
+        },
+        "category": "native-reset-field-state"
+    },
+    {
+        "scenario": "reset-portal",
+        "checkpoint": "accepted",
+        "field": "selection",
+        "angular": "alpha",
+        "react": "beta",
+        "category": "native-reset-selection"
+    },
+    {
+        "scenario": "reset-portal",
+        "checkpoint": "accepted",
+        "field": "checked",
+        "angular": "a",
+        "react": "b",
+        "category": "native-reset-checked-input"
+    },
+    {
+        "scenario": "reset-portal",
+        "checkpoint": "accepted",
+        "field": "field",
+        "angular": {
+            "filled": true,
+            "touched": false,
+            "dirty": false,
+            "focused": false,
+            "error": ""
+        },
+        "react": {
+            "filled": true,
+            "touched": true,
+            "dirty": true,
+            "focused": true,
+            "error": "Density is unavailable"
+        },
+        "category": "native-reset-field-state"
+    }
+]

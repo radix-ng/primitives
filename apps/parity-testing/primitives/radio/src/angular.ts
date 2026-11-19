@@ -15,6 +15,7 @@ import { config, installProbe, options } from './contract';
 import { AngularRadioForms } from './forms.angular';
 import { AngularRadioPortal } from './portal.angular';
 import { AngularRadioRefs } from './refs.angular';
+import { AngularRadioReset } from './reset.angular';
 import { AngularRadioValidation } from './validation.angular';
 
 @Component({
@@ -150,19 +151,21 @@ class AngularRadio {
 }
 
 const settings = config();
-const fixture = settings.portal
-    ? AngularRadioPortal
-    : settings.constraints
-      ? AngularRadioConstraints
-      : settings.validation
-        ? AngularRadioValidation
-        : settings.refs
-          ? AngularRadioRefs
-          : settings.collection
-            ? AngularRadioCollection
-            : settings.forms
-              ? AngularRadioForms
-              : AngularRadio;
+const fixture = settings.reset
+    ? AngularRadioReset
+    : settings.portal
+      ? AngularRadioPortal
+      : settings.constraints
+        ? AngularRadioConstraints
+        : settings.validation
+          ? AngularRadioValidation
+          : settings.refs
+            ? AngularRadioRefs
+            : settings.collection
+              ? AngularRadioCollection
+              : settings.forms
+                ? AngularRadioForms
+                : AngularRadio;
 void bootstrapApplication(fixture, {
     providers: [provideZonelessChangeDetection()]
 });

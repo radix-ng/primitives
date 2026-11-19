@@ -52,6 +52,8 @@ export interface RdxNativeFormControlOptions<T> {
     readonly syncNativeControl?: () => void;
     /** Value restored by a native form reset. Captured once after inputs bind. */
     readonly defaultValue?: () => T;
+    /** Contextual form that can reset the control when there is no native form owner. */
+    readonly resetFormFallback?: () => HTMLFormElement | null;
     /** Applies the captured default in the next task, after native reset and its default action finish. */
     readonly onReset?: (value: T) => void;
     /** Optional persistent input. When named, it submits instead of duplicating generated entries. */
@@ -386,7 +388,7 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
     }
 
     const onReset = (event: Event) => {
-        if (event.target !== ownerForm() || !options.onReset || !hasDefaultValue) {
+        if (!options.onReset || !hasDefaultValue || event.target !== (ownerForm() ?? options.resetFormFallback?.())) {
             return;
         }
 

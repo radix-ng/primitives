@@ -48,6 +48,7 @@ The hydrated form blocks an empty required group, focuses the original radio and
 after a selection.
 Moving the hydrated Field outside the native form keeps the original inputs and required focus.
 The declaring Form emits the portaled value through its submit callback.
+The moved group preserves its selection on canceled reset and restores its default on accepted reset.
 
 ```bash
 node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=eager-radio

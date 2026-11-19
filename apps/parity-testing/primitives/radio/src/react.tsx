@@ -9,6 +9,7 @@ import { config, installProbe, options } from './contract';
 import { ReactRadioForms } from './forms.react';
 import { ReactRadioPortal } from './portal.react';
 import { ReactRadioRefs } from './refs.react';
+import { ReactRadioReset } from './reset.react';
 import { ReactRadioValidation } from './validation.react';
 
 const settings = config();
@@ -112,7 +113,9 @@ function ReactRadio() {
 }
 
 createRoot(document.getElementById('root')!).render(
-    settings.portal ? (
+    settings.reset ? (
+        <ReactRadioReset />
+    ) : settings.portal ? (
         <ReactRadioPortal />
     ) : settings.constraints ? (
         <ReactRadioConstraints />

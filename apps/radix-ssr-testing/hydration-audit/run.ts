@@ -329,6 +329,32 @@ async function checkRadioHydration(
         portalSubmission.submitValue === 'b' &&
         portalSubmission.submitted.length === 0 &&
         !!portalSubmission.nodes['input-b']?.reused;
+
+    await page.locator('[data-radio-node="label-a"]').click();
+    await expectRadioSelection('a');
+    await form.evaluate((element: HTMLFormElement) => {
+        element.ownerDocument.addEventListener('reset', (event) => event.preventDefault(), { once: true });
+        element.reset();
+    });
+    const canceledPortalReset = (await record('canceled native reset retains the portaled edit')).radio;
+    checks.canceledPortaledReset =
+        canceledPortalReset?.selection === 'a' &&
+        canceledPortalReset.submitted.length === 0 &&
+        canceledPortalReset.fieldState.join() === 'filled,dirty,touched';
+
+    await form.evaluate((element: HTMLFormElement) => element.reset());
+    await expectRadioSelection('b');
+    const portalReset = (await record('native reset restores the portaled default')).radio;
+    checks.nativeResetRestoresPortaledField =
+        portalReset?.selection === 'b' &&
+        portalReset.submitted.length === 0 &&
+        !!portalReset.nodes['input-b']?.reused &&
+        portalReset.requests === canceledPortalReset?.requests &&
+        portalReset.fieldState.join() === 'filled';
+
+    function expectRadioSelection(value: 'a' | 'b'): Promise<void> {
+        return page.locator(`[data-radio-node="${value}"][aria-checked="true"]`).waitFor({ timeout: 5000 });
+    }
 }
 
 async function checkDetachedDialogHydration(

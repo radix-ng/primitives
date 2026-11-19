@@ -12,6 +12,8 @@ See the [Radio matrix](../../packages/primitives/radio/PARITY.md#native-required
 
 Field can supply a portaled selection to Form alongside the native `FormData` entries. Radio
 uses this path for a connected, checked input with no native owner and no explicit `form` attribute.
+The native form bridge also lets the declaring Form reset a connected portaled Radio in this
+scope. The bridge waits for the reset event to finish so cancellation applies to both paths.
 
 Form chooses the first invalid control in DOM order, using the actual control or the visible
 focus target supplied by a composite control. A registered invalid field without a target still

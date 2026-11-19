@@ -33,7 +33,11 @@ class RadioDriver {
                 ? 1
                 : this.settings.collection
                   ? collectionOptions.length
-                  : this.settings.forms || this.settings.refs || this.settings.constraints || this.settings.portal
+                  : this.settings.forms ||
+                      this.settings.refs ||
+                      this.settings.constraints ||
+                      this.settings.portal ||
+                      this.settings.reset
                     ? 2
                     : options.length;
         await expect(this.group.getByRole('radio')).toHaveCount(count);
@@ -392,6 +396,92 @@ async function portalScenario(driver: RadioDriver, mode: NonNullable<Settings['p
     await expect(beta).toHaveAttribute('aria-checked', 'true');
     await submit();
     await checkpoint('a disabled portaled selection satisfies required but contributes no entry', 6, 'empty');
+}
+
+async function resetScenario(driver: RadioDriver, mode: NonNullable<Settings['reset']>) {
+    const { page, group } = driver;
+    const form = page.locator('form#owner');
+    const beta = group.getByRole('radio', { name: 'Beta' });
+    const error = page.getByTestId('reset-error');
+    const message = 'Density is unavailable';
+    const read = () =>
+        form.evaluate((owner: HTMLFormElement) => {
+            const field = document.querySelector<HTMLElement>('[data-testid="field"]')!;
+            const error = field.querySelector('[data-testid="reset-error"]');
+            return {
+                selection: field.querySelector('[role="radio"][aria-checked="true"]')?.getAttribute('data-testid'),
+                checked: field.querySelector<HTMLInputElement>('input[type="radio"]:checked')?.value,
+                submitted: new FormData(owner).getAll('density'),
+                field: {
+                    filled: field.hasAttribute('data-filled'),
+                    touched: field.hasAttribute('data-touched'),
+                    dirty: field.hasAttribute('data-dirty'),
+                    focused: field.hasAttribute('data-focused'),
+                    error: !error?.hasAttribute('hidden') ? (error?.textContent?.trim() ?? '') : ''
+                },
+                focus: document.activeElement?.getAttribute('data-testid'),
+                requests: Number(document.querySelector('[data-testid="requests"]')!.textContent)
+            };
+        });
+    const reset = (cancel: boolean) =>
+        form.evaluate(async (owner: HTMLFormElement, cancel) => {
+            if (cancel) {
+                owner.ownerDocument.addEventListener('reset', (event) => event.preventDefault(), { once: true });
+            }
+            owner.reset();
+            await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+        }, cancel);
+
+    if (mode === 'portal') {
+        await expect(page.getByTestId('outside').getByRole('radiogroup')).toBeVisible();
+    }
+    await expect.poll(read).toMatchObject({
+        selection: 'alpha',
+        checked: 'a',
+        submitted: mode === 'portal' ? [] : ['a'],
+        requests: 0
+    });
+    driver.checkpoints.push({ name: 'initial', state: await read() });
+    await beta.focus();
+    await page.keyboard.press('Space');
+    const setError = page.getByRole('button', { name: 'Set server error' });
+    await setError.focus();
+    await beta.focus();
+    await setError.evaluate((button: HTMLButtonElement) => button.click());
+    await expect(error).toHaveText(message);
+    const edited = {
+        selection: 'beta',
+        checked: 'b',
+        submitted: mode === 'portal' ? [] : ['b'],
+        field: { filled: true, touched: true, dirty: true, focused: true, error: message },
+        focus: 'beta',
+        requests: 1
+    };
+    await expect.poll(read).toEqual(edited);
+    await reset(true);
+    expect(await read()).toEqual(edited);
+    driver.checkpoints.push({ name: 'canceled', state: await read() });
+    await reset(false);
+    driver.checkpoints.push({ name: 'accepted', state: await read() });
+    expect(driver.errors).toEqual([]);
+
+    if (driver.framework === 'angular' && mode === 'portal') {
+        const betaInput = group.locator('input[value="b"]');
+        await page.keyboard.press('Space');
+        await expect(beta).toHaveAttribute('aria-checked', 'true');
+        await page.getByRole('button', { name: 'Use missing form' }).click();
+        await expect(betaInput).toHaveAttribute('form', 'missing');
+        await reset(false);
+        await expect(beta).toHaveAttribute('aria-checked', 'true');
+
+        await page.getByRole('button', { name: 'Use external form' }).click();
+        await expect(betaInput).toHaveAttribute('form', 'external');
+        await reset(false);
+        await expect(beta).toHaveAttribute('aria-checked', 'true');
+        await page.locator('form#external').evaluate((external: HTMLFormElement) => external.reset());
+        await expect(group.getByRole('radio', { name: 'Alpha' })).toHaveAttribute('aria-checked', 'true');
+        expect(await read()).toMatchObject({ selection: 'alpha', checked: 'a', submitted: [], requests: 2 });
+    }
 }
 
 async function validationScenario(driver: RadioDriver, mode: NonNullable<Settings['validation']>) {
@@ -861,6 +951,7 @@ const scenarios = Object.entries(cases).map(([name, settings]) => ({
         if ('indicator' in settings) return indicatorScenario(driver, settings.indicator);
         if ('collection' in settings) return collectionScenario(driver, settings.collection);
         if ('refs' in settings) return refsScenario(driver, settings.refs);
+        if ('reset' in settings) return resetScenario(driver, settings.reset);
         if ('portal' in settings) return portalScenario(driver, settings.portal);
         if ('validation' in settings) return validationScenario(driver, settings.validation);
         if ('constraints' in settings) return constraintsScenario(driver, settings.constraints);

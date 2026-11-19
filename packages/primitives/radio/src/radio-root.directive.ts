@@ -297,6 +297,7 @@ export class RdxRadioGroupDirective<Value = string>
             hasNativeControl: computed(() => Boolean(this.selectedItem()?.nativeInput())),
             syncNativeControl: () => this.syncNativeInputs(),
             defaultValue: () => this.initialEditableValue(),
+            resetFormFallback: () => this.portaledResetForm(),
             onReset: (value) => {
                 if (this.controlledValue() === undefined) {
                     // A connected Angular form owns its reset baseline.
@@ -431,6 +432,17 @@ export class RdxRadioGroupDirective<Value = string>
         )
             return undefined;
         return [input.name, input.value];
+    }
+
+    private portaledResetForm(): HTMLFormElement | null {
+        const form = this.formRoot?.element;
+        if (!form || !this.field || this.form() !== undefined) return null;
+
+        const hasPortaledInput = this.items().some(({ nativeInput }) => {
+            const input = nativeInput()?.element;
+            return input?.isConnected && hasNoFormOwner(input);
+        });
+        return hasPortaledInput ? form : null;
     }
 
     /** @ignore Bridge the CVA `onTouched` so `markAsTouched()` also notifies Reactive/template forms. */

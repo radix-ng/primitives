@@ -24,6 +24,7 @@ export interface Settings {
     validation?: 'onBlur' | 'onChange' | 'onSubmit';
     constraints?: 'required' | 'eligibility' | 'disabled-selection';
     portal?: 'field' | 'item';
+    reset?: 'editable' | 'parent-owned' | 'portal';
 }
 
 export const cases = {
@@ -74,7 +75,10 @@ export const cases = {
     'constraints-eligibility': { constraints: 'eligibility' },
     'constraints-disabled-selection': { constraints: 'disabled-selection' },
     'portal-field': { portal: 'field' },
-    'portal-item': { portal: 'item' }
+    'portal-item': { portal: 'item' },
+    'reset-editable': { reset: 'editable' },
+    'reset-parent-owned': { reset: 'parent-owned' },
+    'reset-portal': { reset: 'portal' }
 } satisfies Record<string, Settings>;
 
 export const options = [

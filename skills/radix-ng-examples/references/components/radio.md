@@ -134,6 +134,10 @@ A checked input in that case contributes its serialized value to `onFormSubmit`.
 `FormData` follows native form association. To include the portaled selection in `FormData`, set the
 Radio Group's `form` input to the ID of the owning form.
 
+A native reset restores the editable selection of a portaled group in its declared Field and
+Form. An explicit `form` ID makes the named native form responsible for reset. The same rules
+for parent-owned selection and canceled reset apply in a portal.
+
 ## Option values
 
 Give each item a distinct value. Numbers and strings are separate values, and objects and arrays

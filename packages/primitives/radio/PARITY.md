@@ -36,7 +36,7 @@ server render. Each row is scoped to the stated contract.
 | G1 — initial selection and defaults        | Resolved, scoped B/U/SSR                              | A defined model/form value wins, including `null` and `''`. An uncontrolled default seeds once, including the initially absent case. Later changes preserve selection. B checks ARIA and checked attributes, native checked state, FormData, silent request initialization/external writes and veto versus accepted click. U checks CVA, ngModel, Signal Forms and reset baselines. SSR checks selected markup for bound null, form null and default.                                                         |
 | G2 — editable value and change transaction | Resolved ownership and activation defects, scoped B/U | `controlledValue` governs rendered and submitted state. B covers ignore/repeat, delay, replacement, clear, label veto/refusal, accepted native label edit and one Space activation on a native button. U covers canceled label rollback, trigger metadata, prevented click and controlled reset/release. Angular forwards the originating event. Native event trust and notification details are recorded separately. Broader callback order, Field touch timing and activation combinations remain in G3/G4. |
 | G3 — native activation and composite focus | Resolved scoped B/U                                   | Native and custom hosts select on Space release. Composite owns arrow focus and supplies the actual navigation destination. B checks native Tab and re-entry, LTR/RTL and Shift arrows, wrap, disabled/read-only behavior, canceled requests, parent writes, Enter/Home/End and prevented Space keyup. U covers ignored arrows followed by unrelated focus and keyboard ownership for nested composed roots. Broader host variations, live collection/focus policies and devices remain open.                 |
-| G4 — native forms, labels and Field state  | Partial, scoped B/U/SSR                               | B checks required submission, focus in nested fields, native and portaled ownership, Field labels and state, Fieldset legend, Group/Item refs, and validation timing. U covers deferred CVA edits and refreshing a live native constraint before submit. Eager hydration covers reset, refs and portaled submission. A paired native reset comparison and further portal interactions remain open.                                                                                                            |
+| G4 — native forms, labels and Field state  | Partial, scoped B/U/SSR                               | B checks required submission, focus in nested fields, native and portaled ownership and reset, Field labels and state, Fieldset legend, Group/Item refs, and validation timing. U covers deferred CVA edits and refreshing a live native constraint before submit. Eager hydration covers reset, refs and portaled submission. Further portal interactions remain open.                                                                                                                                       |
 | G5 — Indicator lifetime and CSS hooks      | Resolved for structural Indicator, scoped B/SSR       | Paired checks cover settled initial markup, transient enter, CSS exit, identity when reselected during exit, recreation after exit, no-motion removal and retained views. The attribute-only host retains its authored DOM and hides after exit. SSR checks selected and retained markup. Client hydration remains in G6.                                                                                                                                                                                     |
 | G6 — values, collection and hydration      | Resolved, scoped B/U/SSR and hydration                | B checks typed value identity, equal form strings, same-name groups in separate forms, tracked reorder and focus, an orphaned selection and restoration on the same item. U covers object-valued Signal Forms. Browser hydration checks server node reuse, stable IDs and label links, focus, FormData and Indicator lifetime. Deferred Radio islands and repeated exact option values lie outside this comparison.                                                                                           |
 
@@ -53,8 +53,16 @@ initial selection, so a conflicting or late `defaultValue` cannot change the bas
 `NgControl` resets through its Angular control, including a nullable Reactive Forms control's null
 baseline or the initial value of a non-nullable control. Signal Forms `reset()` follows its own field
 contract. Native reset in parent-owned mode preserves the current parent selection. Removing the
-controlled input resumes the existing editable model and its original reset baseline. The paired
-suite does not assert React/Angular reset equivalence.
+controlled input resumes the existing editable model and its original reset baseline.
+
+The paired suite compares accepted and canceled native reset for editable, parent-owned and
+portaled groups. Both implementations preserve the edited selection and Field state when a reset
+listener cancels the event. The Base UI pin retains its visible selection and Field state after
+an accepted reset. The browser still restores the initially checked input for native form
+participants, so Base UI can display one selection while `FormData` contains another. Angular
+keeps the checked DOM and submitted value aligned with the editable baseline or the current
+parent value. The exact differences are recorded in the
+[comparison manifest](../../../apps/parity-testing/primitives/radio/expected-differences.json).
 
 ## G3 keyboard focus
 
@@ -91,11 +99,10 @@ Radio resolves its accessible label from explicit `aria-labelledby`, Field Label
 Fieldset Legend, in that order. The paired fixture checks a live legend ID change, removal,
 remounting and both overrides. The eager hydration fixture also checks the generated legend ID.
 
-The Angular reset contract preserves Field's filled state for any restored selection, including an
-empty-string option. The standalone editable group restores its starting value and a controlled
-group keeps its parent value. Both clear interaction flags on reset. Cancellation preserves the
-selection, field interaction state and external errors. The native reset assertions use the
-Angular form contract from G1.
+On an accepted reset, Angular clears Field interaction flags and restores its filled state from
+the resulting selection, including an empty-string option. A canceled reset preserves the
+selection, field interaction state and external errors. The reset resolves without emitting a
+selection request or moving DOM focus.
 
 Group and Item forward their native radio through `inputRef` after browser rendering. The Group
 uses the enabled selected input when available. On initialization or clearing it can pick an
@@ -157,6 +164,11 @@ declaring form, opting out with an external or unresolved form ID, disabled sele
 item removal. The eager hydration audit moves the already hydrated Field and verifies that
 validation and submission continue to use the original authored inputs.
 
+The declaring Form also resets an editable group with an ownerless authored input. Explicit
+`form` IDs opt out of contextual reset, including unresolved IDs. A valid external owner still
+handles native reset. The same authored inputs survive accepted and canceled portal reset after
+hydration.
+
 ## G5 Indicator view and motion
 
 `*rdxRadioIndicatorPresence` on the Indicator host owns its Angular view through the shared
@@ -200,8 +212,8 @@ pnpm agents:check
 ```
 
 Initial Chromium comparison reproduced two Angular failures: `bound-null` and `initially-empty`.
-The expanded suite passed **48 scenarios × 3 engines (144 comparisons)**, without
-expected-difference exceptions. Checkpoints compare selection, FormData and request value/reason.
+The expanded suite passed **51 scenarios × 3 engines (153 comparisons)** with the recorded reset
+differences. Checkpoints compare selection, FormData and request value/reason.
 Raw observations retain the originating event and native notifications. Angular uses the actual
 host or native input event. Base UI forwards a visible host click through its hidden input.
 [Radio unit suite](__tests__/radio.spec.ts): **42 passing tests**.
