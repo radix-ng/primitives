@@ -292,7 +292,7 @@ export abstract class RdxFormUiControlBase {
     /** Emits when the control is touched, notifying Signal Forms (stable Angular 22 contract). */
     readonly touch = output<void>();
 
-    private readonly ngControlState = injectNgControlState();
+    protected readonly ngControlState = injectNgControlState();
 
     /** The shared form-UI state derived from the inputs above. Call `formUi.markDirty()` on value change. */
     readonly formUi: RdxFormUiState = createFormUiState({

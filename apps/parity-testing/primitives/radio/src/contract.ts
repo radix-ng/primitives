@@ -15,6 +15,7 @@ export interface Settings {
     indicator?: 'unmount' | 'keep-mounted' | 'no-motion';
     collection?: 'identity' | 'live';
     refs?: 'selection' | 'detach';
+    validation?: 'onBlur' | 'onChange' | 'onSubmit';
 }
 
 export const cases = {
@@ -56,7 +57,10 @@ export const cases = {
     'collection-identity': { collection: 'identity' },
     'collection-live': { collection: 'live' },
     'refs-selection': { refs: 'selection' },
-    'refs-detach': { refs: 'detach' }
+    'refs-detach': { refs: 'detach' },
+    'validation-blur': { validation: 'onBlur' },
+    'validation-change': { validation: 'onChange' },
+    'validation-submit': { validation: 'onSubmit' }
 } satisfies Record<string, Settings>;
 
 export const options = [
@@ -74,6 +78,8 @@ export const collectionOptions = [
 ];
 
 export type CollectionValue = (typeof collectionOptions)[number]['value'];
+
+export const radioValidationMessage = (value: unknown) => (value === 'c' ? null : 'Choose Gamma');
 
 interface InputRefObservation {
     element: HTMLInputElement | null;

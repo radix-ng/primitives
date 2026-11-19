@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { form, FormField, required } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
-import { RdxFieldRoot } from '@radix-ng/primitives/field';
+import { RdxFieldRoot, RdxNgControlField } from '@radix-ng/primitives/field';
 import { RdxFormRoot, type RdxFormErrors } from '@radix-ng/primitives/form';
 import {
     RdxRadioGroupDirective,
@@ -375,6 +375,57 @@ describe('RdxRadio', () => {
 class NativeFormRadioHost {
     control = new FormControl<string | null>('free', { nonNullable: true });
 }
+
+@Component({
+    imports: [ReactiveFormsModule, RdxFieldRoot, RdxNgControlField, RdxRadioGroupDirective, RdxRadioItemDirective],
+    template: `
+        <div validationMode="onChange" rdxFieldRoot>
+            <div [formControl]="choice" rdxNgControlField rdxRadioRoot>
+                <button rdxRadioItem value="a">Alpha</button>
+                <button rdxRadioItem value="b">Beta</button>
+            </div>
+        </div>
+        <button type="button">Outside</button>
+    `
+})
+class BlurDeferredRadioHost {
+    readonly choice = new FormControl('a', {
+        nonNullable: true,
+        updateOn: 'blur',
+        validators: (control) => (control.value === 'a' ? { unavailable: true } : null)
+    });
+}
+
+it('commits an updateOn blur FormControl only when focus leaves Radio Group', async () => {
+    const fixture = TestBed.createComponent(BlurDeferredRadioHost);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const choice = fixture.componentInstance.choice;
+    const group = fixture.debugElement.query(By.css('[rdxRadioRoot]')).nativeElement as HTMLElement;
+    const [alpha, beta, outside] = fixture.debugElement
+        .queryAll(By.css('button'))
+        .map((element) => element.nativeElement as HTMLButtonElement);
+
+    beta.focus();
+    beta.click();
+    fixture.detectChanges();
+    expect(beta.getAttribute('aria-checked')).toBe('true');
+    expect(choice.value).toBe('a');
+    expect(choice.touched).toBe(false);
+    expect(group.hasAttribute('data-invalid')).toBe(false);
+    expect(group.hasAttribute('data-valid')).toBe(false);
+
+    alpha.focus();
+    fixture.detectChanges();
+    expect(choice.value).toBe('a');
+    expect(choice.touched).toBe(false);
+
+    outside.focus();
+    fixture.detectChanges();
+    expect(choice.value).toBe('b');
+    expect(choice.touched).toBe(true);
+    expect(group.hasAttribute('data-valid')).toBe(true);
+});
 
 describe('RdxRadioGroup native form contract', () => {
     it('serializes without item inputs and supports external form, disabled, and native reset', async () => {

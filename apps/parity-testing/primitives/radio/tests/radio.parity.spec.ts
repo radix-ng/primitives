@@ -221,6 +221,80 @@ async function refsScenario(driver: RadioDriver, mode: NonNullable<Settings['ref
     expect(await releases()).toEqual([2, 2]);
 }
 
+async function validationScenario(driver: RadioDriver, mode: NonNullable<Settings['validation']>) {
+    const { page, group } = driver;
+    const alpha = group.getByRole('radio', { name: 'Alpha' });
+    const beta = group.getByRole('radio', { name: 'Beta' });
+    const gamma = group.getByRole('radio', { name: 'Gamma' });
+    const outside = page.getByRole('button', { name: 'Outside' });
+    const button = (name: string) => page.getByRole('button', { name, exact: true });
+
+    async function checkpoint(name: string, status: 'neutral' | 'valid' | 'invalid', selected: string, submits = 0) {
+        const read = () =>
+            group.evaluate((root) => {
+                const field = root.closest('[data-testid="field"]')!;
+                const radios = [...root.querySelectorAll('[role="radio"]')];
+                const indicator = root.querySelector('[data-testid="indicator"]')!;
+                const error = field.querySelector('[data-testid="error"]');
+                return {
+                    selected: new FormData(root.closest('form')!).get('density'),
+                    status: [field, root, ...radios, indicator].map((part) =>
+                        part.hasAttribute('data-invalid')
+                            ? 'invalid'
+                            : part.hasAttribute('data-valid')
+                              ? 'valid'
+                              : 'neutral'
+                    ),
+                    ariaInvalid: [root, ...radios].map((part) => part.getAttribute('aria-invalid') === 'true'),
+                    error: error && !error.hasAttribute('hidden') ? error.textContent?.trim() : '',
+                    submits: Number(root.closest('form')?.querySelector('[data-testid="submits"]')?.textContent)
+                };
+            });
+        await expect.poll(read, name).toEqual({
+            selected,
+            status: Array(6).fill(status),
+            ariaInvalid: Array(4).fill(status === 'invalid'),
+            error: status === 'invalid' ? 'Choose Gamma' : '',
+            submits
+        });
+        driver.checkpoints.push({ name, state: await read() });
+        expect(driver.errors).toEqual([]);
+    }
+
+    await checkpoint('invalid initial value stays neutral', 'neutral', 'a');
+    if (mode === 'onChange') {
+        await button('Write Gamma').click();
+        await checkpoint('external write reveals a valid selection', 'valid', 'c');
+        await button('Write Alpha').click();
+        await checkpoint('returning to the initial value still reveals its error', 'invalid', 'a');
+        return;
+    }
+
+    await alpha.focus();
+    await alpha.press('ArrowRight');
+    await expect(beta).toBeFocused();
+    await checkpoint('selecting with arrows keeps the error hidden while moving within the group', 'neutral', 'b');
+    await outside.focus();
+    if (mode === 'onBlur') {
+        await checkpoint('leaving the whole group reveals the error', 'invalid', 'b');
+        await gamma.click();
+        await outside.focus();
+        await checkpoint('leaving a valid selection clears the shown error', 'valid', 'c');
+        return;
+    }
+
+    await checkpoint('onSubmit keeps errors hidden even after blur', 'neutral', 'b');
+    await button('Submit').click();
+    const focused = group.locator('[role="radio"]:focus');
+    await expect(focused).toHaveCount(1);
+    driver.measurements.push({ name: 'focus after blocked submit', item: (await focused.textContent())?.trim() });
+    await checkpoint('submit reveals the error and returns focus to the group', 'invalid', 'b');
+    await gamma.click();
+    await checkpoint('editing after submit clears the error', 'valid', 'c');
+    await button('Submit').click();
+    await checkpoint('valid form submits', 'valid', 'c', 1);
+}
+
 async function formsScenario(driver: RadioDriver, mode: NonNullable<Settings['forms']>) {
     const { page, group } = driver;
     const form = page.locator('form#owner');
@@ -547,6 +621,7 @@ const scenarios = Object.entries(cases).map(([name, settings]) => ({
         if ('indicator' in settings) return indicatorScenario(driver, settings.indicator);
         if ('collection' in settings) return collectionScenario(driver, settings.collection);
         if ('refs' in settings) return refsScenario(driver, settings.refs);
+        if ('validation' in settings) return validationScenario(driver, settings.validation);
         if ('keyboard' in settings) return keyboardScenario(driver, settings);
         if ('response' in settings) {
             await driver.checkpoint('parent value owns the group', settings.value);

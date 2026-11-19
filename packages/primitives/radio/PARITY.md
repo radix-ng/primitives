@@ -36,7 +36,7 @@ server render. Each row is scoped to the stated contract.
 | G1 — initial selection and defaults        | Resolved, scoped B/U/SSR                              | A defined model/form value wins, including `null` and `''`. An uncontrolled default seeds once, including the initially absent case. Later changes preserve selection. B checks ARIA and checked attributes, native checked state, FormData, silent request initialization/external writes and veto versus accepted click. U checks CVA, ngModel, Signal Forms and reset baselines. SSR checks selected markup for bound null, form null and default.                                                         |
 | G2 — editable value and change transaction | Resolved ownership and activation defects, scoped B/U | `controlledValue` governs rendered and submitted state. B covers ignore/repeat, delay, replacement, clear, label veto/refusal, accepted native label edit and one Space activation on a native button. U covers canceled label rollback, trigger metadata, prevented click and controlled reset/release. Angular forwards the originating event. Native event trust and notification details are recorded separately. Broader callback order, Field touch timing and activation combinations remain in G3/G4. |
 | G3 — native activation and composite focus | Resolved scoped B/U                                   | Native and custom hosts select on Space release. Composite owns arrow focus and supplies the actual navigation destination. B checks native Tab and re-entry, LTR/RTL and Shift arrows, wrap, disabled/read-only behavior, canceled requests, parent writes, Enter/Home/End and prevented Space keyup. U covers ignored arrows followed by unrelated focus and keyboard ownership for nested composed roots. Broader host variations, live collection/focus policies and devices remain open.                 |
-| G4 — native forms, labels and Field state  | Partial, scoped B/U/SSR                               | B checks invalid-submit focus, eligible submission, Field labels and state, Fieldset legend precedence, and Group/Item ref selection, reassignment and detachment. U covers authored input replacement and disabled representatives. Eager hydration covers reset and callback delivery. Validation timing and additional nested field combinations remain open.                                                                                                                                              |
+| G4 — native forms, labels and Field state  | Partial, scoped B/U/SSR                               | B checks invalid-submit focus, eligible submission, Field labels and state, Fieldset legend, Group/Item refs, and onBlur, onChange and onSubmit display timing. U covers deferred CVA edits. Eager hydration covers reset and callback delivery. Direct native constraint participation in the Field/Form registry and additional nested field combinations remain open.                                                                                                                                      |
 | G5 — Indicator lifetime and CSS hooks      | Resolved for structural Indicator, scoped B/SSR       | Paired checks cover settled initial markup, transient enter, CSS exit, identity when reselected during exit, recreation after exit, no-motion removal and retained views. The attribute-only host retains its authored DOM and hides after exit. SSR checks selected and retained markup. Client hydration remains in G6.                                                                                                                                                                                     |
 | G6 — values, collection and hydration      | Resolved, scoped B/U/SSR and hydration                | B checks typed value identity, equal form strings, same-name groups in separate forms, tracked reorder and focus, an orphaned selection and restoration on the same item. U covers object-valued Signal Forms. Browser hydration checks server node reuse, stable IDs and label links, focus, FormData and Indicator lifetime. Deferred Radio islands and repeated exact option values lie outside this comparison.                                                                                           |
 
@@ -105,6 +105,19 @@ releases a representative that becomes disabled and uses authored radio inputs f
 references release previous bindings by calling the returned cleanup or passing `null`. These
 refs remain independent of the registry that drives validation and form submission.
 
+### Validation timing
+
+Reactive Forms validators own the validation result in the Angular fixtures. Field reveals the
+result on a whole-group blur, a committed value change or a Form submit, according to its mode.
+Moving between radios leaves the blur boundary pending. Programmatic model writes reveal the
+result in `onChange` mode even when the form is pristine, including a return to the initial value.
+An `updateOn: 'blur'` control commits and becomes touched when focus leaves Radio Group.
+
+The paired submit case checks that both implementations return focus to a visible radio.
+Angular focused the checked Beta item and Base UI focused Alpha in all three engines. Base UI
+selects its focus target from the eligible validation inputs. These tests compare display timing
+and form outcomes with Angular-owned validators and Base UI's Field validator.
+
 ## G5 Indicator view and motion
 
 `*rdxRadioIndicatorPresence` on the Indicator host owns its Angular view through the shared
@@ -148,11 +161,11 @@ pnpm agents:check
 ```
 
 Initial Chromium comparison reproduced two Angular failures: `bound-null` and `initially-empty`.
-The expanded suite passed **39 scenarios × 3 engines (117 comparisons)**, without
+The expanded suite passed **42 scenarios × 3 engines (126 comparisons)**, without
 expected-difference exceptions. Checkpoints compare selection, FormData and request value/reason.
 Raw observations retain the originating event and native notifications. Angular uses the actual
 host or native input event. Base UI forwards a visible host click through its hidden input.
-[Radio unit suite](__tests__/radio.spec.ts): **40 passing tests**.
+[Radio unit suite](__tests__/radio.spec.ts): **41 passing tests**.
 [SSR render suite](../../../apps/radix-ssr-testing/src/ssr-rendering.spec.ts): **3 focused passes**.
 [Storybook behavior suite](../../../apps/visual-regression/tests/radio.behavior.spec.ts):
 **2 scenarios × 3 engines** for Default motion, interrupted exit and reduced motion.

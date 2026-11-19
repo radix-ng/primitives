@@ -30595,6 +30595,7 @@ A named group submits the value of its mounted, enabled selected item. Add
 visible radio. Use `form="form-id"` on the group to associate it with a form elsewhere on
 the page. Click, keyboard selection and Angular Forms work with or without item inputs.
 See [Field composition](components/radio.md#field-composition) for shared form state and label wiring.
+See [Validation timing](components/radio.md#validation-timing) for Angular Forms and Field.
 See [Option values](components/radio.md#option-values) for numbers, objects and arrays.
 See [Native input refs](components/radio.md#native-input-refs) for access to authored inputs.
 
@@ -30661,6 +30662,22 @@ a standalone group. A connected `NgControl` uses its own reset baseline, and Sig
 `reset()` uses the field's reset contract. A parent-owned selection stays in effect on native reset.
 A composed Field reflects the resulting selection in `data-filled`, including an empty-string
 option. Canceling a native reset preserves the selection and interaction state.
+
+## Validation timing
+
+When using Reactive Forms, add `rdxNgControlField` alongside `[formControl]` on the Radio Group
+inside `rdxFieldRoot`. Validators live on the Angular control. Field's `validationMode` controls
+when the group, items and indicators show its validation state.
+
+- `onBlur` reveals errors when focus leaves the group. Moving between its radios keeps the
+  validation state hidden until that boundary.
+- `onChange` reveals the state after a committed value change, including a programmatic write.
+  Returning to the initial value also displays its resulting validity.
+- `onSubmit` reveals errors on a submit attempt from `rdxFormRoot` and updates the display after
+  subsequent edits.
+
+A Reactive Forms control configured with `updateOn: 'blur'` commits pending selections when focus
+leaves the group. Field then reflects the committed form value.
 
 ## Option values
 

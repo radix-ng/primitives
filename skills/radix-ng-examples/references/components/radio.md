@@ -45,6 +45,7 @@ A named group submits the value of its mounted, enabled selected item. Add
 visible radio. Use `form="form-id"` on the group to associate it with a form elsewhere on
 the page. Click, keyboard selection and Angular Forms work with or without item inputs.
 See [Field composition](#field-composition) for shared form state and label wiring.
+See [Validation timing](#validation-timing) for Angular Forms and Field.
 See [Option values](#option-values) for numbers, objects and arrays.
 See [Native input refs](#native-input-refs) for access to authored inputs.
 
@@ -98,6 +99,22 @@ The group uses its explicit `aria-labelledby`, the Field label, or the enclosing
 | `data-focused` | RadioGroup, RadioGroupItem, RadioIndicator | An enabled radio has focus.           |
 | `data-dirty`   | RadioGroup, RadioGroupItem, RadioIndicator | Field is dirty.                       |
 | `data-touched` | RadioGroup, RadioGroupItem, RadioIndicator | Field is touched.                     |
+
+## Validation timing
+
+When using Reactive Forms, add `rdxNgControlField` alongside `[formControl]` on the Radio Group
+inside `rdxFieldRoot`. Validators live on the Angular control. Field's `validationMode` controls
+when the group, items and indicators show its validation state.
+
+- `onBlur` reveals errors when focus leaves the group. Moving between its radios keeps the
+  validation state hidden until that boundary.
+- `onChange` reveals the state after a committed value change, including a programmatic write.
+  Returning to the initial value also displays its resulting validity.
+- `onSubmit` reveals errors on a submit attempt from `rdxFormRoot` and updates the display after
+  subsequent edits.
+
+A Reactive Forms control configured with `updateOn: 'blur'` commits pending selections when focus
+leaves the group. Field then reflects the committed form value.
 
 ## Option values
 

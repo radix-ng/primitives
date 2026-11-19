@@ -240,6 +240,12 @@ export class RdxRadioGroupDirective<Value = string>
     });
     private readonly focusedItem = signal<HTMLElement | null>(null);
     private readonly initialSelection = signal<Value | null>(null);
+    private readonly validationBlurred = signal(false);
+    private readonly validationChanged = linkedSignal({
+        // With updateOn: 'blur', the visible selection can be ahead of the form model.
+        source: () => (this.ngControlState.connected() ? (this.ngControlState.value() ?? null) : this.currentValue()),
+        computation: (value, previous): boolean => !!previous && (previous.value || previous.source !== value)
+    });
 
     /**
      * The callback function to call when the value of the radio group changes.
@@ -282,6 +288,7 @@ export class RdxRadioGroupDirective<Value = string>
         watch([], () => {
             this.value.set(this.initialEditableValue());
             this.initialSelection.set(this.currentValue());
+            this.validationChanged.set(false);
         });
 
         const field = this.field;
@@ -292,9 +299,13 @@ export class RdxRadioGroupDirective<Value = string>
                 const item = this.items().find(({ element }) => element === this.focusedItem());
                 field.setFocused(Boolean(item && !item.disabled()));
             });
-            const unregisterFilled = field.registerControlFilled(() => this.currentValue() !== null);
+            const unregisterState = field.registerControlState({
+                filled: () => this.currentValue() !== null,
+                blurred: this.validationBlurred,
+                changed: this.validationChanged
+            });
             inject(DestroyRef).onDestroy(() => {
-                unregisterFilled();
+                unregisterState();
                 if (field.controlId() === this.id()) field.setFocused(false);
             });
         }
@@ -348,7 +359,6 @@ export class RdxRadioGroupDirective<Value = string>
         this.value.set(value);
         this.formUi.markDirty();
         this.onChange?.(value);
-        this.onTouched();
         this.field?.setTouched(true);
         this.field?.notifyEdited();
 
@@ -378,6 +388,8 @@ export class RdxRadioGroupDirective<Value = string>
     /** @ignore Clear interaction state when the surrounding native or Angular form resets. */
     override reset(): void {
         super.reset();
+        this.validationBlurred.set(false);
+        this.validationChanged.set(false);
         this.field?.setDirty(false);
         this.field?.setTouched(false);
     }
@@ -388,8 +400,12 @@ export class RdxRadioGroupDirective<Value = string>
      * @ignore
      */
     writeValue(value: Value | null): void {
+        const initialWrite = !this.hasCvaValue;
         this.hasCvaValue = true;
-        untracked(() => this.value.set(value ?? null));
+        untracked(() => {
+            this.value.set(value ?? null);
+            if (initialWrite) this.validationChanged.set(false);
+        });
     }
 
     /**
@@ -439,6 +455,7 @@ export class RdxRadioGroupDirective<Value = string>
         const next = event.relatedTarget as Node | null;
         if (!this.elementRef.nativeElement.contains(next)) {
             this.focusedItem.set(null);
+            this.validationBlurred.set(true);
             this.field?.setTouched(true);
             this.formUi.markAsTouched();
         }

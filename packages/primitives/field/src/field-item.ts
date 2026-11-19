@@ -43,7 +43,7 @@ const fieldItemContext = (): RdxFieldRootContext => {
         removeErrorId: (id: string) => root.errorIds.update((ids) => removeId(ids, id)),
         setFocused: (value: boolean) => root.focusedValue.set(value),
         setFilled: (value: boolean) => root.filledValue.set(value),
-        registerControlFilled: (read) => root.registerControlFilled(read),
+        registerControlState: (state) => root.registerControlState(state),
         setDirty: (value: boolean) => root.dirtyValue.set(value),
         setTouched: (value: boolean) => root.touchedValue.set(value),
         setStateProvider: (provider) => root.setStateProvider(provider),

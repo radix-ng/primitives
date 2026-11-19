@@ -7,6 +7,7 @@ import { ReactRadioCollection } from './collection.react';
 import { config, installProbe, options } from './contract';
 import { ReactRadioForms } from './forms.react';
 import { ReactRadioRefs } from './refs.react';
+import { ReactRadioValidation } from './validation.react';
 
 const settings = config();
 const probe = installProbe();
@@ -109,7 +110,9 @@ function ReactRadio() {
 }
 
 createRoot(document.getElementById('root')!).render(
-    settings.refs ? (
+    settings.validation ? (
+        <ReactRadioValidation />
+    ) : settings.refs ? (
         <ReactRadioRefs />
     ) : settings.collection ? (
         <ReactRadioCollection />

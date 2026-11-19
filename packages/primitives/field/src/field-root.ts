@@ -66,6 +66,13 @@ export interface RdxFieldState {
 const addId = (ids: string[], id: string) => (ids.includes(id) ? ids : [...ids, id]);
 const removeId = (ids: string[], id: string) => ids.filter((item) => item !== id);
 
+/** @internal Composite control state that Field cannot derive from its native host. */
+export interface RdxFieldControlState {
+    filled: () => boolean;
+    blurred: () => boolean;
+    changed: () => boolean;
+}
+
 export interface RdxFieldRootContext extends RdxLabelRegistry {
     controlId: Signal<string>;
     name: Signal<string | undefined>;
@@ -94,8 +101,8 @@ export interface RdxFieldRootContext extends RdxLabelRegistry {
     removeErrorId: (id: string) => void;
     setFocused: (value: boolean) => void;
     setFilled: (value: boolean) => void;
-    /** @internal Track fill state for a composite control that has no native value on its host. */
-    registerControlFilled: (read: () => boolean) => () => void;
+    /** @internal Register a composite control's presentation state. */
+    registerControlState: (state: RdxFieldControlState) => () => void;
     setDirty: (value: boolean) => void;
     setTouched: (value: boolean) => void;
     setStateProvider: (provider: RdxFieldState | null) => RdxFieldState | null;
@@ -139,7 +146,7 @@ const fieldRootContext = (): RdxFieldRootContext => {
         removeErrorId: (id: string) => root.errorIds.update((ids) => removeId(ids, id)),
         setFocused: (value: boolean) => root.focusedValue.set(value),
         setFilled: (value: boolean) => root.filledValue.set(value),
-        registerControlFilled: (read) => root.registerControlFilled(read),
+        registerControlState: (state) => root.registerControlState(state),
         setDirty: (value: boolean) => root.dirtyValue.set(value),
         setTouched: (value: boolean) => root.touchedValue.set(value),
         /**
@@ -269,7 +276,7 @@ export class RdxFieldRoot {
 
     readonly focusedValue = signal(false);
     readonly filledValue = signal(false);
-    private readonly controlFilled = signal<(() => boolean) | null>(null);
+    private readonly controlState = signal<RdxFieldControlState | null>(null);
     readonly dirtyValue = signal(false);
     readonly touchedValue = signal(false);
 
@@ -331,13 +338,14 @@ export class RdxFieldRoot {
     );
 
     /** Whether client-side validity is revealed yet, per {@link effectiveValidationMode} + interaction. */
-    private readonly validationRevealed = computed(() =>
-        isValidationRevealed(this.effectiveValidationMode(), {
-            touched: this.touchedState(),
-            dirty: this.dirtyState(),
+    private readonly validationRevealed = computed(() => {
+        const control = this.controlState();
+        return isValidationRevealed(this.effectiveValidationMode(), {
+            touched: this.resolveTouched(control?.blurred ?? this.touchedValue),
+            dirty: this.dirtyState() || (control?.changed() ?? false),
             submitAttempted: this.formSubmitAttempted()
-        })
-    );
+        });
+    });
 
     /**
      * Client-side invalidity (gated by `validationMode`): the per-field provider's error content / `invalid`
@@ -402,13 +410,9 @@ export class RdxFieldRoot {
             this.resolve('dirty', () => this.dirty() || this.dirtyValue()) ||
             (this.formContext?.dirtyFor(this.effectiveName()) ?? false)
     );
-    readonly touchedState = computed(
-        () =>
-            this.resolve('touched', () => this.touched() || this.touchedValue()) ||
-            (this.formContext?.touchedFor(this.effectiveName()) ?? false)
-    );
+    readonly touchedState = computed(() => this.resolveTouched(this.touchedValue));
     readonly filledState = computed(() =>
-        this.resolve('filled', () => this.filled() ?? this.controlFilled()?.() ?? this.filledValue())
+        this.resolve('filled', () => this.filled() ?? this.controlState()?.filled() ?? this.filledValue())
     );
     readonly focusedState = computed(() => this.resolve('focused', () => this.focused() ?? this.focusedValue()));
 
@@ -441,11 +445,11 @@ export class RdxFieldRoot {
         this.formContext?.notifyEdited(this.effectiveName());
     }
 
-    /** @ignore The control model remains authoritative when Form resets its DOM-derived state. */
-    registerControlFilled(read: () => boolean): () => void {
-        this.controlFilled.set(read);
+    /** @ignore The composite control owns these observations through reset and hydration. */
+    registerControlState(state: RdxFieldControlState): () => void {
+        this.controlState.set(state);
         return () => {
-            if (this.controlFilled() === read) this.controlFilled.set(null);
+            if (this.controlState() === state) this.controlState.set(null);
         };
     }
 
@@ -518,6 +522,13 @@ export class RdxFieldRoot {
     private resolve(key: Exclude<keyof RdxFieldState, 'name' | 'errors'>, fallback: () => boolean): boolean {
         const accessor = this.stateProvider()?.[key];
         return accessor ? accessor() : fallback();
+    }
+
+    private resolveTouched(controlTouched: () => boolean): boolean {
+        return (
+            this.resolve('touched', () => this.touched() || controlTouched()) ||
+            (this.formContext?.touchedFor(this.effectiveName()) ?? false)
+        );
     }
 }
 
