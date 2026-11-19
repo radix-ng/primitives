@@ -1,5 +1,6 @@
 import { Field } from '@base-ui/react/field';
 import { Fieldset } from '@base-ui/react/fieldset';
+import { Form } from '@base-ui/react/form';
 import { Radio } from '@base-ui/react/radio';
 import { RadioGroup } from '@base-ui/react/radio-group';
 import { useState } from 'react';
@@ -13,6 +14,7 @@ export function ReactRadioForms({ mode }: { mode: Settings['forms'] }) {
     const [legendId, setLegendId] = useState('default-legend');
     const [showFieldLabel, setShowFieldLabel] = useState(false);
     const [explicitLabel, setExplicitLabel] = useState(false);
+    const [nestedValues, setNestedValues] = useState<{ theme?: string; density?: string }>({});
 
     if (mode === 'external-required') {
         return (
@@ -96,6 +98,55 @@ export function ReactRadioForms({ mode }: { mode: Settings['forms'] }) {
                     Toggle explicit label
                 </button>
             </>
+        );
+    }
+    if (mode === 'nested-fields') {
+        return (
+            <Form id="owner" onFormSubmit={setNestedValues}>
+                <Field.Root name="density">
+                    <Field.Label render={<span />} nativeLabel={false}>
+                        Density
+                    </Field.Label>
+                    <Field.Description id="density-description">Choose a row density</Field.Description>
+                    <Field.Root name="theme">
+                        <Field.Label render={<span />} nativeLabel={false}>
+                            Theme
+                        </Field.Label>
+                        <Field.Description id="theme-description">Choose a color theme</Field.Description>
+                        <RadioGroup required>
+                            <Field.Item disabled>
+                                <Radio.Root value="light" />
+                                <Field.Label>Light</Field.Label>
+                            </Field.Item>
+                            <Field.Item>
+                                <Radio.Root value="dark" />
+                                <Field.Label data-testid="dark-label">Dark</Field.Label>
+                                <Field.Description id="dark-description">Use dark colors</Field.Description>
+                            </Field.Item>
+                        </RadioGroup>
+                        <Field.Error id="theme-missing" match="valueMissing">
+                            Theme is required
+                        </Field.Error>
+                    </Field.Root>
+                    <RadioGroup required>
+                        <Field.Item>
+                            <Radio.Root value="compact" />
+                            <Field.Label>Compact</Field.Label>
+                        </Field.Item>
+                        <Field.Item>
+                            <Radio.Root value="comfortable" />
+                            <Field.Label>Comfortable</Field.Label>
+                        </Field.Item>
+                    </RadioGroup>
+                    <Field.Error id="density-missing" match="valueMissing">
+                        Density is required
+                    </Field.Error>
+                </Field.Root>
+                <button type="submit">Submit</button>
+                <output data-testid="submitted">
+                    {nestedValues.theme} {nestedValues.density}
+                </output>
+            </Form>
         );
     }
     return (

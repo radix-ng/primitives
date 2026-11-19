@@ -11,7 +11,13 @@ export interface Settings {
     disabled?: boolean;
     disabledItem?: string;
     readOnly?: boolean;
-    forms?: 'external-required' | 'eligible-items' | 'field-labels' | 'field-state' | 'fieldset-legend';
+    forms?:
+        | 'external-required'
+        | 'eligible-items'
+        | 'field-labels'
+        | 'field-state'
+        | 'fieldset-legend'
+        | 'nested-fields';
     indicator?: 'unmount' | 'keep-mounted' | 'no-motion';
     collection?: 'identity' | 'live';
     refs?: 'selection' | 'detach';
@@ -52,6 +58,7 @@ export const cases = {
     'forms-field-labels': { forms: 'field-labels' },
     'forms-field-state': { forms: 'field-state' },
     'forms-fieldset-legend': { forms: 'fieldset-legend' },
+    'forms-nested-fields': { forms: 'nested-fields' },
     'indicator-unmount': { indicator: 'unmount', defaultValue: 'standard' },
     'indicator-keep-mounted': { indicator: 'keep-mounted', defaultValue: 'standard' },
     'indicator-no-motion': { indicator: 'no-motion', defaultValue: 'standard' },

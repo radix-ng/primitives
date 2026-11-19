@@ -16,7 +16,9 @@ import { _importsForm, RdxFormErrors, RdxFormSubmitEvent } from '../index';
             rdxFormRoot
         >
             <div name="email" rdxFieldRoot>
-                <input id="email-input" name="email" rdxFieldControl />
+                @if (showEmail()) {
+                    <input id="email-input" name="email" rdxFieldControl />
+                }
                 <p #emailErr="rdxFieldError" rdxFieldError>{{ emailErr.messages().join(' ') }}</p>
             </div>
             <div name="password" rdxFieldRoot>
@@ -29,6 +31,7 @@ import { _importsForm, RdxFormErrors, RdxFormSubmitEvent } from '../index';
 })
 class FormHost {
     readonly errors = signal<RdxFormErrors | null>(null);
+    readonly showEmail = signal(true);
     readonly submitted = signal<RdxFormSubmitEvent | null>(null);
     readonly cleared = signal<RdxFormErrors | null>(null);
 }
@@ -160,6 +163,19 @@ describe('RdxFormRoot', () => {
 
             expect(host.submitted()).toBeNull();
             expect(document.activeElement).toBe(input('password-input'));
+        });
+
+        it('blocks submission for an invalid field without a control and focuses another invalid control', async () => {
+            host.showEmail.set(false);
+            host.errors.set({ email: 'taken', password: 'weak' });
+            await settle();
+            submit();
+            expect(document.activeElement).toBe(input('password-input'));
+
+            host.errors.set({ email: 'taken' });
+            await settle();
+            submit();
+            expect(host.submitted()).toBeNull();
         });
 
         it('focuses the field control even when a duplicate id exists elsewhere on the page', async () => {

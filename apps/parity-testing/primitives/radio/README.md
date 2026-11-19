@@ -20,7 +20,7 @@ disabled/read-only groups and items, parent updates and vetoes. The custom-host 
 Space release timing and keyup prevention. The suite checks focus and the roving stop separately
 from the checked item and FormData.
 
-Thirteen G4 scenarios cover native constraints and visible focus in an externally owned form,
+Fourteen G4 scenarios cover native constraints and visible focus in an externally owned form,
 disabled and unmounted selections, Field/Field.Item label and description associations, and
 Field interaction flags on the group, radio and indicator. They also compare Fieldset legend
 fallback, label precedence and live legend identity. The Angular hydration audit exercises
@@ -31,6 +31,9 @@ The three validation cases check first whole-group blur, committed writes in `on
 submit gating with error recovery. The raw submit observation records the focused radio.
 The native constraint cases check Form submission and visible focus, reassociation, fieldset
 disablement, unmounting and a disabled selection that satisfies required validity.
+The nested Fields case checks labels, independent required validation, DOM-order focus and
+submission of both values. The [Radio matrix](../../../../packages/primitives/radio/PARITY.md#nested-fields)
+records how accessible descriptions are scoped in each implementation.
 
 Three G5 scenarios compare structural Indicator lifetimes with interrupted CSS exit, retained
 unchecked views and unmounting without motion. They assert the transient hooks and reuse of the
@@ -43,12 +46,12 @@ node identity and healing an orphaned selection by restoring its option value. T
 [hydration audit](../../../radix-ssr-testing/hydration-audit/README.md) covers eager hydration.
 
 The initial Chromium run reproduced Angular's late-default and explicit-null defects. The full suite
-now passes **135 comparisons** with no expected-difference entries. Callback value and reason
+now passes **138 comparisons** with no expected-difference entries. Callback value and reason
 participate in comparison. Event type/trust and native input/change notifications are retained as raw
 observations. Angular assertions check that controlled requests emit no native edit notifications
 and that an accepted editable click with an authored input emits one of each.
 
-Open scope includes paired browser reset, portaled form ownership and nested fields,
+Open scope includes paired browser reset, portaled form ownership,
 additional host and collection combinations, and deferred hydration. The
 [Radio matrix](../../../../packages/primitives/radio/PARITY.md) distinguishes Angular-only form and
 SSR evidence from paired results. Reports live under `dist/parity-testing/radio/results/`.

@@ -443,6 +443,7 @@ export class RdxFieldRoot {
                 dirty: () => this.dirtyState(),
                 touched: () => this.touchedState(),
                 focus: () => this.focusControl(),
+                focusTarget: () => this.invalidFocusTarget(),
                 refreshNativeValidity: () => this.controlState()?.refreshNativeValidity?.(),
                 resetState: () => this.resetState()
             };
@@ -482,7 +483,7 @@ export class RdxFieldRoot {
 
     /** Focus the field's control (used by the Form's first-invalid-focus on blocked submit). */
     private focusControl(): void {
-        const control = this.controlState()?.invalidFocusTarget?.() ?? this.controlElement();
+        const control = this.invalidFocusTarget();
         if (!control) {
             return;
         }
@@ -491,6 +492,10 @@ export class RdxFieldRoot {
         if (control.tagName === 'INPUT') {
             (control as HTMLInputElement).select();
         }
+    }
+
+    private invalidFocusTarget(): HTMLElement | null {
+        return this.controlState()?.invalidFocusTarget?.() ?? this.controlElement();
     }
 
     private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;

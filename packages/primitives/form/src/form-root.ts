@@ -10,7 +10,12 @@ import {
     signal,
     Signal
 } from '@angular/core';
-import { createContext, RDX_DEFAULT_VALIDATION_MODE, RdxValidationMode } from '@radix-ng/primitives/core';
+import {
+    compareNodeDocumentPosition,
+    createContext,
+    RDX_DEFAULT_VALIDATION_MODE,
+    RdxValidationMode
+} from '@radix-ng/primitives/core';
 
 /** A normalized external-error map: each field name maps to its message(s) in display order. */
 export type RdxFormErrors = Record<string, string | string[]>;
@@ -42,8 +47,10 @@ export interface RdxFormFieldRegistration {
     dirty: () => boolean;
     /** Whether the field is touched. */
     touched: () => boolean;
-    /** Focus the field's control (by its `controlId`). */
+    /** Focus the field's invalid control. */
     focus: () => void;
+    /** Locate the control for DOM ordering. Null means that the field has no focus target. */
+    focusTarget?: () => HTMLElement | null;
     /** Refresh DOM-owned constraints before this form reads actual validity. */
     refreshNativeValidity?: () => void;
     /** Reset the field's interaction state (touched/dirty/focused → false, filled re-sync). */
@@ -407,10 +414,18 @@ export class RdxFormRoot {
     }
 
     private focusFirstInvalidField(): void {
-        // Registry order is DOM order; provider-only invalidity has no registered control to focus.
-        this.fields()
-            .find((field) => field.invalid())
-            ?.focus();
+        let firstField: RdxFormFieldRegistration | undefined;
+        let firstTarget: HTMLElement | undefined;
+        for (const field of this.fields()) {
+            if (!field.invalid()) continue;
+            const target = field.focusTarget?.();
+            if (target === null) continue;
+            if (!firstField || (target && firstTarget && compareNodeDocumentPosition(target, firstTarget) < 0)) {
+                firstField = field;
+                firstTarget = target;
+            }
+        }
+        firstField?.focus();
     }
 
     onReset(event: Event): void {

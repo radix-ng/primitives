@@ -20,6 +20,7 @@ class RadioDriver {
 
     get group() {
         if (this.settings.collection) return this.page.getByRole('radiogroup', { name: 'Primary' });
+        if (this.settings.forms === 'nested-fields') return this.page.getByRole('radiogroup', { name: 'Density' });
         return this.page.getByRole('radiogroup');
     }
 
@@ -469,6 +470,73 @@ async function formsScenario(driver: RadioDriver, mode: NonNullable<Settings['fo
         await press('Toggle legend');
         await expect(group).toHaveAccessibleName('Legend density');
         await labelledBy('remounting the legend restores the association', 'new-legend');
+        return;
+    }
+
+    if (mode === 'nested-fields') {
+        const theme = page.getByRole('radiogroup', { name: 'Theme' });
+        const dark = theme.getByRole('radio', { name: 'Dark' });
+        const light = theme.getByRole('radio', { name: 'Light' });
+        const compact = group.getByRole('radio', { name: 'Compact' });
+        const darkLabel = page.getByTestId('dark-label');
+        const themeError = page.locator('#theme-missing');
+        const densityError = page.locator('#density-missing');
+        const output = page.getByTestId('submitted');
+        const state = () =>
+            form.evaluate((element: HTMLFormElement) => ({
+                entries: [...new FormData(element)],
+                invalidGroups: [...element.querySelectorAll('[role="radiogroup"][aria-invalid="true"]')].map((item) =>
+                    document.getElementById(item.getAttribute('aria-labelledby')!)?.textContent?.trim()
+                )
+            }));
+
+        await expect(theme).toHaveAccessibleDescription(
+            driver.framework === 'angular' ? 'Choose a color theme' : 'Choose a row density Choose a color theme'
+        );
+        await expect(group).toHaveAccessibleDescription('Choose a row density');
+        await expect(light).toHaveAttribute('aria-disabled', 'true');
+        await expect(themeError).toBeHidden();
+        await expect(densityError).toBeHidden();
+        await submit.click();
+        await expect(dark).toBeFocused();
+        await expect(themeError).toBeVisible();
+        await expect(densityError).toBeVisible();
+        await expect(dark).toHaveAttribute('aria-describedby', /\btheme-missing\b/);
+        await expect(dark).toHaveAttribute('aria-describedby', /\bdark-description\b/);
+        if (driver.framework === 'angular') {
+            await expect(dark).not.toHaveAttribute('aria-describedby', /\bdensity-missing\b/);
+        } else {
+            await expect(dark).toHaveAttribute('aria-describedby', /\bdensity-missing\b/);
+        }
+        await expect(compact).toHaveAttribute('aria-describedby', /\bdensity-missing\b/);
+        await checkpoint('first invalid radio follows DOM order and skips the disabled Field.Item', state, {
+            entries: [],
+            invalidGroups: ['Theme', 'Density']
+        });
+
+        await darkLabel.click();
+        await expect(dark).toBeFocused();
+        await expect(dark).toHaveAttribute('aria-checked', 'true');
+        await expect(themeError).toBeHidden();
+        await expect(densityError).toBeVisible();
+        await submit.click();
+        await expect(compact).toBeFocused();
+        await expect(output).toHaveText('');
+        await checkpoint('editing the inner Field leaves the outer Field invalid', state, {
+            entries: [['theme', 'dark']],
+            invalidGroups: ['Density']
+        });
+
+        await page.keyboard.press('Space');
+        await submit.click();
+        await expect(output).toHaveText('dark compact');
+        await checkpoint('both field names and selections are submitted', state, {
+            entries: [
+                ['theme', 'dark'],
+                ['density', 'compact']
+            ],
+            invalidGroups: []
+        });
         return;
     }
 

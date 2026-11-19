@@ -1,6 +1,13 @@
 import { Component, signal } from '@angular/core';
-import { RdxFieldDescription, RdxFieldItem, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
+import {
+    RdxFieldDescription,
+    RdxFieldError,
+    RdxFieldItem,
+    RdxFieldLabel,
+    RdxFieldRoot
+} from '@radix-ng/primitives/field';
 import { RdxFieldsetLegend, RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
+import { RdxFormRoot, type RdxFormSubmitEvent } from '@radix-ng/primitives/form';
 import {
     RdxRadioGroupDirective,
     RdxRadioIndicatorDirective,
@@ -13,11 +20,13 @@ import { config, installProbe } from './contract';
     selector: 'parity-radio',
     imports: [
         RdxFieldDescription,
+        RdxFieldError,
         RdxFieldItem,
         RdxFieldLabel,
         RdxFieldRoot,
         RdxFieldsetLegend,
         RdxFieldsetRoot,
+        RdxFormRoot,
         RdxRadioGroupDirective,
         RdxRadioIndicatorDirective,
         RdxRadioItemDirective,
@@ -69,6 +78,44 @@ import { config, installProbe } from './contract';
             <button (click)="legendId.set('new-legend')" type="button">Change legend ID</button>
             <button (click)="showFieldLabel.set(!showFieldLabel())" type="button">Toggle Field label</button>
             <button (click)="explicitLabel.set(!explicitLabel())" type="button">Toggle explicit label</button>
+        } @else if (mode === 'nested-fields') {
+            <form id="owner" (onFormSubmit)="nestedValues.set($event.values)" rdxFormRoot>
+                <div rdxFieldRoot name="density">
+                    <span rdxFieldLabel>Density</span>
+                    <p id="density-description" rdxFieldDescription>Choose a row density</p>
+                    <div rdxFieldRoot name="theme">
+                        <span rdxFieldLabel>Theme</span>
+                        <p id="theme-description" rdxFieldDescription>Choose a color theme</p>
+                        <div rdxRadioRoot required>
+                            <div rdxFieldItem disabled>
+                                <span rdxRadioItem value="light"><input rdxRadioItemInput /></span>
+                                <label rdxFieldLabel>Light</label>
+                            </div>
+                            <div rdxFieldItem>
+                                <span rdxRadioItem value="dark"><input rdxRadioItemInput /></span>
+                                <label data-testid="dark-label" rdxFieldLabel>Dark</label>
+                                <p id="dark-description" rdxFieldDescription>Use dark colors</p>
+                            </div>
+                        </div>
+                        <p id="theme-missing" rdxFieldError match="valueMissing">Theme is required</p>
+                    </div>
+                    <div rdxRadioRoot required>
+                        <div rdxFieldItem>
+                            <span rdxRadioItem value="compact"><input rdxRadioItemInput /></span>
+                            <label rdxFieldLabel>Compact</label>
+                        </div>
+                        <div rdxFieldItem>
+                            <span rdxRadioItem value="comfortable"><input rdxRadioItemInput /></span>
+                            <label rdxFieldLabel>Comfortable</label>
+                        </div>
+                    </div>
+                    <p id="density-missing" rdxFieldError match="valueMissing">Density is required</p>
+                </div>
+                <button type="submit">Submit</button>
+                <output data-testid="submitted">
+                    {{ nestedValues()?.['theme'] }} {{ nestedValues()?.['density'] }}
+                </output>
+            </form>
         } @else {
             <form id="owner">
                 <div [disabled]="disabled()" data-testid="field" rdxFieldRoot name="density">
@@ -105,6 +152,7 @@ export class AngularRadioForms {
     protected readonly legendId = signal('default-legend');
     protected readonly showFieldLabel = signal(false);
     protected readonly explicitLabel = signal(false);
+    protected readonly nestedValues = signal<RdxFormSubmitEvent['values'] | null>(null);
 
     constructor() {
         installProbe();
