@@ -98,5 +98,13 @@
             "error": "Density is unavailable"
         },
         "category": "native-reset-field-state"
+    },
+    {
+        "scenario": "portal-keyboard",
+        "checkpoint": "focus moves to the portaled radio",
+        "field": "field",
+        "angular": { "focused": true, "touched": false, "invalid": false },
+        "react": { "focused": true, "touched": true, "invalid": true },
+        "category": "portaled-field-blur"
     }
 ]

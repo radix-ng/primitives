@@ -85,7 +85,9 @@ export const [injectRadioItemContext, provideRadioItemContext] = createContext<R
         '[attr.tabindex]': 'radioTabIndex()',
         '(click)': 'handleClick($event)',
         '(keydown)': 'onKeyDown($event)',
-        '(focus)': 'onFocus($event)'
+        '(focus)': 'onFocus($event)',
+        '(focusin)': 'relayPortaledFocus($event)',
+        '(focusout)': 'relayPortaledFocus($event)'
     }
 })
 export class RdxRadioItemDirective<Value = string> {
@@ -158,6 +160,7 @@ export class RdxRadioItemDirective<Value = string> {
     });
 
     constructor() {
+        this.compositeItem.enablePortaledNavigation();
         this.compositeItem.setMetadata({
             radio: {
                 value: this.value,
@@ -217,6 +220,11 @@ export class RdxRadioItemDirective<Value = string> {
     /** @ignore */
     protected onKeyDown(event: KeyboardEvent): void {
         if (event.target === this.elementRef.nativeElement && event.key === 'Enter') event.preventDefault();
+        this.compositeItem.relayPortaledKeyboardEvent(event);
+    }
+
+    protected relayPortaledFocus(event: FocusEvent): void {
+        if (event.target === this.elementRef.nativeElement) this.rootContext.relayPortaledFocus?.(event);
     }
 
     /** @ignore */

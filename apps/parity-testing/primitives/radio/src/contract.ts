@@ -23,7 +23,7 @@ export interface Settings {
     refs?: 'selection' | 'detach';
     validation?: 'onBlur' | 'onChange' | 'onSubmit';
     constraints?: 'required' | 'eligibility' | 'disabled-selection';
-    portal?: 'field' | 'item';
+    portal?: 'field' | 'item' | 'keyboard';
     reset?: 'editable' | 'parent-owned' | 'portal';
 }
 
@@ -76,6 +76,7 @@ export const cases = {
     'constraints-disabled-selection': { constraints: 'disabled-selection' },
     'portal-field': { portal: 'field' },
     'portal-item': { portal: 'item' },
+    'portal-keyboard': { portal: 'keyboard' },
     'reset-editable': { reset: 'editable' },
     'reset-parent-owned': { reset: 'parent-owned' },
     'reset-portal': { reset: 'portal' }

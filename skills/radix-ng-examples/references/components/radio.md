@@ -127,6 +127,12 @@ different form changes which inputs can block submission.
 
 ### Radio in a portal
 
+An item moved to a portal in the same document still shares the group's arrow navigation and Tab
+stop. With `validationMode="onBlur"`, focus can move between inline and portaled options before
+Field reveals a validation error. When the portal places the item outside the group element, give
+the item an explicit `id` and include it in the group's `aria-owns` attribute to associate the radio
+with its group for assistive technology.
+
 When a Radio Group belongs to `rdxFieldRoot` inside `rdxFormRoot`, its authored inputs can
 participate in the form even when a portal moves them outside the native form element. An enabled
 input with no browser form owner and no `form` attribute contributes its required constraint.

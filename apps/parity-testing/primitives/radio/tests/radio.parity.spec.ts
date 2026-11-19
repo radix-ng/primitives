@@ -29,7 +29,7 @@ class RadioDriver {
         this.nativeButton = this.settings.nativeButton ?? false;
         await this.page.goto('/' + this.framework + '.html?case=' + name);
         const count =
-            this.settings.portal === 'item'
+            this.settings.portal === 'item' || this.settings.portal === 'keyboard'
                 ? 1
                 : this.settings.collection
                   ? collectionOptions.length
@@ -330,6 +330,34 @@ async function portalScenario(driver: RadioDriver, mode: NonNullable<Settings['p
     const alpha = page.getByRole('radio', { name: 'Alpha' });
     const error = page.locator('#density-missing');
     const button = (name: string) => page.getByRole('button', { name, exact: true });
+    if (mode === 'keyboard') {
+        const before = button('Before options');
+        await expect(group).toHaveAttribute('aria-owns', 'portal-beta');
+        await expect(beta).toHaveAttribute('id', 'portal-beta');
+        await alpha.focus();
+        await portalFocusCheckpoint(driver, 'focus starts on the inline radio');
+        await beta.focus();
+        await portalFocusCheckpoint(driver, 'focus moves to the portaled radio');
+        await before.focus();
+        await portalFocusCheckpoint(driver, 'focus leaves the entire group');
+
+        await page.keyboard.press('Tab');
+        await expect(beta).toBeFocused();
+        await portalFocusCheckpoint(driver, 'Tab enters at the portaled tab stop');
+        await page.keyboard.press('ArrowDown');
+        await portalFocusCheckpoint(driver, 'arrow from the portal reaches the inline radio');
+        await page.keyboard.press('ArrowDown');
+        await portalFocusCheckpoint(driver, 'arrow from the inline radio reaches the portal');
+        if (driver.framework === 'angular') {
+            await page.evaluate(() => {
+                document.addEventListener('keydown', (event) => event.preventDefault(), { capture: true, once: true });
+            });
+            await page.keyboard.press('ArrowDown');
+            await expect(beta).toBeFocused();
+            expect(await page.evaluate(() => window.radioParity.changes.map(({ value }) => value))).toEqual(['a', 'b']);
+        }
+        return;
+    }
     const read = () =>
         owner.evaluate((form: HTMLFormElement) => ({
             native: new FormData(form).getAll('density'),
@@ -396,6 +424,28 @@ async function portalScenario(driver: RadioDriver, mode: NonNullable<Settings['p
     await expect(beta).toHaveAttribute('aria-checked', 'true');
     await submit();
     await checkpoint('a disabled portaled selection satisfies required but contributes no entry', 6, 'empty');
+}
+
+async function portalFocusCheckpoint(driver: RadioDriver, name: string) {
+    const state = await driver.page.evaluate(async () => {
+        await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+        const options = [...document.querySelectorAll<HTMLElement>('[role="radio"]')];
+        const text = (item: HTMLElement | undefined) => item?.textContent?.trim() ?? null;
+        const field = document.querySelector<HTMLElement>('[data-testid="field"]')!;
+        return {
+            focus: text(options.find((item) => item === document.activeElement)),
+            tabStop: options.filter((item) => item.tabIndex === 0).map(text),
+            selected: text(options.find((item) => item.getAttribute('aria-checked') === 'true')),
+            field: {
+                focused: field.hasAttribute('data-focused'),
+                touched: field.hasAttribute('data-touched'),
+                invalid: field.hasAttribute('data-invalid')
+            },
+            requests: window.radioParity.changes.map(({ value }) => value)
+        };
+    });
+    driver.checkpoints.push({ name, state });
+    expect(driver.errors).toEqual([]);
 }
 
 async function resetScenario(driver: RadioDriver, mode: NonNullable<Settings['reset']>) {

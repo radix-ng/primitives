@@ -32,6 +32,9 @@ export class RdxCompositeListItem {
 
     readonly index = computed(() => this.listContext()?.indexOf(this.elementRef.nativeElement) ?? -1);
 
+    /** @internal Set by the primitive before the first render to retain context ownership across portals. */
+    allowPortaledHost = false;
+
     /**
      * Whether the host is a descendant of the owning list element.
      *
@@ -44,7 +47,7 @@ export class RdxCompositeListItem {
         afterRenderEffect({
             earlyRead: (onCleanup) => {
                 const listContext = this.listContext();
-                if (!listContext || !this.isInListElement(listContext)) return;
+                if (!listContext || (!this.allowPortaledHost && !this.isInListElement(listContext))) return;
 
                 const element = this.elementRef.nativeElement;
                 onCleanup(

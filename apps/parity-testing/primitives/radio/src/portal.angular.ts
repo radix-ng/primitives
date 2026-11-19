@@ -18,16 +18,26 @@ import { config, installProbe } from './contract';
     ],
     template: `
         <form id="external"></form>
+        @if (keyboard) {
+            <button type="button">Before options</button>
+        }
         <div #outside data-testid="outside"></div>
         <form id="owner" #owner (onFormSubmit)="save($event)" rdxFormRoot>
             <div [container]="full ? outside : owner" rdxPortal>
-                <div rdxFieldRoot name="density">
+                <div
+                    [invalid]="keyboard && value() === null"
+                    [validationMode]="keyboard ? 'onBlur' : 'onSubmit'"
+                    data-testid="field"
+                    rdxFieldRoot
+                    name="density"
+                >
                     <div
                         #group
                         [controlledValue]="value()"
                         [required]="full"
                         [form]="formId()"
-                        (onValueChange)="value.set($event.value)"
+                        [attr.aria-owns]="keyboard ? 'portal-beta' : undefined"
+                        (onValueChange)="select($event.value)"
                         rdxRadioRoot
                         aria-label="Density"
                     >
@@ -37,6 +47,7 @@ import { config, installProbe } from './contract';
                         </span>
                         @if (showBeta()) {
                             <span
+                                id="portal-beta"
                                 [container]="full ? group : outside"
                                 [disabled]="disabledBeta()"
                                 rdxPortal
@@ -65,6 +76,7 @@ import { config, installProbe } from './contract';
 })
 export class AngularRadioPortal {
     protected readonly full = config().portal === 'field';
+    protected readonly keyboard = config().portal === 'keyboard';
     protected readonly value = signal<string | null>(null);
     protected readonly formId = signal<string | undefined>(undefined);
     protected readonly showBeta = signal(true);
@@ -72,8 +84,11 @@ export class AngularRadioPortal {
     protected readonly submits = signal(0);
     protected readonly submitted = signal<RdxFormSubmitEvent['values'][string] | undefined>(undefined);
 
-    constructor() {
-        installProbe();
+    private readonly probe = installProbe();
+
+    protected select(value: string): void {
+        this.probe.changes.push({ value, reason: 'none' });
+        this.value.set(value);
     }
 
     protected save({ values }: RdxFormSubmitEvent): void {

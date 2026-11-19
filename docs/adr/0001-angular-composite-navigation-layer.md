@@ -52,8 +52,10 @@ wrapper's template cannot inject that List's contexts and silently drops out of 
 for this. A primitive that wants to support the pattern republishes its List's `RdxCompositeRootContext`
 and `RdxCompositeListContext` as signals on its own Root context, then provides an owner on each item
 part; `RdxCompositeItem` / `RdxCompositeListItem` prefer an owner over injection whenever one is present.
-The DOM containment checks (`rootElement.contains` / `listElement.contains`) still gate registration, so
-an item that is bridged but rendered outside the list element registers with nothing.
+The default DOM containment checks (`rootElement.contains` / `listElement.contains`) gate registration.
+Radio explicitly opts in to context ownership for portaled items. These items use the same ordered
+list and relay keyboard events to the injected composite root when relocation puts it outside the
+event path.
 
 Constraints that come with it:
 

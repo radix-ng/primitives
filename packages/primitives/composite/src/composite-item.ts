@@ -59,7 +59,7 @@ export class RdxCompositeItem {
 
         const rootContext = this.rootContext();
 
-        if (!this.isInRootElement(rootContext)) {
+        if (!this.hasOwningRoot(rootContext)) {
             return null;
         }
 
@@ -70,6 +70,21 @@ export class RdxCompositeItem {
     /** @internal Disabled button guards forward the original event to their owned root. */
     relayKeyboardEvent(event: KeyboardEvent): void {
         this.rootContext()?.relayKeyboardEvent(event);
+    }
+
+    /** @internal Opt in to navigation through the injected root when this item moves to a portal. */
+    enablePortaledNavigation(): void {
+        this.listItem.allowPortaledHost = true;
+    }
+
+    /** @internal Forward a key that cannot bubble to the injected root after relocation. */
+    relayPortaledKeyboardEvent(event: KeyboardEvent): void {
+        const element = this.elementRef.nativeElement;
+        if (event.defaultPrevented || event.target !== element || !this.listItem.allowPortaledHost) return;
+        const rootContext = this.rootContext();
+        if (rootContext && !rootContext.rootElement.contains(element) && this.index() !== -1) {
+            rootContext.relayKeyboardEvent(event);
+        }
     }
 
     setMetadata(value: RdxCompositeItemMetadata | null | undefined): void {
@@ -85,7 +100,7 @@ export class RdxCompositeItem {
         const rootContext = this.rootContext();
         const index = this.index();
 
-        if (index !== -1 && this.isInRootElement(rootContext)) {
+        if (index !== -1 && this.hasOwningRoot(rootContext)) {
             rootContext.setHighlightedIndex(index);
         }
     }
@@ -99,7 +114,7 @@ export class RdxCompositeItem {
         const index = this.index();
 
         if (
-            !this.isInRootElement(rootContext) ||
+            !this.hasOwningRoot(rootContext) ||
             index === -1 ||
             !rootContext.highlightItemOnHover() ||
             rootContext.highlightedIndex() === index
@@ -112,7 +127,10 @@ export class RdxCompositeItem {
         }
     }
 
-    private isInRootElement(rootContext: RdxCompositeRootContext | null): rootContext is RdxCompositeRootContext {
-        return !!rootContext && rootContext.rootElement.contains(this.elementRef.nativeElement);
+    private hasOwningRoot(rootContext: RdxCompositeRootContext | null): rootContext is RdxCompositeRootContext {
+        return (
+            !!rootContext &&
+            (this.listItem.allowPortaledHost || rootContext.rootElement.contains(this.elementRef.nativeElement))
+        );
     }
 }

@@ -7,7 +7,9 @@ import { createPortal } from 'react-dom';
 import { config } from './contract';
 
 export function ReactRadioPortal() {
-    const full = config().portal === 'field';
+    const mode = config().portal;
+    const full = mode === 'field';
+    const keyboard = mode === 'keyboard';
     const [outside, setOutside] = useState<HTMLDivElement | null>(null);
     const [value, setValue] = useState<string | null>(null);
     const [formId, setFormId] = useState<string>();
@@ -17,13 +19,28 @@ export function ReactRadioPortal() {
     const [submitted, setSubmitted] = useState<string | null>(null);
 
     const beta = (
-        <Radio.Root value="b" disabled={disabledBeta}>
+        <Radio.Root value="b" disabled={disabledBeta} render={keyboard ? <span id="portal-beta" /> : undefined}>
             Beta
         </Radio.Root>
     );
     const field = (
-        <Field.Root name="density">
-            <RadioGroup value={value} onValueChange={setValue} required={full} form={formId} aria-label="Density">
+        <Field.Root
+            name="density"
+            data-testid="field"
+            validationMode={keyboard ? 'onBlur' : 'onSubmit'}
+            validate={keyboard ? (choice) => (choice == null ? 'Choose a density' : null) : undefined}
+        >
+            <RadioGroup
+                value={value}
+                onValueChange={(next) => {
+                    window.radioParity.changes.push({ value: next, reason: 'none' });
+                    setValue(next);
+                }}
+                required={full}
+                form={formId}
+                aria-owns={keyboard ? 'portal-beta' : undefined}
+                aria-label="Density"
+            >
                 <Radio.Root value="a">Alpha</Radio.Root>
                 {showBeta && (full ? beta : outside && createPortal(beta, outside))}
             </RadioGroup>
@@ -35,6 +52,7 @@ export function ReactRadioPortal() {
     return (
         <>
             <form id="external" />
+            {keyboard && <button type="button">Before options</button>}
             <div ref={setOutside} data-testid="outside" />
             <Form
                 id="owner"

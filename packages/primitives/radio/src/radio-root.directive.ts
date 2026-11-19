@@ -75,6 +75,8 @@ export interface RadioRootContext {
     select(value: unknown, event?: Event, reason?: RdxRadioValueChangeReason, trigger?: HTMLElement): boolean;
     tabStopIndex: Signal<number>;
     isKeyboardFocus(element: HTMLElement): boolean;
+    /** @internal Receive focus events that cannot bubble from a portaled item. */
+    relayPortaledFocus?(event: FocusEvent): void;
 }
 
 const rootContext = (): RadioRootContext => {
@@ -91,7 +93,8 @@ const rootContext = (): RadioRootContext => {
         syncNativeInputs: () => root.syncNativeInputs(),
         select: (value, event, reason, trigger) => root.select(value, event, reason, trigger),
         tabStopIndex: root.tabStopIndex,
-        isKeyboardFocus: (element) => root.isKeyboardFocus(element)
+        isKeyboardFocus: (element) => root.isKeyboardFocus(element),
+        relayPortaledFocus: (event) => root.relayPortaledFocus(event)
     };
 };
 
@@ -512,13 +515,21 @@ export class RdxRadioGroupDirective<Value = string>
         if (this.field) this.focusedItem.set(event.target as HTMLElement);
     }
 
+    /** @ignore */
+    relayPortaledFocus(event: FocusEvent): void {
+        if (this.elementRef.nativeElement.contains(event.target as Node)) return;
+        if (event.type === 'focusin') this.onFocusIn(event);
+        else this.onFocusOut(event);
+    }
+
     /**
-     * Marks the control touched when focus leaves the whole group (Base UI `RadioGroup` parity and the
-     * ADR 0004 CVA strategy) — moving focus between items stays inside, so `relatedTarget` is checked.
+     * Marks the control touched once focus leaves its root and registered items.
      */
     protected onFocusOut(event: FocusEvent): void {
         const next = event.relatedTarget as Node | null;
-        if (!this.elementRef.nativeElement.contains(next)) {
+        const withinGroup =
+            this.elementRef.nativeElement.contains(next) || this.items().some(({ element }) => element.contains(next));
+        if (!withinGroup) {
             this.focusedItem.set(null);
             this.validationBlurred.set(true);
             this.field?.setTouched(true);
