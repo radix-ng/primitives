@@ -47,7 +47,7 @@ import { AngularOverlappingDialogs } from './overlap.angular';
                         Secondary
                     </button>
                 }
-                <ng-template [keepMounted]="settings.keepMounted ?? false" rdxDialogPortal>
+                <ng-template [container]="portalTarget()" [keepMounted]="settings.keepMounted ?? false" rdxDialogPortal>
                     @if (settings.backdrop ?? settings.modal === undefined) {
                         <div [class]="styles.backdrop" rdxDialogBackdrop data-testid="backdrop"></div>
                     }
@@ -163,6 +163,10 @@ import { AngularOverlappingDialogs } from './overlap.angular';
                     </div>
                 </ng-template>
             </div>
+            @if (settings.retarget) {
+                <div #portalA data-testid="portal-a"></div>
+                <div #portalB data-testid="portal-b"></div>
+            }
             @if (settings.modal !== undefined) {
                 <input [class]="styles.input" data-testid="outside-field" aria-label="Outside field" />
                 <div
@@ -184,6 +188,12 @@ class AngularDialog {
     protected readonly secondary = signal(!!this.settings.multiple);
     protected readonly showNested = signal(true);
     protected readonly showPrimary = signal(true);
+    private readonly portalA = viewChild<ElementRef<HTMLElement>>('portalA');
+    private readonly portalB = viewChild<ElementRef<HTMLElement>>('portalB');
+    private readonly useSecondPortalTarget = signal(false);
+    protected portalTarget() {
+        return (this.useSecondPortalTarget() ? this.portalB() : this.portalA())?.nativeElement;
+    }
     private readonly root = viewChild.required(RdxDialogRoot);
     private readonly focusClose = viewChild<ElementRef<HTMLButtonElement>>('close');
     private readonly focusReturn = viewChild<ElementRef<HTMLInputElement>>('focusReturn');
@@ -264,7 +274,7 @@ class AngularDialog {
     }
 
     protected command(event: KeyboardEvent): void {
-        if (!['F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F9', 'F10'].includes(event.key)) return;
+        if (!['F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10'].includes(event.key)) return;
         event.preventDefault();
         if (event.key === 'F2' && this.requested !== undefined) this.open.set(this.requested);
         if (event.key === 'F3') this.defaultOpen.update((open) => !open);
@@ -272,6 +282,7 @@ class AngularDialog {
         if (event.key === 'F5') this.secondary.update((present) => !present);
         if (event.key === 'F6') this.showNested.update((present) => !present);
         if (event.key === 'F7') this.showPrimary.update((present) => !present);
+        if (event.key === 'F8') this.useSecondPortalTarget.update((second) => !second);
         if (event.key === 'F10') this.root().close('imperative-action');
         if (event.key === 'F9' || event.key === 'F10') this.root().unmount();
     }

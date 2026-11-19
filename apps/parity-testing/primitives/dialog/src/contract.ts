@@ -18,6 +18,7 @@ interface Settings {
     defer?: boolean;
     cancelOpen?: boolean;
     keepMounted?: boolean;
+    retarget?: boolean;
     hold?: boolean;
     animate?: boolean;
     modal?: false | 'trap-focus';
@@ -57,6 +58,7 @@ export const configurations = {
     'overlap-retained-backdrops': { overlap: { backdrop: true, keepMounted: true } },
     'mixed-drawers-dialog': { mixed: 'dialog' },
     'mixed-drawers-alert-dialog': { mixed: 'alert-dialog' },
+    'portal-retarget': { retarget: true, backdrop: false },
     'detached-live-payload': { detached: { secondary: true } },
     'detached-trigger-remount': { detached: { secondary: true, openId: 'secondary' } },
     'detached-root-remount': { detached: { initiallyDetached: true } },

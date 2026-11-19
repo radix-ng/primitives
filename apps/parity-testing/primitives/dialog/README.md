@@ -7,8 +7,9 @@ pnpm test-parity dialog --grep touch-
 
 The suite exercises real Angular Dialog parts and Base UI React 1.9.0 at the workspace pin
 `cf696d6f6e08c699c5bda24d5a033430909f2285`.
-The suite has 62 cases and reports native-input capability skips by engine. `expected-differences.json` records the focus
-destination after nested owner removal and the payload of a new unassociated open after a named session.
+The suite has 63 cases and reports native-input capability skips by engine. `expected-differences.json`
+records focus after nested owner removal, payload on a new unassociated open, and draft and
+completion differences after changing the Portal container.
 
 | Area              | Cases | Behavior                                                                                                       |
 | ----------------- | ----- | -------------------------------------------------------------------------------------------------------------- |
@@ -18,6 +19,7 @@ destination after nested owner removal and the payload of a new unassociated ope
 | Nested Dialogs    | 5     | Deepest dismissal, descendant counts, owner removal and a retained child with an animated exit                 |
 | Mixed nesting     | 2     | Drawer-only styling counts, Popup autofocus, and Dialog or AlertDialog dismissal inside two Drawers            |
 | Overlapping Roots | 5     | Independent focus and isolation, per-layer dismissal, authored and internal Backdrops, and retained Portals    |
+| Portal relocation | 1     | Retarget an open modal Dialog, preserve keyboard trapping and isolation, then dismiss from the new container   |
 | Detached handles  | 8     | Named and unassociated opens, live payloads, Trigger and Root remount, handle swap and controlled refusal      |
 | Trigger identity  | 2     | Bound ID before the default, null fallback, active trigger removal and replacement                             |
 | Focus targets     | 8     | Explicit and default focus, callback results, interaction type, Trigger removal and retained exits             |
@@ -64,6 +66,11 @@ Three independent modal Roots each return focus to the launcher when closed. The
 check Tab wrapping, one close per Escape or Backdrop click, and continuous background isolation and
 scroll lock. Angular exposes the active retained Popup. Base UI can leave it aria-hidden while
 focusing its controls, so the report includes the actual isolation attributes.
+
+The Portal case moves an open Dialog between two same-document containers. It verifies focus
+trapping, ARIA, background isolation, return focus after Escape, and pointer dismissal after moving
+back. Angular preserves the field, draft, IDs and open lifetime. React mounts a new field with the
+default draft and emits a second open completion.
 
 The detached fixtures keep Trigger elements outside Root and call the public handle actions. They
 inspect live rendered payloads, each handle's open state, active Trigger relationships, native

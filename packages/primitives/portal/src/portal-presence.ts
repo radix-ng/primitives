@@ -68,12 +68,14 @@ export class RdxPortalPresence {
     private readonly presenceContext = inject(RDX_PRESENCE_CONTEXT);
     private readonly _computedContainer = linkedSignal(this.container);
     private readonly pendingContainer = computed(() => this._computedContainer() === null);
-    private readonly elementContainer = computed<RdxPortalTarget | null>(() => {
+    /** @internal The destination used to compute the current DOM ancestry. */
+    readonly destination = computed<RdxPortalTarget | null>(() => {
         const container = this._computedContainer();
         if (container === null) return null;
         const provided = resolvePortalContainer(container, this.document);
         return provided ?? this.document?.body ?? null;
     });
+    private readonly beforeRelocate = new Set<() => void>();
 
     /** @internal Shared with explicit Presence animation targets. */
     readonly presence = usePresence(this.presenceContext, {
@@ -94,9 +96,23 @@ export class RdxPortalPresence {
     relocate(): void {
         if (!this.isBrowser) return;
         untracked(() => this.parentPortal?.relocate());
-        const container = this.elementContainer();
+        const container = this.destination();
         this.presence.nodes();
-        if (container) movePortalNodes(this.presence.currentNodes(), container);
+        if (!container) return;
+
+        const nodes = this.presence.currentNodes();
+        if (nodes.length && nodes[0].parentNode !== container) {
+            // The old isolation can make the destination inert. Release it before moving so
+            // movePortalNodes can restore focus after the range reaches its new container.
+            untracked(() => this.beforeRelocate.forEach((callback) => callback()));
+            movePortalNodes(nodes, container);
+        }
+    }
+
+    /** @internal Release effects that depend on the old physical ancestry before moving the range. */
+    onBeforeRelocate(callback: () => void): () => void {
+        this.beforeRelocate.add(callback);
+        return () => this.beforeRelocate.delete(callback);
     }
 
     /** Imperatively override the portal container (parity with `RdxPortal.setContainer`). */

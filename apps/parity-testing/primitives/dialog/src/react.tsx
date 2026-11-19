@@ -61,6 +61,9 @@ function ReactDialog() {
     const [secondary, setSecondary] = useState(!!settings.multiple);
     const [showNested, setShowNested] = useState(true);
     const [showPrimary, setShowPrimary] = useState(true);
+    const [useSecondPortalTarget, setUseSecondPortalTarget] = useState(false);
+    const portalA = useRef<HTMLDivElement>(null);
+    const portalB = useRef<HTMLDivElement>(null);
     const actions = useRef<Dialog.Root.Actions>(null);
     const closeRef = useRef<HTMLButtonElement>(null);
     const finalTarget = useRef<HTMLInputElement>(null);
@@ -70,7 +73,7 @@ function ReactDialog() {
 
     useEffect(() => {
         const command = (event: KeyboardEvent) => {
-            if (!['F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F9', 'F10'].includes(event.key)) return;
+            if (!['F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10'].includes(event.key)) return;
             event.preventDefault();
             if (event.key === 'F2' && requested.current !== undefined) setOpen(requested.current);
             if (event.key === 'F3') setDefaultOpen((open) => !open);
@@ -78,6 +81,7 @@ function ReactDialog() {
             if (event.key === 'F5') setSecondary((present) => !present);
             if (event.key === 'F6') setShowNested((present) => !present);
             if (event.key === 'F7') setShowPrimary((present) => !present);
+            if (event.key === 'F8') setUseSecondPortalTarget((second) => !second);
             if (event.key === 'F10') actions.current?.close();
             if (event.key === 'F9' || event.key === 'F10') actions.current?.unmount();
         };
@@ -149,7 +153,10 @@ function ReactDialog() {
                         Secondary
                     </Dialog.Trigger>
                 )}
-                <Dialog.Portal keepMounted={settings.keepMounted}>
+                <Dialog.Portal
+                    container={settings.retarget ? (useSecondPortalTarget ? portalB : portalA) : undefined}
+                    keepMounted={settings.keepMounted}
+                >
                     {(settings.backdrop ?? settings.modal === undefined) && (
                         <Dialog.Backdrop className={classes.backdrop} data-testid="backdrop" />
                     )}
@@ -175,6 +182,12 @@ function ReactDialog() {
                     </Dialog.Popup>
                 </Dialog.Portal>
             </Dialog.Root>
+            {settings.retarget && (
+                <>
+                    <div ref={portalA} data-testid="portal-a" />
+                    <div ref={portalB} data-testid="portal-b" />
+                </>
+            )}
             {settings.modal !== undefined && (
                 <>
                     <input className={classes.input} data-testid="outside-field" aria-label="Outside field" />

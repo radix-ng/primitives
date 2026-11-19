@@ -75,6 +75,7 @@ are permitted; changed observable behavior needs evidence or an explicitly revie
   records the three-engine Angular 22 results and the `@defer` cancellation limitation. Portal
   cleans up its owned nodes; destroying a block while its lazy import is pending can leave Angular
   unstable. [ADR 0085](../../../docs/adr/0085-hydration-owned-identity-and-view-ranges.md).
+- [Dialog's live relocation case](../dialog/PARITY.md#live-portal-relocation) verifies focus and modal isolation across two same-document containers. The focus manager releases the old ancestry's marks before the move and applies them again using the new destination. Angular retains the view, input value and IDs.
 
 The 2026-11-18 audit passed 45 AOT cases in each of Chromium, Firefox and WebKit on Angular 22.0.2.
 The [runner](../../../apps/radix-ssr-testing/hydration-audit/run.ts) checks server node identity,

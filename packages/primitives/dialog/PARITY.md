@@ -96,7 +96,7 @@ and [store selectors](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda2
 
 - [Dialog unit tests](__tests__/dialog.spec.ts) cover initial defaults, parent refusal, delayed acceptance, two-way binding and cancellation.
 - [Dialog browser tests](../../../apps/visual-regression/tests/dialog.behavior.spec.ts) include a deferred open/close request with focus, Portal and scroll-lock observations.
-- The [pinned Dialog suite](../../../apps/parity-testing/primitives/dialog/README.md) runs 62 scenarios across Chromium, Firefox and WebKit. It covers open ownership, modal modes, mixed nesting and overlapping dialogs, detached handles, configurable focus, touch and close lifetime.
+- The [pinned Dialog suite](../../../apps/parity-testing/primitives/dialog/README.md) runs 63 scenarios across Chromium, Firefox and WebKit. It covers open ownership, modal modes, mixed nesting and overlapping dialogs, detached handles, configurable focus, touch, close lifetime and live Portal relocation.
 - The [AOT hydration suite](../../../apps/radix-ssr-testing/hydration-audit/README.md) covers initially open Dialog and closing the eager Root before a detached Trigger hydrates.
 
 The directive reference exposes effective `open()` as readonly. Set a bound value to drive a
@@ -358,4 +358,21 @@ Seven tap cases run in Chromium and WebKit. Five native gesture cases use Chromi
 touch contexts and WebKit pan, cancellation and multi-contact automation are recorded as capability
 skips. Physical-device gesture and soft-keyboard behavior remain outside these emulated checks.
 
-Live Portal destination changes remain pending paired checks.
+## Live Portal relocation
+
+The pinned browser scenario moves an open modal Dialog between two same-document containers.
+Both implementations expose the moved Popup, isolate its former container, keep scroll locked
+and keep the Trigger and Popup ARIA relationships valid. Tab cycles inside the Popup and Escape
+returns focus to the Trigger. Reopening and moving back verifies native outside-press dismissal
+without activating the background.
+[Portal scenario](../../../apps/parity-testing/primitives/dialog/tests/scenarios.ts)
+
+Angular moves the existing physical range. It releases isolation and outside markers from the old
+ancestry before the move and applies them to the new ancestry in the render phase. The same field,
+its draft and the Popup's IDs survive, and the open lifetime completes once. Base UI 1.9.0 remounts
+the portal children at the new destination, restores focus to the new field and emits a second
+`onOpenChangeComplete(true)`. The pin's uncontrolled input resets to its default. Angular preserves
+its declaration-owned view and open lifetime, in line with the hydration contract.
+[Reviewed differences](../../../apps/parity-testing/primitives/dialog/expected-differences.json)
+· [Pinned FloatingPortal](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/utils/popups/portal/FloatingPortal.tsx#L140)
+· [Portal hydration contract](../../../docs/adr/0085-hydration-owned-identity-and-view-ranges.md)

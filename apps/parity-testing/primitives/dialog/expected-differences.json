@@ -14,5 +14,37 @@
         "angular": null,
         "react": "account",
         "category": "payload-reset-on-unassociated-open"
+    },
+    {
+        "scenario": "portal-retarget",
+        "checkpoint": "open after changing the container",
+        "field": "field",
+        "angular": "edited draft",
+        "react": "draft",
+        "category": "portal-retarget-preserves-native-draft"
+    },
+    {
+        "scenario": "portal-retarget",
+        "checkpoint": "open after changing the container",
+        "field": "completions",
+        "angular": [true],
+        "react": [true, true],
+        "category": "portal-retarget-preserves-open-lifetime"
+    },
+    {
+        "scenario": "portal-retarget",
+        "checkpoint": "Escape restores the Trigger after the move",
+        "field": "completions",
+        "angular": [true, false],
+        "react": [true, true, false],
+        "category": "portal-retarget-preserves-open-lifetime"
+    },
+    {
+        "scenario": "portal-retarget",
+        "checkpoint": "outside click dismisses from the new container",
+        "field": "completions",
+        "angular": [true, false, true, false],
+        "react": [true, true, false, true, true, false],
+        "category": "portal-retarget-preserves-open-lifetime"
     }
 ]

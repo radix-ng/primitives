@@ -52,7 +52,7 @@ import {
     RdxFocusScopeConfigToken,
     useFocusGuardsTabbability
 } from '@radix-ng/primitives/focus-scope';
-import { RDX_PORTAL_ANCHOR } from '@radix-ng/primitives/portal';
+import { RDX_PORTAL_ANCHOR, RdxPortalPresence } from '@radix-ng/primitives/portal';
 import { registerFocusGuardOwners, resolveFocusGuardOwner } from './focus-guard-ownership';
 import { markOthers } from './mark-others';
 
@@ -389,6 +389,8 @@ export class RdxFloatingFocusManager {
             return; // SSR: no DOM marking / listeners.
         }
 
+        const portal = inject(RdxPortalPresence, { optional: true });
+
         // Marker pass (ADR 0017 §3) — applied to outside elements while the manager is active **and the
         // popup is open**, independent of `modal`. Read by ADR 0015's outside-press guard. Render
         // after Portal's write phase so isolation uses the popup's final ancestor chain (ADR 0085).
@@ -398,6 +400,7 @@ export class RdxFloatingFocusManager {
             releaseMarker = undefined;
         };
         afterRenderEffect((onCleanup) => {
+            portal?.destination();
             if (!this.effectiveEnabled() || !this.isFloatingOpen()) {
                 return;
             }
@@ -427,6 +430,7 @@ export class RdxFloatingFocusManager {
             releaseIsolation = undefined;
         };
         afterRenderEffect((onCleanup) => {
+            portal?.destination();
             const inert = this.effectiveInert();
             const ariaHidden = this.config?.ariaHidden?.() ?? false;
             if (!this.effectiveEnabled() || !this.isFloatingOpen() || (!inert && !ariaHidden)) {
@@ -436,6 +440,10 @@ export class RdxFloatingFocusManager {
             releaseIsolation = markOthers(this.avoidElements(true), { inert, ariaHidden, mark: false });
             onCleanup(clearIsolation);
         });
+        const unregisterBeforeRelocate = portal?.onBeforeRelocate(() => {
+            clearMarker();
+            clearIsolation();
+        });
         const releaseClosedResources = () => {
             if (this.isFloatingOpen()) return;
             removeInertOwner();
@@ -444,6 +452,7 @@ export class RdxFloatingFocusManager {
         };
         this.rootContext?.events.on('openchange', releaseClosedResources);
         inject(DestroyRef).onDestroy(() => {
+            unregisterBeforeRelocate?.();
             this.rootContext?.events.off('openchange', releaseClosedResources);
             clearMarker();
             clearIsolation();

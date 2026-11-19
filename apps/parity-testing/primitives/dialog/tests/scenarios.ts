@@ -25,6 +25,101 @@ type Scenario = { name: CaseName; run: (driver: DialogDriver) => Promise<void> }
 const triggerOpen = { open: true, reason: 'trigger-press', trigger: 'primary', canceled: false };
 const outsideClose = { open: false, reason: 'outside-press', trigger: 'primary', canceled: false };
 
+const portalRetarget: Scenario = {
+    name: 'portal-retarget',
+    async run(d) {
+        const { page, popup, field } = d;
+        const inContainer = (target: string) => page.getByTestId(target).getByTestId('popup');
+        const angular = d.framework === 'angular';
+        const open = { ...primaryOpen, backdrop: false };
+        const escape = { ...outsideClose, reason: 'escape-key' };
+        const isolated = (element: typeof popup) =>
+            element.evaluate((node) => !!node.closest('[inert], [aria-hidden="true"]'));
+        const checkIsolation = async (outsideContainer: string) => {
+            await expect.poll(() => isolated(popup)).toBe(false);
+            await expect.poll(() => isolated(page.getByTestId(outsideContainer))).toBe(true);
+        };
+        await d.goto('portal-retarget');
+        await d.open();
+        await expect(inContainer('portal-a')).toBeVisible();
+        await checkIsolation('portal-b');
+        await field.fill('edited draft');
+        const originalField = await field.elementHandle();
+        const originalIds = await popup.evaluate((element) => [
+            element.id,
+            element.getAttribute('aria-labelledby'),
+            element.getAttribute('aria-describedby')
+        ]);
+        await d.checkpoint('open in the first container with a draft edit', {
+            ...open,
+            field: 'edited draft',
+            focus: 'field',
+            changes: [triggerOpen],
+            completions: [true]
+        });
+
+        await page.keyboard.press('F8');
+        await expect(inContainer('portal-b')).toBeVisible();
+        await expect(inContainer('portal-a')).toHaveCount(0);
+        await expect(field).toBeFocused();
+        await checkIsolation('portal-a');
+        const sameField = await field.evaluate((current, original) => current === original, originalField);
+        const newIds = await popup.evaluate((element) => [
+            element.id,
+            element.getAttribute('aria-labelledby'),
+            element.getAttribute('aria-describedby')
+        ]);
+        d.measurements.push({
+            name: 'descendant identity after changing the container',
+            sameField,
+            originalIds,
+            newIds
+        });
+        expect(sameField).toBe(angular);
+        if (angular) expect(newIds).toEqual(originalIds);
+        const completedOpens = angular ? [true] : [true, true];
+        await d.checkpoint('open after changing the container', {
+            ...open,
+            focus: 'field',
+            field: angular ? 'edited draft' : 'draft',
+            changes: [triggerOpen],
+            completions: completedOpens
+        });
+
+        await page.keyboard.press('Tab');
+        await expect(page.getByTestId('close')).toBeFocused();
+        await page.keyboard.press('Tab');
+        await expect(field).toBeFocused();
+        await page.keyboard.press('Escape');
+        await d.closed();
+        await d.checkpoint('Escape restores the Trigger after the move', {
+            ...closed,
+            backgroundIsolated: false,
+            scrollLocked: false,
+            focus: 'primary',
+            changes: [triggerOpen, escape],
+            completions: [...completedOpens, false]
+        });
+
+        await d.open();
+        await page.keyboard.press('F8');
+        await expect(inContainer('portal-a')).toBeVisible();
+        await checkIsolation('portal-b');
+        await expect(field).toBeFocused();
+        const outside = await d.pointAt('outside');
+        await page.mouse.click(outside.x, outside.y);
+        await d.closed();
+        await d.checkpoint('outside click dismisses from the new container', {
+            ...closed,
+            backgroundIsolated: false,
+            activations: 0,
+            scrollLocked: false,
+            changes: [triggerOpen, escape, triggerOpen, outsideClose],
+            completions: [...completedOpens, false, ...completedOpens, false]
+        });
+    }
+};
+
 const ownership: Scenario[] = [
     {
         name: 'initial-open',
@@ -1030,6 +1125,7 @@ export const scenarios = [
     ...nesting,
     ...mixedScenarios,
     ...overlapScenarios,
+    portalRetarget,
     ...detachedHandles,
     ...focusTargets,
     ...touchScenarios,
