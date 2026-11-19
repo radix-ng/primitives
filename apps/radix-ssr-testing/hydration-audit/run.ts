@@ -48,6 +48,9 @@ async function snapshot(page: Page) {
                       focus: active?.getAttribute('data-radio-node'),
                       submitted: new FormData(radioForm).getAll('plan'),
                       requests: Number(radioForm.querySelector('output')?.textContent),
+                      submits: Number(radioForm.getAttribute('data-radio-submits')),
+                      requiredError:
+                          radioForm.querySelector('[data-radio-required-error]')?.hasAttribute('hidden') === false,
                       groupRef: radioForm.getAttribute('data-radio-group-ref'),
                       itemRef: radioForm.getAttribute('data-radio-item-ref'),
                       fieldState: ['filled', 'dirty', 'touched'].filter((state) =>
@@ -280,6 +283,23 @@ async function checkRadioHydration(
         reset.submitted.join() === 'b' &&
         reset.requests === 5 &&
         reset.fieldState.join() === 'filled';
+
+    await page.locator('[data-radio-clear]').click();
+    await page.locator('[data-radio-submit]').click();
+    await page.locator('[data-radio-required-error]').waitFor({ state: 'visible', timeout: 5000 });
+    const blocked = (await record('hydrated required radio blocks submission')).radio;
+    checks.hydratedRequiredConstraint =
+        blocked?.requiredError === true &&
+        blocked.focus === 'a' &&
+        blocked.submits === 0 &&
+        blocked.submitted.length === 0 &&
+        !!blocked.nodes['input-a']?.reused;
+
+    await beta.click();
+    await page.locator('[data-radio-submit]').click();
+    const submitted = (await record('hydrated required radio submits after a selection')).radio;
+    checks.hydratedRequiredRecovery =
+        submitted?.requiredError === false && submitted.submits === 1 && submitted.submitted.join() === 'b';
 }
 
 async function checkDetachedDialogHydration(

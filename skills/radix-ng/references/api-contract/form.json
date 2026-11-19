@@ -7,7 +7,7 @@
       "directive": "RdxFormRoot",
       "selector": "form[rdxFormRoot]",
       "exportAs": "rdxFormRoot",
-      "description": "The top of the forms layer cake: a single directive on the native `<form>` element that aggregates\nfield state, maps external (server) errors onto fields by `name`, intercepts submit (values-as-object,\nfocus the first invalid field), and resets field interaction state on native `reset`. It owns no\nvalues and runs no validation — Angular form systems (or Field inputs) remain the source of validity.",
+      "description": "The top of the forms layer cake: a single directive on the native `<form>` element that aggregates\nfield state, maps external (server) errors onto fields by `name`, intercepts submit (values-as-object,\nfocus the first invalid field), and resets field interaction state on native `reset`. It owns no\nvalues. Angular form systems, Field inputs and registered native constraints supply validity.",
       "inputs": [
         {
           "name": "errors",

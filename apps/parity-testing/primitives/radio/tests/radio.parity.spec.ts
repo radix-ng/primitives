@@ -29,7 +29,7 @@ class RadioDriver {
         await this.page.goto('/' + this.framework + '.html?case=' + name);
         const count = this.settings.collection
             ? collectionOptions.length
-            : this.settings.forms || this.settings.refs
+            : this.settings.forms || this.settings.refs || this.settings.constraints
               ? 2
               : options.length;
         await expect(this.group.getByRole('radio')).toHaveCount(count);
@@ -219,6 +219,99 @@ async function refsScenario(driver: RadioDriver, mode: NonNullable<Settings['ref
     await press('Remove group');
     await checkpoint('destroying the group releases its active bindings', null, null, null, []);
     expect(await releases()).toEqual([2, 2]);
+}
+
+async function constraintsScenario(driver: RadioDriver, mode: NonNullable<Settings['constraints']>) {
+    const { page, group } = driver;
+    const owner = page.getByTestId('owner');
+    const submit = page.getByRole('button', { name: 'Submit', exact: true });
+    const alpha = group.getByRole('radio', { name: 'Alpha' });
+    const beta = group.getByRole('radio', { name: 'Beta' });
+    const error = page.getByTestId('missing');
+
+    async function checkpoint(name: string, invalid: boolean, submits: number, submitted: string[] = []) {
+        const read = () =>
+            owner.evaluate((form: HTMLFormElement) => {
+                const root = form.querySelector('[role="radiogroup"]')!;
+                const error = form.querySelector('[data-testid="missing"]');
+                return {
+                    invalid: root.getAttribute('aria-invalid') === 'true',
+                    error: error && !error.hasAttribute('hidden') ? error.textContent?.trim() : '',
+                    submitted: new FormData(form).getAll('density'),
+                    submits: Number(form.querySelector('[data-testid="submits"]')?.textContent)
+                };
+            });
+        await expect.poll(read, name).toEqual({
+            invalid,
+            error: invalid ? 'Choose a density' : '',
+            submitted,
+            submits
+        });
+        driver.checkpoints.push({ name, state: await read() });
+        expect(driver.errors).toEqual([]);
+    }
+    const press = (name: string) => page.getByRole('button', { name, exact: true }).click();
+
+    await checkpoint('initial error is hidden', false, 0);
+    await submit.click();
+    if (mode === 'disabled-selection') {
+        await expect(alpha).toHaveAttribute('aria-checked', 'true');
+        await checkpoint(
+            'disabled checked radio satisfies the native constraint without submitting its value',
+            false,
+            1
+        );
+        await beta.click();
+        await submit.click();
+        await checkpoint('an enabled checked radio submits its value', false, 2, ['b']);
+        return;
+    }
+
+    await checkpoint('missing required choice blocks submission', true, 0);
+    await expect(alpha).toBeFocused();
+    await expect(error).toBeVisible();
+    await expect(group).toHaveAttribute('aria-describedby', /\bdensity-missing\b/);
+    await expect(beta).toHaveAttribute('aria-invalid', 'true');
+    await expect(page.getByTestId('indicator')).toHaveAttribute('data-invalid', '');
+    if (mode === 'required') {
+        await beta.click();
+        await checkpoint('choosing an item clears the error', false, 0, ['b']);
+        await expect(group).not.toHaveAttribute('aria-describedby', /\bdensity-missing\b/);
+        await submit.click();
+        await checkpoint('valid required choice submits', false, 1, ['b']);
+        return;
+    }
+
+    await press('Toggle fieldset');
+    await submit.click();
+    await checkpoint('disabled fieldset removes its radios from validation', false, 1);
+    await press('Toggle fieldset');
+    await submit.click();
+    await checkpoint('re-enabled fieldset restores the constraint', true, 1);
+
+    await press('Toggle form owner');
+    await expect
+        .poll(() =>
+            group
+                .locator('input[type="radio"]')
+                .evaluateAll((inputs: HTMLInputElement[]) =>
+                    inputs.map((input) => [input.form?.id, input.validity.valueMissing])
+                )
+        )
+        .toEqual([
+            ['external', true],
+            ['external', true]
+        ]);
+    await submit.click();
+    await checkpoint('radios owned by a different form do not block this Form', false, 2);
+    await press('Toggle form owner');
+    await submit.click();
+    await checkpoint('reassociation restores the constraint', true, 2);
+
+    await press('Toggle items');
+    await expect(group.getByRole('radio')).toHaveCount(0);
+    await submit.click();
+    await checkpoint('removing the radios drops their constraint', false, 3);
 }
 
 async function validationScenario(driver: RadioDriver, mode: NonNullable<Settings['validation']>) {
@@ -622,6 +715,7 @@ const scenarios = Object.entries(cases).map(([name, settings]) => ({
         if ('collection' in settings) return collectionScenario(driver, settings.collection);
         if ('refs' in settings) return refsScenario(driver, settings.refs);
         if ('validation' in settings) return validationScenario(driver, settings.validation);
+        if ('constraints' in settings) return constraintsScenario(driver, settings.constraints);
         if ('keyboard' in settings) return keyboardScenario(driver, settings);
         if ('response' in settings) {
             await driver.checkpoint('parent value owns the group', settings.value);

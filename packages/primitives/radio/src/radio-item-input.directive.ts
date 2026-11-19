@@ -1,4 +1,4 @@
-import { computed, DestroyRef, Directive, ElementRef, inject, input } from '@angular/core';
+import { afterRenderEffect, computed, DestroyRef, Directive, ElementRef, inject, input } from '@angular/core';
 import { serializeItemValue } from '@radix-ng/primitives/core';
 import { injectRadioItemContext } from './radio-item.directive';
 import { injectRadioRootContext } from './radio-root.directive';
@@ -51,6 +51,21 @@ export class RdxRadioItemInputDirective {
     constructor() {
         const unregister = this.itemContext.registerNativeInput({ element: this.element, id: this.inputId });
         inject(DestroyRef).onDestroy(unregister);
+
+        let previousForm: string | undefined;
+        afterRenderEffect(() => {
+            const form = this.form();
+            if (form === previousForm) return;
+            previousForm = form;
+
+            // Firefox can retain stale valueMissing after a form attribute change.
+            // Rejoin the named radio group so the browser recomputes its native validity.
+            const name = this.element.name;
+            if (name) {
+                this.element.name = '';
+                this.element.name = name;
+            }
+        });
     }
 
     protected onFocus(): void {

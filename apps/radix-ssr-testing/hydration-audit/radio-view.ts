@@ -1,5 +1,11 @@
 import { Component, signal } from '@angular/core';
-import { RdxFieldDescription, RdxFieldItem, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
+import {
+    RdxFieldDescription,
+    RdxFieldError,
+    RdxFieldItem,
+    RdxFieldLabel,
+    RdxFieldRoot
+} from '@radix-ng/primitives/field';
 import { RdxFieldsetLegend, RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
 import { RdxFormRoot } from '@radix-ng/primitives/form';
 import {
@@ -14,6 +20,7 @@ import {
     selector: 'audit-radio-view',
     imports: [
         RdxFieldDescription,
+        RdxFieldError,
         RdxFieldItem,
         RdxFieldLabel,
         RdxFieldRoot,
@@ -30,6 +37,8 @@ import {
         <form
             [attr.data-radio-group-ref]="groupRef()"
             [attr.data-radio-item-ref]="itemRef()"
+            [attr.data-radio-submits]="submits()"
+            (onFormSubmit)="submits.update(increment)"
             data-radio-audit
             rdxFormRoot
         >
@@ -38,11 +47,13 @@ import {
                 <div rdxFieldRoot name="plan">
                     <p rdxFieldDescription>Choose one plan.</p>
                     <div
+                        #group="rdxRadioRoot"
                         [inputRef]="setGroupRef"
                         (onValueChange)="requests.update(increment)"
                         data-radio-node="group"
                         rdxRadioRoot
                         defaultValue="b"
+                        required
                     >
                         <div rdxFieldItem>
                             <span data-radio-node="a" rdxRadioItem value="a">
@@ -69,8 +80,11 @@ import {
                             <label data-radio-node="label-b" rdxFieldLabel>Beta</label>
                         </div>
                     </div>
+                    <p data-radio-required-error rdxFieldError match="valueMissing">Choose one plan.</p>
                 </div>
             </fieldset>
+            <button (click)="group.value.set(null)" type="button" data-radio-clear>Clear plan</button>
+            <button type="submit" data-radio-submit>Submit plan</button>
             <output>{{ requests() }}</output>
         </form>
     `
@@ -81,5 +95,6 @@ export class RadioAuditView {
     protected readonly setGroupRef = (input: HTMLInputElement | null) => this.groupRef.set(input?.id ?? null);
     protected readonly setItemRef = (input: HTMLInputElement | null) => this.itemRef.set(input?.id ?? null);
     protected readonly requests = signal(0);
+    protected readonly submits = signal(0);
     protected readonly increment = (count: number) => count + 1;
 }

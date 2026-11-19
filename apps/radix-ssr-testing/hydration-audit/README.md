@@ -44,6 +44,8 @@ interrupted Indicator exit, removal after completed exit, native label activatio
 state on accepted and canceled native reset.
 Group and item `inputRef` callbacks also resolve to the hydrated inputs and the group follows
 post-hydration selection.
+The hydrated form blocks an empty required group, focuses the original radio and submits
+after a selection.
 
 ```bash
 node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=eager-radio

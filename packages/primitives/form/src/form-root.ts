@@ -44,6 +44,8 @@ export interface RdxFormFieldRegistration {
     touched: () => boolean;
     /** Focus the field's control (by its `controlId`). */
     focus: () => void;
+    /** Refresh DOM-owned constraints before this form reads actual validity. */
+    refreshNativeValidity?: () => void;
     /** Reset the field's interaction state (touched/dirty/focused → false, filled re-sync). */
     resetState: () => void;
 }
@@ -84,6 +86,8 @@ export interface RdxFormState {
 }
 
 export interface RdxFormRootContext {
+    /** @internal Native owner for controls registered through this context. */
+    readonly element?: HTMLFormElement;
     /**
      * **Client** validation errors routed by a form-level provider (e.g. `rdxSignalForm`'s Signal Forms
      * name-routing). These are gated by `validationMode` like any client validity — adding `rdxSignalForm`
@@ -119,6 +123,7 @@ export interface RdxFormRootContext {
 const formRootContext = (): RdxFormRootContext => {
     const root = inject(RdxFormRoot);
     return {
+        element: inject<ElementRef<HTMLFormElement>>(ElementRef).nativeElement,
         clientErrorsFor: (name: string | undefined) => root.clientErrorsFor(name),
         externalErrorsFor: (name: string | undefined) => root.externalErrorsFor(name),
         touchedFor: (name: string | undefined) => root.touchedFor(name),
@@ -159,7 +164,7 @@ function serializeFormData(data: FormData): Record<string, FormDataEntryValue | 
  * The top of the forms layer cake: a single directive on the native `<form>` element that aggregates
  * field state, maps external (server) errors onto fields by `name`, intercepts submit (values-as-object,
  * focus the first invalid field), and resets field interaction state on native `reset`. It owns no
- * values and runs no validation — Angular form systems (or Field inputs) remain the source of validity.
+ * values. Angular form systems, Field inputs and registered native constraints supply validity.
  *
  * @group Components
  */
@@ -358,6 +363,7 @@ export class RdxFormRoot {
         // errors (a `validationMode` of `onBlur`/`onSubmit`), but the Form aggregates *actual* invalidity,
         // so a pristine invalid form is blocked and its errors revealed instead of submitting.
         this.submitAttempted.set(true);
+        for (const field of this.fields()) field.refreshNativeValidity?.();
 
         // Preserve form-system-agnostic invalidity (notably `errors`) before handing control to an
         // adapter. If the provider itself is invalid, let its submit lifecycle mark fields touched and

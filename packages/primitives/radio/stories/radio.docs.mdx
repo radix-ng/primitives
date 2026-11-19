@@ -137,6 +137,15 @@ when the group, items and indicators show its validation state.
 A Reactive Forms control configured with `updateOn: 'blur'` commits pending selections when focus
 leaves the group. Field then reflects the committed form value.
 
+For native `required` validation in `rdxFormRoot`, wrap the group in `rdxFieldRoot` and
+add `input[rdxRadioItemInput]` to each option. Field uses the browser's validity result and the
+configured `validationMode`. An unsuccessful submit focuses the first visible radio whose native
+input reports a missing value. Add `<p rdxFieldError match="valueMissing">Choose an option.</p>`
+inside Field to display a custom message for this error.
+
+Form checks the registered inputs that it owns. Disabling a fieldset or moving an input to a
+different form changes which inputs can block submission.
+
 ## Option values
 
 Give each item a distinct value. Numbers and strings are separate values, and objects and arrays

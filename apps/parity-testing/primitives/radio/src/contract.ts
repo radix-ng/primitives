@@ -16,6 +16,7 @@ export interface Settings {
     collection?: 'identity' | 'live';
     refs?: 'selection' | 'detach';
     validation?: 'onBlur' | 'onChange' | 'onSubmit';
+    constraints?: 'required' | 'eligibility' | 'disabled-selection';
 }
 
 export const cases = {
@@ -60,7 +61,10 @@ export const cases = {
     'refs-detach': { refs: 'detach' },
     'validation-blur': { validation: 'onBlur' },
     'validation-change': { validation: 'onChange' },
-    'validation-submit': { validation: 'onSubmit' }
+    'validation-submit': { validation: 'onSubmit' },
+    'constraints-required': { constraints: 'required' },
+    'constraints-eligibility': { constraints: 'eligibility' },
+    'constraints-disabled-selection': { constraints: 'disabled-selection' }
 } satisfies Record<string, Settings>;
 
 export const options = [

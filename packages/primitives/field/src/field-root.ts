@@ -71,6 +71,12 @@ export interface RdxFieldControlState {
     filled: () => boolean;
     blurred: () => boolean;
     changed: () => boolean;
+    /** Browser constraint errors published by the control. */
+    nativeErrors?: () => readonly RdxValidationError[];
+    /** Read the latest DOM validity before the form decides whether to submit. */
+    refreshNativeValidity?: () => void;
+    /** Visible control for the active browser constraint error, if any. */
+    invalidFocusTarget?: () => HTMLElement | null;
 }
 
 export interface RdxFieldRootContext extends RdxLabelRegistry {
@@ -291,6 +297,7 @@ export class RdxFieldRoot {
 
     /** Error content from a registered state provider (e.g. a Signal Forms adapter). */
     private readonly providerErrors = computed(() => this.stateProvider()?.errors?.() ?? []);
+    private readonly nativeErrors = computed(() => this.controlState()?.nativeErrors?.() ?? []);
 
     /** **Client** validation errors routed by a form-level provider (`rdxSignalForm`) — gated by `validationMode`. */
     private readonly clientErrors = computed(() => this.formContext?.clientErrorsFor(this.effectiveName()) ?? []);
@@ -303,18 +310,17 @@ export class RdxFieldRoot {
     readonly formSubmitAttempted = computed(() => this.formContext?.submitAttempted() ?? false);
 
     /**
-     * Client messages first (per-field `rdxSignalField` provider, then form-level `rdxSignalForm`
-     * name-routing) — only once `validationMode` reveals client validity — then the Form's **server**
-     * messages (the `errors` input), which always show. **Deduped by text**: a field can receive the same
-     * Signal Forms error from both a per-field provider and the form-level routing (they read the same
-     * field state), so deduping renders it once while still surfacing distinct messages from each source.
+     * Client messages appear when `validationMode` reveals them. Sources are native constraints,
+     * the per-field provider and form-level name-routing. Form server errors always appear.
+     * Messages shared by more than one source appear once.
      */
     readonly messages = computed(() => {
-        // **Client** messages (per-field `rdxSignalField` provider + form-level `rdxSignalForm` routing)
-        // surface only once the field's `validationMode` reveals them; **server** messages (the `errors`
-        // input) always show. So a neutral field stays empty and the polite live region announces on reveal.
         const client = this.validationRevealed()
-            ? [...this.providerErrors().map((error) => error.message ?? error.kind), ...this.clientErrors()]
+            ? [
+                  ...this.nativeErrors().map((error) => error.message ?? error.kind),
+                  ...this.providerErrors().map((error) => error.message ?? error.kind),
+                  ...this.clientErrors()
+              ]
             : [];
         const seen = new Set<string>();
         const result: string[] = [];
@@ -329,7 +335,11 @@ export class RdxFieldRoot {
 
     /** Whether a client validation error of `kind` is currently revealed by the field. */
     matchesError(kind: string): boolean {
-        return this.validationRevealed() && this.providerErrors().some((error) => error.kind === kind);
+        return (
+            this.validationRevealed() &&
+            (this.nativeErrors().some((error) => error.kind === kind) ||
+                this.providerErrors().some((error) => error.kind === kind))
+        );
     }
 
     /** Effective validation-display mode: this field's override → the enclosing Form's → the default. */
@@ -354,6 +364,7 @@ export class RdxFieldRoot {
      */
     private readonly clientInvalidState = computed(
         () =>
+            this.nativeErrors().length > 0 ||
             this.providerErrors().length > 0 ||
             this.clientErrors().length > 0 ||
             this.resolve('invalid', () => this.invalid())
@@ -368,9 +379,8 @@ export class RdxFieldRoot {
         if (this.serverErrors().length > 0) {
             return false;
         }
-        // Angular Forms distinguishes pending from both valid and invalid. Preserve Base UI's
-        // tri-state presentation by publishing neither validity attribute while validation settles.
-        if (this.pendingState()) {
+        // A pending Angular validator is neutral while no known native constraint has failed.
+        if (this.pendingState() && this.nativeErrors().length === 0) {
             return null;
         }
         // A disabled Angular control does not participate in validation. Keep it neutral unless an
@@ -433,6 +443,7 @@ export class RdxFieldRoot {
                 dirty: () => this.dirtyState(),
                 touched: () => this.touchedState(),
                 focus: () => this.focusControl(),
+                refreshNativeValidity: () => this.controlState()?.refreshNativeValidity?.(),
                 resetState: () => this.resetState()
             };
             const unregister = formContext.register(registration);
@@ -471,7 +482,7 @@ export class RdxFieldRoot {
 
     /** Focus the field's control (used by the Form's first-invalid-focus on blocked submit). */
     private focusControl(): void {
-        const control = this.controlElement();
+        const control = this.controlState()?.invalidFocusTarget?.() ?? this.controlElement();
         if (!control) {
             return;
         }

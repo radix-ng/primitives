@@ -942,3 +942,62 @@ it('forwards only authored radio inputs and releases an ineligible group ref', a
     expect(host.itemRef).toHaveBeenLastCalledWith(null);
     expect(submitted()).toEqual(['a']);
 });
+
+@Component({
+    imports: [RdxFormRoot, RdxFieldRoot, RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioItemInputDirective],
+    template: `
+        <form (onFormSubmit)="submitted()" rdxFormRoot>
+            <fieldset>
+                <div rdxFieldRoot required name="choice" validationMode="onSubmit">
+                    <div rdxRadioRoot>
+                        <span rdxRadioItem value="a">
+                            Alpha
+                            @if (authored()) {
+                                <input rdxRadioItemInput />
+                            }
+                        </span>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    `
+})
+class RadioNativeConstraintHost {
+    readonly authored = signal(true);
+    readonly submitted = vi.fn();
+}
+
+it('refreshes required constraints on submit and exposes the native error through Field', async () => {
+    const fixture = TestBed.createComponent(RadioNativeConstraintHost);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const form = fixture.debugElement.query(By.css('form')).nativeElement as HTMLFormElement;
+    const fieldset = form.querySelector('fieldset')!;
+    const field = fixture.debugElement.query(By.directive(RdxFieldRoot)).injector.get(RdxFieldRoot);
+    const input = form.querySelector('input[type="radio"]')!;
+
+    expect(field.validState()).toBeNull();
+    expect(field.actualInvalidState()).toBe(true);
+    expect(field.messages()).toEqual([]);
+    form.requestSubmit();
+    expect(fixture.componentInstance.submitted).not.toHaveBeenCalled();
+    expect(field.messages()).toEqual([input.validationMessage]);
+    expect(field.matchesError('valueMissing')).toBe(true);
+
+    fieldset.disabled = true;
+    form.requestSubmit();
+    expect(fixture.componentInstance.submitted).toHaveBeenCalledTimes(1);
+    expect(field.actualInvalidState()).toBe(false);
+
+    fieldset.disabled = false;
+    form.requestSubmit();
+    expect(fixture.componentInstance.submitted).toHaveBeenCalledTimes(1);
+    expect(field.actualInvalidState()).toBe(true);
+
+    fixture.componentInstance.authored.set(false);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    form.requestSubmit();
+    expect(fixture.componentInstance.submitted).toHaveBeenCalledTimes(2);
+    expect(field.matchesError('valueMissing')).toBe(false);
+});

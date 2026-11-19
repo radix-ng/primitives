@@ -1,4 +1,5 @@
 import {
+    afterEveryRender,
     booleanAttribute,
     computed,
     DestroyRef,
@@ -30,6 +31,7 @@ import {
     RdxFormUiTouchTarget,
     RdxFormValueControl,
     type RdxNativeInputRef,
+    type RdxValidationError,
     serializeItemValue,
     serializeNativeFormValue,
     useNativeFormControl,
@@ -37,6 +39,7 @@ import {
 } from '@radix-ng/primitives/core';
 import { injectFieldRootContext, type RdxFieldRootContext } from '@radix-ng/primitives/field';
 import { injectFieldsetRootContext } from '@radix-ng/primitives/fieldset';
+import { injectFormRootContext } from '@radix-ng/primitives/form';
 import { radioDescribedBy, type RadioItemRegistration } from './radio-field';
 import { useRadioInputRef } from './radio-input-ref';
 import { RdxRadioValueChangeReason } from './radio-tokens';
@@ -44,6 +47,11 @@ import { RdxRadioValueChangeReason } from './radio-tokens';
 export type { RdxRadioValueChangeReason } from './radio-tokens';
 
 export type RdxRadioValueChangeEventDetails = RdxCancelableChangeEventDetails<RdxRadioValueChangeReason>;
+
+interface RadioRequiredError {
+    readonly target: HTMLElement;
+    readonly message: string;
+}
 
 export interface RdxRadioValueChangeEvent<Value = string> {
     value: Value;
@@ -125,6 +133,7 @@ export class RdxRadioGroupDirective<Value = string>
     /** @ignore Optional enclosing Field, distinct from a radio's own Field.Item context. */
     readonly field = injectFieldRootContext(true);
     private readonly fieldset = injectFieldsetRootContext(true);
+    private readonly formRoot = injectFormRootContext(true);
     protected readonly authoredTabIndex = injectTabIndexAttribute();
     private hasExplicitValueInput = false;
     private hasCvaValue = false;
@@ -246,6 +255,13 @@ export class RdxRadioGroupDirective<Value = string>
         source: () => (this.ngControlState.connected() ? (this.ngControlState.value() ?? null) : this.currentValue()),
         computation: (value, previous): boolean => !!previous && (previous.value || previous.source !== value)
     });
+    private readonly requiredError = signal<RadioRequiredError | null>(null, {
+        equal: (previous, next) => previous?.target === next?.target && previous?.message === next?.message
+    });
+    private readonly nativeErrors = computed<readonly RdxValidationError[]>(() => {
+        const error = this.requiredError();
+        return error ? [{ kind: 'valueMissing', message: error.message }] : [];
+    });
 
     /**
      * The callback function to call when the value of the radio group changes.
@@ -302,8 +318,12 @@ export class RdxRadioGroupDirective<Value = string>
             const unregisterState = field.registerControlState({
                 filled: () => this.currentValue() !== null,
                 blurred: this.validationBlurred,
-                changed: this.validationChanged
+                changed: this.validationChanged,
+                nativeErrors: this.nativeErrors,
+                refreshNativeValidity: () => this.refreshNativeValidity(),
+                invalidFocusTarget: () => this.requiredError()?.target ?? null
             });
+            afterEveryRender({ read: () => this.refreshNativeValidity() });
             inject(DestroyRef).onDestroy(() => {
                 unregisterState();
                 if (field.controlId() === this.id()) field.setFocused(false);
@@ -378,6 +398,19 @@ export class RdxRadioGroupDirective<Value = string>
             const input = item.nativeInput()?.element;
             if (input) input.checked = selectedValue !== null && item.value() === selectedValue;
         }
+    }
+
+    private refreshNativeValidity(): void {
+        const form = this.formRoot?.element;
+        for (const { element, nativeInput } of this.items()) {
+            const input = nativeInput()?.element;
+            if (!input?.isConnected || !input.willValidate || (form && input.form !== form)) continue;
+            if (input.validity.valueMissing) {
+                this.requiredError.set({ target: element, message: input.validationMessage });
+                return;
+            }
+        }
+        this.requiredError.set(null);
     }
 
     /** @ignore Bridge the CVA `onTouched` so `markAsTouched()` also notifies Reactive/template forms. */
