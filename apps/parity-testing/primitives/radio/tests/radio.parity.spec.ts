@@ -643,7 +643,11 @@ async function formsScenario(driver: RadioDriver, mode: NonNullable<Settings['fo
             () => page.evaluate(() => document.activeElement?.getAttribute('data-testid')),
             'radio-a'
         );
-        await beta.click();
+        // Firefox's native validation popup can intercept pointer input after the blocked submit.
+        // Continue from the focused radio using the group's keyboard navigation.
+        await page.keyboard.press('ArrowDown');
+        await expect(beta).toBeFocused();
+        await expect(beta).toHaveAttribute('aria-checked', 'true');
         await submitted('selected radio belongs to the external form', ['b']);
         await submit.click();
         await expect(form).toHaveAttribute('data-submitted', 'true');
