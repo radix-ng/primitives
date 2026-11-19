@@ -1,6 +1,6 @@
 # Parity matrix index
 
-All **58 secondary entry points** have a matrix. **Nine families** have dedicated comparison suites
+All **58 secondary entry points** have a matrix. **Eleven families** have dedicated comparison suites
 against Base UI **1.9.0** at `cf696d6f6e08c699c5bda24d5a033430909f2285`. The suite READMEs and coverage map
 record the scenarios and reviewed differences. The other matrices start from an API inventory and
 identify the comparisons each family needs.
@@ -32,7 +32,7 @@ state, editable form values, readonly configuration and native or derived state 
 | `core`                   | [PARITY.md](../../packages/primitives/core/PARITY.md)                   | Related internals / Angular mechanism                  | Initial inventory                                                                           |
 | `cropper`                | [PARITY.md](../../packages/primitives/cropper/PARITY.md)                | Angular extension; no direct pinned public counterpart | Initial inventory                                                                           |
 | `date-field`             | [PARITY.md](../../packages/primitives/date-field/PARITY.md)             | Angular extension; no direct pinned public counterpart | Initial inventory                                                                           |
-| `dialog`                 | [PARITY.md](../../packages/primitives/dialog/PARITY.md)                 | Public Base UI family                                  | Source review and Angular state probes                                                      |
+| `dialog`                 | [PARITY.md](../../packages/primitives/dialog/PARITY.md)                 | Public Base UI family                                  | [Paired suite](../../apps/parity-testing/primitives/dialog/README.md)                       |
 | `direction-provider`     | [PARITY.md](../../packages/primitives/direction-provider/PARITY.md)     | Public Base UI family                                  | Source comparison                                                                           |
 | `dismissable-layer`      | [PARITY.md](../../packages/primitives/dismissable-layer/PARITY.md)      | Related internals / Angular mechanism                  | Initial inventory                                                                           |
 | `drawer`                 | [PARITY.md](../../packages/primitives/drawer/PARITY.md)                 | Public Base UI family                                  | Source review and Angular state probes                                                      |
@@ -48,7 +48,7 @@ state, editable form values, readonly configuration and native or derived state 
 | `menubar`                | [PARITY.md](../../packages/primitives/menubar/PARITY.md)                | Public Base UI family                                  | [Paired suite](../../apps/parity-testing/primitives/menubar/README.md)                      |
 | `meter`                  | [PARITY.md](../../packages/primitives/meter/PARITY.md)                  | Public Base UI family                                  | Initial inventory                                                                           |
 | `navigation-menu`        | [PARITY.md](../../packages/primitives/navigation-menu/PARITY.md)        | Public Base UI family                                  | Initial inventory                                                                           |
-| `number-field`           | [PARITY.md](../../packages/primitives/number-field/PARITY.md)           | Public Base UI family                                  | Source review and Angular state probes                                                      |
+| `number-field`           | [PARITY.md](../../packages/primitives/number-field/PARITY.md)           | Public Base UI family                                  | [Paired suite](../../apps/parity-testing/primitives/number-field/README.md)                 |
 | `otp-field`              | [PARITY.md](../../packages/primitives/otp-field/PARITY.md)              | Public Base UI family                                  | Initial inventory                                                                           |
 | `pagination`             | [PARITY.md](../../packages/primitives/pagination/PARITY.md)             | Angular extension; no direct pinned public counterpart | Source review and Angular state probes                                                      |
 | `popover`                | [PARITY.md](../../packages/primitives/popover/PARITY.md)                | Public Base UI family                                  | [Paired suite](../../apps/parity-testing/primitives/popover/README.md)                      |

@@ -5461,9 +5461,6 @@
           "selector": "div[rdxNumberFieldRoot]",
           "exportAs": "rdxNumberFieldRoot",
           "description": "Groups all parts of the number field and manages its state, parsing/formatting\nand value-change logic. A single directive drives the whole family — parts read\nsignals and call methods off it through the root context.\n\nSee https://base-ui.com/react/components/number-field",
-          "hostDirectives": [
-            "RdxControlValueAccessor"
-          ],
           "inputs": [
             {
               "name": "allowOutOfRange",
@@ -5567,7 +5564,7 @@
               "name": "value",
               "type": "number | null",
               "default": "null",
-              "description": "The controlled value of the field. Use with `(onValueChange)` or two-way `[(value)]`."
+              "description": "The numeric form value. Use two-way `[(value)]` to accept edits into an application model."
             },
             {
               "name": "dirty",

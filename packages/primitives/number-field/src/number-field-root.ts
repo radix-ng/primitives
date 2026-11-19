@@ -7,24 +7,27 @@ import {
     input,
     model,
     numberAttribute,
+    OnChanges,
     output,
     signal,
+    SimpleChanges,
     untracked
 } from '@angular/core';
+import type { ControlValueAccessor } from '@angular/forms';
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
-    injectControlValueAccessor,
     injectId,
     NumberInput,
+    provideValueAccessor,
     RdxCancelableChangeEventDetails,
-    RdxControlValueAccessor,
     RdxFormUiControlBase,
     RdxFormUiTouchTarget,
     RdxFormValueControl,
     rdxPlatform,
     serializeNativeFormValue,
-    useNativeFormControl
+    useNativeFormControl,
+    watch
 } from '@radix-ng/primitives/core';
 import { provideNumberFieldRootContext } from './number-field-context';
 import { numberOrUndefined, toValidatedNumber, useNumberFormatter, useNumberParser } from './number-field.utils';
@@ -55,12 +58,9 @@ export interface RdxNumberFieldValueChangeEvent {
 @Directive({
     selector: 'div[rdxNumberFieldRoot]',
     exportAs: 'rdxNumberFieldRoot',
-    providers: [provideNumberFieldRootContext(() => inject(RdxNumberFieldRoot))],
-    hostDirectives: [
-        {
-            directive: RdxControlValueAccessor,
-            inputs: ['value: value', 'disabled']
-        }
+    providers: [
+        provideValueAccessor(RdxNumberFieldRoot),
+        provideNumberFieldRootContext(() => inject(RdxNumberFieldRoot))
     ],
     host: {
         role: 'group',
@@ -74,9 +74,15 @@ export interface RdxNumberFieldValueChangeEvent {
         '[attr.data-scrubbing]': 'isScrubbing() ? "" : undefined'
     }
 })
-export class RdxNumberFieldRoot extends RdxFormUiControlBase implements RdxFormValueControl<number | null> {
-    /** @ignore */
-    protected readonly cva = injectControlValueAccessor<number | null>();
+export class RdxNumberFieldRoot
+    extends RdxFormUiControlBase
+    implements RdxFormValueControl<number | null>, ControlValueAccessor, OnChanges
+{
+    private readonly cvaDisabled = signal(false);
+    private hasExplicitValueInput = false;
+    private hasCvaValue = false;
+    private onChange?: (value: number | null) => void;
+    private onTouched?: () => void;
 
     /** The id of the input element. */
     readonly id = input<string>(injectId('rdx-number-field-'));
@@ -157,7 +163,7 @@ export class RdxNumberFieldRoot extends RdxFormUiControlBase implements RdxFormV
     /** The uncontrolled value of the field when it is initially rendered. */
     readonly defaultValue = input<number>();
 
-    /** The controlled value of the field. Use with `(onValueChange)` or two-way `[(value)]`. */
+    /** The numeric form value. Use two-way `[(value)]` to accept edits into an application model. */
     readonly value = model<number | null>(null);
 
     /** Emitted when the value changes (during interaction or programmatically). */
@@ -192,7 +198,7 @@ export class RdxNumberFieldRoot extends RdxFormUiControlBase implements RdxFormV
     hasPendingCommit = false;
 
     /** @ignore */
-    readonly isDisabled = computed(() => !!this.cva.disabled());
+    readonly isDisabled = computed(() => this.disabled() || this.cvaDisabled());
 
     /** @ignore */
     readonly invalidState = this.formUi.invalidState;
@@ -205,7 +211,7 @@ export class RdxNumberFieldRoot extends RdxFormUiControlBase implements RdxFormV
     private readonly parser = useNumberParser(this.locale, this.format);
 
     /** @ignore The current numeric value (`null` when empty). */
-    readonly currentValue = computed<number | null>(() => this.cva.value() ?? null);
+    readonly currentValue = computed(() => this.value() ?? null);
 
     // The hidden number input remains an opt-in constraint-validation/autofill bridge and owns native
     // serialization when present. Otherwise the shared layer supplies a plain hidden form control.
@@ -216,15 +222,11 @@ export class RdxNumberFieldRoot extends RdxFormUiControlBase implements RdxFormV
         value: this.currentValue,
         serialize: serializeNativeFormValue,
         hasNativeControl: computed(() => this.nativeInputEl() !== null),
-        defaultValue: () => this.defaultValue() ?? this.cva.value() ?? null,
+        defaultValue: () => this.initialValue(),
         onReset: (value) => {
-            this.value.set(value);
-            if (!this.resetNgControl(value)) {
-                this.cva.setValue(value);
-            }
-            this.allowInputSync = true;
-            this.setInputValue(this.formatNumber(value));
-            this.formUi.resetInteractionState?.();
+            // Reactive and template-driven forms use their own reset baseline.
+            if (!this.resetNgControl(undefined)) this.value.set(value);
+            this.reset();
         }
     });
 
@@ -261,16 +263,7 @@ export class RdxNumberFieldRoot extends RdxFormUiControlBase implements RdxFormV
     constructor() {
         super();
 
-        // Apply the uncontrolled initial value once it is provided.
-        effect(() => {
-            const dv = this.defaultValue();
-            if (dv !== undefined) {
-                untracked(() => {
-                    this.value.set(dv);
-                    this.cva.setValue(dv);
-                });
-            }
-        });
+        watch([], () => this.value.set(this.initialValue()));
 
         // Keep the visible input in sync with the value whenever it changes externally or the
         // formatting options change. Skipped while the user is typing (`allowInputSync === false`).
@@ -282,6 +275,17 @@ export class RdxNumberFieldRoot extends RdxFormUiControlBase implements RdxFormV
                 }
             });
         });
+    }
+
+    /** @ignore */
+    // eslint-disable-next-line no-restricted-syntax -- Observe initial model input presence, including null (ADR 0071).
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['value']?.currentValue !== undefined) this.hasExplicitValueInput = true;
+    }
+
+    private initialValue(): number | null {
+        const value = this.currentValue();
+        return this.hasExplicitValueInput || this.hasCvaValue || value !== null ? value : (this.defaultValue() ?? null);
     }
 
     /** @ignore Formats a numeric value to its display string (empty for `null`/`NaN`). */
@@ -339,7 +343,44 @@ export class RdxNumberFieldRoot extends RdxFormUiControlBase implements RdxFormV
 
     /** @ignore Bridge the CVA into `markAsTouched` (dual). */
     protected override formUiTouchTarget(): RdxFormUiTouchTarget {
-        return injectControlValueAccessor<number | null>();
+        return { markAsTouched: () => this.onTouched?.() };
+    }
+
+    /** @ignore Write a form-owned value without reporting an edit back to the form. */
+    writeValue(value: number | null): void {
+        this.hasCvaValue = true;
+        untracked(() => {
+            this.value.set(value ?? null);
+            this.resetDraft();
+        });
+    }
+
+    /** @ignore */
+    registerOnChange(fn: (value: number | null) => void): void {
+        this.onChange = fn;
+    }
+
+    /** @ignore */
+    registerOnTouched(fn: () => void): void {
+        this.onTouched = fn;
+    }
+
+    /** @ignore */
+    setDisabledState(disabled: boolean): void {
+        this.cvaDisabled.set(disabled);
+    }
+
+    /** @ignore */
+    override reset(): void {
+        super.reset();
+        this.resetDraft();
+    }
+
+    private resetDraft(): void {
+        this.allowInputSync = true;
+        this.hasPendingCommit = false;
+        this.lastChangedValue = null;
+        this.setInputValue(this.formatNumber(this.currentValue()));
     }
 
     /**
@@ -422,7 +463,7 @@ export class RdxNumberFieldRoot extends RdxFormUiControlBase implements RdxFormV
 
     private applyValue(value: number | null): void {
         this.value.set(value);
-        this.cva.setValue(value);
+        this.onChange?.(value);
         this.formUi.markDirty();
     }
 }

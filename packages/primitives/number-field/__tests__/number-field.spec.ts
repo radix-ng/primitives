@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
@@ -69,7 +69,7 @@ class TestComponent {
     imports: [RdxNumberFieldRoot, RdxNumberFieldInput],
     template: `
         <form>
-            <div [(value)]="value" name="amount" rdxNumberFieldRoot>
+            <div [(value)]="value" [defaultValue]="42" name="amount" rdxNumberFieldRoot>
                 <input rdxNumberFieldInput />
             </div>
         </form>
@@ -84,14 +84,51 @@ class GeneratedNativeInputHost {
     imports: [ReactiveFormsModule, RdxNumberFieldRoot, RdxNumberFieldInput],
     template: `
         <form>
-            <div [formControl]="control" name="amount" rdxNumberFieldRoot>
+            <div
+                [formControl]="control"
+                [defaultValue]="defaultValue()"
+                (onValueChange)="onValueChange($event)"
+                (onValueCommitted)="onValueCommitted($event)"
+                name="amount"
+                rdxNumberFieldRoot
+            >
                 <input rdxNumberFieldInput />
             </div>
         </form>
     `
 })
 class NumberFieldNativeReactiveFormHost {
-    readonly control = new FormControl(5, { nonNullable: true });
+    control = new FormControl<number | null>(5, { nonNullable: true });
+    readonly defaultValue = signal(11);
+    readonly onValueChange = vi.fn();
+    readonly onValueCommitted = vi.fn();
+}
+
+@Component({
+    imports: [RdxNumberFieldRoot, RdxNumberFieldInput, RdxNumberFieldHiddenInput],
+    template: `
+        <form>
+            <div [defaultValue]="defaultValue()" name="amount" rdxNumberFieldRoot>
+                <input rdxNumberFieldInput />
+                <input rdxNumberFieldHiddenInput />
+            </div>
+        </form>
+    `
+})
+class NumberFieldDefaultHost {
+    readonly defaultValue = signal(42);
+}
+
+@Component({
+    imports: [FormsModule, RdxNumberFieldRoot, RdxNumberFieldInput],
+    template: `
+        <div [(ngModel)]="amount" [defaultValue]="11" rdxNumberFieldRoot>
+            <input rdxNumberFieldInput />
+        </div>
+    `
+})
+class NumberFieldTemplateFormHost {
+    readonly amount = signal<number | null>(0);
 }
 
 describe('RdxNumberField', () => {
@@ -123,10 +160,23 @@ describe('RdxNumberField', () => {
         expect(input.value).toBe('');
     });
 
-    it('applies the uncontrolled defaultValue and formats it', () => {
+    it('ignores a late defaultValue on a bound empty model', () => {
         component.defaultValue.set(42);
         fixture.detectChanges();
-        expect(input.value).toBe('42');
+        expect(component.value()).toBeNull();
+        expect(input.value).toBe('');
+        expect(component.onValueChange).not.toHaveBeenCalled();
+    });
+
+    it.each([0, null])('gives a bound %s priority over the initial default', (value) => {
+        const freshFixture = TestBed.createComponent(TestComponent);
+        freshFixture.componentInstance.value.set(value);
+        freshFixture.componentInstance.defaultValue.set(42);
+        freshFixture.detectChanges();
+        expect(freshFixture.componentInstance.value()).toBe(value);
+        expect(freshFixture.debugElement.query(By.css('[rdxNumberFieldInput]')).nativeElement.value).toBe(
+            value === null ? '' : '0'
+        );
     });
 
     it('formats a controlled value', () => {
@@ -335,7 +385,68 @@ describe('RdxNumberField', () => {
     });
 });
 
+describe('RdxNumberField uncontrolled defaults', () => {
+    it('initializes once and restores the initial value on native form reset', async () => {
+        const fixture = TestBed.createComponent(NumberFieldDefaultHost);
+        fixture.detectChanges();
+        const formElement = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+        const input = formElement.querySelector<HTMLInputElement>('[rdxNumberFieldInput]')!;
+        expect(input.value).toBe('42');
+
+        input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
+        fixture.detectChanges();
+        fixture.componentInstance.defaultValue.set(11);
+        fixture.detectChanges();
+        expect(input.value).toBe('43');
+        expect(new FormData(formElement).get('amount')).toBe('43');
+
+        formElement.reset();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+        fixture.detectChanges();
+        expect(input.value).toBe('42');
+        expect(new FormData(formElement).get('amount')).toBe('42');
+    });
+});
+
 describe('RdxNumberField native reset with Reactive Forms', () => {
+    it.each([0, null])('uses the FormControl value %s and keeps external writes synchronized', async (initial) => {
+        const fixture = TestBed.createComponent(NumberFieldNativeReactiveFormHost);
+        const host = fixture.componentInstance;
+        host.control = new FormControl(initial as number | null);
+        const writes = vi.fn();
+        host.control.valueChanges.subscribe(writes);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        const root = fixture.debugElement.query(By.directive(RdxNumberFieldRoot)).injector.get(RdxNumberFieldRoot);
+        const input = fixture.nativeElement.querySelector('[rdxNumberFieldInput]') as HTMLInputElement;
+        const formElement = input.form!;
+
+        expect(host.control.value).toBe(initial);
+        expect(root.value()).toBe(initial);
+        expect(input.value).toBe(initial === null ? '' : '0');
+        expect(writes).not.toHaveBeenCalled();
+        expect(host.control.pristine).toBe(true);
+
+        host.control.setValue(6);
+        fixture.detectChanges();
+        expect(root.value()).toBe(6);
+        expect(input.value).toBe('6');
+        host.defaultValue.set(12);
+        fixture.detectChanges();
+        expect(host.control.value).toBe(6);
+        expect(root.value()).toBe(6);
+        expect(input.value).toBe('6');
+        expect(new FormData(formElement).get('amount')).toBe('6');
+
+        host.control.reset(3);
+        fixture.detectChanges();
+        expect(root.value()).toBe(3);
+        expect(input.value).toBe('3');
+        expect(writes.mock.calls).toEqual([[6], [3]]);
+        expect(host.onValueChange).not.toHaveBeenCalled();
+        expect(host.onValueCommitted).not.toHaveBeenCalled();
+    });
+
     it('restores the FormControl value and interaction state', async () => {
         TestBed.configureTestingModule({ imports: [NumberFieldNativeReactiveFormHost] });
         const fixture = TestBed.createComponent(NumberFieldNativeReactiveFormHost);
@@ -357,6 +468,60 @@ describe('RdxNumberField native reset with Reactive Forms', () => {
         expect(host.control.pristine).toBe(true);
         expect(host.control.untouched).toBe(true);
         expect((fixture.nativeElement.querySelector('[rdxNumberFieldInput]') as HTMLInputElement).value).toBe('5');
+    });
+
+    it('reports an accepted edit once and uses the Angular reset baseline for a nullable control', async () => {
+        const fixture = TestBed.createComponent(NumberFieldNativeReactiveFormHost);
+        const host = fixture.componentInstance;
+        host.control = new FormControl<number | null>(0);
+        const writes = vi.fn();
+        host.control.valueChanges.subscribe(writes);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        const root = fixture.debugElement.query(By.directive(RdxNumberFieldRoot)).injector.get(RdxNumberFieldRoot);
+        const input = fixture.nativeElement.querySelector('[rdxNumberFieldInput]') as HTMLInputElement;
+
+        input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
+        fixture.detectChanges();
+        expect(host.control.value).toBe(1);
+        expect(root.value()).toBe(1);
+        expect(writes.mock.calls).toEqual([[1]]);
+        expect(host.onValueChange).toHaveBeenCalledTimes(1);
+        expect(host.onValueCommitted).toHaveBeenCalledExactlyOnceWith(1);
+        expect(host.control.dirty).toBe(true);
+
+        input.form!.reset();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+        fixture.detectChanges();
+        expect(host.control.value).toBeNull();
+        expect(root.value()).toBeNull();
+        expect(input.value).toBe('');
+        expect(writes.mock.calls).toEqual([[1], [null]]);
+        expect(host.control.pristine).toBe(true);
+        expect(host.onValueChange).toHaveBeenCalledTimes(1);
+        expect(host.onValueCommitted).toHaveBeenCalledExactlyOnceWith(1);
+
+        host.control.disable();
+        fixture.detectChanges();
+        expect(input.disabled).toBe(true);
+    });
+});
+
+describe('RdxNumberField with ngModel', () => {
+    it('keeps the initial zero and propagates a keyboard edit', async () => {
+        const fixture = TestBed.createComponent(NumberFieldTemplateFormHost);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+        const input = fixture.debugElement.query(By.css('[rdxNumberFieldInput]')).nativeElement as HTMLInputElement;
+        expect(input.value).toBe('0');
+        expect(fixture.componentInstance.amount()).toBe(0);
+
+        input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
+        await fixture.whenStable();
+        fixture.detectChanges();
+        expect(fixture.componentInstance.amount()).toBe(1);
+        expect(input.value).toBe('1');
     });
 });
 
@@ -431,7 +596,7 @@ describe('RdxNumberField validation state (batch #4)', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [FormField, RdxNumberFieldRoot, RdxNumberFieldInput, RdxNumberFieldIncrement],
     template: `
-        <div [formField]="amount" rdxNumberFieldRoot>
+        <div [formField]="amount" [defaultValue]="defaultValue()" rdxNumberFieldRoot>
             <input rdxNumberFieldInput />
             <button rdxNumberFieldIncrement>+</button>
         </div>
@@ -439,6 +604,7 @@ describe('RdxNumberField validation state (batch #4)', () => {
 })
 class NumberFieldSignalFormHost {
     readonly model = signal<{ amount: number | null }>({ amount: 5 });
+    readonly defaultValue = signal(11);
     readonly formTree = form(this.model);
 
     get amount() {
@@ -465,7 +631,19 @@ describe('RdxNumberField with Signal Forms', () => {
         expect(input.value).toBe('5');
         host.model.update((value) => ({ ...value, amount: 12 }));
         fixture.detectChanges();
+        host.defaultValue.set(15);
+        fixture.detectChanges();
         expect(input.value).toBe('12');
+    });
+
+    it.each([0, null])('preserves the field initial value %s when a default is supplied', (amount) => {
+        const freshFixture = TestBed.createComponent(NumberFieldSignalFormHost);
+        freshFixture.componentInstance.model.set({ amount });
+        freshFixture.detectChanges();
+        expect(freshFixture.componentInstance.model().amount).toBe(amount);
+        expect(freshFixture.debugElement.query(By.css('[rdxNumberFieldInput]')).nativeElement.value).toBe(
+            amount === null ? '' : '0'
+        );
     });
 
     it('updates the bound field on interaction', () => {

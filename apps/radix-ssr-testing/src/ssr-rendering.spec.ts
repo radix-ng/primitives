@@ -2,6 +2,7 @@
 // as a fallback in the test environment (otherwise PlatformLocation fails to compile).
 import '@angular/compiler';
 import { Component, provideZonelessChangeDetection, Type } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { bootstrapApplication, BootstrapContext, provideClientHydration } from '@angular/platform-browser';
 import { provideServerRendering, renderApplication } from '@angular/platform-server';
 import {
@@ -20,6 +21,7 @@ import {
     RdxMenuRadioGroup,
     RdxMenuRoot
 } from '@radix-ng/primitives/menu';
+import { RdxNumberFieldHiddenInput, RdxNumberFieldInput, RdxNumberFieldRoot } from '@radix-ng/primitives/number-field';
 import { RdxPortal } from '@radix-ng/primitives/portal';
 import { _importsSelect, RdxSelectLabel, RdxSelectRoot, RdxSelectTrigger } from '@radix-ng/primitives/select';
 import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
@@ -110,6 +112,26 @@ const cases: readonly SsrCase[] = [
     `
 })
 class AutocompleteDefaultsPage {}
+
+@Component({
+    selector: 'app-number-field-defaults',
+    imports: [ReactiveFormsModule, RdxNumberFieldRoot, RdxNumberFieldInput, RdxNumberFieldHiddenInput],
+    template: `
+        <div [formControl]="amount" [defaultValue]="11" name="reactive-amount" rdxNumberFieldRoot>
+            <input rdxNumberFieldInput />
+            <input rdxNumberFieldHiddenInput />
+        </div>
+        <div [value]="null" [defaultValue]="11" rdxNumberFieldRoot>
+            <input rdxNumberFieldInput />
+        </div>
+        <div [defaultValue]="11" rdxNumberFieldRoot>
+            <input rdxNumberFieldInput />
+        </div>
+    `
+})
+class NumberFieldDefaultsPage {
+    readonly amount = new FormControl(0, { nonNullable: true });
+}
 
 @Component({
     selector: 'app-native-select',
@@ -491,6 +513,14 @@ describe('SSR rendering', () => {
             ['autocomplete-default-open', 'true']
         ])
             expect(parsed.getElementById(id)?.textContent).toBe(value);
+        expect(html).toMatch(/ngh=/);
+    });
+    it('resolves Number Field form and model values before server serialization', async () => {
+        const html = await renderToString('app-number-field-defaults', NumberFieldDefaultsPage);
+        const parsed = new DOMParser().parseFromString(html, 'text/html');
+        const inputs = [...parsed.querySelectorAll<HTMLInputElement>('input[rdxnumberfieldinput]')];
+        expect(inputs.map((input) => input.value)).toEqual(['0', '', '11']);
+        expect(parsed.querySelector<HTMLInputElement>('input[rdxnumberfieldhiddeninput]')?.value).toBe('0');
         expect(html).toMatch(/ngh=/);
     });
     it('resolves Menu model/default precedence before server serialization', async () => {
