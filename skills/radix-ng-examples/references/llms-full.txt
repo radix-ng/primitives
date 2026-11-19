@@ -30611,22 +30611,27 @@ input to set.
 
 ## Initial selection and reset
 
-`defaultValue` initializes the selection once when the group has no value binding or Angular form
-value. A supplied `null` means no selection, and `''` can select an item with an empty string value.
+`defaultValue` initializes the selection once when the group has no value binding, Angular form
+value or `controlledValue`. A supplied `null` means no selection, and `''` can select an item with an empty string value.
 Changes to `defaultValue` after initialization leave the current selection in place.
 
 Use `[(value)]` when binding the editable model directly. Use `ngModel`, a Reactive Forms control,
 or Signal Forms when a form owns the value. A native form reset restores the initial selection of
 a standalone group. A connected `NgControl` uses its own reset baseline, and Signal Forms
-`reset()` uses the field's reset contract.
+`reset()` uses the field's reset contract. A parent-owned selection stays in effect on native reset.
 
-## Change events
+## Selection ownership and change events
 
-`onValueChange` emits `{ value, eventDetails }`. The details include the `reason`, originating DOM
-event, and trigger element; call `eventDetails.cancel()` to keep the previous selection.
+`onValueChange` requests a selection through `{ value, eventDetails }`. The details include the
+`reason`, originating DOM event, and radio item that triggered the request. Call `eventDetails.cancel()`
+to veto the edit. `[(value)]` and the Angular form adapters commit accepted local edits automatically.
+
+Use `[controlledValue]` when the application decides what to commit. It can ignore the request,
+apply it later, or supply a different selection. A defined `controlledValue`, including `null`, owns
+the rendered and submitted selection. Read that selection through `currentValue()` on the group.
 
 ```html
-<div [value]="value()" (onValueChange)="setValue($event)" rdxRadioRoot>
+<div [controlledValue]="value()" (onValueChange)="setValue($event)" rdxRadioRoot>
     ...
 </div>
 ```
@@ -30641,6 +30646,13 @@ setValue(change: RdxRadioValueChangeEvent) {
     this.value.set(change.value);
 }
 ```
+
+Use either application ownership or an editable Angular form binding for the group. Setting
+`controlledValue` to `undefined` returns to the editable value. The two modes keep their own
+input values, and switching modes does not reapply `defaultValue`.
+
+With `rdxRadioItemInput`, an accepted editable activation emits one `input` and one `change`.
+External value writes update the checked input and `FormData` without emitting native edit events.
 
 ## Examples
 

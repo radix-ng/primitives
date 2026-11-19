@@ -156,6 +156,12 @@ class NumberFieldDefaultsPage {
                 Free
             </span>
         </div>
+        <div [value]="null" controlledValue="free" rdxRadioRoot name="parent-plan">
+            <span rdxRadioItem value="free">
+                <input rdxRadioItemInput />
+                Free
+            </span>
+        </div>
     `
 })
 class RadioDefaultsPage {
@@ -557,8 +563,8 @@ describe('SSR rendering', () => {
         const parsed = new DOMParser().parseFromString(html, 'text/html');
         const radios = Array.from(parsed.querySelectorAll('[role="radio"]'));
         const inputs = Array.from(parsed.querySelectorAll<HTMLInputElement>('input[type="radio"]'));
-        expect(radios.map((radio) => radio.getAttribute('aria-checked'))).toEqual(['false', 'false', 'true']);
-        expect(inputs.map((input) => input.checked)).toEqual([false, false, true]);
+        expect(radios.map((radio) => radio.getAttribute('aria-checked'))).toEqual(['false', 'false', 'true', 'true']);
+        expect(inputs.map((input) => input.checked)).toEqual([false, false, true, true]);
         expect(html).toMatch(/ngh=/);
     });
     it('resolves Menu model/default precedence before server serialization', async () => {

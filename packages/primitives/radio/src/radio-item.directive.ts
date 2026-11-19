@@ -9,6 +9,7 @@ export interface RadioItemContext {
     disabledState: Signal<boolean>;
     readonlyState: Signal<boolean>;
     requiredState: Signal<boolean>;
+    requestSelection(event?: Event): boolean;
 }
 
 const itemContext = (): RadioItemContext => {
@@ -19,7 +20,8 @@ const itemContext = (): RadioItemContext => {
         checkedState: item.checkedState,
         disabledState: item.disabledState,
         readonlyState: item.readonlyState,
-        requiredState: item.requiredState
+        requiredState: item.requiredState,
+        requestSelection: (event) => item.requestSelection(event)
     };
 };
 
@@ -48,7 +50,7 @@ export const [injectRadioItemContext, provideRadioItemContext] = createContext<R
         '[attr.data-readonly]': 'readonlyState() ? "" : undefined',
         '[attr.data-required]': 'requiredState() ? "" : undefined',
         '[attr.disabled]': 'isNativeButton && disabledState() ? "" : undefined',
-        '(click)': 'onClick($event)',
+        '(click)': 'handleClick($event)',
         '(keydown)': 'onKeyDown($event)',
         '(keyup)': 'onKeyUp()',
         '(focus)': 'onFocus($event)'
@@ -100,17 +102,23 @@ export class RdxRadioItemDirective {
     }
 
     /** @ignore */
-    onClick(event?: Event) {
-        if (!this.disabledState() && !this.readonlyState()) {
-            this.rootContext.select(this.value(), event);
-        }
+    requestSelection(event?: Event): boolean {
+        if (this.disabledState() || this.readonlyState()) return false;
+        return this.rootContext.select(this.value(), event, 'none', this.elementRef.nativeElement);
+    }
+
+    protected handleClick(event: MouseEvent): void {
+        this.requestSelection(event);
+        // A non-labelable host click inside a wrapping label would also activate its native input.
+        if (!this.isNativeButton && this.elementRef.nativeElement.closest('label')) event.preventDefault();
     }
 
     /** @ignore */
     onKeyDown(event: Event): void {
         const keyEvent = event as KeyboardEvent;
         if (keyEvent.key === ' ') {
-            this.onClick(keyEvent);
+            // Native buttons produce their own Space click on keyup.
+            if (!this.isNativeButton) this.requestSelection(keyEvent);
             return;
         }
 
@@ -133,7 +141,7 @@ export class RdxRadioItemDirective {
     onFocus(event?: FocusEvent) {
         queueMicrotask(() => {
             if (this.rootContext.isArrowNavigation()) {
-                this.rootContext.select(this.value(), event);
+                this.requestSelection(event);
                 this.rootContext.setArrowNavigation(false);
             }
         });

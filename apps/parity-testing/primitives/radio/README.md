@@ -4,19 +4,24 @@ Run `pnpm test-parity radio` from the workspace. The fixtures use the Angular pu
 and the pinned Base UI `RadioGroup` and `Radio.Root` implementations. The runner verifies the reference
 digest and builds both fixtures before launching Chromium, Firefox and WebKit.
 
-Six cases cover an omitted default, a string or empty-string default, and a bound string,
-empty string or null with a conflicting default. Each checks initial selection, late defaults,
-a rejected and accepted click, and the settled DOM and FormData. Bound cases reflect accepted
-updates and exercise a separate external write. This represents Angular's editable two-way model
-and a React parent that accepts requests. It does not certify refusal by an Angular one-way binding.
+The six G1 scenarios cover an omitted default, a string or empty-string default, and a bound string,
+empty string or null with a conflicting default. They check initial selection, late defaults,
+a rejected and accepted click, and the settled DOM and FormData. Bound cases exercise an external
+write and use Angular's editable two-way model with an accepting React parent.
 
-The initial Chromium run reproduced Angular's late-default and explicit-null defects. After the fix,
-all **18 comparisons** passed with no expected-difference entries. Callback value and reason
-participate in the comparison. Native event type/trust are retained as observations for the later
-activation increment. The matched snapshots include visible Item selection, authored/generated
-radio input checked state and native serialization, without equating input placement.
+The nine G2 scenarios cover strict parent selection with successive ignored requests, null selection,
+delayed application, replacement with the empty-string item, clearing, refusal and veto of native
+label clicks, accepted editable label activation and native button Space release. In the native
+button case Angular uses generated form serialization and React uses its own native radios. The
+paired checkpoints compare visible selection and submitted values for this case.
 
-Open scope includes browser reset, native labels and validation, keyboard and RTL, refusal and
-replacement by a controlled parent, Field state and Indicator view lifetime. The
-[Radio matrix](../../../../packages/primitives/radio/PARITY.md) distinguishes Angular-only form/SSR
-evidence from paired results. Reports live under `dist/parity-testing/radio/results/`.
+The initial Chromium run reproduced Angular's late-default and explicit-null defects. The full suite
+now passes **45 comparisons** with no expected-difference entries. Callback value and reason
+participate in comparison. Event type/trust and native input/change notifications are retained as raw
+observations. Angular assertions check that controlled requests emit no native edit notifications
+and that an accepted editable click with an authored input emits one of each.
+
+Open scope includes paired browser reset, constraints and invalid focus, broader keyboard and RTL,
+Field state and Indicator lifetime. The
+[Radio matrix](../../../../packages/primitives/radio/PARITY.md) distinguishes Angular-only form and
+SSR evidence from paired results. Reports live under `dist/parity-testing/radio/results/`.

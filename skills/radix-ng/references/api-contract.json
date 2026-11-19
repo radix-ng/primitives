@@ -6932,6 +6932,11 @@
           ],
           "inputs": [
             {
+              "name": "controlledValue",
+              "type": "string | null",
+              "description": "Parent-owned selection. A defined value, including null, takes precedence over the editable model."
+            },
+            {
               "name": "defaultValue",
               "type": "string",
               "description": "Initial selection when neither a value binding nor an Angular form supplies one."
@@ -6964,7 +6969,7 @@
               "name": "value",
               "type": "string | null",
               "default": "null",
-              "description": "The selected value. Deliberately typed as `string` (not Base UI's generic `Value`):\na radio group maps onto native radio inputs whose form value is a string, so values are\nthe option identifiers. Use the string key of your option as the value."
+              "description": "The editable form value. Use a string identifier for each option and null for no selection.\nAccepts local edits and connects to Angular Forms or `[(value)]`."
             },
             {
               "name": "dirty",

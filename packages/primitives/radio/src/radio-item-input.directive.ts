@@ -22,6 +22,7 @@ import { injectRadioRootContext } from './radio-root.directive';
         '[attr.checked]': 'checked() ? "" : undefined',
         '[checked]': 'checked()',
         '[attr.value]': 'value()',
+        '(click)': 'onInputClick($event)',
         '(change)': 'onInputChange($event)',
         style: 'transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0; inset: 0;'
     }
@@ -42,34 +43,24 @@ export class RdxRadioItemInputDirective {
         effect((onCleanup) => {
             onCleanup(this.rootContext.registerNativeInput(this.itemContext.value(), this.input));
         });
-
-        let isInitial = true;
-
-        effect(() => {
-            const checked = this.checked();
-
-            if (isInitial) {
-                isInitial = false;
-                return;
-            }
-
-            if (checked) {
-                this.input.dispatchEvent(new Event('input', { bubbles: true }));
-                this.input.dispatchEvent(new Event('change', { bubbles: true }));
-            }
-        });
     }
 
     /**
-     * Selects this item when the native input is checked — covers `<label>` activation,
-     * where clicking the label toggles the hidden radio input rather than the visible item.
-     * `select()` is a no-op when the value is already current, so the programmatic
-     * `change` dispatched above does not re-trigger selection.
-     * @ignore
+     * A native label click preselects its radio before handlers run. On refusal, roll back
+     * the checked properties and cancel the browser's input/change notifications.
      */
+    protected onInputClick(event: MouseEvent): void {
+        event.stopPropagation();
+        if (!this.itemContext.requestSelection(event)) {
+            event.preventDefault();
+            this.rootContext.syncNativeInputs();
+        }
+    }
+
+    /** Covers changes that arrive without a click, including native autofill. */
     protected onInputChange(event: Event): void {
-        if (this.input.checked) {
-            this.rootContext.select(this.itemContext.value(), event);
+        if (this.input.checked && !this.checked() && !this.itemContext.requestSelection(event)) {
+            this.rootContext.syncNativeInputs();
         }
     }
 }

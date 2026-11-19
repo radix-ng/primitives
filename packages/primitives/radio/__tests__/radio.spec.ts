@@ -85,9 +85,17 @@ class RadioHost {
 class LabelWrappedRadioHost {
     value: string | null = 'ssd';
     changes: string[] = [];
+    cancelNext = false;
+    lastChange?: RdxRadioValueChangeEvent;
 
     onValueChange(change: RdxRadioValueChangeEvent): void {
         this.changes.push(change.value);
+        this.lastChange = change;
+        if (this.cancelNext) {
+            change.eventDetails.cancel();
+            this.cancelNext = false;
+            return;
+        }
         this.value = change.value;
     }
 }
@@ -284,6 +292,37 @@ describe('RdxRadio', () => {
         expect(labelHost.value).toBe('hdd');
         expect(labelHost.changes).toEqual(['hdd']);
     });
+
+    it('keeps the previous FormData after vetoing a native label click', () => {
+        const fixture = TestBed.createComponent(LabelWrappedRadioHost);
+        fixture.detectChanges();
+        const host = fixture.componentInstance;
+        host.cancelNext = true;
+        const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+        const label = form.querySelectorAll('label')[1];
+        const item = label.querySelector('[rdxRadioItem]');
+        const native = label.querySelector('input');
+        const notifications: string[] = [];
+        form.addEventListener('change', (event) => notifications.push(event.type));
+
+        label.click();
+        fixture.detectChanges();
+        expect(host.changes).toEqual(['hdd']);
+        expect(host.lastChange?.eventDetails.trigger).toBe(item);
+        expect(host.lastChange?.eventDetails.event.target).toBe(native);
+        expect(new FormData(form).getAll('storage')).toEqual(['ssd']);
+        expect(notifications).toEqual([]);
+    });
+
+    it('does not request an edit for a prevented host click', () => {
+        const item = buttons()[1];
+        const event = new MouseEvent('click', { cancelable: true, bubbles: true });
+        event.preventDefault();
+        item.dispatchEvent(event);
+        fixture.detectChanges();
+        expect(host.changes).toEqual([]);
+        expect(inputs()[0].checked).toBe(true);
+    });
 });
 
 @Component({
@@ -390,7 +429,13 @@ it.each([null, ''])('gives an initial ngModel value of %j priority over the radi
     imports: [RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioItemInputDirective],
     template: `
         <form>
-            <div [(value)]="value" [defaultValue]="defaultValue()" rdxRadioRoot name="plan">
+            <div
+                [(value)]="value"
+                [controlledValue]="controlledValue()"
+                [defaultValue]="defaultValue()"
+                rdxRadioRoot
+                name="plan"
+            >
                 <button rdxRadioItem value="free">
                     Free
                     <input rdxRadioItemInput />
@@ -405,6 +450,7 @@ it.each([null, ''])('gives an initial ngModel value of %j priority over the radi
 })
 class RadioModelResetHost {
     readonly value = signal<string | null>('free');
+    readonly controlledValue = signal<string | null | undefined>(undefined);
     readonly defaultValue = signal('pro');
 }
 
@@ -429,6 +475,41 @@ it.each(['free', null])('restores the originally supplied radio model %j on nati
     fixture.detectChanges();
     expect(host.value()).toBe(initialValue);
     expect(new FormData(form).getAll('plan')).toEqual(expected);
+});
+
+it('preserves the latest parent selection on native reset without updating the editable model', async () => {
+    const fixture = TestBed.createComponent(RadioModelResetHost);
+    const host = fixture.componentInstance;
+    host.controlledValue.set(null);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+    const root = fixture.debugElement.query(By.directive(RdxRadioGroupDirective)).injector.get(RdxRadioGroupDirective);
+    expect(root.currentValue()).toBeNull();
+    expect(new FormData(form).has('plan')).toBe(false);
+
+    host.controlledValue.set('pro');
+    fixture.detectChanges();
+    form.reset();
+    await new Promise<void>((resolve) => setTimeout(resolve, 0));
+    fixture.detectChanges();
+    expect(host.value()).toBe('free');
+    expect(root.currentValue()).toBe('pro');
+    expect(new FormData(form).getAll('plan')).toEqual(['pro']);
+
+    host.controlledValue.set(undefined);
+    fixture.detectChanges();
+    expect(root.currentValue()).toBe('free');
+    expect(new FormData(form).getAll('plan')).toEqual(['free']);
+
+    form.querySelectorAll('button')[1].click();
+    fixture.detectChanges();
+    form.reset();
+    await new Promise<void>((resolve) => setTimeout(resolve, 0));
+    fixture.detectChanges();
+    expect(host.value()).toBe('free');
+    expect(new FormData(form).getAll('plan')).toEqual(['free']);
 });
 
 @Component({

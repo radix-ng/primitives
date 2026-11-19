@@ -48,7 +48,8 @@ export interface RadioRootContext {
     name: Signal<string | undefined>;
     form: Signal<string | undefined>;
     registerNativeInput(value: string, input: HTMLInputElement): () => void;
-    select(value: string | null, event?: Event, reason?: RdxRadioValueChangeReason): void;
+    syncNativeInputs(): void;
+    select(value: string | null, event?: Event, reason?: RdxRadioValueChangeReason, trigger?: HTMLElement): boolean;
     setArrowNavigation(value: boolean): void;
     isArrowNavigation(): boolean;
 }
@@ -57,14 +58,15 @@ const rootContext = (): RadioRootContext => {
     const root = inject(RdxRadioGroupDirective);
 
     return {
-        value: root.value,
+        value: root.currentValue,
         disabledState: root.disabledState,
         readonly: root.readonly,
         required: root.required,
         name: root.name,
         form: root.form,
         registerNativeInput: (value, input) => root.registerNativeInput(value, input),
-        select: (value, event, reason) => root.select(value, event, reason),
+        syncNativeInputs: () => root.syncNativeInputs(),
+        select: (value, event, reason, trigger) => root.select(value, event, reason, trigger),
         setArrowNavigation: (value) => root.setArrowNavigation(value),
         isArrowNavigation: () => root.isArrowNavigation()
     };
@@ -104,11 +106,19 @@ export class RdxRadioGroupDirective
     private hasCvaValue = false;
 
     /**
-     * The selected value. Deliberately typed as `string` (not Base UI's generic `Value`):
-     * a radio group maps onto native radio inputs whose form value is a string, so values are
-     * the option identifiers. Use the string key of your option as the value.
+     * The editable form value. Use a string identifier for each option and null for no selection.
+     * Accepts local edits and connects to Angular Forms or `[(value)]`.
      */
     readonly value = model<string | null>(null);
+
+    /** Parent-owned selection. A defined value, including null, takes precedence over the editable model. */
+    readonly controlledValue = input<string | null>();
+
+    /** The effective selection used by the items and native form controls. */
+    readonly currentValue = computed(() => {
+        const controlledValue = this.controlledValue();
+        return controlledValue === undefined ? this.value() : controlledValue;
+    });
 
     /** Initial selection when neither a value binding nor an Angular form supplies one. */
     readonly defaultValue = input<string>();
@@ -140,7 +150,7 @@ export class RdxRadioGroupDirective
     private readonly arrowNavigation = signal(false);
     private readonly nativeInputs = signal<ReadonlyMap<string, HTMLInputElement>>(new Map());
     private readonly selectedItemHasNativeInput = computed(() => {
-        const value = this.value();
+        const value = this.currentValue();
         return value !== null && this.nativeInputs().has(value);
     });
     private readonly itemMetadata = computed(() =>
@@ -152,7 +162,7 @@ export class RdxRadioGroupDirective
             .map((metadata) => metadata.index)
     );
     private readonly activeIndex = computed(() => {
-        const value = this.value();
+        const value = this.currentValue();
         if (value === null) {
             return -1;
         }
@@ -182,24 +192,22 @@ export class RdxRadioGroupDirective
             name: this.name,
             form: this.form,
             disabled: this.disabledState,
-            value: this.value,
+            value: this.currentValue,
             serialize: serializeNativeFormValue,
             hasNativeControl: this.selectedItemHasNativeInput,
-            syncNativeControl: () => {
-                const selectedValue = this.value();
-                for (const [value, input] of this.nativeInputs()) {
-                    input.checked = value === selectedValue;
-                }
-            },
-            defaultValue: () => this.initialValue(),
+            syncNativeControl: () => this.syncNativeInputs(),
+            defaultValue: () => this.initialEditableValue(),
             onReset: (value) => {
+                if (this.controlledValue() !== undefined) return;
                 // A connected Angular form owns its reset baseline.
                 if (!this.resetNgControl(undefined)) this.value.set(value);
                 this.reset();
             }
         });
 
-        watch([], () => this.value.set(this.initialValue()));
+        watch([], () => {
+            this.value.set(this.initialEditableValue());
+        });
 
         effect(() => {
             this.compositeRoot.setEnableHomeAndEndKeys(false);
@@ -232,23 +240,29 @@ export class RdxRadioGroupDirective
         if (changes['value']?.currentValue !== undefined) this.hasExplicitValueInput = true;
     }
 
-    private initialValue(): string | null {
+    private initialEditableValue(): string | null {
         const value = this.value();
+        if (this.controlledValue() !== undefined) return value;
         return this.hasExplicitValueInput || this.hasCvaValue || value !== null ? value : (this.defaultValue() ?? null);
     }
 
     /**
-     * Select a radio item.
-     * @param value The value of the radio item to select.
+     * Request a selection. Returns whether an editable value was committed.
      * @ignore
      */
-    select(value: string | null, event?: Event, reason: RdxRadioValueChangeReason = 'none'): void {
-        if (this.disabledState() || this.readonly() || this.value() === value) {
-            return;
+    select(
+        value: string | null,
+        event?: Event,
+        reason: RdxRadioValueChangeReason = 'none',
+        trigger?: HTMLElement
+    ): boolean {
+        if (event?.defaultPrevented || this.disabledState() || this.readonly() || this.currentValue() === value) {
+            return false;
         }
 
+        const controlled = this.controlledValue() !== undefined;
+
         if (value !== null) {
-            const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
             const { eventDetails } = createCancelableChangeEventDetails(
                 reason,
                 event ?? new Event('radio.value-change'),
@@ -256,14 +270,32 @@ export class RdxRadioGroupDirective
             );
             this.onValueChange.emit({ value, eventDetails });
             if (eventDetails.isCanceled()) {
-                return;
+                return false;
             }
         }
+
+        if (controlled) return false;
 
         this.value.set(value);
         this.formUi.markDirty();
         this.onChange?.(value);
         this.onTouched();
+
+        const input = value === null ? undefined : this.nativeInputs().get(value);
+        if (input && event?.target !== input && this.currentValue() === value) {
+            this.syncNativeInputs();
+            input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        return true;
+    }
+
+    /** @ignore Restore the actual checked properties from the effective selection. */
+    syncNativeInputs(): void {
+        const selectedValue = this.currentValue();
+        for (const [value, input] of this.nativeInputs()) {
+            input.checked = value === selectedValue;
+        }
     }
 
     /** @ignore Bridge the CVA `onTouched` so `markAsTouched()` also notifies Reactive/template forms. */

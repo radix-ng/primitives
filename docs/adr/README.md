@@ -138,3 +138,4 @@ Keep this table in sync when adding or re-statusing an ADR.
 | [0086](0086-shared-element-registry.md)                                      | Accepted               | Share element registration and document order across navigation models               |
 | [0087](0087-accordion-whole-panel-presence.md)                               | Accepted               | Own complete Accordion Panel views through structural presence                       |
 | [0088](0088-inherit-primitive-direction-through-di.md)                       | Accepted               | Inherit primitive direction through Angular DI                                       |
+| [0089](0089-radio-selection-ownership.md)                                    | Accepted               | Separate parent-owned Radio selection from the editable form value                   |
