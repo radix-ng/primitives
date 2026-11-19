@@ -9,9 +9,49 @@
   "anatomy": "<div rdxRadioRoot name=\"density\">\n  <label>\n    <span rdxRadioItem value=\"default\">\n      <span rdxRadioIndicator></span>\n      <input rdxRadioItemInput />\n    </span>\n    Default\n  </label>\n</div>",
   "dataAttributes": [
     {
+      "attribute": "data-valid",
+      "parts": "RadioGroup, RadioGroupItem, RadioIndicator",
+      "values": "Field displays a valid state."
+    },
+    {
+      "attribute": "data-invalid",
+      "parts": "RadioGroup, RadioGroupItem, RadioIndicator",
+      "values": "Field displays an invalid state."
+    },
+    {
+      "attribute": "data-filled",
+      "parts": "RadioGroup, RadioGroupItem, RadioIndicator",
+      "values": "Field has a selection."
+    },
+    {
+      "attribute": "data-focused",
+      "parts": "RadioGroup, RadioGroupItem, RadioIndicator",
+      "values": "An enabled radio has focus."
+    },
+    {
+      "attribute": "data-dirty",
+      "parts": "RadioGroup, RadioGroupItem, RadioIndicator",
+      "values": "Field is dirty."
+    },
+    {
+      "attribute": "data-touched",
+      "parts": "RadioGroup, RadioGroupItem, RadioIndicator",
+      "values": "Field is touched."
+    },
+    {
       "attribute": "data-disabled",
       "parts": "RadioGroup",
       "values": "the group is disabled."
+    },
+    {
+      "attribute": "data-required",
+      "parts": "RadioGroup",
+      "values": "the group is required."
+    },
+    {
+      "attribute": "data-readonly",
+      "parts": "RadioGroup",
+      "values": "the group is read-only."
     },
     {
       "attribute": "data-checked",

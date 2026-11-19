@@ -11,6 +11,7 @@ export interface Settings {
     disabled?: boolean;
     disabledItem?: string;
     readOnly?: boolean;
+    forms?: 'external-required' | 'eligible-items' | 'field-labels' | 'field-state';
 }
 
 export const cases = {
@@ -40,7 +41,11 @@ export const cases = {
     'keys-controlled-ignore': { keyboard: 'arrows', value: 'standard', response: 'ignore' },
     'keys-external': { keyboard: 'external', value: 'compact', response: 'ignore' },
     'keys-custom-space': { keyboard: 'space', defaultValue: 'standard' },
-    'keys-prevent-space': { keyboard: 'prevent-space', defaultValue: 'standard' }
+    'keys-prevent-space': { keyboard: 'prevent-space', defaultValue: 'standard' },
+    'forms-external-required': { forms: 'external-required' },
+    'forms-eligible-items': { forms: 'eligible-items' },
+    'forms-field-labels': { forms: 'field-labels' },
+    'forms-field-state': { forms: 'field-state' }
 } satisfies Record<string, Settings>;
 
 export const options = [

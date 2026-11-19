@@ -1,7 +1,9 @@
 import {
     booleanAttribute,
     computed,
+    DestroyRef,
     Directive,
+    effect,
     ElementRef,
     inject,
     input,
@@ -19,6 +21,8 @@ import {
     BooleanInput,
     createCancelableChangeEventDetails,
     createContext,
+    injectId,
+    injectTabIndexAttribute,
     provideValueAccessor,
     RdxCancelableChangeEventDetails,
     RdxFormUiControlBase,
@@ -28,6 +32,8 @@ import {
     useNativeFormControl,
     watch
 } from '@radix-ng/primitives/core';
+import { injectFieldRootContext, type RdxFieldRootContext } from '@radix-ng/primitives/field';
+import { radioDescribedBy, type RadioItemRegistration } from './radio-field';
 import { RdxRadioValueChangeReason } from './radio-tokens';
 
 export type { RdxRadioValueChangeReason } from './radio-tokens';
@@ -46,7 +52,7 @@ export interface RadioRootContext {
     required: Signal<boolean>;
     name: Signal<string | undefined>;
     form: Signal<string | undefined>;
-    registerNativeInput(value: string, input: HTMLInputElement): () => void;
+    field: RdxFieldRootContext | null;
     syncNativeInputs(): void;
     select(value: string | null, event?: Event, reason?: RdxRadioValueChangeReason, trigger?: HTMLElement): boolean;
     tabStopIndex: Signal<number>;
@@ -60,10 +66,10 @@ const rootContext = (): RadioRootContext => {
         value: root.currentValue,
         disabledState: root.disabledState,
         readonly: root.readonly,
-        required: root.required,
-        name: root.name,
+        required: root.requiredState,
+        name: root.effectiveName,
         form: root.form,
-        registerNativeInput: (value, input) => root.registerNativeInput(value, input),
+        field: root.field,
         syncNativeInputs: () => root.syncNativeInputs(),
         select: (value, event, reason, trigger) => root.select(value, event, reason, trigger),
         tabStopIndex: root.tabStopIndex,
@@ -83,15 +89,25 @@ export const [injectRadioRootContext, provideRadioRootContext] = createContext<R
     hostDirectives: [RdxCompositeRoot],
     host: {
         role: 'radiogroup',
-        '[attr.aria-required]': 'required() ? "true" : undefined',
+        '[attr.id]': 'id()',
+        '[attr.tabindex]': 'authoredTabIndex ?? (field ? -1 : undefined)',
+        '[attr.aria-labelledby]': 'ariaLabelledBy() ?? field?.labelId()',
+        '[attr.aria-describedby]': 'describedBy()',
+        '[attr.aria-required]': 'requiredState() ? "true" : undefined',
         '[attr.aria-disabled]': 'disabledState() ? "true" : undefined',
         '[attr.aria-readonly]': 'readonly() ? "true" : undefined',
         '[attr.aria-invalid]': 'displayValid() === false ? "true" : undefined',
         '[attr.data-disabled]': 'disabledState() ? "" : undefined',
+        '[attr.data-required]': 'requiredState() ? "" : undefined',
+        '[attr.data-readonly]': 'readonly() ? "" : undefined',
         '[attr.data-invalid]': 'displayValid() === false ? "" : undefined',
         '[attr.data-valid]': 'displayValid() === true ? "" : undefined',
-        '[attr.data-touched]': 'touchedState() ? "" : undefined',
-        '[attr.data-dirty]': 'dirtyState() ? "" : undefined',
+        '[attr.data-touched]': 'touchedState() || field?.touchedState() ? "" : undefined',
+        '[attr.data-dirty]': 'dirtyState() || field?.dirtyState() ? "" : undefined',
+        '[attr.data-filled]': 'field?.filledState() ? "" : undefined',
+        '[attr.data-focused]': 'field?.focusedState() ? "" : undefined',
+        '(focus)': 'focusGroupItem()',
+        '(focusin)': 'onFocusIn($event)',
         '(focusout)': 'onFocusOut($event)'
     }
 })
@@ -101,6 +117,9 @@ export class RdxRadioGroupDirective
 {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly compositeRoot = inject(RdxCompositeRoot, { self: true });
+    /** @ignore Optional enclosing Field, distinct from a radio's own Field.Item context. */
+    readonly field = injectFieldRootContext(true);
+    protected readonly authoredTabIndex = injectTabIndexAttribute();
     private hasExplicitValueInput = false;
     private hasCvaValue = false;
 
@@ -126,6 +145,17 @@ export class RdxRadioGroupDirective
 
     readonly form = input<string>();
 
+    /** ID of the radiogroup, used for the enclosing Field's focus target. */
+    readonly id = input(injectId('rdx-radio-group-'));
+
+    /** Override the accessible label supplied by Field. */
+    readonly ariaLabelledBy = input<string>(undefined, { alias: 'aria-labelledby' });
+
+    /** Additional description IDs. Field descriptions and errors are appended automatically. */
+    readonly ariaDescribedBy = input<string>(undefined, { alias: 'aria-describedby' });
+
+    protected readonly describedBy = computed(() => radioDescribedBy(this.ariaDescribedBy(), this.field));
+
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
@@ -136,23 +166,37 @@ export class RdxRadioGroupDirective
 
     readonly required = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /** @ignore Field can supply native form metadata. */
+    readonly requiredState = computed(() => this.required() || Boolean(this.field?.requiredState()));
+
+    /** @ignore Field's name takes precedence for browser submission. */
+    readonly effectiveName = computed(() => this.field?.name() ?? this.name());
+
     /**
      * Event handler called when the value changes.
      */
     readonly onValueChange = output<RdxRadioValueChangeEvent>();
 
     private readonly disable = signal<boolean>(false);
-    readonly disabledState = computed(() => this.disable() || this.disabled());
+    readonly disabledState = computed(() => this.disable() || this.disabled() || Boolean(this.field?.disabledState()));
     readonly invalidState = this.formUi.invalidState;
     readonly touchedState = this.formUi.touchedState;
     readonly dirtyState = this.formUi.dirtyState;
     /** @ignore The last focused index, seeded from the checked Item when the Composite mounts. */
     readonly tabStopIndex = this.compositeRoot.highlightedIndex.asReadonly();
-    private readonly nativeInputs = signal<ReadonlyMap<string, HTMLInputElement>>(new Map());
-    private readonly selectedItemHasNativeInput = computed(() => {
-        const value = this.currentValue();
-        return value !== null && this.nativeInputs().has(value);
+    private readonly items = computed(() =>
+        this.compositeRoot.items().flatMap(({ element, metadata }) => {
+            const radio = metadata()?.['radio'] as RadioItemRegistration | undefined;
+            return radio ? [{ element, ...radio }] : [];
+        })
+    );
+    private readonly selectedItem = computed(() => this.items().find((item) => item.value() === this.currentValue()));
+    private readonly submissionValue = computed(() => {
+        const item = this.selectedItem();
+        return item && !item.disabled() ? item.value() : null;
     });
+    private readonly focusedItem = signal<HTMLElement | null>(null);
+    private readonly initialSelection = signal<string | null>(null);
 
     /**
      * The callback function to call when the value of the radio group changes.
@@ -173,12 +217,12 @@ export class RdxRadioGroupDirective
         super();
 
         useNativeFormControl({
-            name: this.name,
+            name: this.effectiveName,
             form: this.form,
             disabled: this.disabledState,
-            value: this.currentValue,
+            value: this.submissionValue,
             serialize: serializeNativeFormValue,
-            hasNativeControl: this.selectedItemHasNativeInput,
+            hasNativeControl: computed(() => Boolean(this.selectedItem()?.nativeInput())),
             syncNativeControl: () => this.syncNativeInputs(),
             defaultValue: () => this.initialEditableValue(),
             onReset: (value) => {
@@ -191,7 +235,25 @@ export class RdxRadioGroupDirective
 
         watch([], () => {
             this.value.set(this.initialEditableValue());
+            this.initialSelection.set(this.currentValue());
         });
+
+        const field = this.field;
+        if (field) {
+            effect(() => field.setControlId(this.id()));
+            effect(() => {
+                const value = this.currentValue();
+                field.setFilled(value !== null);
+                field.setDirty(value !== this.initialSelection());
+            });
+            effect(() => {
+                const item = this.items().find(({ element }) => element === this.focusedItem());
+                field.setFocused(Boolean(item && !item.disabled()));
+            });
+            inject(DestroyRef).onDestroy(() => {
+                if (field.controlId() === this.id()) field.setFocused(false);
+            });
+        }
 
         this.compositeRoot.setModifierKeys(['Shift']);
         this.compositeRoot.configureKeyboardNavigation({ respectDefaultPrevented: true, stopPropagation: false });
@@ -243,8 +305,10 @@ export class RdxRadioGroupDirective
         this.formUi.markDirty();
         this.onChange?.(value);
         this.onTouched();
+        this.field?.setTouched(true);
+        this.field?.notifyEdited();
 
-        const input = value === null ? undefined : this.nativeInputs().get(value);
+        const input = this.selectedItem()?.nativeInput()?.element;
         if (input && event?.target !== input && this.currentValue() === value) {
             this.syncNativeInputs();
             input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
@@ -256,8 +320,9 @@ export class RdxRadioGroupDirective
     /** @ignore Restore the actual checked properties from the effective selection. */
     syncNativeInputs(): void {
         const selectedValue = this.currentValue();
-        for (const [value, input] of this.nativeInputs()) {
-            input.checked = value === selectedValue;
+        for (const item of this.items()) {
+            const input = item.nativeInput()?.element;
+            if (input) input.checked = item.value() === selectedValue;
         }
     }
 
@@ -304,20 +369,15 @@ export class RdxRadioGroupDirective
         return this.compositeRoot.isKeyboardFocus(element);
     }
 
-    /** @ignore Register an optional native radio input by its item value. */
-    registerNativeInput(value: string, input: HTMLInputElement): () => void {
-        this.nativeInputs.update((inputs) => new Map(inputs).set(value, input));
-        return () => {
-            this.nativeInputs.update((inputs) => {
-                if (inputs.get(value) !== input) {
-                    return inputs;
-                }
+    protected focusGroupItem(): void {
+        if (!this.field || this.disabledState()) return;
+        const selected = this.selectedItem();
+        const item = selected && !selected.disabled() ? selected : this.items().find((item) => !item.disabled());
+        item?.element.focus();
+    }
 
-                const next = new Map(inputs);
-                next.delete(value);
-                return next;
-            });
-        };
+    protected onFocusIn(event: FocusEvent): void {
+        if (this.field) this.focusedItem.set(event.target as HTMLElement);
     }
 
     /**
@@ -327,6 +387,8 @@ export class RdxRadioGroupDirective
     protected onFocusOut(event: FocusEvent): void {
         const next = event.relatedTarget as Node | null;
         if (!this.elementRef.nativeElement.contains(next)) {
+            this.focusedItem.set(null);
+            this.field?.setTouched(true);
             this.formUi.markAsTouched();
         }
     }

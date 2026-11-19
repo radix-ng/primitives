@@ -45,14 +45,59 @@ import {
 </div>
 ```
 
-A named group participates in native `FormData` without item inputs. Add the optional
-`input[rdxRadioItemInput]` part inside each item when you also need native constraint validation,
-`<label>` activation, or native input/change events. Selection through the group (click, keyboard,
-`ngModel`/reactive forms) works with or without it.
+A named group submits the value of its mounted, enabled selected item. Add
+`input[rdxRadioItemInput]` inside each item for native `required` validation,
+`<label>` activation or native input/change events. Failed native validation focuses the
+visible radio. Use `form="form-id"` on the group to associate it with a form elsewhere on
+the page. Click, keyboard selection and Angular Forms work with or without item inputs.
+See [Field composition](#field-composition) for shared form state and label wiring.
 
 The item can attach to any element. When the host is a native `<button>` it is detected automatically:
 `type="button"` and the native `disabled` attribute are applied for you — there is no `nativeButton`
 input to set.
+
+## Field composition
+
+Import `RdxFieldRoot`, `RdxFieldLabel`, `RdxFieldDescription` and `RdxFieldItem` from
+`@radix-ng/primitives/field` to associate a group label and description and give each item
+its own label. Use a non-native label for the group and a native label for each item's input.
+
+```html
+<div rdxFieldRoot name="density">
+    <span rdxFieldLabel>Density</span>
+    <p rdxFieldDescription>Choose how much space to leave between rows.</p>
+
+    <div rdxRadioRoot>
+        <div rdxFieldItem>
+            <span rdxRadioItem value="compact">
+                <span rdxRadioIndicator></span>
+                <input rdxRadioItemInput />
+            </span>
+            <label rdxFieldLabel>Compact</label>
+        </div>
+        <div rdxFieldItem>
+            <span rdxRadioItem value="comfortable">
+                <span rdxRadioIndicator></span>
+                <input rdxRadioItemInput />
+            </span>
+            <label rdxFieldLabel>Comfortable</label>
+        </div>
+    </div>
+</div>
+```
+
+The field's name takes precedence over the group's name. A disabled field disables the group,
+and a disabled Field Item disables its radio. Each radio includes the group description and
+its own Field Item description.
+
+| Attribute      | Parts                                     | Present when                         |
+| -------------- | ----------------------------------------- | ------------------------------------ |
+| `data-valid`   | RadioGroup, RadioGroupItem, RadioIndicator | Field displays a valid state.        |
+| `data-invalid` | RadioGroup, RadioGroupItem, RadioIndicator | Field displays an invalid state.      |
+| `data-filled`  | RadioGroup, RadioGroupItem, RadioIndicator | Field has a selection.                |
+| `data-focused` | RadioGroup, RadioGroupItem, RadioIndicator | An enabled radio has focus.           |
+| `data-dirty`   | RadioGroup, RadioGroupItem, RadioIndicator | Field is dirty.                       |
+| `data-touched` | RadioGroup, RadioGroupItem, RadioIndicator | Field is touched.                     |
 
 ## Initial selection and reset
 
@@ -165,9 +210,11 @@ system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook 
 
 **Data attributes**
 
-| Attribute       | Present when           |
-| --------------- | ---------------------- |
-| `data-disabled` | the group is disabled. |
+| Attribute       | Present when             |
+| --------------- | ------------------------ |
+| `data-disabled` | the group is disabled.   |
+| `data-required` | the group is required.   |
+| `data-readonly` | the group is read-only.  |
 
 ### RadioGroupItem
 
@@ -191,8 +238,8 @@ Exposes `role="radio"` and `aria-checked`.
 ### RadioGroupItemInput
 
 `RdxRadioItemInputDirective` — optional hidden native radio input for constraint validation,
-`<label>` activation, and native input/change events. FormData serialization works from the named
-group without it. Apply it inside an item; it has no public inputs or `data-*` attributes.
+`<label>` activation, and native input/change events. Apply it inside an item. Its default ID
+is the item ID followed by `-input`. Set `id` to use your own ID with an explicit label.
 
 ### RadioIndicator
 

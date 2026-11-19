@@ -1,15 +1,31 @@
-import { booleanAttribute, computed, Directive, ElementRef, inject, input, Signal } from '@angular/core';
+import {
+    booleanAttribute,
+    computed,
+    Directive,
+    effect,
+    ElementRef,
+    inject,
+    input,
+    signal,
+    Signal
+} from '@angular/core';
 import { RdxButtonBehavior } from '@radix-ng/primitives/button';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
-import { BooleanInput, createContext } from '@radix-ng/primitives/core';
+import { BooleanInput, createContext, injectId } from '@radix-ng/primitives/core';
+import { injectFieldRootContext, type RdxFieldRootContext } from '@radix-ng/primitives/field';
+import { radioDescribedBy, type RadioItemRegistration, type RadioNativeInput } from './radio-field';
 import { injectRadioRootContext } from './radio-root.directive';
 
 export interface RadioItemContext {
+    id: Signal<string>;
+    field: RdxFieldRootContext | null;
     value: Signal<string>;
     checkedState: Signal<boolean>;
     disabledState: Signal<boolean>;
     readonlyState: Signal<boolean>;
     requiredState: Signal<boolean>;
+    registerNativeInput(input: RadioNativeInput): () => void;
+    focus(): void;
     requestSelection(event?: Event): boolean;
 }
 
@@ -17,11 +33,15 @@ const itemContext = (): RadioItemContext => {
     const item = inject(RdxRadioItemDirective);
 
     return {
+        id: item.id,
+        field: item.field,
         value: item.value,
         checkedState: item.checkedState,
         disabledState: item.disabledState,
         readonlyState: item.readonlyState,
         requiredState: item.requiredState,
+        registerNativeInput: (input) => item.registerNativeInput(input),
+        focus: () => item.focus(),
         requestSelection: (event) => item.requestSelection(event)
     };
 };
@@ -38,8 +58,12 @@ export const [injectRadioItemContext, provideRadioItemContext] = createContext<R
     hostDirectives: [RdxCompositeItem],
 
     host: {
+        '[attr.id]': 'id()',
         '[attr.type]': 'isNativeButton ? "button" : undefined',
         role: 'radio',
+        '[attr.aria-labelledby]': 'ariaLabelledBy() ?? itemField?.labelId()',
+        '[attr.aria-describedby]': 'describedBy()',
+        '[attr.aria-invalid]': 'field?.invalidState() ? "true" : undefined',
         '[attr.aria-checked]': 'checkedState()',
         '[attr.aria-disabled]': 'disabledState() ? "true" : undefined',
         '[attr.aria-readonly]': 'readonlyState() ? "true" : undefined',
@@ -50,6 +74,12 @@ export const [injectRadioItemContext, provideRadioItemContext] = createContext<R
         '[attr.data-disabled]': 'disabledState() ? "" : undefined',
         '[attr.data-readonly]': 'readonlyState() ? "" : undefined',
         '[attr.data-required]': 'requiredState() ? "" : undefined',
+        '[attr.data-valid]': 'field?.validState() === true ? "" : undefined',
+        '[attr.data-invalid]': 'field?.validState() === false ? "" : undefined',
+        '[attr.data-touched]': 'field?.touchedState() ? "" : undefined',
+        '[attr.data-dirty]': 'field?.dirtyState() ? "" : undefined',
+        '[attr.data-filled]': 'field?.filledState() ? "" : undefined',
+        '[attr.data-focused]': 'field?.focusedState() ? "" : undefined',
         '[attr.disabled]': 'isNativeButton && disabledState() ? "" : undefined',
         '[attr.tabindex]': 'radioTabIndex()',
         '(click)': 'handleClick($event)',
@@ -61,10 +91,24 @@ export class RdxRadioItemDirective {
     private readonly rootContext = injectRadioRootContext();
     private readonly compositeItem = inject(RdxCompositeItem, { self: true });
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    private readonly nativeInput = signal<RadioNativeInput | null>(null);
+    /** @ignore Field.Item can scope an individual radio's associations. */
+    readonly field = injectFieldRootContext(true);
+    protected readonly itemField = this.field === this.rootContext.field ? null : this.field;
 
     readonly value = input.required<string>();
 
-    readonly id = input<string>();
+    readonly id = input(injectId('rdx-radio-item-'));
+
+    /** Override the accessible label supplied by Field.Item. */
+    readonly ariaLabelledBy = input<string>(undefined, { alias: 'aria-labelledby' });
+
+    /** Additional description IDs. Group and item Field descriptions are appended automatically. */
+    readonly ariaDescribedBy = input<string>(undefined, { alias: 'aria-describedby' });
+
+    protected readonly describedBy = computed(() =>
+        radioDescribedBy(this.ariaDescribedBy(), this.rootContext.field, this.itemField)
+    );
 
     readonly required = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
@@ -83,7 +127,9 @@ export class RdxRadioItemDirective {
      */
     protected readonly isNativeButton = this.elementRef.nativeElement.tagName === 'BUTTON';
 
-    readonly disabledState = computed(() => this.rootContext.disabledState() || this.disabled());
+    readonly disabledState = computed(
+        () => this.rootContext.disabledState() || this.disabled() || Boolean(this.itemField?.disabledState())
+    );
 
     readonly readonlyState = computed(() => this.rootContext.readonly() || this.readonly());
 
@@ -102,6 +148,18 @@ export class RdxRadioItemDirective {
     });
 
     constructor() {
+        this.compositeItem.setMetadata({
+            radio: {
+                value: this.value,
+                disabled: this.disabledState,
+                nativeInput: this.nativeInput
+            } satisfies RadioItemRegistration
+        });
+
+        const field = this.itemField;
+        if (field)
+            effect(() => field.setControlId(this.isNativeButton ? this.id() : (this.nativeInput()?.id() ?? this.id())));
+
         inject(RdxButtonBehavior, { self: true }).configure(
             {
                 disabled: this.disabledState,
@@ -111,6 +169,19 @@ export class RdxRadioItemDirective {
             },
             'radio'
         );
+    }
+
+    /** @ignore Native controls belong to the item they mirror. */
+    registerNativeInput(input: RadioNativeInput): () => void {
+        this.nativeInput.set(input);
+        return () => {
+            if (this.nativeInput() === input) this.nativeInput.set(null);
+        };
+    }
+
+    /** @ignore Redirect native label and validation focus to the visible radio. */
+    focus(): void {
+        if (!this.disabledState()) this.elementRef.nativeElement.focus();
     }
 
     /** @ignore */

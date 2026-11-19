@@ -22,7 +22,13 @@
       "selector": "input[rdxRadioItemInput]",
       "exportAs": "rdxRadioItemInput",
       "description": "The hidden native radio input that mirrors the item state for form submission, native validation,\nand `<label>` activation. Place it inside an `rdxRadioItem`.\n\nSee https://base-ui.com/react/components/radio",
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "id",
+          "type": "string",
+          "description": "ID for an explicit native label. Defaults to the item ID with an `-input` suffix."
+        }
+      ],
       "outputs": []
     },
     {
@@ -34,13 +40,25 @@
       ],
       "inputs": [
         {
+          "name": "aria-describedby",
+          "type": "string",
+          "default": "undefined",
+          "description": "Additional description IDs. Group and item Field descriptions are appended automatically."
+        },
+        {
+          "name": "aria-labelledby",
+          "type": "string",
+          "default": "undefined",
+          "description": "Override the accessible label supplied by Field.Item."
+        },
+        {
           "name": "disabled",
           "type": "boolean",
           "default": "false"
         },
         {
           "name": "id",
-          "type": "string"
+          "default": "injectId('rdx-radio-item-')"
         },
         {
           "name": "readOnly",
@@ -70,6 +88,18 @@
       ],
       "inputs": [
         {
+          "name": "aria-describedby",
+          "type": "string",
+          "default": "undefined",
+          "description": "Additional description IDs. Field descriptions and errors are appended automatically."
+        },
+        {
+          "name": "aria-labelledby",
+          "type": "string",
+          "default": "undefined",
+          "description": "Override the accessible label supplied by Field."
+        },
+        {
           "name": "controlledValue",
           "type": "string | null",
           "description": "Parent-owned selection. A defined value, including null, takes precedence over the editable model."
@@ -87,6 +117,11 @@
         {
           "name": "form",
           "type": "string"
+        },
+        {
+          "name": "id",
+          "default": "injectId('rdx-radio-group-')",
+          "description": "ID of the radiogroup, used for the enclosing Field's focus target."
         },
         {
           "name": "name",

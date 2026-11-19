@@ -13,7 +13,7 @@ import {
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
 import { RdxAutocompleteInput, RdxAutocompleteRoot } from '@radix-ng/primitives/autocomplete';
-import { RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
+import { RdxFieldDescription, RdxFieldItem, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import {
     RdxMenuGroup,
     RdxMenuGroupLabel,
@@ -167,6 +167,32 @@ class NumberFieldDefaultsPage {
 class RadioDefaultsPage {
     readonly plan = new FormControl<string | null>(null);
 }
+
+@Component({
+    selector: 'app-radio-field',
+    imports: [
+        RdxFieldDescription,
+        RdxFieldItem,
+        RdxFieldLabel,
+        RdxFieldRoot,
+        RdxRadioGroupDirective,
+        RdxRadioItemDirective,
+        RdxRadioItemInputDirective
+    ],
+    template: `
+        <div rdxFieldRoot name="plan">
+            <span id="plan-label" rdxFieldLabel>Plan</span>
+            <p id="plan-description" rdxFieldDescription>Select a plan.</p>
+            <div rdxRadioRoot defaultValue="free">
+                <div rdxFieldItem>
+                    <span id="plan-free" rdxRadioItem value="free"><input rdxRadioItemInput /></span>
+                    <label id="plan-free-label" rdxFieldLabel>Free</label>
+                </div>
+            </div>
+        </div>
+    `
+})
+class RadioFieldPage {}
 
 @Component({
     selector: 'app-native-select',
@@ -565,6 +591,23 @@ describe('SSR rendering', () => {
         const inputs = Array.from(parsed.querySelectorAll<HTMLInputElement>('input[type="radio"]'));
         expect(radios.map((radio) => radio.getAttribute('aria-checked'))).toEqual(['false', 'false', 'true', 'true']);
         expect(inputs.map((input) => input.checked)).toEqual([false, false, true, true]);
+        expect(html).toMatch(/ngh=/);
+    });
+    it('serializes Radio Field labels and the native input association', async () => {
+        const html = await renderToString('app-radio-field', RadioFieldPage);
+        const parsed = new DOMParser().parseFromString(html, 'text/html');
+        const group = parsed.querySelector('[role="radiogroup"]');
+        const item = parsed.querySelector('[role="radio"]');
+        const input = parsed.querySelector<HTMLInputElement>('input[type="radio"]');
+
+        expect(group?.getAttribute('aria-labelledby')).toBe('plan-label');
+        expect(group?.getAttribute('aria-describedby')).toBe('plan-description');
+        expect(item?.getAttribute('aria-labelledby')).toBe('plan-free-label');
+        expect(item?.getAttribute('aria-describedby')).toBe('plan-description');
+        expect(input?.id).toBe('plan-free-input');
+        expect(input?.name).toBe('plan');
+        expect(parsed.querySelector('label')?.htmlFor).toBe(input?.id);
+        expect(input?.checked).toBe(true);
         expect(html).toMatch(/ngh=/);
     });
     it('resolves Menu model/default precedence before server serialization', async () => {

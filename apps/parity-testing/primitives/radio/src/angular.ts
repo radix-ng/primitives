@@ -8,6 +8,7 @@ import {
     type RdxRadioValueChangeEvent
 } from '@radix-ng/primitives/radio';
 import { config, installProbe, options } from './contract';
+import { AngularRadioForms } from './forms.angular';
 
 @Component({
     selector: 'parity-radio-items',
@@ -129,4 +130,6 @@ class AngularRadio {
     }
 }
 
-void bootstrapApplication(AngularRadio, { providers: [provideZonelessChangeDetection()] });
+void bootstrapApplication(config().forms ? AngularRadioForms : AngularRadio, {
+    providers: [provideZonelessChangeDetection()]
+});

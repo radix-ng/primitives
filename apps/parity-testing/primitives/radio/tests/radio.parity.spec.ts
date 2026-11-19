@@ -19,14 +19,14 @@ class RadioDriver {
     }
 
     get group() {
-        return this.page.getByRole('radiogroup', { name: 'Density' });
+        return this.page.getByRole('radiogroup');
     }
 
     async goto(name: string) {
         this.settings = cases[name as keyof typeof cases];
         this.nativeButton = this.settings.nativeButton ?? false;
         await this.page.goto('/' + this.framework + '.html?case=' + name);
-        await expect(this.group.getByRole('radio')).toHaveCount(options.length);
+        await expect(this.group.getByRole('radio')).toHaveCount(this.settings.forms ? 2 : options.length);
         this.metadata = await this.page.evaluate(() => window.radioParity.reference);
     }
 
@@ -81,6 +81,126 @@ class RadioDriver {
         await expect.poll(read, name).toEqual({ focus, tabStops: tabStop === null ? [] : [tabStop] });
         this.checkpoints.push({ name, state: await read() });
     }
+}
+
+async function formsScenario(driver: RadioDriver, mode: NonNullable<Settings['forms']>) {
+    const { page, group } = driver;
+    const form = page.locator('form#owner');
+    const alpha = page.getByTestId('radio-a');
+    const beta = page.getByTestId('radio-b');
+    const submit = page.getByRole('button', { name: 'Submit', exact: true });
+    const toggleDisabled = page.getByRole('button', { name: 'Toggle disabled' });
+    const submitted = (name: string, entries: string[]) =>
+        checkpoint(
+            name,
+            () =>
+                form.evaluate((element: HTMLFormElement) =>
+                    Array.from(new FormData(element), ([key, value]) => [key, String(value)])
+                ),
+            entries.map((entry) => ['density', entry])
+        );
+    async function checkpoint<T>(name: string, read: () => Promise<T>, expected: T) {
+        await expect.poll(read, name).toEqual(expected);
+        driver.checkpoints.push({ name, state: { value: await read() } });
+        expect(driver.errors).toEqual([]);
+    }
+
+    if (mode === 'external-required') {
+        await checkpoint(
+            'empty external required group is invalid',
+            () => form.evaluate((element: HTMLFormElement) => element.checkValidity()),
+            false
+        );
+        await submit.click();
+        await expect(form).not.toHaveAttribute('data-submitted');
+        await checkpoint(
+            'invalid input redirects focus to the visible item',
+            () => page.evaluate(() => document.activeElement?.getAttribute('data-testid')),
+            'radio-a'
+        );
+        await beta.click();
+        await submitted('selected radio belongs to the external form', ['b']);
+        await submit.click();
+        await expect(form).toHaveAttribute('data-submitted', 'true');
+        return;
+    }
+
+    if (mode === 'eligible-items') {
+        await submitted('the enabled selected radio submits one entry', ['a']);
+        await toggleDisabled.click();
+        await expect(alpha).toHaveAttribute('aria-checked', 'true');
+        await submitted('a disabled selection is omitted', []);
+        await toggleDisabled.click();
+        await submitted('re-enabling restores submission', ['a']);
+        const toggleAlpha = page.getByRole('button', { name: 'Toggle Alpha' });
+        await toggleAlpha.click();
+        await expect(alpha).toHaveCount(0);
+        await submitted('an unmounted selection is omitted', []);
+        await toggleAlpha.click();
+        await submitted('remounting restores a still selected value', ['a']);
+        return;
+    }
+
+    await expect(group).toHaveAccessibleName('Density');
+    await expect(group).toHaveAccessibleDescription('Pick a density');
+    await expect(alpha).toHaveAccessibleName('Alpha');
+    await expect(beta).toHaveAccessibleName('Beta');
+    const label = page.getByTestId('label-b');
+    await checkpoint(
+        'item label owns its radio input',
+        () => label.evaluate((node: HTMLLabelElement) => node.control?.getAttribute('value')),
+        'b'
+    );
+    await checkpoint(
+        'item description contains group and local text',
+        () =>
+            beta.evaluate((node) =>
+                node
+                    .getAttribute('aria-describedby')
+                    ?.split(/\s+/)
+                    .filter((id) => ['description-b', 'group-description'].includes(id))
+                    .sort()
+            ),
+        ['description-b', 'group-description']
+    );
+
+    if (mode === 'field-labels') {
+        await label.click();
+        await expect(beta).toHaveAttribute('aria-checked', 'true');
+        await submitted('Field name takes precedence on label activation', ['b']);
+        return;
+    }
+
+    const parts = [page.getByTestId('field'), group, beta, page.getByTestId('indicator-b')];
+    const state = () =>
+        Promise.all(
+            parts.map((part) =>
+                part.evaluate((node) =>
+                    ['focused', 'filled', 'dirty', 'touched'].filter((attr) => node.hasAttribute('data-' + attr))
+                )
+            )
+        );
+    const fieldFlags = (name: string, flags: string[]) =>
+        checkpoint(
+            name,
+            state,
+            parts.map(() => flags)
+        );
+    await fieldFlags('initial Field flags', []);
+    await alpha.focus();
+    await fieldFlags('focus marks the Field without choosing a value', ['focused']);
+    await page.keyboard.press('ArrowDown');
+    await expect(beta).toBeFocused();
+    await fieldFlags('an accepted edit fills and touches the Field', ['focused', 'filled', 'dirty', 'touched']);
+    await submitted('the accepted edit is serialized', ['b']);
+    await page.getByRole('button', { name: 'Toggle Beta' }).evaluate((button: HTMLButtonElement) => button.click());
+    await expect(beta).toHaveAttribute('aria-disabled', 'true');
+    await expect(alpha).not.toHaveAttribute('aria-disabled', 'true');
+    await fieldFlags('disabling a focused item clears Field focus', ['filled', 'dirty', 'touched']);
+    await submitted('Field.Item disabled excludes its selection', []);
+    await toggleDisabled.evaluate((button: HTMLButtonElement) => button.click());
+    await expect(group).toHaveAttribute('aria-disabled', 'true');
+    await expect(alpha).toHaveAttribute('aria-disabled', 'true');
 }
 
 async function keyboardScenario(driver: RadioDriver, settings: Settings) {
@@ -170,6 +290,7 @@ async function keyboardScenario(driver: RadioDriver, settings: Settings) {
 const scenarios = Object.entries(cases).map(([name, settings]) => ({
     name,
     async run(driver: RadioDriver) {
+        if ('forms' in settings) return formsScenario(driver, settings.forms);
         if ('keyboard' in settings) return keyboardScenario(driver, settings);
         if ('response' in settings) {
             await driver.checkpoint('parent value owns the group', settings.value);

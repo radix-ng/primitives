@@ -20,13 +20,17 @@ disabled/read-only groups and items, parent updates and vetoes. The custom-host 
 Space release timing and keyup prevention. The suite checks focus and the roving stop separately
 from the checked item and FormData.
 
+Four G4 scenarios cover native constraints and visible focus in an externally owned form,
+disabled and unmounted selections, Field/Field.Item label and description associations, and
+Field interaction flags on the group, radio and indicator.
+
 The initial Chromium run reproduced Angular's late-default and explicit-null defects. The full suite
-now passes **81 comparisons** with no expected-difference entries. Callback value and reason
+now passes **93 comparisons** with no expected-difference entries. Callback value and reason
 participate in comparison. Event type/trust and native input/change notifications are retained as raw
 observations. Angular assertions check that controlled requests emit no native edit notifications
 and that an accepted editable click with an authored input emits one of each.
 
-Open scope includes paired browser reset, constraints and invalid focus, live collection and host changes,
-Field state and Indicator lifetime. The
+Open scope includes paired browser reset, dynamic form ownership, Fieldset legends, validation timing,
+live collection and host changes, and Indicator lifetime. The
 [Radio matrix](../../../../packages/primitives/radio/PARITY.md) distinguishes Angular-only form and
 SSR evidence from paired results. Reports live under `dist/parity-testing/radio/results/`.
