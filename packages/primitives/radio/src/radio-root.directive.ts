@@ -7,9 +7,11 @@ import {
     inject,
     input,
     model,
+    OnChanges,
     output,
     signal,
     Signal,
+    SimpleChanges,
     untracked
 } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
@@ -24,7 +26,8 @@ import {
     RdxFormUiTouchTarget,
     RdxFormValueControl,
     serializeNativeFormValue,
-    useNativeFormControl
+    useNativeFormControl,
+    watch
 } from '@radix-ng/primitives/core';
 import { RdxRadioValueChangeReason } from './radio-tokens';
 
@@ -93,10 +96,12 @@ export const [injectRadioRootContext, provideRadioRootContext] = createContext<R
 })
 export class RdxRadioGroupDirective
     extends RdxFormUiControlBase
-    implements ControlValueAccessor, RdxFormValueControl<string | null>
+    implements ControlValueAccessor, RdxFormValueControl<string | null>, OnChanges
 {
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly compositeRoot = inject(RdxCompositeRoot, { self: true });
+    private hasExplicitValueInput = false;
+    private hasCvaValue = false;
 
     /**
      * The selected value. Deliberately typed as `string` (not Base UI's generic `Value`):
@@ -105,6 +110,7 @@ export class RdxRadioGroupDirective
      */
     readonly value = model<string | null>(null);
 
+    /** Initial selection when neither a value binding nor an Angular form supplies one. */
     readonly defaultValue = input<string>();
 
     readonly name = input<string>();
@@ -185,28 +191,15 @@ export class RdxRadioGroupDirective
                     input.checked = value === selectedValue;
                 }
             },
-            defaultValue: () => this.defaultValue() ?? this.value(),
+            defaultValue: () => this.initialValue(),
             onReset: (value) => {
-                this.value.set(value);
-                if (!this.resetNgControl(value)) {
-                    this.onChange(value);
-                }
-                this.formUi.resetInteractionState?.();
+                // A connected Angular form owns its reset baseline.
+                if (!this.resetNgControl(undefined)) this.value.set(value);
+                this.reset();
             }
         });
 
-        let hasAppliedDefault = false;
-        effect(() => {
-            const defaultValue = this.defaultValue();
-            if (hasAppliedDefault || defaultValue === undefined) {
-                return;
-            }
-
-            hasAppliedDefault = true;
-            if (untracked(this.value) === null) {
-                this.value.set(defaultValue);
-            }
-        });
+        watch([], () => this.value.set(this.initialValue()));
 
         effect(() => {
             this.compositeRoot.setEnableHomeAndEndKeys(false);
@@ -231,6 +224,17 @@ export class RdxRadioGroupDirective
 
             this.compositeRoot.setHighlightedIndex(activeIndex);
         });
+    }
+
+    /** @ignore */
+    // eslint-disable-next-line no-restricted-syntax -- Observe initial model input presence, including null (ADR 0071).
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['value']?.currentValue !== undefined) this.hasExplicitValueInput = true;
+    }
+
+    private initialValue(): string | null {
+        const value = this.value();
+        return this.hasExplicitValueInput || this.hasCvaValue || value !== null ? value : (this.defaultValue() ?? null);
     }
 
     /**
@@ -273,7 +277,8 @@ export class RdxRadioGroupDirective
      * @ignore
      */
     writeValue(value: string | null): void {
-        this.value.set(value);
+        this.hasCvaValue = true;
+        untracked(() => this.value.set(value ?? null));
     }
 
     /**

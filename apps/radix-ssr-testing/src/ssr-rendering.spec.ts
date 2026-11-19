@@ -23,6 +23,7 @@ import {
 } from '@radix-ng/primitives/menu';
 import { RdxNumberFieldHiddenInput, RdxNumberFieldInput, RdxNumberFieldRoot } from '@radix-ng/primitives/number-field';
 import { RdxPortal } from '@radix-ng/primitives/portal';
+import { RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioItemInputDirective } from '@radix-ng/primitives/radio';
 import { _importsSelect, RdxSelectLabel, RdxSelectRoot, RdxSelectTrigger } from '@radix-ng/primitives/select';
 import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 import { describe, expect, it, vi } from 'vitest';
@@ -131,6 +132,34 @@ class AutocompleteDefaultsPage {}
 })
 class NumberFieldDefaultsPage {
     readonly amount = new FormControl(0, { nonNullable: true });
+}
+
+@Component({
+    selector: 'app-radio-defaults',
+    imports: [ReactiveFormsModule, RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioItemInputDirective],
+    template: `
+        <div [value]="null" defaultValue="free" rdxRadioRoot name="model-plan">
+            <span rdxRadioItem value="free">
+                <input rdxRadioItemInput />
+                Free
+            </span>
+        </div>
+        <div [formControl]="plan" defaultValue="free" rdxRadioRoot name="form-plan">
+            <span rdxRadioItem value="free">
+                <input rdxRadioItemInput />
+                Free
+            </span>
+        </div>
+        <div defaultValue="free" rdxRadioRoot name="default-plan">
+            <span rdxRadioItem value="free">
+                <input rdxRadioItemInput />
+                Free
+            </span>
+        </div>
+    `
+})
+class RadioDefaultsPage {
+    readonly plan = new FormControl<string | null>(null);
 }
 
 @Component({
@@ -521,6 +550,15 @@ describe('SSR rendering', () => {
         const inputs = [...parsed.querySelectorAll<HTMLInputElement>('input[rdxnumberfieldinput]')];
         expect(inputs.map((input) => input.value)).toEqual(['0', '', '11']);
         expect(parsed.querySelector<HTMLInputElement>('input[rdxnumberfieldhiddeninput]')?.value).toBe('0');
+        expect(html).toMatch(/ngh=/);
+    });
+    it('resolves Radio form and model values before server serialization', async () => {
+        const html = await renderToString('app-radio-defaults', RadioDefaultsPage);
+        const parsed = new DOMParser().parseFromString(html, 'text/html');
+        const radios = Array.from(parsed.querySelectorAll('[role="radio"]'));
+        const inputs = Array.from(parsed.querySelectorAll<HTMLInputElement>('input[type="radio"]'));
+        expect(radios.map((radio) => radio.getAttribute('aria-checked'))).toEqual(['false', 'false', 'true']);
+        expect(inputs.map((input) => input.checked)).toEqual([false, false, true]);
         expect(html).toMatch(/ngh=/);
     });
     it('resolves Menu model/default precedence before server serialization', async () => {

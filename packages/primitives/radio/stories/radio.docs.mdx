@@ -54,6 +54,17 @@ The item can attach to any element. When the host is a native `<button>` it is d
 `type="button"` and the native `disabled` attribute are applied for you — there is no `nativeButton`
 input to set.
 
+## Initial selection and reset
+
+`defaultValue` initializes the selection once when the group has no value binding or Angular form
+value. A supplied `null` means no selection, and `''` can select an item with an empty string value.
+Changes to `defaultValue` after initialization leave the current selection in place.
+
+Use `[(value)]` when binding the editable model directly. Use `ngModel`, a Reactive Forms control,
+or Signal Forms when a form owns the value. A native form reset restores the initial selection of
+a standalone group. A connected `NgControl` uses its own reset baseline, and Signal Forms
+`reset()` uses the field's reset contract.
+
 ## Change events
 
 `onValueChange` emits `{ value, eventDetails }`. The details include the `reason`, originating DOM

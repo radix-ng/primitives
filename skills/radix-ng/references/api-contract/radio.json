@@ -71,7 +71,8 @@
       "inputs": [
         {
           "name": "defaultValue",
-          "type": "string"
+          "type": "string",
+          "description": "Initial selection when neither a value binding nor an Angular form supplies one."
         },
         {
           "name": "disabled",

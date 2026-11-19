@@ -1,84 +1,71 @@
-# Radio — parity matrix
+# Radio — Base UI compatibility
 
-Initial inventory: 2026-11-17. Reference pin: **Base UI 1.9.0**,
-`cf696d6f6e08c699c5bda24d5a033430909f2285` ([reference manifest](../../../apps/parity-testing/reference.json)).
+Updated 2026-11-19 against Base UI **1.9.0** at
+[`cf696d6f6e08c699c5bda24d5a033430909f2285`](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/radio),
+as pinned in [reference.json](../../../apps/parity-testing/reference.json).
+The Angular entry covers both **RadioGroup** and **Radio**. Menu RadioGroup has its own matrix.
 
-Primary counterpart: [radio](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/radio).
-Pinned exported parts/functions: `Root`, `Indicator`.
-The Angular entry also covers [radio-group](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/radio-group); audit both part sets.
+The first increment resolves initial selection and late defaults. The
+[paired browser suite](../../../apps/parity-testing/primitives/radio/README.md) covers rendered
+selection, native serialization and the selection outcome of click cancellation. Angular tests
+also cover initial form writes and reset.
 
-**Scope: initial source inventory and comparison backlog.** Exported local declarations and evidence
-locations were inventoried; complete per-handler, per-attribute and browser equivalence has not been
-established. A source observation below is not a newly passing runtime or differential result.
+**Breaking changes are permitted.** Apply the [state ownership contract](../../../docs/engineering/state-ownership.md)
+per field. Keep the writable form model where Angular Forms requires it. Resolve strict parent
+ownership separately if it is needed, without mirroring the selection in two writable stores.
+Update an existing ADR if a later increment replaces an accepted design.
 
-**Breaking changes are permitted; backward compatibility does not constrain the target.** Apply the
-[state ownership/defaults contract](../../../docs/engineering/state-ownership.md) per field. Inputs,
-models, outputs, defaults and part boundaries may change; do not retain compatibility mirrors or
-aliases solely for the old API. Review earlier ADR decisions explicitly when replacing them.
+## Public parts
 
-## Public surface inventory
+| Pinned counterpart                                                                                                                                    | Angular part                                                                               | Boundary                                                                                                                                                                                            |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [RadioGroup](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/radio-group/RadioGroup.tsx)              | [RdxRadioGroupDirective](src/radio-root.directive.ts)                                      | One group-owned selection. Angular exposes `value`/`valueChange`, CVA and a Signal Forms model. Both expose `defaultValue`, `onValueChange`, `name`, `form`, `disabled`, `readOnly` and `required`. |
+| [Radio.Root](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/radio/root/RadioRoot.tsx)                | [RdxRadioItemDirective](src/radio-item.directive.ts)                                       | Consumer supplies the host. Angular infers a native button and requires a group. The pin also renders a standalone Root and supports arbitrary value identity. Angular item values are strings.     |
+| Generated radio input per Root; `inputRef` on Root and Group                                                                                          | [RdxRadioItemInputDirective](src/radio-item-input.directive.ts) plus the group form bridge | Angular's authored input is optional. It enables native constraints and implicit label activation. The group supplies serialized entries when the selected item has no registered input.            |
+| [Radio.Indicator](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/radio/indicator/RadioIndicator.tsx) | [RdxRadioIndicatorDirective](src/radio-indicator.directive.ts)                             | Both expose `keepMounted`, with different view lifetimes. See G5.                                                                                                                                   |
 
-Source of truth: [entry barrel](index.ts). These are directly exported decorated classes, not a
-claim that inherited/host-directive APIs or every upstream prop have already been compared. Exported
-composition bases, guards and internal helpers are not thereby promoted to stable public widget parts.
+## Evidence and priorities
 
-| Angular declaration                                               | Selector / role            | Direct input/model/output declarations                                                                        |
-| ----------------------------------------------------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| [`RdxRadioGroupDirective`](src/radio-root.directive.ts)           | `[rdxRadioRoot]`           | `value` (model), `defaultValue`, `name`, `form`, `disabled`, `readOnly`, `required`, `onValueChange` (output) |
-| [`RdxRadioIndicatorDirective`](src/radio-indicator.directive.ts)  | `[rdxRadioIndicator]`      | `keepMounted`                                                                                                 |
-| [`RdxRadioItemInputDirective`](src/radio-item-input.directive.ts) | `input[rdxRadioItemInput]` | No direct signal input/model/output declaration.                                                              |
-| [`RdxRadioItemDirective`](src/radio-item.directive.ts)            | `[rdxRadioItem]`           | `value`, `id`, `required`, `disabled`, `readOnly`                                                             |
+**S** = source audit, **U** = Angular unit, **B** = paired browser observation, **SSR** = Angular
+server render. Each row is scoped to the stated contract.
 
-Inherited classes and composed directives may add state/API. Follow those sources when completing
-the comparison; similar part names or selector counts do not prove the same contract.
+| ID                                         | Status                   | Evidence and remaining comparison                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ------------------------------------------ | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| G1 — initial selection and defaults        | Resolved, scoped B/U/SSR | A defined model/form value wins, including `null` and `''`. An uncontrolled default seeds once, including the initially absent case. Later changes preserve selection. B checks ARIA and checked attributes, native checked state, FormData, silent request initialization/external writes and veto versus accepted click. U checks CVA, ngModel, Signal Forms and reset baselines. SSR checks selected markup for bound null, form null and default.                                      |
+| G2 — editable value and change transaction | Partial, S/B/U           | Under the paired fixtures a veto preserves selection and serialization, and an accepted request updates both. Angular's one-way `[value]` still edits a model. The pin keeps controlled state with the parent. Compare ignored/delayed/replaced requests and decide the API boundary around form models. Also compare event trust, trigger, native default prevention, callback order, touch timing and exactly-once notification across host/input paths.                                 |
+| G3 — native activation and composite focus | Partial, S/U             | Both delegate roving navigation to Composite, allow Shift with arrows and omit Home/End. Angular selects on Space keydown and handles pointer activation on the host. The pin uses button semantics and forwards selection to the native input. Compare focus entry, LTR/RTL arrows, repeat/release, canceled and modified keys, disabled-item skipping, read-only focus and the tab stop after cancellation or external selection.                                                        |
+| G4 — native forms, labels and Field state  | Partial, S/B/U           | B compares one named local form with authored Angular inputs. U also covers an external form, generated fallback, implicit label and reset. Compare constraints, invalid focus, external-form changes, removed/disabled selected items, nesting and label/description wiring. The pin routes Radio through Field/Fieldset and forwards representative inputs. Angular primarily exposes validation/interaction state on Group and has no equivalent generated per-item input/ref contract. |
+| G5 — Indicator lifetime and CSS hooks      | Source divergence        | The pin retains an exiting view until motion completes, then unmounts unless kept. Angular keeps the authored element, hides it synchronously by default and uses persistent checked/unchecked state as starting/ending hooks. Compare initial state, appearance, exit, reopen and retained view identity before changing part ownership.                                                                                                                                                  |
+| G6 — values, collection and hydration      | Partial, S/SSR           | The Angular group accepts `string \| null`; Base UI also compares non-string identities before serialization. Compare dynamic item identity, duplicate tokens, reorder/removal, orphan selection and isolated groups. SSR checks initial markup only. Client hydration, IDs, focus and retained/animated Indicator coverage remain open.                                                                                                                                                   |
 
-## State ownership and defaults
+Group exposes `role="radiogroup"`, `aria-required`, `aria-disabled`, `aria-readonly` and local
+validation/interaction attributes. Item exposes `role="radio"`, `aria-checked`,
+`data-composite-item-active`, `data-checked`, `data-unchecked`, `data-disabled`, `data-readonly`
+and `data-required`. Indicator mirrors item state plus its motion hooks. The pin's Item and
+Indicator also expose Field validity and interaction state. No Radio CSS variable contract was found
+in either implementation. These are source observations beyond the attributes asserted in G1.
 
-Ownership class for this entry: **Editable form value and auxiliary state**. The [shared contract](../../../docs/engineering/state-ownership.md)
-distinguishes controlled UI requests, editable form models, readonly configuration, native DOM state
-and derived/render state. Local writes to required form models are legitimate Angular behavior.
-For strict controlled UI state, a request must not mutate the effective value before parent acceptance.
+## G1 reset semantics
 
-| State field / source                                          | Current declaration           | Ownership review                                                                                               |
-| ------------------------------------------------------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| [`RdxRadioGroupDirective.value`](src/radio-root.directive.ts) | `model<string \| null>(null)` | Editable form model where the actual Angular control contract requires it; coordinate CVA/native/Signal Forms. |
-| [`RdxRadioItemDirective.value`](src/radio-item.directive.ts)  | `input.required<string>()`    | Readonly supplied data/identity/configuration; no local model write.                                           |
+Native reset restores the initial resolved value of a standalone group. The snapshot is shared with
+initial selection, so a conflicting or late `defaultValue` cannot change the baseline. A connected
+`NgControl` resets through its Angular control, including a nullable Reactive Forms control's null
+baseline or the initial value of a non-nullable control. Signal Forms `reset()` follows its own field
+contract. The paired suite does not assert React/Angular reset equivalence.
 
-| Declared default / source                                            | Declaration                | Required comparison                                                                                                                                         |
-| -------------------------------------------------------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`RdxRadioGroupDirective.defaultValue`](src/radio-root.directive.ts) | `input<string>(undefined)` | Initial supplied/falsy/empty/form priority, initial-only snapshot, late changes and reset baseline. Distinguish state defaults from reactive configuration. |
+## Verification
 
-Always include allowed `false`, `0`, `''`, `[]` and `null` cases; initial parent/CVA/Signal Forms
-writes; default changes after initialization; ignored/delayed/replaced controlled requests; cancellation
-and native/form reset. Not every case applies to readonly or infrastructure entries: mark those
-boundaries explicitly instead of converting all models to readonly inputs.
+```bash
+pnpm test-parity radio
+pnpm exec vitest run --config packages/primitives/vite.config.ts packages/primitives/radio/__tests__
+pnpm exec vitest run --config apps/radix-ssr-testing/vite.config.ts -t 'resolves Radio form'
+pnpm agents:check
+```
 
-## Family-specific comparison matrix
-
-“Source” identifies a local implementation fact. “Compare/verify/audit” is pending work. Priorities
-describe the target work, not a certificate or a reproduced defect count.
-
-| Area                  | Current observation / required target comparison                                                                                                                                        | Priority |
-| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| Selection owner       | Source: Group value is a model; Item value is a readonly identity. Keep form edit semantics and one group-owned selection; do not create per-item selected models.                      | P1       |
-| Default priority      | Source: defaultValue uses a first-defined latch with a null-value guard. Compare explicit null, initial CVA/model values, late defaults and native form reset.                          | P1       |
-| Combined part mapping | Angular Radio includes Group, Item, Indicator and native input; compare both pinned Radio and RadioGroup, including keyboard/RTL, required/disabled/readonly, labels and serialization. | P2       |
-
-Also compare the actual emitted per-part attributes/CSS variables with both the pinned declaration
-files and runtime state mapping. Check native hosts, event reasons/details/default prevention,
-accessibility relationships, keyboard/RTL and cleanup where applicable. Angular framework adapters
-are permitted; changed observable behavior needs evidence or an explicitly reviewed deviation.
-
-## Evidence inventory and next checks
-
-- [Local unit files](__tests__): **1 file discovered**; not a passing-test count.
-- No same-family named browser behavior file was found. Cross-family consumer or shared-mechanism checks may exist; locate them before claiming absence or coverage.
-- No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
-- No conventional same-family SSR page was found; inspect shared SSR/hydration fixtures for applicable cases. No SSR/hydration result is claimed here.
-
-No runtime suite was executed for this initial matrix sweep. Complete focused state/DI units,
-native/layout browser cases and SSR/hydration checks before promoting rows; add a paired pinned
-fixture before certifying equivalent observable behavior. See the
-[verification skill](../../../.agents/skills/radix-testing/SKILL.md),
-[matrix index](../../../docs/engineering/parity-matrices.md) and
-[upstream preparation guide](../../../docs/engineering/upstream-reference.md).
+Initial Chromium comparison reproduced two Angular failures: `bound-null` and `initially-empty`.
+The corrected suite passed **6 scenarios × 3 engines (18 comparisons)**, without expected-difference
+exceptions. Checkpoints compare state and request value/reason. Raw click events are recorded
+separately: the Angular handler receives the trusted host click, and the pin handles an untrusted
+forwarded click on the hidden input. Event parity remains in G2.
+[Radio unit suite](__tests__/radio.spec.ts): **29 passing tests**.
+[SSR render suite](../../../apps/radix-ssr-testing/src/ssr-rendering.spec.ts): **1 focused pass**.

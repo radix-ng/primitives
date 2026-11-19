@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { form, FormField, required } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import {
@@ -291,14 +291,14 @@ describe('RdxRadio', () => {
     imports: [ReactiveFormsModule, RdxRadioGroupDirective, RdxRadioItemDirective],
     template: `
         <form id="checkout"></form>
-        <div [formControl]="control" rdxRadioRoot name="plan" form="checkout">
+        <div [formControl]="control" defaultValue="pro" rdxRadioRoot name="plan" form="checkout">
             <button rdxRadioItem value="free">Free</button>
             <button rdxRadioItem value="pro">Pro</button>
         </div>
     `
 })
 class NativeFormRadioHost {
-    readonly control = new FormControl<string | null>('free');
+    control = new FormControl<string | null>('free', { nonNullable: true });
 }
 
 describe('RdxRadioGroup native form contract', () => {
@@ -334,6 +334,101 @@ describe('RdxRadioGroup native form contract', () => {
         fixture.detectChanges();
         expect(new FormData(form).has('plan')).toBe(false);
     });
+
+    it('keeps a nullable FormControl empty at setup and restores its Angular reset baseline', async () => {
+        TestBed.configureTestingModule({ imports: [NativeFormRadioHost] });
+        const fixture = TestBed.createComponent(NativeFormRadioHost);
+        const control = new FormControl<string | null>(null);
+        fixture.componentInstance.control = control;
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+        const root = fixture.debugElement
+            .query(By.directive(RdxRadioGroupDirective))
+            .injector.get(RdxRadioGroupDirective);
+        expect(root.value()).toBeNull();
+        expect(new FormData(form).has('plan')).toBe(false);
+
+        control.setValue('free');
+        fixture.detectChanges();
+        expect(new FormData(form).getAll('plan')).toEqual(['free']);
+
+        form.reset();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+        fixture.detectChanges();
+        expect(control.value).toBeNull();
+        expect(root.value()).toBeNull();
+        expect(new FormData(form).has('plan')).toBe(false);
+    });
+});
+
+@Component({
+    imports: [FormsModule, RdxRadioGroupDirective, RdxRadioItemDirective],
+    template: `
+        <div [(ngModel)]="plan" defaultValue="free" rdxRadioRoot>
+            <button rdxRadioItem value="free">Free</button>
+            <button rdxRadioItem value="">No preference</button>
+        </div>
+    `
+})
+class RadioNgModelHost {
+    plan: string | null = null;
+}
+
+it.each([null, ''])('gives an initial ngModel value of %j priority over the radio default', async (plan) => {
+    const fixture = TestBed.createComponent(RadioNgModelHost);
+    fixture.componentInstance.plan = plan;
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const root = fixture.debugElement.query(By.directive(RdxRadioGroupDirective)).injector.get(RdxRadioGroupDirective);
+    expect(root.value()).toBe(plan);
+    expect(fixture.componentInstance.plan).toBe(plan);
+});
+
+@Component({
+    imports: [RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioItemInputDirective],
+    template: `
+        <form>
+            <div [(value)]="value" [defaultValue]="defaultValue()" rdxRadioRoot name="plan">
+                <button rdxRadioItem value="free">
+                    Free
+                    <input rdxRadioItemInput />
+                </button>
+                <button rdxRadioItem value="pro">
+                    Pro
+                    <input rdxRadioItemInput />
+                </button>
+            </div>
+        </form>
+    `
+})
+class RadioModelResetHost {
+    readonly value = signal<string | null>('free');
+    readonly defaultValue = signal('pro');
+}
+
+it.each(['free', null])('restores the originally supplied radio model %j on native reset', async (initialValue) => {
+    const fixture = TestBed.createComponent(RadioModelResetHost);
+    const host = fixture.componentInstance;
+    host.value.set(initialValue);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+    const expected = initialValue === null ? [] : [initialValue];
+    expect(new FormData(form).getAll('plan')).toEqual(expected);
+
+    form.querySelectorAll('button')[1].click();
+    host.defaultValue.set('other');
+    fixture.detectChanges();
+    expect(new FormData(form).getAll('plan')).toEqual(['pro']);
+
+    form.reset();
+    await new Promise<void>((resolve) => setTimeout(resolve, 0));
+    fixture.detectChanges();
+    expect(host.value()).toBe(initialValue);
+    expect(new FormData(form).getAll('plan')).toEqual(expected);
 });
 
 @Component({
@@ -404,7 +499,7 @@ describe('RdxRadioGroup validation state (batch #4)', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [FormField, RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioItemInputDirective],
     template: `
-        <div [formField]="plan" rdxRadioRoot name="plan">
+        <div [formField]="plan" defaultValue="free" rdxRadioRoot name="plan">
             <button id="free" rdxRadioItem value="free"><input rdxRadioItemInput /></button>
             <button id="pro" rdxRadioItem value="pro"><input rdxRadioItemInput /></button>
         </div>
@@ -430,6 +525,16 @@ describe('RdxRadioGroup with Signal Forms', () => {
         fixture = TestBed.createComponent(RadioSignalFormHost);
         host = fixture.componentInstance;
         fixture.detectChanges();
+    });
+
+    it('preserves a null Signal Forms value over a supplied default', () => {
+        const root = fixture.debugElement
+            .query(By.directive(RdxRadioGroupDirective))
+            .injector.get(RdxRadioGroupDirective);
+        expect(root.value()).toBeNull();
+        expect(host.plan().value()).toBeNull();
+        expect(host.plan().dirty()).toBe(false);
+        expect(fixture.nativeElement.querySelector('[aria-checked="true"]')).toBeNull();
     });
 
     it('updates the bound field on selection', () => {
