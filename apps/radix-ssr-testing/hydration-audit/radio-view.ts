@@ -7,7 +7,8 @@ import {
     RdxFieldRoot
 } from '@radix-ng/primitives/field';
 import { RdxFieldsetLegend, RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
-import { RdxFormRoot } from '@radix-ng/primitives/form';
+import { RdxFormRoot, type RdxFormSubmitEvent } from '@radix-ng/primitives/form';
+import { RdxPortal } from '@radix-ng/primitives/portal';
 import {
     RdxRadioGroupDirective,
     RdxRadioIndicatorDirective,
@@ -27,6 +28,7 @@ import {
         RdxFieldsetLegend,
         RdxFieldsetRoot,
         RdxFormRoot,
+        RdxPortal,
         RdxRadioGroupDirective,
         RdxRadioIndicatorDirective,
         RdxRadioIndicatorPresenceDirective,
@@ -38,13 +40,14 @@ import {
             [attr.data-radio-group-ref]="groupRef()"
             [attr.data-radio-item-ref]="itemRef()"
             [attr.data-radio-submits]="submits()"
-            (onFormSubmit)="submits.update(increment)"
+            [attr.data-radio-submit-value]="submitValue()"
+            (onFormSubmit)="recordSubmit($event)"
             data-radio-audit
             rdxFormRoot
         >
-            <fieldset rdxFieldsetRoot>
+            <fieldset #fieldset rdxFieldsetRoot>
                 <legend data-radio-node="legend" rdxFieldsetLegend>Plan</legend>
-                <div rdxFieldRoot name="plan">
+                <div [container]="portaled() ? outside : fieldset" rdxPortal rdxFieldRoot name="plan">
                     <p rdxFieldDescription>Choose one plan.</p>
                     <div
                         #group="rdxRadioRoot"
@@ -84,9 +87,11 @@ import {
                 </div>
             </fieldset>
             <button (click)="group.value.set(null)" type="button" data-radio-clear>Clear plan</button>
+            <button (click)="portaled.set(true)" type="button" data-radio-move>Move plan outside</button>
             <button type="submit" data-radio-submit>Submit plan</button>
             <output>{{ requests() }}</output>
         </form>
+        <div #outside data-radio-portal></div>
     `
 })
 export class RadioAuditView {
@@ -96,5 +101,12 @@ export class RadioAuditView {
     protected readonly setItemRef = (input: HTMLInputElement | null) => this.itemRef.set(input?.id ?? null);
     protected readonly requests = signal(0);
     protected readonly submits = signal(0);
+    protected readonly submitValue = signal<string | null>(null);
+    protected readonly portaled = signal(false);
     protected readonly increment = (count: number) => count + 1;
+
+    protected recordSubmit({ values }: RdxFormSubmitEvent): void {
+        this.submitValue.set(String(values['plan']));
+        this.submits.update(this.increment);
+    }
 }

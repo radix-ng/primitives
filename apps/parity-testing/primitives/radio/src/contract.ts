@@ -23,6 +23,7 @@ export interface Settings {
     refs?: 'selection' | 'detach';
     validation?: 'onBlur' | 'onChange' | 'onSubmit';
     constraints?: 'required' | 'eligibility' | 'disabled-selection';
+    portal?: 'field' | 'item';
 }
 
 export const cases = {
@@ -71,7 +72,9 @@ export const cases = {
     'validation-submit': { validation: 'onSubmit' },
     'constraints-required': { constraints: 'required' },
     'constraints-eligibility': { constraints: 'eligibility' },
-    'constraints-disabled-selection': { constraints: 'disabled-selection' }
+    'constraints-disabled-selection': { constraints: 'disabled-selection' },
+    'portal-field': { portal: 'field' },
+    'portal-item': { portal: 'item' }
 } satisfies Record<string, Settings>;
 
 export const options = [

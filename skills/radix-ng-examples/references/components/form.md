@@ -10,7 +10,7 @@ The top of the forms layer cake: aggregates fields, maps server errors by name, 
 
 - ✅ Maps `errors` (server/external) onto fields by `name`; messages flow to `rdxFieldError`.
 - ✅ Clears a field's external error as soon as the user edits it; `onClearErrors` emits the remaining map.
-- ✅ Intercepts submit (`preventDefault`), emitting `onFormSubmit` with values serialized from `FormData`.
+- ✅ Intercepts submit (`preventDefault`), emitting `onFormSubmit` with native `FormData` values and any registered portaled values.
 - ✅ Blocks submit when any field is invalid and focuses the first invalid field, in DOM order.
 - ✅ Handles native `reset`: clears errors and re-syncs each field's touched/dirty/focused/filled state.
 - ✅ Aggregate state via `data-invalid`, `data-dirty`, `data-touched`, and `data-submitting`.

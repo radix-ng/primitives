@@ -53,6 +53,11 @@ interface RadioRequiredError {
     readonly message: string;
 }
 
+/** An explicit form attribute takes precedence even when the specified form does not exist. */
+function hasNoFormOwner(input: HTMLInputElement): boolean {
+    return input.form === null && !input.hasAttribute('form');
+}
+
 export interface RdxRadioValueChangeEvent<Value = string> {
     value: Value;
     eventDetails: RdxRadioValueChangeEventDetails;
@@ -321,7 +326,8 @@ export class RdxRadioGroupDirective<Value = string>
                 changed: this.validationChanged,
                 nativeErrors: this.nativeErrors,
                 refreshNativeValidity: () => this.refreshNativeValidity(),
-                invalidFocusTarget: () => this.requiredError()?.target ?? null
+                invalidFocusTarget: () => this.requiredError()?.target ?? null,
+                portaledEntry: () => this.portaledEntry()
             });
             afterEveryRender({ read: () => this.refreshNativeValidity() });
             inject(DestroyRef).onDestroy(() => {
@@ -404,13 +410,27 @@ export class RdxRadioGroupDirective<Value = string>
         const form = this.formRoot?.element;
         for (const { element, nativeInput } of this.items()) {
             const input = nativeInput()?.element;
-            if (!input?.isConnected || !input.willValidate || (form && input.form !== form)) continue;
+            if (!input?.isConnected || !input.willValidate) continue;
+            if (form && input.form !== form && !hasNoFormOwner(input)) continue;
             if (input.validity.valueMissing) {
                 this.requiredError.set({ target: element, message: input.validationMessage });
                 return;
             }
         }
         this.requiredError.set(null);
+    }
+
+    private portaledEntry(): readonly [name: string, value: string] | undefined {
+        const input = this.selectedItem()?.nativeInput()?.element;
+        if (
+            !input?.isConnected ||
+            !hasNoFormOwner(input) ||
+            !input.checked ||
+            !input.name ||
+            input.matches(':disabled')
+        )
+            return undefined;
+        return [input.name, input.value];
     }
 
     /** @ignore Bridge the CVA `onTouched` so `markAsTouched()` also notifies Reactive/template forms. */

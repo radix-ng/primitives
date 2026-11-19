@@ -46,6 +46,8 @@ Group and item `inputRef` callbacks also resolve to the hydrated inputs and the 
 post-hydration selection.
 The hydrated form blocks an empty required group, focuses the original radio and submits
 after a selection.
+Moving the hydrated Field outside the native form keeps the original inputs and required focus.
+The declaring Form emits the portaled value through its submit callback.
 
 ```bash
 node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=eager-radio

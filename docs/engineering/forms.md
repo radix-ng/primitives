@@ -10,6 +10,9 @@ Radio Group supplies browser `valueMissing` errors from authored `rdxRadioItemIn
 to its enclosing Field. In Form, Field refreshes the native constraint before the submit guard.
 See the [Radio matrix](../../packages/primitives/radio/PARITY.md#native-required-constraints).
 
+Field can supply a portaled selection to Form alongside the native `FormData` entries. Radio
+uses this path for a connected, checked input with no native owner and no explicit `form` attribute.
+
 Form chooses the first invalid control in DOM order, using the actual control or the visible
 focus target supplied by a composite control. A registered invalid field without a target still
 blocks submission. Nested Fields keep their labels, descriptions and validation state scoped to

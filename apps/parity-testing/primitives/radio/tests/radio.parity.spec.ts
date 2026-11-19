@@ -28,11 +28,14 @@ class RadioDriver {
         this.settings = cases[name as keyof typeof cases];
         this.nativeButton = this.settings.nativeButton ?? false;
         await this.page.goto('/' + this.framework + '.html?case=' + name);
-        const count = this.settings.collection
-            ? collectionOptions.length
-            : this.settings.forms || this.settings.refs || this.settings.constraints
-              ? 2
-              : options.length;
+        const count =
+            this.settings.portal === 'item'
+                ? 1
+                : this.settings.collection
+                  ? collectionOptions.length
+                  : this.settings.forms || this.settings.refs || this.settings.constraints || this.settings.portal
+                    ? 2
+                    : options.length;
         await expect(this.group.getByRole('radio')).toHaveCount(count);
         this.metadata = await this.page.evaluate(() => window.radioParity.reference);
     }
@@ -313,6 +316,82 @@ async function constraintsScenario(driver: RadioDriver, mode: NonNullable<Settin
     await expect(group.getByRole('radio')).toHaveCount(0);
     await submit.click();
     await checkpoint('removing the radios drops their constraint', false, 3);
+}
+
+async function portalScenario(driver: RadioDriver, mode: NonNullable<Settings['portal']>) {
+    const { page, group } = driver;
+    const owner = page.locator('form#owner');
+    const outside = page.getByTestId('outside');
+    const beta = outside.getByRole('radio', { name: 'Beta' });
+    const alpha = page.getByRole('radio', { name: 'Alpha' });
+    const error = page.locator('#density-missing');
+    const button = (name: string) => page.getByRole('button', { name, exact: true });
+    const read = () =>
+        owner.evaluate((form: HTMLFormElement) => ({
+            native: new FormData(form).getAll('density'),
+            external: new FormData(document.querySelector<HTMLFormElement>('#external')!).getAll('density'),
+            submitted: document.querySelector('[data-testid="submitted"]')!.textContent?.trim(),
+            submits: Number(document.querySelector('[data-testid="submits"]')!.textContent)
+        }));
+    const checkpoint = async (
+        name: string,
+        submits: number,
+        submitted: string,
+        native: string[] = [],
+        external: string[] = []
+    ) => {
+        await expect.poll(read, name).toEqual({ native, external, submitted, submits });
+        driver.checkpoints.push({ name, state: await read() });
+        expect(driver.errors).toEqual([]);
+    };
+    const submit = () => button('Submit').click();
+
+    await expect(beta).toBeVisible();
+    await expect(owner.getByRole('radio')).toHaveCount(mode === 'field' ? 0 : 1);
+    if (mode === 'field') {
+        await expect(error).toBeHidden();
+        await submit();
+        await expect(group).toHaveAttribute('aria-invalid', 'true');
+        await expect(alpha).toBeFocused();
+        await expect(error).toBeVisible();
+        await checkpoint('ownerless required radio blocks the declaring Form', 0, 'empty');
+    }
+
+    await beta.click();
+    await expect(beta).toHaveAttribute('aria-checked', 'true');
+    await expect(error).toBeHidden();
+    await submit();
+    await checkpoint('onFormSubmit includes the portaled selection without a native entry', 1, 'b');
+
+    if (mode === 'item') {
+        await alpha.click();
+        await expect(beta).toHaveAttribute('aria-checked', 'false');
+        await submit();
+        await checkpoint('an inline selection submits once through the native input', 2, 'a', ['a']);
+        await beta.click();
+        await button('Toggle Beta').click();
+        await expect(beta).toHaveCount(0);
+        await submit();
+        await checkpoint('an unmounted portaled selection is absent', 3, 'empty');
+        return;
+    }
+
+    await button('Use owner form').click();
+    await submit();
+    await checkpoint('explicit ownership submits once through the native input', 2, 'b', ['b']);
+    await button('Use external form').click();
+    await submit();
+    await checkpoint('an externally owned selection only belongs to the external form', 3, 'empty', [], ['b']);
+    await button('Use missing form').click();
+    await submit();
+    await checkpoint('an unresolved explicit owner opts out of the declaring Form', 4, 'empty');
+    await button('Clear form owner').click();
+    await submit();
+    await checkpoint('clearing the explicit owner restores contextual submission', 5, 'b');
+    await button('Toggle disabled Beta').click();
+    await expect(beta).toHaveAttribute('aria-checked', 'true');
+    await submit();
+    await checkpoint('a disabled portaled selection satisfies required but contributes no entry', 6, 'empty');
 }
 
 async function validationScenario(driver: RadioDriver, mode: NonNullable<Settings['validation']>) {
@@ -782,6 +861,7 @@ const scenarios = Object.entries(cases).map(([name, settings]) => ({
         if ('indicator' in settings) return indicatorScenario(driver, settings.indicator);
         if ('collection' in settings) return collectionScenario(driver, settings.collection);
         if ('refs' in settings) return refsScenario(driver, settings.refs);
+        if ('portal' in settings) return portalScenario(driver, settings.portal);
         if ('validation' in settings) return validationScenario(driver, settings.validation);
         if ('constraints' in settings) return constraintsScenario(driver, settings.constraints);
         if ('keyboard' in settings) return keyboardScenario(driver, settings);

@@ -4,8 +4,9 @@
 
 > Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
-No `@angular/forms` at all — a valid submit serializes the form's `FormData` into a plain values object
-(repeated names collapse into arrays).
+A valid submit serializes the form's `FormData` into a plain values object. Compatible controls
+such as [Radio in a portal](../components/radio.md#radio-in-a-portal) can add values
+through their Field registration. Repeated names collapse into arrays.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';

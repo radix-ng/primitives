@@ -22,7 +22,7 @@ export type RdxFormErrors = Record<string, string | string[]>;
 
 /** Payload of {@link RdxFormRoot.onFormSubmit}. Mirrors Base UI's `(values, eventDetails)` shape. */
 export interface RdxFormSubmitEvent {
-    /** The form's values serialized from `FormData` (repeated names collapse into arrays). */
+    /** Native and registered portaled form values. Repeated names collapse into arrays. */
     values: Record<string, FormDataEntryValue | FormDataEntryValue[]>;
     /** Why the submit happened (Base UI `SubmitEventDetails.reason`). Always `'none'` for a user submit. */
     reason: 'none';
@@ -53,6 +53,8 @@ export interface RdxFormFieldRegistration {
     focusTarget?: () => HTMLElement | null;
     /** Refresh DOM-owned constraints before this form reads actual validity. */
     refreshNativeValidity?: () => void;
+    /** A successful portaled control's entry when it belongs to this Form through Field context. */
+    portaledEntry?: () => readonly [name: string, value: string] | undefined;
     /** Reset the field's interaction state (touched/dirty/focused → false, filled re-sync). */
     resetState: () => void;
 }
@@ -400,7 +402,12 @@ export class RdxFormRoot {
             return;
         }
 
-        const values = serializeFormData(new FormData(this.form));
+        const data = new FormData(this.form);
+        for (const field of this.fields()) {
+            const entry = field.portaledEntry?.();
+            if (entry) data.append(...entry);
+        }
+        const values = serializeFormData(data);
         this.onFormSubmit.emit({ values, reason: 'none', event });
     }
 

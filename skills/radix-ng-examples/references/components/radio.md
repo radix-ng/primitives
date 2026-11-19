@@ -125,6 +125,15 @@ inside Field to display a custom message for this error.
 Form checks the registered inputs that it owns. Disabling a fieldset or moving an input to a
 different form changes which inputs can block submission.
 
+### Radio in a portal
+
+When a Radio Group belongs to `rdxFieldRoot` inside `rdxFormRoot`, its authored inputs can
+participate in the form even when a portal moves them outside the native form element. An enabled
+input with no browser form owner and no `form` attribute contributes its required constraint.
+A checked input in that case contributes its serialized value to `onFormSubmit`. Browser
+`FormData` follows native form association. To include the portaled selection in `FormData`, set the
+Radio Group's `form` input to the ID of the owning form.
+
 ## Option values
 
 Give each item a distinct value. Numbers and strings are separate values, and objects and arrays

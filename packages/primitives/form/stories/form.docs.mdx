@@ -11,10 +11,10 @@ import * as FormStories from './form.stories';
 
 #### The top of the forms layer cake: aggregates fields, maps server errors by name, and intercepts submit and reset.
 
-Form rides the native `<form>` element. It owns no values and runs no validation — Angular form
-systems (or Field inputs) stay the source of validity. It maps external/server errors onto fields by
-`name`, clears them as the user edits, serializes values on submit, focuses the first invalid field,
-and resets field interaction state on native reset.
+Form uses the native `<form>` element. Angular form systems, Field inputs and registered native
+constraints supply validity. Form maps server errors onto fields by `name`, clears them as the user
+edits, serializes values on submit, focuses the first invalid field and resets field interaction
+state on native reset.
 
 <Canvas sourceState="hidden" of={FormStories.Default} />
 
@@ -22,7 +22,7 @@ and resets field interaction state on native reset.
 
 - ✅ Maps `errors` (server/external) onto fields by `name`; messages flow to `rdxFieldError`.
 - ✅ Clears a field's external error as soon as the user edits it; `onClearErrors` emits the remaining map.
-- ✅ Intercepts submit (`preventDefault`), emitting `onFormSubmit` with values serialized from `FormData`.
+- ✅ Intercepts submit (`preventDefault`), emitting `onFormSubmit` with native `FormData` values and any registered portaled values.
 - ✅ Blocks submit when any field is invalid and focuses the first invalid field, in DOM order.
 - ✅ Handles native `reset`: clears errors and re-syncs each field's touched/dirty/focused/filled state.
 - ✅ Aggregate state via `data-invalid`, `data-dirty`, `data-touched`, and `data-submitting`.
@@ -97,8 +97,9 @@ change.
 
 ### Native controls
 
-No `@angular/forms` at all — a valid submit serializes the form's `FormData` into a plain values object
-(repeated names collapse into arrays).
+A valid submit serializes the form's `FormData` into a plain values object. Compatible controls
+such as [Radio in a portal](?path=/docs/primitives-radio-group--docs#radio-in-a-portal) can add values
+through their Field registration. Repeated names collapse into arrays.
 
 <Canvas of={FormStories.NativeControls} />
 

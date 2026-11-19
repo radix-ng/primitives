@@ -7,6 +7,7 @@ import { ReactRadioCollection } from './collection.react';
 import { ReactRadioConstraints } from './constraints.react';
 import { config, installProbe, options } from './contract';
 import { ReactRadioForms } from './forms.react';
+import { ReactRadioPortal } from './portal.react';
 import { ReactRadioRefs } from './refs.react';
 import { ReactRadioValidation } from './validation.react';
 
@@ -111,7 +112,9 @@ function ReactRadio() {
 }
 
 createRoot(document.getElementById('root')!).render(
-    settings.constraints ? (
+    settings.portal ? (
+        <ReactRadioPortal />
+    ) : settings.constraints ? (
         <ReactRadioConstraints />
     ) : settings.validation ? (
         <ReactRadioValidation />

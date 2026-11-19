@@ -25,58 +25,61 @@ async function snapshot(page: Page) {
         const detachedTrigger = document.querySelector('[data-detached-dialog-trigger]');
         const detachedPopup = document.querySelector('[data-detached-dialog-popup]');
         const radioForm = document.querySelector<HTMLFormElement>('[data-radio-audit]');
-        const radioGroup = radioForm?.querySelector('[role="radiogroup"]');
+        const radioView = radioForm?.parentElement;
+        const radioGroup = radioView?.querySelector('[role="radiogroup"]');
         return {
             ready: window.portalHydrationAudit?.ready ?? false,
             stable: window.portalHydrationAudit?.stable,
             errors: window.portalHydrationAudit?.errors ?? [],
             constructed: window.portalHydrationAudit?.constructed ?? [],
             duplicateIds: ids.filter((id, index) => ids.indexOf(id) !== index),
-            radio: radioForm
-                ? {
-                      nodes: Object.fromEntries(
-                          [...radioForm.querySelectorAll<HTMLElement>('[data-radio-node]')].map((node) => [
-                              node.dataset.radioNode!,
-                              {
-                                  id: node.id,
-                                  reused: window.auditServerNodes?.['radio:' + node.dataset.radioNode] === node
-                              }
-                          ])
-                      ),
-                      selection: radioGroup?.querySelector<HTMLElement>('[aria-checked="true"]')?.dataset.radioNode,
-                      tabStop: radioGroup?.querySelector<HTMLElement>('[tabindex="0"]')?.dataset.radioNode,
-                      focus: active?.getAttribute('data-radio-node'),
-                      submitted: new FormData(radioForm).getAll('plan'),
-                      requests: Number(radioForm.querySelector('output')?.textContent),
-                      submits: Number(radioForm.getAttribute('data-radio-submits')),
-                      requiredError:
-                          radioForm.querySelector('[data-radio-required-error]')?.hasAttribute('hidden') === false,
-                      groupRef: radioForm.getAttribute('data-radio-group-ref'),
-                      itemRef: radioForm.getAttribute('data-radio-item-ref'),
-                      fieldState: ['filled', 'dirty', 'touched'].filter((state) =>
-                          radioForm.querySelector('[rdxFieldRoot]')?.hasAttribute('data-' + state)
-                      ),
-                      labels: ['a', 'b'].every((choice) => {
-                          const item = radioForm.querySelector(`[data-radio-node="${choice}"]`);
-                          const label = radioForm.querySelector<HTMLLabelElement>(
-                              `[data-radio-node="label-${choice}"]`
-                          );
-                          return (
-                              label?.id &&
-                              item?.getAttribute('aria-labelledby') === label.id &&
-                              label.control === radioForm.querySelector(`[data-radio-node="input-${choice}"]`)
-                          );
-                      }),
-                      groupLabel: document.getElementById(radioGroup?.getAttribute('aria-labelledby') ?? '')
-                          ?.textContent,
-                      groupDescription: document.getElementById(radioGroup?.getAttribute('aria-describedby') ?? '')
-                          ?.textContent,
-                      ending: [...radioForm.querySelectorAll<HTMLElement>('[data-radio-node][data-ending-style]')].map(
-                          (dot) => dot.dataset.radioNode
-                      ),
-                      starting: !!radioForm.querySelector('[data-radio-node][data-starting-style]')
-                  }
-                : undefined,
+            radio:
+                radioForm && radioView
+                    ? {
+                          nodes: Object.fromEntries(
+                              [...radioView.querySelectorAll<HTMLElement>('[data-radio-node]')].map((node) => [
+                                  node.dataset.radioNode!,
+                                  {
+                                      id: node.id,
+                                      reused: window.auditServerNodes?.['radio:' + node.dataset.radioNode] === node
+                                  }
+                              ])
+                          ),
+                          selection: radioGroup?.querySelector<HTMLElement>('[aria-checked="true"]')?.dataset.radioNode,
+                          tabStop: radioGroup?.querySelector<HTMLElement>('[tabindex="0"]')?.dataset.radioNode,
+                          focus: active?.getAttribute('data-radio-node'),
+                          submitted: new FormData(radioForm).getAll('plan'),
+                          requests: Number(radioForm.querySelector('output')?.textContent),
+                          submits: Number(radioForm.getAttribute('data-radio-submits')),
+                          submitValue: radioForm.getAttribute('data-radio-submit-value'),
+                          requiredError:
+                              radioView.querySelector('[data-radio-required-error]')?.hasAttribute('hidden') === false,
+                          groupRef: radioForm.getAttribute('data-radio-group-ref'),
+                          itemRef: radioForm.getAttribute('data-radio-item-ref'),
+                          fieldState: ['filled', 'dirty', 'touched'].filter((state) =>
+                              radioView.querySelector('[rdxFieldRoot]')?.hasAttribute('data-' + state)
+                          ),
+                          labels: ['a', 'b'].every((choice) => {
+                              const item = radioView.querySelector(`[data-radio-node="${choice}"]`);
+                              const label = radioView.querySelector<HTMLLabelElement>(
+                                  `[data-radio-node="label-${choice}"]`
+                              );
+                              return (
+                                  label?.id &&
+                                  item?.getAttribute('aria-labelledby') === label.id &&
+                                  label.control === radioView.querySelector(`[data-radio-node="input-${choice}"]`)
+                              );
+                          }),
+                          groupLabel: document.getElementById(radioGroup?.getAttribute('aria-labelledby') ?? '')
+                              ?.textContent,
+                          groupDescription: document.getElementById(radioGroup?.getAttribute('aria-describedby') ?? '')
+                              ?.textContent,
+                          ending: [
+                              ...radioView.querySelectorAll<HTMLElement>('[data-radio-node][data-ending-style]')
+                          ].map((dot) => dot.dataset.radioNode),
+                          starting: !!radioView.querySelector('[data-radio-node][data-starting-style]')
+                      }
+                    : undefined,
             detachedDialog: detachedTrigger
                 ? {
                       open: document.querySelector('audit-detached-dialog')?.getAttribute('data-dialog-open'),
@@ -299,7 +302,33 @@ async function checkRadioHydration(
     await page.locator('[data-radio-submit]').click();
     const submitted = (await record('hydrated required radio submits after a selection')).radio;
     checks.hydratedRequiredRecovery =
-        submitted?.requiredError === false && submitted.submits === 1 && submitted.submitted.join() === 'b';
+        submitted?.requiredError === false &&
+        submitted.submits === 1 &&
+        submitted.submitValue === 'b' &&
+        submitted.submitted.join() === 'b';
+
+    await page.locator('[data-radio-move]').click();
+    await page.locator('[data-radio-portal] [role="radiogroup"]').waitFor();
+    await page.locator('[data-radio-clear]').click();
+    await page.locator('[data-radio-submit]').click();
+    await page.locator('[data-radio-required-error]').waitFor({ state: 'visible', timeout: 5000 });
+    const portaled = (await record('portaled required radio still blocks the declaring form')).radio;
+    checks.hydratedPortalConstraint =
+        portaled?.requiredError === true &&
+        portaled.focus === 'a' &&
+        portaled.submits === 1 &&
+        portaled.submitted.length === 0 &&
+        !!portaled.nodes['input-a']?.reused;
+
+    await page.locator('[data-radio-node="label-b"]').click();
+    await page.locator('[data-radio-submit]').click();
+    const portalSubmission = (await record('declaring Form includes the portaled selection')).radio;
+    checks.hydratedPortalSubmission =
+        portalSubmission?.requiredError === false &&
+        portalSubmission.submits === 2 &&
+        portalSubmission.submitValue === 'b' &&
+        portalSubmission.submitted.length === 0 &&
+        !!portalSubmission.nodes['input-b']?.reused;
 }
 
 async function checkDetachedDialogHydration(
