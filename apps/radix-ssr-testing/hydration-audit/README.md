@@ -42,6 +42,8 @@ The `eager-radio` case verifies server node reuse, stable group, input and legen
 description associations, focus and form selection. After hydration it checks keyboard selection,
 interrupted Indicator exit, removal after completed exit, native label activation and Field
 state on accepted and canceled native reset.
+Group and item `inputRef` callbacks also resolve to the hydrated inputs and the group follows
+post-hydration selection.
 
 ```bash
 node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=eager-radio

@@ -30,6 +30,7 @@ export default defineConfig({
                     'packages/primitives/radio/src/radio-field.ts',
                     'packages/primitives/radio/src/radio-item.directive.ts',
                     'packages/primitives/radio/src/radio-item-input.directive.ts',
+                    'packages/primitives/radio/src/radio-input-ref.ts',
                     'packages/primitives/radio/src/radio-indicator.directive.ts',
                     'packages/primitives/radio/src/radio-indicator-presence.directive.ts',
                     'packages/primitives/field/src/field-root.ts',

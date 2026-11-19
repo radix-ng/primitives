@@ -75,6 +75,11 @@
           "default": "injectId('rdx-radio-item-')"
         },
         {
+          "name": "inputRef",
+          "type": "RdxNativeInputRef",
+          "description": "Called with the item's authored input after rendering and released when it detaches."
+        },
+        {
           "name": "readOnly",
           "type": "boolean",
           "default": "false",
@@ -136,6 +141,11 @@
           "name": "id",
           "default": "injectId('rdx-radio-group-')",
           "description": "ID of the radiogroup, used for the enclosing Field's focus target."
+        },
+        {
+          "name": "inputRef",
+          "type": "RdxNativeInputRef",
+          "description": "Called with the group's representative authored input and released when the binding changes."
         },
         {
           "name": "name",

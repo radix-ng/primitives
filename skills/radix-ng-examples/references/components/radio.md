@@ -46,6 +46,7 @@ visible radio. Use `form="form-id"` on the group to associate it with a form els
 the page. Click, keyboard selection and Angular Forms work with or without item inputs.
 See [Field composition](#field-composition) for shared form state and label wiring.
 See [Option values](#option-values) for numbers, objects and arrays.
+See [Native input refs](#native-input-refs) for access to authored inputs.
 
 The item can attach to any element. When the host is a native `<button>` it is detected automatically:
 `type="button"` and the native `disabled` attribute are applied for you — there is no `nativeButton`
@@ -138,6 +139,40 @@ Use `RdxRadioValueChangeEvent<StorageOption>` when annotating an object-valued h
 A native form submits one entry for the selection. Strings pass through, and other values
 are serialized as JSON where possible. Two distinct items can produce the same submitted string.
 Give independent groups separate form owners or distinct names if they use native radio inputs.
+
+## Native input refs
+
+Bind `[inputRef]` on `rdxRadioRoot` for the group's representative native radio input,
+or on `rdxRadioItem` for that item's own input.
+
+```ts
+import { Component, signal } from '@angular/core';
+import { RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioItemInputDirective } from '@radix-ng/primitives/radio';
+
+@Component({
+    selector: 'density-options',
+    imports: [RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioItemInputDirective],
+    template: `
+        <div [inputRef]="setInput" rdxRadioRoot defaultValue="compact" aria-label="Density">
+            <span rdxRadioItem value="compact">Compact<input rdxRadioItemInput /></span>
+            <span rdxRadioItem value="comfortable">Comfortable<input rdxRadioItemInput /></span>
+        </div>
+    `
+})
+export class DensityOptions {
+    readonly nativeInput = signal<HTMLInputElement | null>(null);
+    protected readonly setInput = (element: HTMLInputElement | null) => this.nativeInput.set(element);
+}
+```
+
+The group forwards the enabled selected input when available. On initialization and clearing,
+it can use the first eligible authored input. Removing or disabling the forwarded input releases
+the binding. A selected input or a newly eligible registration can then take its place.
+
+Both directives expose a readonly `nativeInput()` signal. The input comes from
+`input[rdxRadioItemInput]`. The group's generated form-data fallback does not appear in either ref.
+Callbacks run after browser rendering. When the element or callback changes, the old binding
+receives `null` or runs the cleanup function its callback returned.
 
 ## Examples
 

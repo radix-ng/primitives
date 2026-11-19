@@ -14,6 +14,7 @@ export interface Settings {
     forms?: 'external-required' | 'eligible-items' | 'field-labels' | 'field-state' | 'fieldset-legend';
     indicator?: 'unmount' | 'keep-mounted' | 'no-motion';
     collection?: 'identity' | 'live';
+    refs?: 'selection' | 'detach';
 }
 
 export const cases = {
@@ -53,7 +54,9 @@ export const cases = {
     'indicator-keep-mounted': { indicator: 'keep-mounted', defaultValue: 'standard' },
     'indicator-no-motion': { indicator: 'no-motion', defaultValue: 'standard' },
     'collection-identity': { collection: 'identity' },
-    'collection-live': { collection: 'live' }
+    'collection-live': { collection: 'live' },
+    'refs-selection': { refs: 'selection' },
+    'refs-detach': { refs: 'detach' }
 } satisfies Record<string, Settings>;
 
 export const options = [
@@ -72,12 +75,21 @@ export const collectionOptions = [
 
 export type CollectionValue = (typeof collectionOptions)[number]['value'];
 
+interface InputRefObservation {
+    element: HTMLInputElement | null;
+    calls: number;
+    releases: number;
+}
+
+type InputRefs = Record<'primary' | 'alternate' | 'item', InputRefObservation>;
+
 export interface Probe {
     reference: { commit: string; packageVersion: string; digest: string };
     changes: { value: string; reason: string }[];
     nativeEvents: { type: string; trusted: boolean }[];
     nativeNotifications: { type: string; value: string; checked: boolean }[];
     cancelNext: boolean;
+    refs?: InputRefs;
 }
 
 declare global {
@@ -91,6 +103,31 @@ export function config(): Settings {
     const name = new URLSearchParams(location.search).get('case') ?? 'initial-default';
     if (!Object.hasOwn(cases, name)) throw new Error('Unknown Radio case: ' + name);
     return cases[name as keyof typeof cases];
+}
+
+export function installInputRefs() {
+    const refs: InputRefs = {
+        primary: { element: null, calls: 0, releases: 0 },
+        alternate: { element: null, calls: 0, releases: 0 },
+        item: { element: null, calls: 0, releases: 0 }
+    };
+    window.radioParity.refs = refs;
+    const bind =
+        (entry: InputRefObservation, withCleanup = false) =>
+        (element: HTMLInputElement | null) => {
+            entry.element = element;
+            entry.calls++;
+            if (!element || !withCleanup) return;
+            return () => {
+                entry.element = null;
+                entry.releases++;
+            };
+        };
+    return {
+        primary: bind(refs.primary),
+        alternate: bind(refs.alternate, true),
+        item: bind(refs.item, true)
+    };
 }
 
 export function installProbe() {

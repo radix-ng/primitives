@@ -20,11 +20,13 @@ disabled/read-only groups and items, parent updates and vetoes. The custom-host 
 Space release timing and keyup prevention. The suite checks focus and the roving stop separately
 from the checked item and FormData.
 
-Five G4 scenarios cover native constraints and visible focus in an externally owned form,
+Seven G4 scenarios cover native constraints and visible focus in an externally owned form,
 disabled and unmounted selections, Field/Field.Item label and description associations, and
 Field interaction flags on the group, radio and indicator. They also compare Fieldset legend
 fallback, label precedence and live legend identity. The Angular hydration audit exercises
 accepted and canceled reset with a Radio Group in Field and Form.
+The two ref cases compare group fallback and selected input, callback replacement and cleanup,
+item input ownership, and group and item detachment.
 
 Three G5 scenarios compare structural Indicator lifetimes with interrupted CSS exit, retained
 unchecked views and unmounting without motion. They assert the transient hooks and reuse of the
@@ -37,12 +39,12 @@ node identity and healing an orphaned selection by restoring its option value. T
 [hydration audit](../../../radix-ssr-testing/hydration-audit/README.md) covers eager hydration.
 
 The initial Chromium run reproduced Angular's late-default and explicit-null defects. The full suite
-now passes **111 comparisons** with no expected-difference entries. Callback value and reason
+now passes **117 comparisons** with no expected-difference entries. Callback value and reason
 participate in comparison. Event type/trust and native input/change notifications are retained as raw
 observations. Angular assertions check that controlled requests emit no native edit notifications
 and that an accepted editable click with an authored input emits one of each.
 
-Open scope includes paired browser reset, dynamic form ownership, representative input refs, validation timing,
+Open scope includes paired browser reset, dynamic form ownership, validation timing,
 additional host and collection combinations, and deferred hydration. The
 [Radio matrix](../../../../packages/primitives/radio/PARITY.md) distinguishes Angular-only form and
 SSR evidence from paired results. Reports live under `dist/parity-testing/radio/results/`.

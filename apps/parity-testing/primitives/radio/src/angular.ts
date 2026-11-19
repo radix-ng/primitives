@@ -12,6 +12,7 @@ import {
 import { AngularRadioCollection } from './collection.angular';
 import { config, installProbe, options } from './contract';
 import { AngularRadioForms } from './forms.angular';
+import { AngularRadioRefs } from './refs.angular';
 
 @Component({
     selector: 'parity-radio-items',
@@ -146,7 +147,13 @@ class AngularRadio {
 }
 
 const settings = config();
-const fixture = settings.collection ? AngularRadioCollection : settings.forms ? AngularRadioForms : AngularRadio;
+const fixture = settings.refs
+    ? AngularRadioRefs
+    : settings.collection
+      ? AngularRadioCollection
+      : settings.forms
+        ? AngularRadioForms
+        : AngularRadio;
 void bootstrapApplication(fixture, {
     providers: [provideZonelessChangeDetection()]
 });

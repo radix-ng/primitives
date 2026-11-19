@@ -11,9 +11,10 @@ import {
 } from '@angular/core';
 import { RdxButtonBehavior } from '@radix-ng/primitives/button';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
-import { BooleanInput, createContext, injectId } from '@radix-ng/primitives/core';
+import { BooleanInput, createContext, injectId, type RdxNativeInputRef } from '@radix-ng/primitives/core';
 import { injectFieldRootContext, type RdxFieldRootContext } from '@radix-ng/primitives/field';
 import { radioDescribedBy, type RadioItemRegistration, type RadioNativeInput } from './radio-field';
+import { useRadioInputRef } from './radio-input-ref';
 import { injectRadioRootContext } from './radio-root.directive';
 
 export interface RadioItemContext {
@@ -91,7 +92,13 @@ export class RdxRadioItemDirective<Value = string> {
     private readonly rootContext = injectRadioRootContext();
     private readonly compositeItem = inject(RdxCompositeItem, { self: true });
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
-    private readonly nativeInput = signal<RadioNativeInput | null>(null);
+    private readonly nativeInputRegistration = signal<RadioNativeInput | null>(null);
+
+    /** The authored native radio input, when present. */
+    readonly nativeInput = computed(() => this.nativeInputRegistration()?.element ?? null);
+
+    /** Called with the item's authored input after rendering and released when it detaches. */
+    readonly inputRef = input<RdxNativeInputRef>();
     /** @ignore Field.Item can scope an individual radio's associations. */
     readonly field = injectFieldRootContext(true);
     protected readonly itemField = this.field === this.rootContext.field ? null : this.field;
@@ -155,13 +162,19 @@ export class RdxRadioItemDirective<Value = string> {
             radio: {
                 value: this.value,
                 disabled: this.disabledState,
-                nativeInput: this.nativeInput
+                nativeInput: this.nativeInputRegistration
             } satisfies RadioItemRegistration
         });
 
         const field = this.itemField;
         if (field)
-            effect(() => field.setControlId(this.isNativeButton ? this.id() : (this.nativeInput()?.id() ?? this.id())));
+            effect(() =>
+                field.setControlId(
+                    this.isNativeButton ? this.id() : (this.nativeInputRegistration()?.id() ?? this.id())
+                )
+            );
+
+        useRadioInputRef(this.nativeInput, this.inputRef);
 
         inject(RdxButtonBehavior, { self: true }).configure(
             {
@@ -176,9 +189,9 @@ export class RdxRadioItemDirective<Value = string> {
 
     /** @ignore Native controls belong to the item they mirror. */
     registerNativeInput(input: RadioNativeInput): () => void {
-        this.nativeInput.set(input);
+        this.nativeInputRegistration.set(input);
         return () => {
-            if (this.nativeInput() === input) this.nativeInput.set(null);
+            if (this.nativeInputRegistration() === input) this.nativeInputRegistration.set(null);
         };
     }
 

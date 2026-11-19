@@ -48,6 +48,8 @@ async function snapshot(page: Page) {
                       focus: active?.getAttribute('data-radio-node'),
                       submitted: new FormData(radioForm).getAll('plan'),
                       requests: Number(radioForm.querySelector('output')?.textContent),
+                      groupRef: radioForm.getAttribute('data-radio-group-ref'),
+                      itemRef: radioForm.getAttribute('data-radio-item-ref'),
                       fieldState: ['filled', 'dirty', 'touched'].filter((state) =>
                           radioForm.querySelector('[rdxFieldRoot]')?.hasAttribute('data-' + state)
                       ),
@@ -183,6 +185,7 @@ async function checkRadioHydration(
         before?.nodes['dot-a'] && before.nodes['dot-b'] && !before.starting && before.ending.length === 0
     );
     checks.serverSelection = before?.selection === 'b' && before.submitted.join() === 'b' && before.requests === 0;
+    checks.serverRefsAreSilent = before?.groupRef === null && before.itemRef === null;
 
     release();
     await page.waitForFunction(() => window.portalHydrationAudit?.ready, undefined, { timeout: 5000 });
@@ -208,10 +211,20 @@ async function checkRadioHydration(
         boot.requests === 0 &&
         !boot.starting &&
         boot.ending.length === 0;
+    checks.hydratedRefs = Boolean(
+        boot?.nodes['input-b']?.reused &&
+        boot.groupRef === boot.nodes['input-b'].id &&
+        boot.itemRef === boot.nodes['input-b'].id
+    );
 
     await beta.press('ArrowRight');
     await betaDot.and(page.locator('[data-ending-style]')).waitFor({ timeout: 5000 });
     const exiting = (await record('keyboard selection after hydration holds exit')).radio;
+    checks.hydratedRefsFollowSelection = Boolean(
+        exiting?.nodes['input-a']?.reused &&
+        exiting.groupRef === exiting.nodes['input-a'].id &&
+        exiting.itemRef === boot?.itemRef
+    );
     checks.keyboardAndExit =
         exiting?.focus === 'a' &&
         exiting.selection === 'a' &&

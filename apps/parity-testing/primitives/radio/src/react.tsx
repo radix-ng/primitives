@@ -6,6 +6,7 @@ import { createRoot } from 'react-dom/client';
 import { ReactRadioCollection } from './collection.react';
 import { config, installProbe, options } from './contract';
 import { ReactRadioForms } from './forms.react';
+import { ReactRadioRefs } from './refs.react';
 
 const settings = config();
 const probe = installProbe();
@@ -108,7 +109,9 @@ function ReactRadio() {
 }
 
 createRoot(document.getElementById('root')!).render(
-    settings.collection ? (
+    settings.refs ? (
+        <ReactRadioRefs />
+    ) : settings.collection ? (
         <ReactRadioCollection />
     ) : settings.forms ? (
         <ReactRadioForms mode={settings.forms} />

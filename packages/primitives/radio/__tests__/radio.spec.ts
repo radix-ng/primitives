@@ -820,3 +820,74 @@ describe('Radio reset in Field and Form', () => {
         expect(field().hasAttribute('data-invalid')).toBe(true);
     });
 });
+
+@Component({
+    imports: [RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioItemInputDirective],
+    template: `
+        <form>
+            <div [inputRef]="groupRef" rdxRadioRoot name="choice" defaultValue="a">
+                <span [disabled]="disabled()" [inputRef]="itemRef" rdxRadioItem value="a">
+                    @if (authored()) {
+                        <input rdxRadioItemInput />
+                    }
+                </span>
+            </div>
+        </form>
+    `
+})
+class RadioOptionalInputRefHost {
+    readonly authored = signal(false);
+    readonly disabled = signal(false);
+    readonly groupRef = vi.fn<(input: HTMLInputElement | null) => void>();
+    readonly itemRef = vi.fn<(input: HTMLInputElement | null) => void>();
+}
+
+it('forwards only authored radio inputs and releases an ineligible group ref', async () => {
+    const fixture = TestBed.createComponent(RadioOptionalInputRefHost);
+    const host = fixture.componentInstance;
+    async function render() {
+        fixture.detectChanges();
+        await fixture.whenStable();
+    }
+
+    await render();
+    const group = fixture.debugElement.query(By.directive(RdxRadioGroupDirective)).injector.get(RdxRadioGroupDirective);
+    const item = fixture.debugElement.query(By.directive(RdxRadioItemDirective)).injector.get(RdxRadioItemDirective);
+    const form = fixture.debugElement.query(By.css('form')).nativeElement as HTMLFormElement;
+    const submitted = () => new FormData(form).getAll('choice');
+    expect(submitted()).toEqual(['a']);
+    expect(group.nativeInput()).toBeNull();
+    expect(item.nativeInput()).toBeNull();
+    expect(host.groupRef).not.toHaveBeenCalled();
+    expect(host.itemRef).not.toHaveBeenCalled();
+
+    host.authored.set(true);
+    await render();
+    const element = form.querySelector('input[type="radio"]');
+    expect(element?.checked).toBe(true);
+    expect(group.nativeInput()).toBe(element);
+    expect(item.nativeInput()).toBe(element);
+    expect(host.groupRef).toHaveBeenLastCalledWith(element);
+    expect(host.itemRef).toHaveBeenLastCalledWith(element);
+    expect(submitted()).toEqual(['a']);
+
+    host.disabled.set(true);
+    await render();
+    expect(group.nativeInput()).toBeNull();
+    expect(host.groupRef).toHaveBeenLastCalledWith(null);
+    expect(item.nativeInput()).toBe(element);
+    expect(host.itemRef).toHaveBeenCalledTimes(1);
+    expect(submitted()).toEqual([]);
+
+    host.disabled.set(false);
+    await render();
+    expect(host.groupRef).toHaveBeenLastCalledWith(element);
+
+    host.authored.set(false);
+    await render();
+    expect(group.nativeInput()).toBeNull();
+    expect(item.nativeInput()).toBeNull();
+    expect(host.groupRef).toHaveBeenLastCalledWith(null);
+    expect(host.itemRef).toHaveBeenLastCalledWith(null);
+    expect(submitted()).toEqual(['a']);
+});

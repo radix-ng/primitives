@@ -7,6 +7,7 @@ import {
     ElementRef,
     inject,
     input,
+    linkedSignal,
     model,
     OnChanges,
     output,
@@ -28,6 +29,7 @@ import {
     RdxFormUiControlBase,
     RdxFormUiTouchTarget,
     RdxFormValueControl,
+    type RdxNativeInputRef,
     serializeItemValue,
     serializeNativeFormValue,
     useNativeFormControl,
@@ -36,6 +38,7 @@ import {
 import { injectFieldRootContext, type RdxFieldRootContext } from '@radix-ng/primitives/field';
 import { injectFieldsetRootContext } from '@radix-ng/primitives/fieldset';
 import { radioDescribedBy, type RadioItemRegistration } from './radio-field';
+import { useRadioInputRef } from './radio-input-ref';
 import { RdxRadioValueChangeReason } from './radio-tokens';
 
 export type { RdxRadioValueChangeReason } from './radio-tokens';
@@ -149,6 +152,9 @@ export class RdxRadioGroupDirective<Value = string>
 
     readonly form = input<string>();
 
+    /** Called with the group's representative authored input and released when the binding changes. */
+    readonly inputRef = input<RdxNativeInputRef>();
+
     /** ID of the radiogroup, used for the enclosing Field's focus target. */
     readonly id = input(injectId('rdx-radio-group-'));
 
@@ -201,6 +207,33 @@ export class RdxRadioGroupDirective<Value = string>
         const value = this.currentValue();
         return value === null ? undefined : this.items().find((item) => item.value() === value);
     });
+    private readonly representativeInput = linkedSignal({
+        source: () => {
+            const value = this.currentValue();
+            const candidates: HTMLInputElement[] = [];
+            let checked: HTMLInputElement | null = null;
+            for (const item of this.items()) {
+                const input = item.nativeInput()?.element;
+                if (!input || item.disabled()) continue;
+                candidates.push(input);
+                if (item.value() === value && value !== null) checked ??= input;
+            }
+            return { value, candidates, checked };
+        },
+        computation: ({ value, candidates, checked }, previous): HTMLInputElement | null => {
+            if (checked) return checked;
+            if (!previous || (value === null && previous.source.value !== null)) return candidates[0] ?? null;
+            if (previous.value && candidates.includes(previous.value)) return previous.value;
+
+            // A detached representative releases its ref. An existing unchecked sibling does
+            // not claim that binding until it becomes selected or registers again.
+            const previousCandidates = new Set(previous.source.candidates);
+            return candidates.find((input) => !previousCandidates.has(input)) ?? null;
+        }
+    });
+
+    /** The currently forwarded native radio input. Fallback form inputs are excluded. */
+    readonly nativeInput = this.representativeInput.asReadonly();
     private readonly submissionValue = computed(() => {
         const item = this.selectedItem();
         return item && !item.disabled() ? this.currentValue() : null;
@@ -225,6 +258,8 @@ export class RdxRadioGroupDirective<Value = string>
 
     constructor() {
         super();
+
+        useRadioInputRef(this.nativeInput, this.inputRef);
 
         useNativeFormControl({
             name: this.effectiveName,

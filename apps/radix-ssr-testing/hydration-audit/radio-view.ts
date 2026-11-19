@@ -27,12 +27,18 @@ import {
         RdxRadioItemInputDirective
     ],
     template: `
-        <form data-radio-audit rdxFormRoot>
+        <form
+            [attr.data-radio-group-ref]="groupRef()"
+            [attr.data-radio-item-ref]="itemRef()"
+            data-radio-audit
+            rdxFormRoot
+        >
             <fieldset rdxFieldsetRoot>
                 <legend data-radio-node="legend" rdxFieldsetLegend>Plan</legend>
                 <div rdxFieldRoot name="plan">
                     <p rdxFieldDescription>Choose one plan.</p>
                     <div
+                        [inputRef]="setGroupRef"
                         (onValueChange)="requests.update(increment)"
                         data-radio-node="group"
                         rdxRadioRoot
@@ -51,7 +57,7 @@ import {
                             <label data-radio-node="label-a" rdxFieldLabel>Alpha</label>
                         </div>
                         <div rdxFieldItem>
-                            <span data-radio-node="b" rdxRadioItem value="b">
+                            <span [inputRef]="setItemRef" data-radio-node="b" rdxRadioItem value="b">
                                 <span
                                     class="audit-radio-indicator"
                                     *rdxRadioIndicatorPresence
@@ -70,6 +76,10 @@ import {
     `
 })
 export class RadioAuditView {
+    protected readonly groupRef = signal<string | null>(null);
+    protected readonly itemRef = signal<string | null>(null);
+    protected readonly setGroupRef = (input: HTMLInputElement | null) => this.groupRef.set(input?.id ?? null);
+    protected readonly setItemRef = (input: HTMLInputElement | null) => this.itemRef.set(input?.id ?? null);
     protected readonly requests = signal(0);
     protected readonly increment = (count: number) => count + 1;
 }

@@ -27,7 +27,11 @@ class RadioDriver {
         this.settings = cases[name as keyof typeof cases];
         this.nativeButton = this.settings.nativeButton ?? false;
         await this.page.goto('/' + this.framework + '.html?case=' + name);
-        const count = this.settings.collection ? collectionOptions.length : this.settings.forms ? 2 : options.length;
+        const count = this.settings.collection
+            ? collectionOptions.length
+            : this.settings.forms || this.settings.refs
+              ? 2
+              : options.length;
         await expect(this.group.getByRole('radio')).toHaveCount(count);
         this.metadata = await this.page.evaluate(() => window.radioParity.reference);
     }
@@ -145,6 +149,76 @@ async function collectionScenario(driver: RadioDriver, mode: NonNullable<Setting
     await number.press('ArrowDown');
     await expect(group.getByTestId('text')).toBeFocused();
     await checkpoint('arrows follow the reordered DOM', 'text', ['1'], 2);
+}
+
+async function refsScenario(driver: RadioDriver, mode: NonNullable<Settings['refs']>) {
+    const { page, group } = driver;
+    const read = () =>
+        page.locator('form').evaluate((form: HTMLFormElement) => {
+            const refs = window.radioParity.refs!;
+            return {
+                primary: refs.primary.element?.value ?? null,
+                alternate: refs.alternate.element?.value ?? null,
+                item: refs.item.element?.value ?? null,
+                live: Object.values(refs).every(
+                    ({ element }) => !element || (element.type === 'radio' && form.contains(element))
+                ),
+                submitted: new FormData(form).getAll('density')
+            };
+        });
+    async function checkpoint(
+        name: string,
+        primary: string | null,
+        alternate: string | null,
+        item: string | null,
+        submitted: string[]
+    ) {
+        await expect.poll(read, name).toEqual({ primary, alternate, item, live: true, submitted });
+        driver.checkpoints.push({ name, state: await read() });
+        expect(driver.errors).toEqual([]);
+    }
+    const press = (name: string) => page.getByRole('button', { name, exact: true }).click();
+
+    await checkpoint('initial group ref skips disabled inputs', mode === 'detach' ? 'b' : 'a', null, 'b', []);
+    await group.getByRole('radio', { name: 'Beta' }).click();
+    await checkpoint('checked input is forwarded', 'b', null, 'b', ['b']);
+    await press('Replace callback');
+    await checkpoint('replacement callback receives the same input and releases the old callback', null, 'b', 'b', [
+        'b'
+    ]);
+
+    if (mode === 'selection') {
+        const count = () =>
+            page.evaluate(() => {
+                const { alternate, item } = window.radioParity.refs!;
+                return [alternate.calls, alternate.releases, item.calls, item.releases];
+            });
+        const before = await count();
+        await press('Rerender (0)');
+        await expect(page.getByRole('button', { name: 'Rerender (1)' })).toBeVisible();
+        await checkpoint('unrelated render leaves stable bindings attached', null, 'b', 'b', ['b']);
+        expect(await count()).toEqual(before);
+
+        await press('Clear selection');
+        await checkpoint('clearing forwards the initial eligible fallback', null, 'a', 'b', []);
+        return;
+    }
+
+    await press('Toggle Alpha disabled');
+    await checkpoint('enabling a sibling keeps the checked input representative', null, 'b', 'b', ['b']);
+    await press('Toggle Beta');
+    await checkpoint('removing the representative clears both refs without claiming its sibling', null, null, null, []);
+    const releases = () =>
+        page.evaluate(() => {
+            const { alternate, item } = window.radioParity.refs!;
+            return [alternate.releases, item.releases];
+        });
+    expect(await releases()).toEqual([1, 1]);
+    await press('Toggle Beta');
+    await checkpoint('remounting the checked item acquires its replacement input', null, 'b', 'b', ['b']);
+    await press('Remove group');
+    await checkpoint('destroying the group releases its active bindings', null, null, null, []);
+    expect(await releases()).toEqual([2, 2]);
 }
 
 async function formsScenario(driver: RadioDriver, mode: NonNullable<Settings['forms']>) {
@@ -472,6 +546,7 @@ const scenarios = Object.entries(cases).map(([name, settings]) => ({
         if ('forms' in settings) return formsScenario(driver, settings.forms);
         if ('indicator' in settings) return indicatorScenario(driver, settings.indicator);
         if ('collection' in settings) return collectionScenario(driver, settings.collection);
+        if ('refs' in settings) return refsScenario(driver, settings.refs);
         if ('keyboard' in settings) return keyboardScenario(driver, settings);
         if ('response' in settings) {
             await driver.checkpoint('parent value owns the group', settings.value);
