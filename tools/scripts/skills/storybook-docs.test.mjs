@@ -39,18 +39,19 @@ test('composition examples export real source from the existing stories', () => 
     for (const { body } of [tabs, menu, select]) assert.doesNotMatch(body, /<Canvas\b/);
 });
 
-test('Popover Default exports a portable component and its shared stylesheet as separate blocks', () => {
-    const { files } = createMarkdownBundle(docs, { versionLine: 'Test version' });
+test('portable examples link to a single copy of the rendered stylesheet', () => {
+    const { files, fullDocs } = createMarkdownBundle(docs, { versionLine: 'Test version' });
     const example = files.get('examples/popover--default.md');
     const sharedStyles = readFileSync(
         new URL('../../../apps/radix-storybook/.storybook/demo-styles.css', import.meta.url),
         'utf8'
-    ).trim();
+    );
     const [, defaultCode] = example.match(/```typescript\n([\s\S]*?)\n```/);
-    const stylesheet = [...example.matchAll(/```css\n([\s\S]*?)\n```/g)]
-        .map((match) => match[1])
-        .find((code) => code.includes('.demo-surface'));
-    assert.equal(stylesheet, sharedStyles);
+    assert.equal(files.get('demo-styles.css'), sharedStyles);
+    assert.match(example, /\]\(\.\.\/demo-styles\.css\)/);
+    assert.match(fullDocs.join('\n\n'), /\]\(demo-styles\.css\)/);
+    const pages = [...files].filter(([file]) => file.endsWith('.md')).map(([, body]) => body);
+    assert.ok([...pages, ...fullDocs].every((body) => !body.includes(sharedStyles.trim())));
     assert.match(defaultCode, /class="demo-surface [^"]*w-80 p-4"/);
     assert.match(defaultCode, /data-\[starting-style\]:animate-popover-popup-in/);
     assert.match(defaultCode, /data-\[ending-style\]:animate-popover-popup-out/);
@@ -58,12 +59,8 @@ test('Popover Default exports a portable component and its shared stylesheet as 
     assert.doesNotMatch(example, /<Source\b/);
 });
 
-test('migrated example shards retain setup, the rendered CSS and local wrapper sources', () => {
+test('migrated example shards retain setup, the CSS link and local wrapper sources', () => {
     const { files } = createMarkdownBundle(docs, { versionLine: 'Test version' });
-    const css = readFileSync(
-        new URL('../../../apps/radix-storybook/.storybook/demo-styles.css', import.meta.url),
-        'utf8'
-    ).trim();
     for (const name of [
         'button--default',
         'input--default',
@@ -74,7 +71,7 @@ test('migrated example shards retain setup, the rendered CSS and local wrapper s
     ]) {
         const source = files.get(`examples/${name}.md`);
         assert.ok(source, name);
-        assert.ok(source.includes(css), `${name} includes the rendered stylesheet`);
+        assert.match(source, /\]\(\.\.\/demo-styles\.css\)/, `${name} links to the shared stylesheet`);
         assert.match(source, /Setup and shared files/);
         assert.match(source, /@tailwindcss\/postcss/);
         assert.doesNotMatch(source, /from ['"][^'"]*storybook\/styles|<Source\b/);

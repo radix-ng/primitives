@@ -6,7 +6,7 @@ Public API metadata comes from primitive source through compodoc; public prose a
 
 - `radix-ng/SKILL.md` and its prose references are hand-authored. API and styling contracts are generated per-primitive JSON shards, with version stamps. Deprecated whole-library monoliths remain during the migration window.
 - `radix-ng-examples/SKILL.md` is a small generated router. Per-component indexes link to per-example source shards; `llms.txt` and `llms-full.txt` support discovery and complete export.
-- Storybook serves the same generated files through `staticDirs` in `.storybook/main.ts`: `/llms.txt`, `/llms-full.txt`, `/<section>/<slug>.md`, `/api-contract/<slug>.json` and `/styling-contract/<slug>.json`, relative to its base. The composed site mounts Storybook at `https://radix-ng.com/docs/`.
+- Storybook serves the same generated files through `staticDirs` in `.storybook/main.ts`: `/llms.txt`, `/llms-full.txt`, `/demo-styles.css`, `/<section>/<slug>.md`, `/api-contract/<slug>.json` and `/styling-contract/<slug>.json`, relative to its base. The composed site mounts Storybook at `https://radix-ng.com/docs/`.
 
 ## Styling extraction
 
@@ -30,6 +30,9 @@ Storybook's Nx cache inputs include the generated Markdown and both JSON shard d
 are external `staticDirs`, outside the Storybook project; omitting them can restore a build with
 stale contracts even after generation succeeds. The browser export check compares served files
 with the committed bundle, including content changes within the same package version.
+
+The renderer copies the shared Tailwind stylesheet once into `references/demo-styles.css`.
+Markdown examples and the full dump link to it from their own paths.
 
 ## Agents tasks and verification
 

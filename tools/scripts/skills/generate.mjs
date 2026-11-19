@@ -10,6 +10,7 @@
  *   skills/radix-ng/references/api-contract.json         selectors + inputs/outputs per part (from compodoc)
  *   skills/radix-ng-examples/SKILL.md                    index of every documented example
  *   skills/radix-ng-examples/references/<section>/<slug>.md   full rendered docs (with code)
+ *   skills/radix-ng-examples/references/demo-styles.css   shared Tailwind stylesheet
  *   skills/radix-ng-examples/references/llms-full.txt     all docs concatenated, one file
  *
  * The hand-authored skill body (skills/radix-ng/SKILL.md + its reference *.md files) is
@@ -129,7 +130,7 @@ const mdxMeta = new Map(
 
 const docs = getStorybookDocs();
 const metaFor = (doc) => mdxMeta.get(`${doc.section}/${doc.slug}`) ?? {};
-const { files: markdownFiles, exampleShardCount, fullDocs } = createMarkdownBundle(docs, { versionLine, metaFor });
+const { files: referenceFiles, exampleShardCount, fullDocs } = createMarkdownBundle(docs, { versionLine, metaFor });
 
 // 1. bundled per-component docs + llms-full.txt (offline, no site dependency)
 const refsRoot = path.join(skillsRoot, 'radix-ng-examples/references');
@@ -144,7 +145,9 @@ for (const section of ['agents', 'overview', 'learn', 'components', 'utils', 'gu
     }
 }
 
-for (const [file, content] of markdownFiles) write(path.join(refsRoot, file), `${content}\n`);
+for (const [file, content] of referenceFiles) {
+    write(path.join(refsRoot, file), file.endsWith('.md') ? `${content}\n` : content);
+}
 
 const llmsFull = [
     '# Radix NG Primitives — Full Documentation',
@@ -342,7 +345,7 @@ for (const file of fs.readdirSync(path.join(skillsRoot, 'radix-ng/references/sty
 errors.push(
     ...validateMarkdownLinks(
         new Map([
-            ...[...markdownFiles].map(([file, content]) => [`references/${file}`, content]),
+            ...[...referenceFiles].map(([file, content]) => [`references/${file}`, content]),
             ['SKILL.md', examplesSkill],
             ['references/llms-full.txt', llmsFull]
         ])

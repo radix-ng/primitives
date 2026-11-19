@@ -75,7 +75,8 @@ The MDX **Setup and shared files** section lists dependencies, PostCSS configura
 order (`tailwindcss` first, then `demo-styles.css`). Its `Source` blocks import the rendered CSS and
 local wrapper/helper files with `?raw`. Include external HTML for `templateUrl` examples. Preserve
 relative paths when copying multiple files. The consumer Markdown pipeline appends this same setup
-to each example shard, including its CSS and wrapper sources.
+to each example shard with the wrapper sources and a link to the shared `demo-styles.css` file
+in the bundle.
 
 Run the [external portability check](../../tools/storybook-portability/README.md) against an installed
 tarball. It compiles all selected examples with strict Angular templates and Tailwind v4 outside

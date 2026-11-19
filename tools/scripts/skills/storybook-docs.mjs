@@ -15,6 +15,7 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const primitivesRoot = path.resolve(__dirname, '../../../packages/primitives');
 const publicDocsRoot = path.resolve(__dirname, '../../../apps/radix-storybook/docs');
+const sharedStylesheet = path.resolve(__dirname, '../../../apps/radix-storybook/.storybook/demo-styles.css');
 
 const groupToSection = (group) => {
     switch (group) {
@@ -232,7 +233,8 @@ const getRawImports = (storyFilePath, storyContent) => {
         const sourcePath = resolveImportPath(storyFilePath, match[2]);
         if (existsSync(sourcePath)) {
             rawImports.set(match[1], {
-                code: readFileSync(sourcePath, 'utf8').replace(/\r\n?/g, '\n').trim(),
+                sourcePath,
+                code: readFileSync(sourcePath, 'utf8'),
                 language: getCodeFenceLanguage(sourcePath)
             });
         }
@@ -259,9 +261,9 @@ const getStoryCode = (storyFilePath, storyName) => {
     return undefined;
 };
 
-const codeFence = ({ code, language }) => `\n\`\`\`${language}\n${code}\n\`\`\`\n`;
+const codeFence = ({ code, language }) => `\n\`\`\`${language}\n${code.replace(/\r\n?/g, '\n').trim()}\n\`\`\`\n`;
 
-const replaceStorybookBlocks = (content, filePath) => {
+const replaceStorybookBlocks = (content, filePath, assets) => {
     const storybookImports = getStorybookImports(content, filePath);
     const rawImports = getRawImports(filePath, content);
     const metaAlias = content.match(/<Meta\b[^>]*\bof=\{(\w+)\}[^>]*\/>/)?.[1];
@@ -279,6 +281,11 @@ const replaceStorybookBlocks = (content, filePath) => {
         )
         .replace(/<Source\b[^>]*\bcode=\{(\w+)\}[^>]*\/>/g, (block, name) => {
             const source = rawImports.get(name);
+            if (source?.sourcePath === sharedStylesheet) {
+                const file = path.basename(sharedStylesheet);
+                assets.set(file, source.code);
+                return `\n[Download ${file}](../${file})\n`;
+            }
             return source ? codeFence(source) : block;
         })
         .replace(/<(Canvas|Controls|ArgTypes)\b[^>]*\/>\n*/g, '');
@@ -313,8 +320,8 @@ const stripImports = (content) => {
     return nextLines.join('\n');
 };
 
-const cleanStorybookMdx = (content, filePath) =>
-    stripImports(replaceStorybookBlocks(content, filePath))
+const cleanStorybookMdx = (content, filePath, assets) =>
+    stripImports(replaceStorybookBlocks(content, filePath, assets))
         .replace(/<Meta\b[^>]*\/>\n*/g, '')
         .replace(/\n{3,}/g, '\n\n')
         .trim();
@@ -332,6 +339,7 @@ const parseDoc = (filePath) => {
     const description = content.match(/^####\s+(.+)$/m)?.[1]?.trim() || title;
     const section = groupToSection(group);
     const slug = getSlug(filePath);
+    const assets = new Map();
 
     return {
         group: sectionLabel(section),
@@ -340,7 +348,8 @@ const parseDoc = (filePath) => {
         title,
         storybookId: content.match(/<Meta\b[^>]*\bid=["']([^"']+)["']/)?.[1] ?? titleToSlug(metaTitle ?? title),
         description,
-        body: cleanStorybookMdx(content, filePath)
+        body: cleanStorybookMdx(content, filePath, assets),
+        assets
     };
 };
 

@@ -123,6 +123,13 @@ test('Agents pages and exported contracts are discoverable through Storybook and
     const bundled = (file: string) => readFileSync(resolve(__dirname, '../../../skills', file), 'utf8');
     expect(llms).toBe(bundled('radix-ng-examples/references/llms.txt'));
     expect(full).toBe(bundled('radix-ng-examples/references/llms-full.txt'));
+    expect(full).toContain('](demo-styles.css)');
+    const example = await request.get('/examples/popover--default.md');
+    expect(example.ok()).toBe(true);
+    expect(await example.text()).toContain('](../demo-styles.css)');
+    const stylesheet = await request.get('/demo-styles.css');
+    expect(stylesheet.ok()).toBe(true);
+    expect(await stylesheet.text()).toBe(bundled('radix-ng-examples/references/demo-styles.css'));
     for (const slug of pages) {
         expect(index.entries[`agents-${slug}--docs`]?.type).toBe('docs');
         const response = await request.get(`/agents/${slug}.md`);

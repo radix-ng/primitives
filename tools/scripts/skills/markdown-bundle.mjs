@@ -55,6 +55,7 @@ function componentIndex(doc, examples, retained, versionLine, meta) {
 
 export function createMarkdownBundle(docs, { versionLine, metaFor = () => ({}) }) {
     const sources = new Map(docs.map((doc) => [pagePath(doc), doc]));
+    const assets = new Map(docs.flatMap((doc) => [...(doc.assets ?? [])]));
     const routes = new Map(docs.map((doc) => [doc.storybookId, pagePath(doc)]));
     const examples = new Map(
         docs.filter(({ section }) => section === 'components').map((doc) => [pagePath(doc), splitExamples(doc)])
@@ -89,11 +90,9 @@ export function createMarkdownBundle(docs, { versionLine, metaFor = () => ({}) }
         }
         if (/^(?:[a-z][a-z\d+.-]*:|\/)/i.test(url)) return undefined;
         const [target, fragment] = url.split('#');
-        if (target && !target.endsWith('.md')) return undefined;
-        return {
-            page: target ? path.posix.normalize(path.posix.join(path.posix.dirname(source), target)) : source,
-            fragment
-        };
+        const page = target ? path.posix.normalize(path.posix.join(path.posix.dirname(source), target)) : source;
+        if (target && !target.endsWith('.md') && !assets.has(page)) return undefined;
+        return { page, fragment };
     };
 
     // Preserve only linked narrative sections that the compact component index would omit.
@@ -142,7 +141,7 @@ export function createMarkdownBundle(docs, { versionLine, metaFor = () => ({}) }
         files.set(file, rewrite(body, source, file));
     }
     return {
-        files,
+        files: new Map([...files, ...assets]),
         exampleShardCount: [...examples.values()].reduce((count, blocks) => count + blocks.length, 0),
         fullDocs: docs.map((doc) => rewrite(doc.body, pagePath(doc), 'llms-full.txt'))
     };

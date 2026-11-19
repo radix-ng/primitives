@@ -30,3 +30,13 @@ test('validation accepts encoded fragments and ignores example code, inline code
         '# État\n[State](#%C3%A9tat)\n[External](https://example.com/#missing)\n`[Inline](#missing)`\n```md\n[Code](#missing)\n```\n';
     assert.deepEqual(validateMarkdownLinks(new Map([['demo.md', content]])), []);
 });
+
+test('validation checks stylesheet links without treating CSS as Markdown', () => {
+    const files = new Map([
+        ['examples/demo.md', '[Download stylesheet](../demo-styles.css)'],
+        ['demo-styles.css', '/* [A comment](missing.md) */']
+    ]);
+    assert.deepEqual(validateMarkdownLinks(files), []);
+    files.delete('demo-styles.css');
+    assert.deepEqual(validateMarkdownLinks(files), ['examples/demo.md: missing stylesheet ../demo-styles.css']);
+});

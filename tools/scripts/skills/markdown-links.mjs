@@ -56,20 +56,23 @@ export function rewriteMarkdownLinks(content, rewrite) {
 
 // Validate final exported Markdown, after indexes and example shards have been assembled.
 export function validateMarkdownLinks(files) {
+    const pages = [...files].filter(([file]) => !file.endsWith('.css'));
     const anchors = new Map(
-        [...files].map(([file, content]) => [file, new Set(markdownHeadings(content).map(({ id }) => id))])
+        pages.map(([file, content]) => [file, new Set(markdownHeadings(content).map(({ id }) => id))])
     );
     const errors = [];
-    for (const [file, content] of files) {
+    for (const [file, content] of pages) {
         for (const { url } of markdownLinks(content)) {
             if (/^(?:[a-z][a-z\d+.-]*:|\/)/i.test(url)) continue;
             const [target, fragment] = url.split('#');
-            if (target && !target.endsWith('.md')) continue;
+            const stylesheet = target.endsWith('.css');
+            if (target && !target.endsWith('.md') && !stylesheet) continue;
             const destination = target
                 ? path.posix.normalize(path.posix.join(path.posix.dirname(file), decodeURIComponent(target)))
                 : file;
-            if (!files.has(destination)) errors.push(`${file}: missing Markdown file ${url}`);
-            else if (fragment && !anchors.get(destination).has(decodeURIComponent(fragment)))
+            if (!files.has(destination))
+                errors.push(`${file}: missing ${stylesheet ? 'stylesheet' : 'Markdown file'} ${url}`);
+            else if (fragment && !stylesheet && !anchors.get(destination).has(decodeURIComponent(fragment)))
                 errors.push(`${file}: missing Markdown anchor ${url}`);
         }
     }
