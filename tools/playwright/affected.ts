@@ -60,6 +60,17 @@ export function buildDependencies(files: string[], read: (file: string) => strin
     return { families, modules };
 }
 
+function comparisonJobs(suites: readonly string[]) {
+    return suites.flatMap((suite) => {
+        const shardCount = suite === 'menu' ? 3 : 1;
+        return Array.from({ length: shardCount }, (_, index) => ({
+            suite,
+            shard: `${index + 1}/${shardCount}`,
+            name: shardCount === 1 ? suite : `${suite}-${index + 1}-of-${shardCount}`
+        }));
+    });
+}
+
 export function selectChecks(input: {
     changed: string[];
     suites: string[];
@@ -155,10 +166,12 @@ export function selectChecks(input: {
         docs = true;
         hydration = true;
     }
+    const selectedSuites = [...suites].sort();
     return {
         full,
         affected: [...affected].sort(),
-        suites: [...suites].sort(),
+        suites: selectedSuites,
+        comparisons: comparisonJobs(selectedSuites),
         floating: [...specs].sort(),
         docs,
         hydration,
@@ -207,12 +220,12 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     const plan = planFromGit();
     console.log(JSON.stringify(plan, null, 2));
     if (process.env.GITHUB_OUTPUT) {
-        for (const key of ['suites', 'floating', 'docs', 'hydration', 'browser', 'full'] as const)
+        for (const key of ['comparisons', 'floating', 'docs', 'hydration', 'browser', 'full'] as const)
             appendFileSync(process.env.GITHUB_OUTPUT, `${key}=${JSON.stringify(plan[key])}\n`);
     }
     if (process.env.GITHUB_STEP_SUMMARY)
         appendFileSync(
             process.env.GITHUB_STEP_SUMMARY,
-            `### Browser check scope\n\nMode: ${plan.full ? 'full' : 'affected'}.\n\nPinned suites: ${plan.suites.join(', ') || 'none'}.\n\nFloating specs: ${plan.floating.length}. Docs: ${plan.docs}. Hydration: ${plan.hydration}.\n`
+            `### Browser check scope\n\nMode: ${plan.full ? 'full' : 'affected'}.\n\nPinned suites: ${plan.suites.join(', ') || 'none'}.\nComparison jobs: ${plan.comparisons.length}.\n\nFloating specs: ${plan.floating.length}. Docs: ${plan.docs}. Hydration: ${plan.hydration}.\n`
         );
 }

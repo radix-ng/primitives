@@ -28,6 +28,13 @@ test('a menubar change selects its own suite without selecting upstream dependen
 test('Menu changes include both dependent families, submenu checks and shared consumers', () => {
     const result = plan(['packages/primitives/menu/src/menu-root.ts']);
     assert.deepEqual(result.suites, ['context-menu', 'menu', 'menubar']);
+    assert.deepEqual(result.comparisons, [
+        { suite: 'context-menu', shard: '1/1', name: 'context-menu' },
+        { suite: 'menu', shard: '1/3', name: 'menu-1-of-3' },
+        { suite: 'menu', shard: '2/3', name: 'menu-2-of-3' },
+        { suite: 'menu', shard: '3/3', name: 'menu-3-of-3' },
+        { suite: 'menubar', shard: '1/1', name: 'menubar' }
+    ]);
     assert.deepEqual(
         result.floating,
         ['context-menu', 'floating-consumers', 'menu-submenu', 'menu', 'menubar'].map(spec).sort()
@@ -63,6 +70,7 @@ test('direct browser edits select that spec, without pinned comparisons', () => 
     const result = plan([spec('menubar')]);
     assert.deepEqual(result.floating, [spec('menubar')]);
     assert.deepEqual(result.suites, []);
+    assert.deepEqual(result.comparisons, []);
 });
 
 test('hydration fixtures and shared lifetimes select real SSR browser checks', () => {
@@ -224,7 +232,15 @@ test('the CLI emits separate GitHub output records and a readable summary', () =
         assert.equal(values.full, true);
         assert.equal(values.browser, true);
         assert.equal(values.hydration, true);
-        assert.ok(values.suites.includes('menubar'));
+        assert.deepEqual(
+            values.comparisons.filter((job: { suite: string }) => job.suite === 'menu'),
+            [
+                { suite: 'menu', shard: '1/3', name: 'menu-1-of-3' },
+                { suite: 'menu', shard: '2/3', name: 'menu-2-of-3' },
+                { suite: 'menu', shard: '3/3', name: 'menu-3-of-3' }
+            ]
+        );
+        assert.ok(values.comparisons.some((job: { name: string }) => job.name === 'menubar'));
         assert.ok(values.floating.includes(spec('menubar')));
         assert.ok(values.floating.includes(spec('presence-waapi')));
         assert.ok(values.floating.includes(spec('tabs')));

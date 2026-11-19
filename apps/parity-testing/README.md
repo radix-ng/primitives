@@ -132,8 +132,10 @@ identified by browser and scenario; observations also record the engine version 
 Input capability skips retain their reason in JSON and the Markdown summary. Select's touch cases
 run only where Playwright exposes the required native input API; see its suite guide for limits.
 
-CI uses Node 24 and Chromium/Firefox/WebKit on Ubuntu 24.04. `scope` selects affected pinned suites
-and Storybook floating behavior specs from the last successful CI base supplied by `nx-set-shas`.
+CI uses Node 24 and a pinned Playwright Noble image with Chromium, Firefox, WebKit and their system
+dependencies. [The CI workflow](../../.github/workflows/ci.yml) shares this image between parity and
+browser regression jobs. `scope` checks the parity tooling types, runs the shared runner and
+planner tests once, and selects affected checks from the last successful CI base supplied by `nx-set-shas`.
 It reads actual primitive imports, including story composition, and follows reverse dependencies:
 a Menubar edit selects Menubar; a Menu edit also selects its consumers. Browser helper edits select
 their importing specs. Documentation, generated skills, unit-only edits and screenshot baselines do
@@ -141,11 +143,11 @@ not launch browser comparisons. MDX changes also select docs navigation checks.
 
 Shared core, build/configuration or unclassified changes, and unavailable Git history select the
 full existing coverage. This selection does not replace unit, type, lint or visual checks.
-`comparisons` runs selected pinned suites as separate jobs; `browsers` runs selected behavior specs
-in three concurrent engine jobs. The existing `parity` job remains the required aggregate gate,
-including when no browser checks are needed. Per-suite summaries and per-engine artifacts retain
-observations, reviewed differences and failure traces. New, changed and disappeared differences
-require review; a passing check means there is no unreviewed drift.
+`comparisons` runs selected pinned suites in parallel. Menu is split into three Playwright shards,
+each with its own summary and artifact (for example, `primitive-parity-menu-1-of-3`).
+`browsers` runs selected behavior specs in three concurrent engine jobs. The required `parity` gate
+checks the result of the entire comparison matrix and the browser jobs, including when the plan
+is empty. The reports retain observations, reviewed differences and failure traces.
 
 Use **Actions → CI → Run workflow → full** for all suites and floating/docs regressions. Local commands
 still support every suite or one suite as shown above. To inspect CI selection locally:

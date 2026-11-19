@@ -110,7 +110,7 @@ jobs:
   scope:
     runs-on: ubuntu-24.04
     outputs:
-      suites: ${{ steps.scope.outputs.suites }}
+      comparisons: ${{ steps.scope.outputs.comparisons }}
       floating: ${{ steps.scope.outputs.floating }}
       docs: ${{ steps.scope.outputs.docs }}
       hydration: ${{ steps.scope.outputs.hydration }}
@@ -121,10 +121,10 @@ jobs:
           fetch-depth: 0
       - uses: ./.github/actions/setup
       - uses: nrwl/nx-set-shas@afb73a62d26e41464e9254689e1fd6122ee683c1 # v5.0.1
-      - name: Verify affected selection
+      - name: Check parity tooling and affected selection
         run: |
           pnpm parity:typecheck
-          node --test tools/playwright/*.test.ts
+          node --test apps/parity-testing/shared/*.test.ts tools/playwright/*.test.ts
       - name: Select affected browser contracts
         id: scope
         env:
@@ -132,22 +132,26 @@ jobs:
         run: node tools/playwright/affected.ts
 
   comparisons:
-    name: Pinned parity (${{ matrix.suite }})
+    name: Pinned parity (${{ matrix.name }})
     needs: scope
-    if: ${{ needs.scope.outputs.suites != '[]' }}
+    if: ${{ needs.scope.outputs.comparisons != '[]' }}
     strategy:
       fail-fast: false
       matrix:
-        suite: ${{ fromJSON(needs.scope.outputs.suites) }}
-    # Playwright supports the browser system dependencies on Ubuntu 24.04.
+        include: ${{ fromJSON(needs.scope.outputs.comparisons) }}
     runs-on: ubuntu-24.04
+    # Keep the image version and digest in sync with the Playwright version in pnpm-lock.yaml.
+    container: &playwright_container
+      image: mcr.microsoft.com/playwright:v1.60.0-noble@sha256:9bd26ad900bb5e0f4dee75839e957a89ae89c2b7ab1e76050e559790e946b948
+      options: --ipc=host
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - uses: ./.github/actions/setup
-      - name: Install browsers
-        run: pnpm exec playwright install --with-deps chromium firefox webkit
       - name: Compare affected primitive with pinned Base UI
-        run: pnpm test-parity ${{ matrix.suite }}
+        env:
+          PARITY_SUITE: ${{ matrix.suite }}
+          PARITY_SHARD: ${{ matrix.shard }}
+        run: node apps/parity-testing/run.ts "$PARITY_SUITE" --shard="$PARITY_SHARD"
       - name: Publish comparison summary
         if: always()
         env:
@@ -161,7 +165,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: primitive-parity-${{ matrix.suite }}
+          name: primitive-parity-${{ matrix.name }}
           path: dist/parity-testing/${{ matrix.suite }}/results
           retention-days: 14
 
@@ -174,11 +178,10 @@ jobs:
       matrix:
         project: [chromium, firefox, webkit]
     runs-on: ubuntu-24.04
+    container: *playwright_container
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
       - uses: ./.github/actions/setup
-      - name: Install browser
-        run: pnpm exec playwright install --with-deps ${{ matrix.project }}
       - name: Check affected primitives, docs and hydration
         env:
           BROWSER_PROJECT: ${{ matrix.project }}
