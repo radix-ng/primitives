@@ -6,6 +6,7 @@ import {
     ElementRef,
     inject,
     input,
+    linkedSignal,
     model,
     numberAttribute,
     output,
@@ -38,6 +39,7 @@ import {
     RdxNavigationMenuRootContext
 } from './navigation-menu-root-context';
 
+const HOVER_CLICK_GRACE_MS = 500;
 const context = () => contextFor(inject(RdxNavigationMenuRoot));
 
 /**
@@ -133,6 +135,10 @@ export class RdxNavigationMenuRoot {
     private openTimer: ReturnType<typeof setTimeout> | undefined;
     private closeTimer: ReturnType<typeof setTimeout> | undefined;
     private instantFrame: number | undefined;
+    private readonly hoverClickDeadline = linkedSignal({
+        source: this.value,
+        computation: (): number | undefined => undefined
+    });
 
     private readonly transition = useRenderLifecycle(
         (open) => {
@@ -251,6 +257,9 @@ export class RdxNavigationMenuRoot {
         this.previousValue.set(previous);
         this.preventUnmountOnClose.set(value === null ? change.shouldPreventUnmountOnClose() : false);
         this.value.set(value);
+        if (value !== null && reason === 'trigger-hover') {
+            this.hoverClickDeadline.set(performance.now() + HOVER_CLICK_GRACE_MS);
+        }
         this.onValueChange.emit(value);
 
         if (this.nested && value === null && reason === 'link-press') {
@@ -285,6 +294,12 @@ export class RdxNavigationMenuRoot {
         this.clearHoverTimers();
 
         if (this.value() === value) {
+            const deadline = this.hoverClickDeadline();
+            if (event?.type === 'click' && deadline !== undefined && performance.now() < deadline) {
+                // The first press confirms a recent hover activation. A second press can close it.
+                this.hoverClickDeadline.set(undefined);
+                return;
+            }
             this.close('trigger-press', event);
             return;
         }

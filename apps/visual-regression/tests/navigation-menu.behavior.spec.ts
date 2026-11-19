@@ -1,4 +1,5 @@
 import { expect, Page, test } from '@playwright/test';
+import { pauseClockBeforeInteraction } from '../helpers/clock';
 import { holdExitAnimations } from '../helpers/exit-animations';
 
 /**
@@ -107,15 +108,39 @@ test.describe('Navigation Menu — new floating engine migration', () => {
     });
 
     test('pressing a sibling trigger switches items instead of dismissing', async ({ page }) => {
+        await page.clock.install();
         await gotoStory(page, 'primitives-navigation-menu--default');
         const triggers = page.locator(trigger);
-        await triggers.first().click();
+        await triggers.first().press('Enter');
         await expect(page.locator(popup)).toBeVisible();
 
-        // A sibling trigger is a registered "inside" element, so opening it switches the shared popup
-        // rather than counting as an outside press / focus-out that would dismiss.
-        await triggers.nth(1).click();
-        await expect(page.locator(popup)).toBeVisible();
+        await pauseClockBeforeInteraction(page);
+        const sibling = triggers.nth(1);
+        await sibling.hover();
+        await page.clock.runFor(50);
+        await expect(sibling).toHaveAttribute('aria-expanded', 'true');
+        await sibling.click();
+        await page.clock.runFor(50);
+        await expect(sibling).toHaveAttribute('aria-expanded', 'true');
+        await expect(page.locator(popup).getByRole('link', { name: /^Styling/ })).toBeVisible();
+    });
+
+    test('the first click keeps a recently hover-opened item open', async ({ page }) => {
+        await page.clock.install();
+        await gotoStory(page, 'primitives-navigation-menu--default');
+        const first = page.locator(trigger).first();
+        await expect(first).toBeVisible();
+        await pauseClockBeforeInteraction(page);
+        await first.hover();
+        await page.clock.runFor(100);
+        await expect(first).toHaveAttribute('aria-expanded', 'true');
+        await first.click();
+        await page.clock.runFor(50);
+        await expect(first).toHaveAttribute('aria-expanded', 'true');
+
+        await first.click();
+        await page.clock.runFor(50);
+        await expect(first).toHaveAttribute('aria-expanded', 'false');
     });
 
     test('ArrowLeft and ArrowRight move focus inside the open popup', async ({ page }) => {
@@ -191,7 +216,7 @@ test.describe('Navigation Menu — new floating engine migration', () => {
 
     test('popup links keep their natural tab order outside the top-level composite list', async ({ page }) => {
         await gotoStory(page, 'primitives-navigation-menu--default');
-        await page.locator(trigger).first().click();
+        await page.locator(trigger).first().press('Enter');
         await expect(page.locator(popup)).toBeVisible();
 
         const firstPopupLink = page.locator(`${popup} a[rdxNavigationMenuLink]`).first();

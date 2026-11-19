@@ -146,6 +146,13 @@ jobs:
       options: --ipc=host
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - &configure_playwright_container
+        name: Configure Playwright container
+        run: |
+          # Actions mounts these directories from the runner. Firefox requires its home to be owned
+          # by the browser user, and hydration reads the checkout revision after the checkout step.
+          chown "$(id -u):$(id -g)" "$HOME"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: ./.github/actions/setup
       - name: Compare affected primitive with pinned Base UI
         env:
@@ -181,6 +188,7 @@ jobs:
     container: *playwright_container
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - *configure_playwright_container
       - uses: ./.github/actions/setup
       - name: Check affected primitives, docs and hydration
         env:
