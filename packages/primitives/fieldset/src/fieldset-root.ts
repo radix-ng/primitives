@@ -1,17 +1,19 @@
-import { booleanAttribute, computed, Directive, inject, input } from '@angular/core';
-import { BooleanInput, createContext } from '@radix-ng/primitives/core';
+import { booleanAttribute, computed, Directive, inject, input, Signal } from '@angular/core';
+import { BooleanInput, createContext, createLabelRegistry, RdxLabelRegistry } from '@radix-ng/primitives/core';
 
 const attr = (value: boolean) => (value ? '' : undefined);
 
-const fieldsetRootContext = () => {
-    const root = injectFieldsetRoot();
+export interface RdxFieldsetRootContext extends RdxLabelRegistry {
+    readonly disabledState: Signal<boolean>;
+}
 
+const fieldsetRootContext = (): RdxFieldsetRootContext => {
+    const root = inject(RdxFieldsetRoot);
     return {
+        ...root.legendRegistry,
         disabledState: root.disabledState
     };
 };
-
-export type RdxFieldsetRootContext = ReturnType<typeof fieldsetRootContext>;
 
 export const [injectFieldsetRootContext, provideFieldsetRootContext] = createContext<RdxFieldsetRootContext>(
     'RdxFieldsetRoot',
@@ -43,9 +45,8 @@ export class RdxFieldsetRoot {
 
     readonly disabledState = computed(() => this.disabled());
 
-    protected readonly dataAttr = attr;
-}
+    /** @ignore Registered legend IDs for composite controls inside the fieldset. */
+    readonly legendRegistry = createLabelRegistry();
 
-function injectFieldsetRoot(): RdxFieldsetRoot {
-    return inject(RdxFieldsetRoot);
+    protected readonly dataAttr = attr;
 }

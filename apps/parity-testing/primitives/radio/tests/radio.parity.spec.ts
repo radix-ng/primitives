@@ -205,6 +205,32 @@ async function formsScenario(driver: RadioDriver, mode: NonNullable<Settings['fo
         return;
     }
 
+    if (mode === 'fieldset-legend') {
+        const labelledBy = (name: string, id: string | null) =>
+            checkpoint(name, () => group.getAttribute('aria-labelledby'), id);
+        const press = (name: string) => page.getByRole('button', { name, exact: true }).click();
+        await expect(group).toHaveAccessibleName('Legend density');
+        await labelledBy('Fieldset legend supplies the name', 'default-legend');
+        await press('Change legend ID');
+        await labelledBy('a bound legend ID updates the association', 'new-legend');
+        await press('Toggle Field label');
+        await expect(group).toHaveAccessibleName('Field density');
+        await labelledBy('Field label takes precedence over legend', 'field-density');
+        await press('Toggle explicit label');
+        await expect(group).toHaveAccessibleName('Explicit density');
+        await labelledBy('explicit label takes precedence', 'explicit-density');
+        await press('Toggle explicit label');
+        await labelledBy('removing explicit label restores Field label', 'field-density');
+        await press('Toggle Field label');
+        await labelledBy('removing Field label restores legend', 'new-legend');
+        await press('Toggle legend');
+        await labelledBy('removed legend clears the association', null);
+        await press('Toggle legend');
+        await expect(group).toHaveAccessibleName('Legend density');
+        await labelledBy('remounting the legend restores the association', 'new-legend');
+        return;
+    }
+
     await expect(group).toHaveAccessibleName('Density');
     await expect(group).toHaveAccessibleDescription('Pick a density');
     await expect(alpha).toHaveAccessibleName('Alpha');

@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { RdxFieldDescription, RdxFieldItem, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
+import { RdxFieldsetLegend, RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
 import {
     RdxRadioGroupDirective,
     RdxRadioIndicatorDirective,
@@ -15,6 +16,8 @@ import { config, installProbe } from './contract';
         RdxFieldItem,
         RdxFieldLabel,
         RdxFieldRoot,
+        RdxFieldsetLegend,
+        RdxFieldsetRoot,
         RdxRadioGroupDirective,
         RdxRadioIndicatorDirective,
         RdxRadioItemDirective,
@@ -46,6 +49,26 @@ import { config, installProbe } from './contract';
             </form>
             <button (click)="disabled.set(!disabled())" type="button">Toggle disabled</button>
             <button (click)="showAlpha.set(!showAlpha())" type="button">Toggle Alpha</button>
+        } @else if (mode === 'fieldset-legend') {
+            <fieldset rdxFieldsetRoot>
+                @if (showLegend()) {
+                    <legend [id]="legendId()" rdxFieldsetLegend>Legend density</legend>
+                }
+                <div rdxFieldRoot>
+                    @if (showFieldLabel()) {
+                        <span id="field-density" rdxFieldLabel>Field density</span>
+                    }
+                    <div [aria-labelledby]="explicitLabel() ? 'explicit-density' : undefined" rdxRadioRoot>
+                        <span rdxRadioItem value="a">Alpha</span>
+                        <span rdxRadioItem value="b">Beta</span>
+                    </div>
+                </div>
+            </fieldset>
+            <span id="explicit-density">Explicit density</span>
+            <button (click)="showLegend.set(!showLegend())" type="button">Toggle legend</button>
+            <button (click)="legendId.set('new-legend')" type="button">Change legend ID</button>
+            <button (click)="showFieldLabel.set(!showFieldLabel())" type="button">Toggle Field label</button>
+            <button (click)="explicitLabel.set(!explicitLabel())" type="button">Toggle explicit label</button>
         } @else {
             <form id="owner">
                 <div [disabled]="disabled()" data-testid="field" rdxFieldRoot name="density">
@@ -78,6 +101,10 @@ export class AngularRadioForms {
     protected readonly disabled = signal(false);
     protected readonly disableBeta = signal(false);
     protected readonly showAlpha = signal(true);
+    protected readonly showLegend = signal(true);
+    protected readonly legendId = signal('default-legend');
+    protected readonly showFieldLabel = signal(false);
+    protected readonly explicitLabel = signal(false);
 
     constructor() {
         installProbe();

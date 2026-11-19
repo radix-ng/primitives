@@ -17293,7 +17293,8 @@ system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook 
 
 ### Legend
 
-`RdxFieldsetLegend`
+`RdxFieldsetLegend` applies to a native `<legend>`. It registers its ID so a nested Radio Group
+can use the legend as its accessible name. Set `id` to supply your own ID, or use the generated one.
 
 Reads disabled state from the root context and exposes it via `data-disabled`.
 
@@ -17552,8 +17553,9 @@ export class FormDefaultExample {
 
 ### Reset
 
-Native `reset` clears external errors and every field's interaction state, and re-syncs `filled` to the
-reverted values.
+After the native reset completes, Form clears the previous external errors and resets each field's
+interaction state. The field's `filled` reflects its restored value. Canceling the reset preserves
+errors and field state. A new `errors` object assigned during reset takes effect independently.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
@@ -30633,6 +30635,10 @@ The field's name takes precedence over the group's name. A disabled field disabl
 and a disabled Field Item disables its radio. Each radio includes the group description and
 its own Field Item description.
 
+The group uses its explicit `aria-labelledby`, the Field label, or the enclosing Fieldset's
+`legend[rdxFieldsetLegend]`, in that order. Import `RdxFieldsetRoot` and `RdxFieldsetLegend` from
+`@radix-ng/primitives/fieldset` to share a legend with related controls.
+
 | Attribute      | Parts                                     | Present when                         |
 | -------------- | ----------------------------------------- | ------------------------------------ |
 | `data-valid`   | RadioGroup, RadioGroupItem, RadioIndicator | Field displays a valid state.        |
@@ -30652,6 +30658,8 @@ Use `[(value)]` when binding the editable model directly. Use `ngModel`, a React
 or Signal Forms when a form owns the value. A native form reset restores the initial selection of
 a standalone group. A connected `NgControl` uses its own reset baseline, and Signal Forms
 `reset()` uses the field's reset contract. A parent-owned selection stays in effect on native reset.
+A composed Field reflects the resulting selection in `data-filled`, including an empty-string
+option. Canceling a native reset preserves the selection and interaction state.
 
 ## Option values
 

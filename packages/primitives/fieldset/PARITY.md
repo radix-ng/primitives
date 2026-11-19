@@ -21,10 +21,10 @@ Source of truth: [entry barrel](index.ts). These are directly exported decorated
 claim that inherited/host-directive APIs or every upstream prop have already been compared. Exported
 composition bases, guards and internal helpers are not thereby promoted to stable public widget parts.
 
-| Angular declaration                           | Selector / role             | Direct input/model/output declarations           |
-| --------------------------------------------- | --------------------------- | ------------------------------------------------ |
-| [`RdxFieldsetLegend`](src/fieldset-legend.ts) | `legend[rdxFieldsetLegend]` | No direct signal input/model/output declaration. |
-| [`RdxFieldsetRoot`](src/fieldset-root.ts)     | `fieldset[rdxFieldsetRoot]` | `disabled`                                       |
+| Angular declaration                           | Selector / role             | Direct input/model/output declarations |
+| --------------------------------------------- | --------------------------- | -------------------------------------- |
+| [`RdxFieldsetLegend`](src/fieldset-legend.ts) | `legend[rdxFieldsetLegend]` | `id`                                   |
+| [`RdxFieldsetRoot`](src/fieldset-root.ts)     | `fieldset[rdxFieldsetRoot]` | `disabled`                             |
 
 Inherited classes and composed directives may add state/API. Follow those sources when completing
 the comparison; similar part names or selector counts do not prove the same contract.
@@ -70,7 +70,7 @@ are permitted; changed observable behavior needs evidence or an explicitly revie
 - [Local unit files](__tests__): **1 file discovered**; not a passing-test count.
 - No same-family named browser behavior file was found. Cross-family consumer or shared-mechanism checks may exist; locate them before claiming absence or coverage.
 - No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
-- No conventional same-family SSR page was found; inspect shared SSR/hydration fixtures for applicable cases. No SSR/hydration result is claimed here.
+- The Radio case below covers cross-family hydration. The initial inventory found no dedicated Fieldset SSR page.
 
 No runtime suite was executed for this initial matrix sweep. Complete focused state/DI units,
 native/layout browser cases and SSR/hydration checks before promoting rows; add a paired pinned
@@ -78,3 +78,11 @@ fixture before certifying equivalent observable behavior. See the
 [verification skill](../../../.agents/skills/radix-testing/SKILL.md),
 [matrix index](../../../docs/engineering/parity-matrices.md) and
 [upstream preparation guide](../../../docs/engineering/upstream-reference.md).
+
+## Radio Group legend
+
+Fieldset Legend registers its generated or bound ID with the closest Fieldset. The
+[Radio comparison](../radio/PARITY.md#g4-form-and-label-composition) covers legend fallback,
+live ID changes, removal and remounting, and explicit and Field label precedence.
+The [eager Radio hydration audit](../../../apps/radix-ssr-testing/hydration-audit/README.md) covers
+reuse of the generated legend ID and its accessible association.

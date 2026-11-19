@@ -36,7 +36,7 @@ server render. Each row is scoped to the stated contract.
 | G1 — initial selection and defaults        | Resolved, scoped B/U/SSR                              | A defined model/form value wins, including `null` and `''`. An uncontrolled default seeds once, including the initially absent case. Later changes preserve selection. B checks ARIA and checked attributes, native checked state, FormData, silent request initialization/external writes and veto versus accepted click. U checks CVA, ngModel, Signal Forms and reset baselines. SSR checks selected markup for bound null, form null and default.                                                         |
 | G2 — editable value and change transaction | Resolved ownership and activation defects, scoped B/U | `controlledValue` governs rendered and submitted state. B covers ignore/repeat, delay, replacement, clear, label veto/refusal, accepted native label edit and one Space activation on a native button. U covers canceled label rollback, trigger metadata, prevented click and controlled reset/release. Angular forwards the originating event. Native event trust and notification details are recorded separately. Broader callback order, Field touch timing and activation combinations remain in G3/G4. |
 | G3 — native activation and composite focus | Resolved scoped B/U                                   | Native and custom hosts select on Space release. Composite owns arrow focus and supplies the actual navigation destination. B checks native Tab and re-entry, LTR/RTL and Shift arrows, wrap, disabled/read-only behavior, canceled requests, parent writes, Enter/Home/End and prevented Space keyup. U covers ignored arrows followed by unrelated focus and keyboard ownership for nested composed roots. Broader host variations, live collection/focus policies and devices remain open.                 |
-| G4 — native forms, labels and Field state  | Partial, scoped B/U/SSR                               | B checks a required group owned by an external form, visible focus after invalid submit, disabled and removed selected items, Field/Field.Item labels and descriptions, name precedence, and interaction flags. U covers form adapters, fallback serialization, implicit labels and reset. SSR checks label association and native markup. Fieldset legend inference, representative input refs, validation timing, nested field and reset interactions remain open.                                          |
+| G4 — native forms, labels and Field state  | Partial, scoped B/U/SSR                               | B checks invalid-submit focus, eligible submission, Field/Field.Item labels and descriptions, interaction flags, and Fieldset legend precedence and registration. U and eager hydration cover accepted and canceled reset with Field and Form. SSR checks label association and native markup. Representative input refs, validation timing and additional nested field combinations remain open.                                                                                                             |
 | G5 — Indicator lifetime and CSS hooks      | Resolved for structural Indicator, scoped B/SSR       | Paired checks cover settled initial markup, transient enter, CSS exit, identity when reselected during exit, recreation after exit, no-motion removal and retained views. The attribute-only host retains its authored DOM and hides after exit. SSR checks selected and retained markup. Client hydration remains in G6.                                                                                                                                                                                     |
 | G6 — values, collection and hydration      | Resolved, scoped B/U/SSR and hydration                | B checks typed value identity, equal form strings, same-name groups in separate forms, tracked reorder and focus, an orphaned selection and restoration on the same item. U covers object-valued Signal Forms. Browser hydration checks server node reuse, stable IDs and label links, focus, FormData and Indicator lifetime. Deferred Radio islands and repeated exact option values lie outside this comparison.                                                                                           |
 
@@ -87,6 +87,16 @@ description and label, associated with the item's native input in the paired cus
 The first Chromium run reproduced four Angular failures covering invalid focus, stale submission and
 missing Field associations. Base UI passed the same checkpoints.
 
+Radio resolves its accessible label from explicit `aria-labelledby`, Field Label and the enclosing
+Fieldset Legend, in that order. The paired fixture checks a live legend ID change, removal,
+remounting and both overrides. The eager hydration fixture also checks the generated legend ID.
+
+The Angular reset contract preserves Field's filled state for any restored selection, including an
+empty-string option. The standalone editable group restores its starting value and a controlled
+group keeps its parent value. Both clear interaction flags on reset. Cancellation preserves the
+selection, field interaction state and external errors. The native reset assertions use the
+Angular form contract from G1.
+
 ## G5 Indicator view and motion
 
 `*rdxRadioIndicatorPresence` on the Indicator host owns its Angular view through the shared
@@ -130,11 +140,11 @@ pnpm agents:check
 ```
 
 Initial Chromium comparison reproduced two Angular failures: `bound-null` and `initially-empty`.
-The expanded suite passed **36 scenarios × 3 engines (108 comparisons)**, without
+The expanded suite passed **37 scenarios × 3 engines (111 comparisons)**, without
 expected-difference exceptions. Checkpoints compare selection, FormData and request value/reason.
 Raw observations retain the originating event and native notifications. Angular uses the actual
 host or native input event. Base UI forwards a visible host click through its hidden input.
-[Radio unit suite](__tests__/radio.spec.ts): **35 passing tests**.
+[Radio unit suite](__tests__/radio.spec.ts): **39 passing tests**.
 [SSR render suite](../../../apps/radix-ssr-testing/src/ssr-rendering.spec.ts): **3 focused passes**.
 [Storybook behavior suite](../../../apps/visual-regression/tests/radio.behavior.spec.ts):
 **2 scenarios × 3 engines** for Default motion, interrupted exit and reduced motion.

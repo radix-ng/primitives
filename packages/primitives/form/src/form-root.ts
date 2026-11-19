@@ -174,7 +174,7 @@ function serializeFormData(data: FormData): Record<string, FormDataEntryValue | 
         '[attr.data-touched]': 'anyTouched() ? "" : undefined',
         '[attr.data-submitting]': 'submitting() ? "" : undefined',
         '(submit)': 'onSubmit($event)',
-        '(reset)': 'onReset()'
+        '(reset)': 'onReset($event)'
     }
 })
 export class RdxFormRoot {
@@ -407,23 +407,20 @@ export class RdxFormRoot {
             ?.focus();
     }
 
-    onReset(): void {
-        // Don't prevent the native reset — control values revert on their own.
-        this.submitAttempted.set(false);
-        // Clear server errors (the `errors` input); client provider errors re-validate themselves.
-        const keys = Object.keys(this.errors() ?? {});
-        const hadVisible = keys.some((key) => !this.clearedNames().has(key));
-        if (keys.length) {
-            this.clearedNames.set(new Set(keys));
-        }
-        if (hadVisible) {
-            this.onClearErrors.emit({});
-        }
-        // Values revert asynchronously relative to the reset event — re-sync field state next macrotask.
-        // Read the registry fresh inside the callback (fields may register/unregister in between), and
-        // cancel on destroy so resetState never runs against a torn-down field.
+    onReset(event: Event): void {
+        const errors = this.errors();
+        // Wait for the native default action and any later reset listeners before clearing state.
         const timer = setTimeout(() => {
             this.resetTimers.delete(timer);
+            if (event.defaultPrevented) return;
+
+            this.submitAttempted.set(false);
+            if (errors === this.errors()) {
+                const keys = Object.keys(errors ?? {});
+                const hadVisible = keys.some((key) => !this.clearedNames().has(key));
+                if (keys.length) this.clearedNames.set(new Set(keys));
+                if (hadVisible) this.onClearErrors.emit({});
+            }
             this.fields().forEach((field) => field.resetState());
         });
         this.resetTimers.add(timer);

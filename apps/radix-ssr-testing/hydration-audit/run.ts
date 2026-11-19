@@ -48,6 +48,9 @@ async function snapshot(page: Page) {
                       focus: active?.getAttribute('data-radio-node'),
                       submitted: new FormData(radioForm).getAll('plan'),
                       requests: Number(radioForm.querySelector('output')?.textContent),
+                      fieldState: ['filled', 'dirty', 'touched'].filter((state) =>
+                          radioForm.querySelector('[rdxFieldRoot]')?.hasAttribute('data-' + state)
+                      ),
                       labels: ['a', 'b'].every((choice) => {
                           const item = radioForm.querySelector(`[data-radio-node="${choice}"]`);
                           const label = radioForm.querySelector<HTMLLabelElement>(
@@ -242,6 +245,28 @@ async function checkRadioHydration(
         !final.nodes['dot-b'].reused &&
         !!final.nodes['input-b']?.reused &&
         !!final.nodes['dot-a']?.reused;
+
+    await beta.press('ArrowRight');
+    const form = page.locator('[data-radio-audit]');
+    await form.evaluate((element: HTMLFormElement) => {
+        element.addEventListener('reset', (event) => event.preventDefault(), { once: true });
+        element.reset();
+    });
+    const canceled = (await record('canceled native reset retains the edit')).radio;
+    checks.canceledResetPreservesField =
+        canceled?.selection === 'a' &&
+        canceled.submitted.join() === 'a' &&
+        canceled.requests === 5 &&
+        canceled.fieldState.join() === 'filled,dirty,touched';
+
+    await form.evaluate((element: HTMLFormElement) => element.reset());
+    await page.locator('[data-radio-node="b"][aria-checked="true"]').waitFor({ timeout: 5000 });
+    const reset = (await record('accepted native reset restores the default and the Field')).radio;
+    checks.nativeResetRestoresField =
+        reset?.selection === 'b' &&
+        reset.submitted.join() === 'b' &&
+        reset.requests === 5 &&
+        reset.fieldState.join() === 'filled';
 }
 
 async function checkDetachedDialogHydration(

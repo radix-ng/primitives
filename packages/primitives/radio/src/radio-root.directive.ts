@@ -34,6 +34,7 @@ import {
     watch
 } from '@radix-ng/primitives/core';
 import { injectFieldRootContext, type RdxFieldRootContext } from '@radix-ng/primitives/field';
+import { injectFieldsetRootContext } from '@radix-ng/primitives/fieldset';
 import { radioDescribedBy, type RadioItemRegistration } from './radio-field';
 import { RdxRadioValueChangeReason } from './radio-tokens';
 
@@ -92,7 +93,7 @@ export const [injectRadioRootContext, provideRadioRootContext] = createContext<R
         role: 'radiogroup',
         '[attr.id]': 'id()',
         '[attr.tabindex]': 'authoredTabIndex ?? (field ? -1 : undefined)',
-        '[attr.aria-labelledby]': 'ariaLabelledBy() ?? field?.labelId()',
+        '[attr.aria-labelledby]': 'labelledBy()',
         '[attr.aria-describedby]': 'describedBy()',
         '[attr.aria-required]': 'requiredState() ? "true" : undefined',
         '[attr.aria-disabled]': 'disabledState() ? "true" : undefined',
@@ -120,6 +121,7 @@ export class RdxRadioGroupDirective<Value = string>
     private readonly compositeRoot = inject(RdxCompositeRoot, { self: true });
     /** @ignore Optional enclosing Field, distinct from a radio's own Field.Item context. */
     readonly field = injectFieldRootContext(true);
+    private readonly fieldset = injectFieldsetRootContext(true);
     protected readonly authoredTabIndex = injectTabIndexAttribute();
     private hasExplicitValueInput = false;
     private hasCvaValue = false;
@@ -150,13 +152,16 @@ export class RdxRadioGroupDirective<Value = string>
     /** ID of the radiogroup, used for the enclosing Field's focus target. */
     readonly id = input(injectId('rdx-radio-group-'));
 
-    /** Override the accessible label supplied by Field. */
+    /** Override the accessible label supplied by Field or Fieldset. */
     readonly ariaLabelledBy = input<string>(undefined, { alias: 'aria-labelledby' });
 
     /** Additional description IDs. Field descriptions and errors are appended automatically. */
     readonly ariaDescribedBy = input<string>(undefined, { alias: 'aria-describedby' });
 
     protected readonly describedBy = computed(() => radioDescribedBy(this.ariaDescribedBy(), this.field));
+    protected readonly labelledBy = computed(
+        () => this.ariaLabelledBy() ?? this.field?.labelId() ?? this.fieldset?.labelId()
+    );
 
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
@@ -231,9 +236,10 @@ export class RdxRadioGroupDirective<Value = string>
             syncNativeControl: () => this.syncNativeInputs(),
             defaultValue: () => this.initialEditableValue(),
             onReset: (value) => {
-                if (this.controlledValue() !== undefined) return;
-                // A connected Angular form owns its reset baseline.
-                if (!this.resetNgControl(undefined)) this.value.set(value);
+                if (this.controlledValue() === undefined) {
+                    // A connected Angular form owns its reset baseline.
+                    if (!this.resetNgControl(undefined)) this.value.set(value);
+                }
                 this.reset();
             }
         });
@@ -246,16 +252,14 @@ export class RdxRadioGroupDirective<Value = string>
         const field = this.field;
         if (field) {
             effect(() => field.setControlId(this.id()));
-            effect(() => {
-                const value = this.currentValue();
-                field.setFilled(value !== null);
-                field.setDirty(value !== this.initialSelection());
-            });
+            effect(() => field.setDirty(this.currentValue() !== this.initialSelection()));
             effect(() => {
                 const item = this.items().find(({ element }) => element === this.focusedItem());
                 field.setFocused(Boolean(item && !item.disabled()));
             });
+            const unregisterFilled = field.registerControlFilled(() => this.currentValue() !== null);
             inject(DestroyRef).onDestroy(() => {
+                unregisterFilled();
                 if (field.controlId() === this.id()) field.setFocused(false);
             });
         }
@@ -334,6 +338,13 @@ export class RdxRadioGroupDirective<Value = string>
     /** @ignore Bridge the CVA `onTouched` so `markAsTouched()` also notifies Reactive/template forms. */
     protected override formUiTouchTarget(): RdxFormUiTouchTarget {
         return { markAsTouched: () => this.onTouched() };
+    }
+
+    /** @ignore Clear interaction state when the surrounding native or Angular form resets. */
+    override reset(): void {
+        super.reset();
+        this.field?.setDirty(false);
+        this.field?.setTouched(false);
     }
 
     /**

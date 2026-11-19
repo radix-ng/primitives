@@ -8,7 +8,13 @@
       "selector": "legend[rdxFieldsetLegend]",
       "exportAs": "rdxFieldsetLegend",
       "description": "Labels the fieldset.",
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "id",
+          "default": "injectId('rdx-fieldset-legend-')",
+          "description": "ID that nested composite controls can use to reference this legend."
+        }
+      ],
       "outputs": []
     },
     {

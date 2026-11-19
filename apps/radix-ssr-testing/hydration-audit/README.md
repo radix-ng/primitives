@@ -38,9 +38,10 @@ update on hydration and a single open request from the next click.
 node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=detached-dialog-close-before-trigger-hydration
 ```
 
-The `eager-radio` case verifies server node reuse, stable group and input IDs, Field label and
+The `eager-radio` case verifies server node reuse, stable group, input and legend IDs, label and
 description associations, focus and form selection. After hydration it checks keyboard selection,
-interrupted Indicator exit, removal after completed exit and native label activation.
+interrupted Indicator exit, removal after completed exit, native label activation and Field
+state on accepted and canceled native reset.
 
 ```bash
 node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=eager-radio

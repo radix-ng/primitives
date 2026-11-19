@@ -3,6 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { form, FormField, required } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
+import { RdxFieldRoot } from '@radix-ng/primitives/field';
+import { RdxFormRoot, type RdxFormErrors } from '@radix-ng/primitives/form';
 import {
     RdxRadioGroupDirective,
     RdxRadioIndicatorDirective,
@@ -721,4 +723,100 @@ it('keeps object identity in Signal Forms and serializes only the native form en
 
     expect(host.model().plan).toBe(host.standard);
     expect([...new FormData(form).values()]).toEqual(['{"id":1}']);
+});
+
+@Component({
+    imports: [RdxFormRoot, RdxFieldRoot, RdxRadioGroupDirective, RdxRadioItemDirective],
+    template: `
+        <form [errors]="errors()" rdxFormRoot>
+            <div rdxFieldRoot name="choice">
+                <div [controlledValue]="controlled()" [defaultValue]="defaultValue()" rdxRadioRoot>
+                    <button rdxRadioItem value="">No preference</button>
+                    <button rdxRadioItem value="premium">Premium</button>
+                </div>
+            </div>
+        </form>
+    `
+})
+class RadioFieldResetHost {
+    readonly controlled = signal<string | null | undefined>(undefined);
+    readonly defaultValue = signal<string | undefined>('');
+    readonly errors = signal<RdxFormErrors>({});
+}
+
+describe('Radio reset in Field and Form', () => {
+    let fixture: ComponentFixture<RadioFieldResetHost>;
+    const formElement = () => fixture.debugElement.query(By.directive(RdxFormRoot)).nativeElement as HTMLFormElement;
+    const field = () => fixture.debugElement.query(By.directive(RdxFieldRoot)).nativeElement as HTMLDivElement;
+    const premium = () => fixture.debugElement.queryAll(By.css('button'))[1].nativeElement as HTMLButtonElement;
+    async function render() {
+        fixture.detectChanges();
+        await fixture.whenStable();
+    }
+    async function reset() {
+        formElement().reset();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+        await render();
+    }
+
+    beforeEach(() => {
+        fixture = TestBed.createComponent(RadioFieldResetHost);
+    });
+
+    it.each([
+        { initial: '', submitted: [''], filled: true },
+        { initial: undefined, submitted: [], filled: false }
+    ])(
+        'derives filled from the restored group model with initial value $initial',
+        async ({ initial, submitted, filled }) => {
+            fixture.componentInstance.defaultValue.set(initial);
+            await render();
+            premium().click();
+            await render();
+            expect(field().hasAttribute('data-filled')).toBe(true);
+            expect(field().hasAttribute('data-dirty')).toBe(true);
+            expect(field().hasAttribute('data-touched')).toBe(true);
+
+            await reset();
+
+            expect(field().hasAttribute('data-filled')).toBe(filled);
+            expect(field().hasAttribute('data-dirty')).toBe(false);
+            expect(field().hasAttribute('data-touched')).toBe(false);
+            expect(premium().getAttribute('aria-checked')).toBe('false');
+            expect(new FormData(formElement()).getAll('choice')).toEqual(submitted);
+        }
+    );
+
+    it('keeps a controlled selection and retains its filled state when the form resets', async () => {
+        fixture.componentInstance.controlled.set('');
+        await render();
+        fixture.componentInstance.controlled.set('premium');
+        await render();
+        expect(field().hasAttribute('data-dirty')).toBe(true);
+
+        await reset();
+
+        expect(premium().getAttribute('aria-checked')).toBe('true');
+        expect(new FormData(formElement()).getAll('choice')).toEqual(['premium']);
+        expect(field().hasAttribute('data-filled')).toBe(true);
+        expect(field().hasAttribute('data-dirty')).toBe(false);
+    });
+
+    it('preserves selection, interaction flags and external errors on a canceled native reset', async () => {
+        await render();
+        premium().click();
+        fixture.componentInstance.errors.set({ choice: 'Plan is unavailable' });
+        await render();
+        expect(field().hasAttribute('data-invalid')).toBe(true);
+        formElement().addEventListener('reset', (event) => event.preventDefault(), { once: true });
+
+        await reset();
+
+        expect(premium().getAttribute('aria-checked')).toBe('true');
+        expect(new FormData(formElement()).getAll('choice')).toEqual(['premium']);
+        expect(field().hasAttribute('data-filled')).toBe(true);
+        expect(field().hasAttribute('data-dirty')).toBe(true);
+        expect(field().hasAttribute('data-touched')).toBe(true);
+        expect(field().hasAttribute('data-invalid')).toBe(true);
+    });
 });

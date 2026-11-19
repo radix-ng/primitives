@@ -2,6 +2,7 @@ import demoStylesSource from '../../../../apps/radix-storybook/.storybook/demo-s
 import { Source, ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as FieldsetStories from './fieldset.stories';
 import { RdxFieldsetRoot } from '../src/fieldset-root';
+import { RdxFieldsetLegend } from '../src/fieldset-legend';
 
 <Meta title="Primitives/Fieldset" of={FieldsetStories} />
 
@@ -100,9 +101,12 @@ system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook 
 
 ### Legend
 
-`RdxFieldsetLegend`
+`RdxFieldsetLegend` applies to a native `<legend>`. It registers its ID so a nested Radio Group
+can use the legend as its accessible name. Set `id` to supply your own ID, or use the generated one.
 
 Reads disabled state from the root context and exposes it via `data-disabled`.
+
+<ArgTypes of={RdxFieldsetLegend} />
 
 | Attribute       | Present when              |
 | --------------- | ------------------------- |

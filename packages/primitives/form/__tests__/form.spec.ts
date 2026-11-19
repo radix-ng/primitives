@@ -198,10 +198,24 @@ describe('RdxFormRoot', () => {
 
             host.cleared.set(null);
             formEl().reset();
+            await new Promise((resolve) => setTimeout(resolve, 0));
             await settle();
 
             expect(field('email').hasAttribute('data-invalid')).toBe(false);
             expect(host.cleared()).toEqual({});
+        });
+
+        it('keeps external errors assigned by a later reset listener', async () => {
+            host.errors.set({ email: 'Old error' });
+            await settle();
+            formEl().addEventListener('reset', () => host.errors.set({ email: 'New error' }), { once: true });
+
+            formEl().reset();
+            await settle();
+            await new Promise((resolve) => setTimeout(resolve, 0));
+            await settle();
+
+            expect(errorText('email')).toBe('New error');
         });
 
         it('does not reset fields after the form is destroyed', () => {

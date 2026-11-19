@@ -85,6 +85,10 @@ The field's name takes precedence over the group's name. A disabled field disabl
 and a disabled Field Item disables its radio. Each radio includes the group description and
 its own Field Item description.
 
+The group uses its explicit `aria-labelledby`, the Field label, or the enclosing Fieldset's
+`legend[rdxFieldsetLegend]`, in that order. Import `RdxFieldsetRoot` and `RdxFieldsetLegend` from
+`@radix-ng/primitives/fieldset` to share a legend with related controls.
+
 | Attribute      | Parts                                     | Present when                         |
 | -------------- | ----------------------------------------- | ------------------------------------ |
 | `data-valid`   | RadioGroup, RadioGroupItem, RadioIndicator | Field displays a valid state.        |

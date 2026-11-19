@@ -4,8 +4,9 @@
 
 > Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
-Native `reset` clears external errors and every field's interaction state, and re-syncs `filled` to the
-reverted values.
+After the native reset completes, Form clears the previous external errors and resets each field's
+interaction state. The field's `filled` reflects its restored value. Canceling the reset preserves
+errors and field state. A new `errors` object assigned during reset takes effect independently.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';

@@ -11,7 +11,7 @@ export interface Settings {
     disabled?: boolean;
     disabledItem?: string;
     readOnly?: boolean;
-    forms?: 'external-required' | 'eligible-items' | 'field-labels' | 'field-state';
+    forms?: 'external-required' | 'eligible-items' | 'field-labels' | 'field-state' | 'fieldset-legend';
     indicator?: 'unmount' | 'keep-mounted' | 'no-motion';
     collection?: 'identity' | 'live';
 }
@@ -48,6 +48,7 @@ export const cases = {
     'forms-eligible-items': { forms: 'eligible-items' },
     'forms-field-labels': { forms: 'field-labels' },
     'forms-field-state': { forms: 'field-state' },
+    'forms-fieldset-legend': { forms: 'fieldset-legend' },
     'indicator-unmount': { indicator: 'unmount', defaultValue: 'standard' },
     'indicator-keep-mounted': { indicator: 'keep-mounted', defaultValue: 'standard' },
     'indicator-no-motion': { indicator: 'no-motion', defaultValue: 'standard' },

@@ -77,8 +77,9 @@ error maps onto the field by `name` and clears when you edit it.
 
 ### Reset
 
-Native `reset` clears external errors and every field's interaction state, and re-syncs `filled` to the
-reverted values.
+After the native reset completes, Form clears the previous external errors and resets each field's
+interaction state. The field's `filled` reflects its restored value. Canceling the reset preserves
+errors and field state. A new `errors` object assigned during reset takes effect independently.
 
 <Canvas of={FormStories.Reset} />
 
