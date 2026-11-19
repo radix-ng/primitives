@@ -1,5 +1,6 @@
-import { booleanAttribute, computed, Directive, input } from '@angular/core';
+import { booleanAttribute, DestroyRef, Directive, ElementRef, inject, input } from '@angular/core';
 import { BooleanInput } from '@radix-ng/primitives/core';
+import { injectRadioIndicatorPresence, useRadioIndicatorTransition } from './radio-indicator-presence.directive';
 import { injectRadioItemContext } from './radio-item.directive';
 
 @Directive({
@@ -17,17 +18,35 @@ import { injectRadioItemContext } from './radio-item.directive';
         '[attr.data-dirty]': 'itemContext.field?.dirtyState() ? "" : undefined',
         '[attr.data-filled]': 'itemContext.field?.filledState() ? "" : undefined',
         '[attr.data-focused]': 'itemContext.field?.focusedState() ? "" : undefined',
-        '[attr.data-starting-style]': 'isVisible() ? "" : undefined',
-        '[attr.data-ending-style]': '!isVisible() ? "" : undefined',
-        '[style.display]': '!keepMounted() && !isVisible() ? "none" : null',
+        '[attr.data-starting-style]': 'transition.status() === "starting" ? "" : undefined',
+        '[attr.data-ending-style]': 'transition.status() === "ending" ? "" : undefined',
+        '[style.display]': 'hidden() ? "none" : null',
         '[style.pointer-events]': '"none"'
     }
 })
 export class RdxRadioIndicatorDirective {
     protected readonly itemContext = injectRadioItemContext();
+    private readonly presence = (() => {
+        const presence = injectRadioIndicatorPresence(true);
+        return presence?.item === this.itemContext ? presence : null;
+    })();
+    protected readonly transition =
+        this.presence?.transition ?? useRadioIndicatorTransition(this.itemContext.checkedState);
 
-    /** Keep the indicator in the DOM when unchecked so CSS exit animations can play. */
+    /** Leave an attribute-only host displayed when unchecked. Structural ownership has its own option. */
     readonly keepMounted = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    protected readonly isVisible = computed(() => this.itemContext.checkedState());
+    constructor() {
+        const unregister = this.transition.registerElement(inject<ElementRef<HTMLElement>>(ElementRef).nativeElement);
+        inject(DestroyRef).onDestroy(unregister);
+    }
+
+    protected hidden(): boolean {
+        return (
+            !this.presence &&
+            !this.keepMounted() &&
+            !this.itemContext.checkedState() &&
+            this.transition.status() !== 'ending'
+        );
+    }
 }

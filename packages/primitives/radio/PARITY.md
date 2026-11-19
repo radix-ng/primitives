@@ -8,7 +8,8 @@ The Angular entry covers both **RadioGroup** and **Radio**. Menu RadioGroup has 
 G1 resolves initial selection and late defaults. G2 separates parent-owned selection from the
 Angular form model and fixes rejected native activation. G3 aligns keyboard activation and
 the focus position used by Tab. G4 covers native validation focus, which items submit, and Field
-composition. The [paired browser suite](../../../apps/parity-testing/primitives/radio/README.md)
+composition. G5 aligns the Indicator's transient CSS hooks and structural view lifetime.
+The [paired browser suite](../../../apps/parity-testing/primitives/radio/README.md)
 compares the rendered state, native serialization and user interaction.
 
 **Breaking changes are permitted.** Apply the [state ownership contract](../../../docs/engineering/state-ownership.md)
@@ -17,12 +18,12 @@ ownership. [ADR 0089](../../../docs/adr/0089-radio-selection-ownership.md) expla
 
 ## Public parts
 
-| Pinned counterpart                                                                                                                                    | Angular part                                                                               | Boundary                                                                                                                                                                                                                                                   |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [RadioGroup](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/radio-group/RadioGroup.tsx)              | [RdxRadioGroupDirective](src/radio-root.directive.ts)                                      | One group-owned selection. Angular uses `controlledValue` for strict ownership and `value`/`valueChange` for the editable model, CVA and Signal Forms. Both expose `defaultValue`, `onValueChange`, `name`, `form`, `disabled`, `readOnly` and `required`. |
-| [Radio.Root](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/radio/root/RadioRoot.tsx)                | [RdxRadioItemDirective](src/radio-item.directive.ts)                                       | Consumer supplies the host. Angular infers a native button and requires a group. The pin also renders a standalone Root and supports arbitrary value identity. Angular item values are strings.                                                            |
-| Generated radio input per Root; `inputRef` on Root and Group                                                                                          | [RdxRadioItemInputDirective](src/radio-item-input.directive.ts) plus the group form bridge | Angular's optional authored input enables native constraints and label activation. The group serializes the selected, enabled, mounted item when it has no authored input. Angular consumers can reference an authored input directly.                     |
-| [Radio.Indicator](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/radio/indicator/RadioIndicator.tsx) | [RdxRadioIndicatorDirective](src/radio-indicator.directive.ts)                             | Both expose `keepMounted`, with different view lifetimes. See G5.                                                                                                                                                                                          |
+| Pinned counterpart                                                                                                                                    | Angular part                                                                                                     | Boundary                                                                                                                                                                                                                                                   |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [RadioGroup](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/radio-group/RadioGroup.tsx)              | [RdxRadioGroupDirective](src/radio-root.directive.ts)                                                            | One group-owned selection. Angular uses `controlledValue` for strict ownership and `value`/`valueChange` for the editable model, CVA and Signal Forms. Both expose `defaultValue`, `onValueChange`, `name`, `form`, `disabled`, `readOnly` and `required`. |
+| [Radio.Root](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/radio/root/RadioRoot.tsx)                | [RdxRadioItemDirective](src/radio-item.directive.ts)                                                             | Consumer supplies the host. Angular infers a native button and requires a group. The pin also renders a standalone Root and supports arbitrary value identity. Angular item values are strings.                                                            |
+| Generated radio input per Root; `inputRef` on Root and Group                                                                                          | [RdxRadioItemInputDirective](src/radio-item-input.directive.ts) plus the group form bridge                       | Angular's optional authored input enables native constraints and label activation. The group serializes the selected, enabled, mounted item when it has no authored input. Angular consumers can reference an authored input directly.                     |
+| [Radio.Indicator](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/radio/indicator/RadioIndicator.tsx) | [Indicator](src/radio-indicator.directive.ts) and [IndicatorPresence](src/radio-indicator-presence.directive.ts) | The attribute owns state and styling hooks. Add the structural directive to own the Angular view, with optional `keepMounted`. The attribute also supports consumer-owned hosts.                                                                           |
 
 ## Evidence and priorities
 
@@ -35,8 +36,8 @@ server render. Each row is scoped to the stated contract.
 | G2 — editable value and change transaction | Resolved ownership and activation defects, scoped B/U | `controlledValue` governs rendered and submitted state. B covers ignore/repeat, delay, replacement, clear, label veto/refusal, accepted native label edit and one Space activation on a native button. U covers canceled label rollback, trigger metadata, prevented click and controlled reset/release. Angular forwards the originating event. Native event trust and notification details are recorded separately. Broader callback order, Field touch timing and activation combinations remain in G3/G4. |
 | G3 — native activation and composite focus | Resolved scoped B/U                                   | Native and custom hosts select on Space release. Composite owns arrow focus and supplies the actual navigation destination. B checks native Tab and re-entry, LTR/RTL and Shift arrows, wrap, disabled/read-only behavior, canceled requests, parent writes, Enter/Home/End and prevented Space keyup. U covers ignored arrows followed by unrelated focus and keyboard ownership for nested composed roots. Broader host variations, live collection/focus policies and devices remain open.                 |
 | G4 — native forms, labels and Field state  | Partial, scoped B/U/SSR                               | B checks a required group owned by an external form, visible focus after invalid submit, disabled and removed selected items, Field/Field.Item labels and descriptions, name precedence, and interaction flags. U covers form adapters, fallback serialization, implicit labels and reset. SSR checks label association and native markup. Fieldset legend inference, representative input refs, validation timing, nested field and reset interactions remain open.                                          |
-| G5 — Indicator lifetime and CSS hooks      | Source divergence                                     | The pin retains an exiting view until motion completes, then unmounts unless kept. Angular keeps the authored element, hides it synchronously by default and uses persistent checked/unchecked state as starting/ending hooks. Compare initial state, appearance, exit, reopen and retained view identity before changing part ownership.                                                                                                                                                                     |
-| G6 — values, collection and hydration      | Partial, S/SSR                                        | The Angular group accepts `string \| null`; Base UI also compares non-string identities before serialization. Compare dynamic item identity, duplicate tokens, reorder/removal, orphan selection and isolated groups. SSR checks initial markup only. Client hydration, IDs, focus and retained/animated Indicator coverage remain open.                                                                                                                                                                      |
+| G5 — Indicator lifetime and CSS hooks      | Resolved for structural Indicator, scoped B/SSR       | Paired checks cover settled initial markup, transient enter, CSS exit, identity when reselected during exit, recreation after exit, no-motion removal and retained views. The attribute-only host retains its authored DOM and hides after exit. SSR checks selected and retained markup. Client hydration remains in G6.                                                                                                                                                                                     |
+| G6 — values, collection and hydration      | Partial, S/SSR                                        | The Angular group accepts `string \| null`; Base UI also compares non-string identities before serialization. Compare dynamic item identity, duplicate tokens, reorder/removal, orphan selection and isolated groups. SSR checks initial markup only. Client hydration, IDs, focus and Indicator lifecycle after hydration remain open.                                                                                                                                                                       |
 
 Group exposes `role="radiogroup"`, `aria-required`, `aria-disabled` and `aria-readonly`. Item
 exposes `role="radio"`, `aria-checked`, `data-composite-item-active`, `data-checked` and
@@ -85,6 +86,20 @@ description and label, associated with the item's native input in the paired cus
 The first Chromium run reproduced four Angular failures covering invalid focus, stale submission and
 missing Field associations. Base UI passed the same checkpoints.
 
+## G5 Indicator view and motion
+
+`*rdxRadioIndicatorPresence` on the Indicator host owns its Angular view through the shared
+[render lifecycle](../../../docs/adr/0084-signal-render-lifecycle.md). The host registers as an
+animation participant. An outgoing view stays mounted during CSS motion. Reselecting it interrupts
+exit and preserves the same view. After exit the structural owner destroys the view, or retains it
+when configured with `{ keepMounted: true }`.
+
+Existing attribute-only templates retain the authored host. The host hides after exit by default and
+stays displayed with `keepMounted`. Both compositions use transient `data-starting-style` and
+`data-ending-style` hooks. Apply settled styling through `data-checked` and `data-unchecked`.
+The paired suite checks lifecycle milestones. Exact frame timing of the hooks during reversal is
+outside the comparison.
+
 ## Verification
 
 ```bash
@@ -95,9 +110,11 @@ pnpm agents:check
 ```
 
 Initial Chromium comparison reproduced two Angular failures: `bound-null` and `initially-empty`.
-The expanded suite passed **31 scenarios × 3 engines (93 comparisons)**, without
+The expanded suite passed **34 scenarios × 3 engines (102 comparisons)**, without
 expected-difference exceptions. Checkpoints compare selection, FormData and request value/reason.
 Raw observations retain the originating event and native notifications. Angular uses the actual
 host or native input event. Base UI forwards a visible host click through its hidden input.
-[Radio unit suite](__tests__/radio.spec.ts): **33 passing tests**.
-[SSR render suite](../../../apps/radix-ssr-testing/src/ssr-rendering.spec.ts): **2 focused passes**.
+[Radio unit suite](__tests__/radio.spec.ts): **34 passing tests**.
+[SSR render suite](../../../apps/radix-ssr-testing/src/ssr-rendering.spec.ts): **3 focused passes**.
+[Storybook behavior suite](../../../apps/visual-regression/tests/radio.behavior.spec.ts):
+**2 scenarios × 3 engines** for Default motion, interrupted exit and reduced motion.

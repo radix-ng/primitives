@@ -70,6 +70,12 @@ function ReactRadio() {
                                     }}
                                 >
                                     {option.label}
+                                    {settings.indicator && (
+                                        <Radio.Indicator
+                                            data-testid={'indicator-' + option.value}
+                                            keepMounted={settings.indicator === 'keep-mounted'}
+                                        />
+                                    )}
                                 </Radio.Root>
                                 <span data-testid={'label-' + option.value}>Select</span>
                             </label>

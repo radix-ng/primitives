@@ -6866,6 +6866,20 @@
       "section": "components",
       "parts": [
         {
+          "directive": "RdxRadioIndicatorPresenceDirective",
+          "selector": "ng-template[rdxRadioIndicatorPresence]",
+          "description": "Owns the indicator host and its Angular children until its exit motion finishes.",
+          "inputs": [
+            {
+              "name": "rdxRadioIndicatorPresence",
+              "type": "RdxRadioIndicatorPresenceOptions | undefined",
+              "default": "undefined",
+              "description": "Use `{ keepMounted: true }` to retain the unchecked view."
+            }
+          ],
+          "outputs": []
+        },
+        {
           "directive": "RdxRadioIndicatorDirective",
           "selector": "[rdxRadioIndicator]",
           "exportAs": "rdxRadioIndicator",
@@ -6874,7 +6888,7 @@
               "name": "keepMounted",
               "type": "boolean",
               "default": "false",
-              "description": "Keep the indicator in the DOM when unchecked so CSS exit animations can play."
+              "description": "Leave an attribute-only host displayed when unchecked. Structural ownership has its own option."
             }
           ],
           "outputs": []

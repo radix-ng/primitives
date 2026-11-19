@@ -287,10 +287,100 @@ async function keyboardScenario(driver: RadioDriver, settings: Settings) {
     await driver.checkpoint('re-entry preserves selection', selected, requests);
 }
 
+async function indicatorScenario(driver: RadioDriver, mode: NonNullable<Settings['indicator']>) {
+    const { page, group } = driver;
+    const standard = page.getByTestId('radio-standard');
+    const compact = page.getByTestId('radio-compact');
+    const original = page.getByTestId('indicator-standard');
+    const next = page.getByTestId('indicator-compact');
+    const retained = mode === 'keep-mounted';
+    const animated = mode !== 'no-motion';
+
+    await page.addStyleTag({
+        content: `
+            [data-testid^="indicator-"] { display: inline-block; width: 10px; height: 10px; }
+            ${
+                animated
+                    ? `
+                [data-testid^="indicator-"][data-ending-style] { animation: indicator-exit 1s linear both paused; }
+                @keyframes indicator-exit { to { opacity: 0; } }
+            `
+                    : ''
+            }
+        `
+    });
+    await group.evaluate((root) => {
+        const recordEnter = () => {
+            for (const indicator of root.querySelectorAll<HTMLElement>('[data-starting-style]')) {
+                if (indicator.dataset['testid']?.startsWith('indicator-')) indicator.dataset['entered'] = 'true';
+            }
+        };
+        new MutationObserver(recordEnter).observe(root, {
+            childList: true,
+            subtree: true,
+            attributeFilter: ['data-starting-style']
+        });
+    });
+
+    const settled = async (indicator: typeof original, state: 'checked' | 'unchecked') => {
+        await expect(indicator).toBeVisible();
+        await expect(indicator).toHaveAttribute('data-' + state, '');
+        await expect(indicator).not.toHaveAttribute('data-starting-style');
+        await expect(indicator).not.toHaveAttribute('data-ending-style');
+    };
+    const inactive = async (indicator: typeof original) => {
+        if (retained) await settled(indicator, 'unchecked');
+        else await expect(indicator).toHaveCount(0);
+    };
+
+    await settled(original, 'checked');
+    await expect(original).not.toHaveAttribute('data-entered');
+    await inactive(next);
+    await original.evaluate((node) => node.setAttribute('data-original', ''));
+    await driver.checkpoint('initial indicators are settled', 'standard');
+
+    await compact.click();
+    await expect(next).toHaveAttribute('data-entered', 'true');
+    await settled(next, 'checked');
+    if (animated) {
+        const pendingExit = async () => {
+            await expect(original).toBeVisible();
+            await expect(original).toHaveAttribute('data-unchecked', '');
+            await expect(original).toHaveAttribute('data-ending-style', '');
+            await expect
+                .poll(() => original.evaluate((node) => node.getAnimations().map((animation) => animation.playState)))
+                .toEqual(['paused']);
+        };
+        await pendingExit();
+        await driver.checkpoint('outgoing indicator stays mounted during exit', 'compact', ['compact']);
+
+        await standard.click();
+        await settled(original, 'checked');
+        await expect(original).toHaveAttribute('data-original', '');
+        await expect(original).not.toHaveAttribute('data-entered');
+        await driver.checkpoint('reopening reuses the outgoing indicator', 'standard', ['compact', 'standard']);
+
+        await compact.click();
+        await pendingExit();
+        await original.evaluate((node) => node.getAnimations().forEach((animation) => animation.finish()));
+    }
+    await inactive(original);
+    const edits = animated ? ['compact', 'standard', 'compact'] : ['compact'];
+    await driver.checkpoint('settled inactive indicator follows keepMounted', 'compact', edits);
+
+    await standard.click();
+    await settled(original, 'checked');
+    await expect(original).toHaveAttribute('data-entered', 'true');
+    if (retained) await expect(original).toHaveAttribute('data-original', '');
+    else await expect(original).not.toHaveAttribute('data-original');
+    await driver.checkpoint('reselection after exit', 'standard', [...edits, 'standard']);
+}
+
 const scenarios = Object.entries(cases).map(([name, settings]) => ({
     name,
     async run(driver: RadioDriver) {
         if ('forms' in settings) return formsScenario(driver, settings.forms);
+        if ('indicator' in settings) return indicatorScenario(driver, settings.indicator);
         if ('keyboard' in settings) return keyboardScenario(driver, settings);
         if ('response' in settings) {
             await driver.checkpoint('parent value owns the group', settings.value);

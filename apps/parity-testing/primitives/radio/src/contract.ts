@@ -12,6 +12,7 @@ export interface Settings {
     disabledItem?: string;
     readOnly?: boolean;
     forms?: 'external-required' | 'eligible-items' | 'field-labels' | 'field-state';
+    indicator?: 'unmount' | 'keep-mounted' | 'no-motion';
 }
 
 export const cases = {
@@ -45,7 +46,10 @@ export const cases = {
     'forms-external-required': { forms: 'external-required' },
     'forms-eligible-items': { forms: 'eligible-items' },
     'forms-field-labels': { forms: 'field-labels' },
-    'forms-field-state': { forms: 'field-state' }
+    'forms-field-state': { forms: 'field-state' },
+    'indicator-unmount': { indicator: 'unmount', defaultValue: 'standard' },
+    'indicator-keep-mounted': { indicator: 'keep-mounted', defaultValue: 'standard' },
+    'indicator-no-motion': { indicator: 'no-motion', defaultValue: 'standard' }
 } satisfies Record<string, Settings>;
 
 export const options = [

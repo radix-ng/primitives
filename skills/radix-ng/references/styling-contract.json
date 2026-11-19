@@ -1927,7 +1927,7 @@
       "description": "A set of checkable buttons—known as radio buttons—where no more than one of the buttons can be checked at a time.",
       "doc": "radix-ng-examples/references/components/radio.md",
       "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-radio--docs",
-      "anatomy": "<div rdxRadioRoot name=\"density\">\n  <label>\n    <span rdxRadioItem value=\"default\">\n      <span rdxRadioIndicator></span>\n      <input rdxRadioItemInput />\n    </span>\n    Default\n  </label>\n</div>",
+      "anatomy": "<div rdxRadioRoot name=\"density\">\n  <label>\n    <span rdxRadioItem value=\"default\">\n      <span *rdxRadioIndicatorPresence rdxRadioIndicator></span>\n      <input rdxRadioItemInput />\n    </span>\n    Default\n  </label>\n</div>",
       "dataAttributes": [
         {
           "attribute": "data-valid",
@@ -2032,12 +2032,12 @@
         {
           "attribute": "data-starting-style",
           "parts": "RadioIndicator",
-          "values": "the indicator just mounted (use to animate it in)."
+          "values": "the indicator is entering after a selection change."
         },
         {
           "attribute": "data-ending-style",
           "parts": "RadioIndicator",
-          "values": "the indicator is unchecked (use to animate it out)."
+          "values": "the indicator is exiting after deselection."
         }
       ]
     },

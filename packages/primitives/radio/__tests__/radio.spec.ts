@@ -253,6 +253,18 @@ describe('RdxRadio', () => {
         expect(host.lastReason).toBe('none');
     });
 
+    it('keeps authored Indicator hosts in their settled state on initial render', () => {
+        const [checked, unchecked] = indicators();
+        expect(checked.hasAttribute('data-checked')).toBe(true);
+        expect(checked.style.display).not.toBe('none');
+        expect(unchecked.hasAttribute('data-unchecked')).toBe(true);
+        expect(unchecked.style.display).toBe('none');
+        for (const indicator of [checked, unchecked]) {
+            expect(indicator.hasAttribute('data-starting-style')).toBe(false);
+            expect(indicator.hasAttribute('data-ending-style')).toBe(false);
+        }
+    });
+
     it('propagates group disabled and required state to items, indicators, and hidden inputs', () => {
         host.disabled = true;
         host.required = true;

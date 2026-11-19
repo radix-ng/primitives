@@ -4,6 +4,7 @@ import * as RadioDirectiveStories from './radio.stories';
 import { RdxRadioGroupDirective } from '../src/radio-root.directive';
 import { RdxRadioItemDirective } from '../src/radio-item.directive';
 import { RdxRadioIndicatorDirective } from '../src/radio-indicator.directive';
+import { RdxRadioIndicatorPresenceDirective } from '../src/radio-indicator-presence.directive';
 
 <Meta title="Primitives/Radio Group" />
 
@@ -26,6 +27,7 @@ Get started with importing the directives:
 import {
     RdxRadioGroupDirective,
     RdxRadioIndicatorDirective,
+    RdxRadioIndicatorPresenceDirective,
     RdxRadioItemDirective,
     RdxRadioItemInputDirective
 } from '@radix-ng/primitives/radio';
@@ -37,7 +39,7 @@ import {
 <div rdxRadioRoot name="density">
   <label>
     <span rdxRadioItem value="default">
-      <span rdxRadioIndicator></span>
+      <span *rdxRadioIndicatorPresence rdxRadioIndicator></span>
       <input rdxRadioItemInput />
     </span>
     Default
@@ -148,7 +150,7 @@ External value writes update the checked input and `FormData` without emitting n
 
 ### Default
 
-A radio group with sibling labels and hidden native inputs.
+A radio group with labels, hidden native inputs and an animated indicator.
 
 <Canvas of={RadioDirectiveStories.Default} />
 
@@ -244,8 +246,9 @@ is the item ID followed by `-input`. Set `id` to use your own ID with an explici
 ### RadioIndicator
 
 `RdxRadioIndicatorDirective` — visual marker shown when the radio is selected. Apply to an element
-inside an item (typically a `<span>`). By default it is hidden while unchecked; set `keepMounted` to
-keep it in the DOM so CSS enter/exit animations can play.
+inside an item (typically a `<span>`). Used on its own, the attribute directive hides the authored
+host after exit. Set `keepMounted` on the host to leave it displayed while unchecked.
+Use `data-checked` and `data-unchecked` for styles that should persist after motion.
 
 <ArgTypes of={RdxRadioIndicatorDirective} />
 
@@ -258,8 +261,25 @@ keep it in the DOM so CSS enter/exit animations can play.
 | `data-disabled`       | the radio or its group is disabled.                    |
 | `data-readonly`       | the radio or its group is read-only.                   |
 | `data-required`       | the radio or its group is required.                    |
-| `data-starting-style` | the indicator just mounted (use to animate it in).     |
-| `data-ending-style`   | the indicator is unchecked (use to animate it out).    |
+| `data-starting-style` | the indicator is entering after a selection change.    |
+| `data-ending-style`   | the indicator is exiting after deselection.            |
+
+### RadioIndicatorPresence
+
+`RdxRadioIndicatorPresenceDirective` — owns the indicator's Angular view. Apply
+`*rdxRadioIndicatorPresence` to the element with `rdxRadioIndicator`. The view is created when
+selected and destroyed after the indicator's CSS exit finishes. Selecting it again during exit
+preserves that view. An initially selected radio renders its indicator in the settled state.
+
+```html
+<span *rdxRadioIndicatorPresence rdxRadioIndicator></span>
+<span *rdxRadioIndicatorPresence="{ keepMounted: true }" rdxRadioIndicator></span>
+```
+
+Use `{ keepMounted: true }` on the structural directive to retain the whole view while unchecked.
+Style the settled unchecked state with `data-unchecked` when a retained indicator should be invisible.
+
+<ArgTypes of={RdxRadioIndicatorPresenceDirective} />
 
 ## Accessibility
 

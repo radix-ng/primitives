@@ -3,6 +3,8 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { RdxDirectionProvider } from '@radix-ng/primitives/direction-provider';
 import {
     RdxRadioGroupDirective,
+    RdxRadioIndicatorDirective,
+    RdxRadioIndicatorPresenceDirective,
     RdxRadioItemDirective,
     RdxRadioItemInputDirective,
     type RdxRadioValueChangeEvent
@@ -12,7 +14,12 @@ import { AngularRadioForms } from './forms.angular';
 
 @Component({
     selector: 'parity-radio-items',
-    imports: [RdxRadioItemDirective, RdxRadioItemInputDirective],
+    imports: [
+        RdxRadioItemDirective,
+        RdxRadioItemInputDirective,
+        RdxRadioIndicatorDirective,
+        RdxRadioIndicatorPresenceDirective
+    ],
     template: `
         @for (option of choices; track option.value) {
             @if (nativeButton) {
@@ -29,6 +36,13 @@ import { AngularRadioForms } from './forms.angular';
                         rdxRadioItem
                     >
                         {{ option.label }}
+                        @if (settings.indicator) {
+                            <span
+                                *rdxRadioIndicatorPresence="{ keepMounted: settings.indicator === 'keep-mounted' }"
+                                [attr.data-testid]="'indicator-' + option.value"
+                                rdxRadioIndicator
+                            ></span>
+                        }
                         <input rdxRadioItemInput />
                     </span>
                     <span [attr.data-testid]="'label-' + option.value">Select</span>

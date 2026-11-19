@@ -19,6 +19,7 @@ Get started with importing the directives:
 import {
     RdxRadioGroupDirective,
     RdxRadioIndicatorDirective,
+    RdxRadioIndicatorPresenceDirective,
     RdxRadioItemDirective,
     RdxRadioItemInputDirective
 } from '@radix-ng/primitives/radio';
@@ -30,7 +31,7 @@ import {
 <div rdxRadioRoot name="density">
   <label>
     <span rdxRadioItem value="default">
-      <span rdxRadioIndicator></span>
+      <span *rdxRadioIndicatorPresence rdxRadioIndicator></span>
       <input rdxRadioItemInput />
     </span>
     Default

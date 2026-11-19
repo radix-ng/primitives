@@ -23,7 +23,13 @@ import {
 } from '@radix-ng/primitives/menu';
 import { RdxNumberFieldHiddenInput, RdxNumberFieldInput, RdxNumberFieldRoot } from '@radix-ng/primitives/number-field';
 import { RdxPortal } from '@radix-ng/primitives/portal';
-import { RdxRadioGroupDirective, RdxRadioItemDirective, RdxRadioItemInputDirective } from '@radix-ng/primitives/radio';
+import {
+    RdxRadioGroupDirective,
+    RdxRadioIndicatorDirective,
+    RdxRadioIndicatorPresenceDirective,
+    RdxRadioItemDirective,
+    RdxRadioItemInputDirective
+} from '@radix-ng/primitives/radio';
 import { _importsSelect, RdxSelectLabel, RdxSelectRoot, RdxSelectTrigger } from '@radix-ng/primitives/select';
 import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 import { describe, expect, it, vi } from 'vitest';
@@ -176,6 +182,8 @@ class RadioDefaultsPage {
         RdxFieldLabel,
         RdxFieldRoot,
         RdxRadioGroupDirective,
+        RdxRadioIndicatorDirective,
+        RdxRadioIndicatorPresenceDirective,
         RdxRadioItemDirective,
         RdxRadioItemInputDirective
     ],
@@ -185,9 +193,24 @@ class RadioDefaultsPage {
             <p id="plan-description" rdxFieldDescription>Select a plan.</p>
             <div rdxRadioRoot defaultValue="free">
                 <div rdxFieldItem>
-                    <span id="plan-free" rdxRadioItem value="free"><input rdxRadioItemInput /></span>
+                    <span id="plan-free" rdxRadioItem value="free">
+                        <span id="selected-indicator" *rdxRadioIndicatorPresence rdxRadioIndicator></span>
+                        <input rdxRadioItemInput />
+                    </span>
                     <label id="plan-free-label" rdxFieldLabel>Free</label>
                 </div>
+                <button rdxRadioItem value="basic">
+                    Basic
+                    <span id="inactive-indicator" *rdxRadioIndicatorPresence rdxRadioIndicator></span>
+                </button>
+                <button rdxRadioItem value="pro">
+                    Pro
+                    <span
+                        id="retained-indicator"
+                        *rdxRadioIndicatorPresence="{ keepMounted: true }"
+                        rdxRadioIndicator
+                    ></span>
+                </button>
             </div>
         </div>
     `
@@ -608,6 +631,17 @@ describe('SSR rendering', () => {
         expect(input?.name).toBe('plan');
         expect(parsed.querySelector('label')?.htmlFor).toBe(input?.id);
         expect(input?.checked).toBe(true);
+        expect(html).toMatch(/ngh=/);
+    });
+    it('serializes the settled Radio Indicator view according to selection and keepMounted', async () => {
+        const html = await renderToString('app-radio-field', RadioFieldPage);
+        const parsed = new DOMParser().parseFromString(html, 'text/html');
+        expect(parsed.querySelector('#selected-indicator')?.hasAttribute('data-checked')).toBe(true);
+        expect(parsed.querySelector('#inactive-indicator')).toBeNull();
+        expect(parsed.querySelector('#retained-indicator')?.hasAttribute('data-unchecked')).toBe(true);
+        expect(
+            parsed.querySelector('[rdxradioindicator][data-starting-style], [rdxradioindicator][data-ending-style]')
+        ).toBeNull();
         expect(html).toMatch(/ngh=/);
     });
     it('resolves Menu model/default precedence before server serialization', async () => {
