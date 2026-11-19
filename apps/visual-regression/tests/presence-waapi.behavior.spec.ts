@@ -148,17 +148,39 @@ test.describe('Presence render lifetime', () => {
         await mountButton(page).click();
         const box = page.locator('.waapi-box');
         await expect(box).toBeVisible();
-        await box.evaluate((element) => {
+        const exit = await box.evaluateHandle((element) => {
             element.style.transitionDuration = '100ms';
+            const paused = new Promise<Animation[]>((resolve) => {
+                element.addEventListener(
+                    'transitionstart',
+                    () => {
+                        const animations = element.getAnimations();
+                        animations.forEach((animation) => animation.pause());
+                        resolve(animations);
+                    },
+                    { once: true }
+                );
+            });
+            return { element, paused };
         });
         await mountButton(page).click();
         await expect(box).toHaveAttribute('data-state', 'closed');
-        await box.evaluate(async (element) => {
-            element.getAnimations().forEach((animation) => animation.pause());
+        const retained = await exit.evaluate(async ({ element, paused }) => {
+            const animations = await paused;
+            await Promise.all(animations.map((animation) => animation.ready));
             await new Promise((resolve) => setTimeout(resolve, 250));
+            const retained = {
+                attached: element.isConnected,
+                states: animations.map((animation) => animation.playState)
+            };
+            // Firefox can omit a paused transition from getAnimations() after it reaches the effect end.
+            animations.forEach((animation) => animation.finish());
+            return retained;
         });
-        await expect(box).toBeAttached();
-        await box.evaluate((element) => element.getAnimations().forEach((animation) => animation.finish()));
+        await exit.dispose();
+        expect(retained.attached).toBe(true);
+        expect(retained.states.length).toBeGreaterThan(0);
+        expect(retained.states).toEqual(retained.states.map(() => 'paused'));
         await expect(box).toHaveCount(0);
     });
 
