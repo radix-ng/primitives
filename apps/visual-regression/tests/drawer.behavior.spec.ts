@@ -131,6 +131,12 @@ test.describe('Drawer mobile navigation', () => {
         const popup = page.locator('[rdxDrawerPopup]');
         const viewport = page.locator('[rdxDrawerViewport]');
         const closeButton = page.getByRole('button', { name: 'Close menu' });
+        await expect(popup).toBeFocused();
+        await popup.evaluate((element) =>
+            Promise.allSettled(element.getAnimations().map((animation) => animation.finished))
+        );
+        await expect(viewport.locator('[rdxScrollAreaViewport]')).toHaveJSProperty('scrollTop', 0);
+
         const popupBox = await popup.boundingBox();
         const viewportBox = await viewport.boundingBox();
 

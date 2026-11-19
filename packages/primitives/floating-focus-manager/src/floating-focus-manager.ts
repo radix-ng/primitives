@@ -535,10 +535,11 @@ export class RdxFloatingFocusManager {
             }
             // Portal order guards temporarily remove inner controls from the tab order while focus
             // is outside. Restore those controls before the scope discovers its initial candidates.
-            enableFocusInside(this.rootContext?.floatingElement ?? this.host);
+            const popup = this.rootContext?.floatingElement ?? this.host;
+            enableFocusInside(popup);
             if (target) {
                 event.preventDefault(); // override the scope's first-tabbable default
-                target.focus();
+                target.focus({ preventScroll: target === popup });
             }
         });
     }

@@ -86,14 +86,18 @@ files and runtime state mapping. Check native hosts, event reasons/details/defau
 accessibility relationships, keyboard/RTL and cleanup where applicable. Angular framework adapters
 are permitted; changed observable behavior needs evidence or an explicitly reviewed deviation.
 
+Angular Drawer Popup also exposes `data-nested`, `data-nested-dialog-open` and `--nested-dialogs`
+through its composed Dialog Popup. The mixed regression covers the pinned Drawer hooks
+`data-nested-drawer-open` and `--nested-drawers`.
+
 ## Evidence inventory and next checks
 
 - [Local unit files](__tests__): **2 files discovered**; not a passing-test count.
-- Named browser regression files: [drawer.behavior.spec.ts](../../../apps/visual-regression/tests/drawer.behavior.spec.ts). Scenario scope and freshness still need review; none was run by this inventory.
-- No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
+- [Drawer browser tests](../../../apps/visual-regression/tests/drawer.behavior.spec.ts) verify Popup autofocus without scrolling the tall mobile menu and swipe dismissal from the top.
+- [Dialog's pinned suite](../dialog/PARITY.md#mixed-nesting-with-drawer-and-alertdialog) compares mixed Drawer, Dialog and AlertDialog stacks.
 - No conventional same-family SSR page was found; inspect shared SSR/hydration fixtures for applicable cases. No SSR/hydration result is claimed here.
 
-The [TestBed audit](../../../docs/engineering/parity-matrices.md#confirmed-state-gaps) checked effective open and snap point. Paired browser comparisons remain pending.
+The [TestBed audit](../../../docs/engineering/parity-matrices.md#confirmed-state-gaps) checked effective open and snap point. Paired snap-point comparisons remain pending.
 See the
 [verification skill](../../../.agents/skills/radix-testing/SKILL.md),
 [matrix index](../../../docs/engineering/parity-matrices.md) and

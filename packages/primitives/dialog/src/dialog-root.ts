@@ -34,7 +34,7 @@ import {
 } from '@radix-ng/primitives/core';
 import { getInteractionTypeFromEvent, RdxInteractionType } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxDialogHandle } from './dialog-handle';
-import { RDX_DIALOG_VARIANT, RdxDialogRole } from './dialog-variant';
+import { injectRdxDialogVariant, RdxDialogRole } from './dialog-variant';
 
 export type RdxDialogModal = boolean | 'trap-focus';
 
@@ -94,6 +94,8 @@ export interface RdxDialogRootContext {
     disablePointerDismissal: Signal<boolean>;
     /** ARIA role for the popup; constant, fixed by the variant at construction. */
     role: RdxDialogRole;
+    /** @internal Whether the Root composes a Drawer. */
+    isDrawer?: boolean;
     transitionStatus: Signal<RdxTransitionStatus>;
     trigger: Signal<HTMLElement | undefined>;
     triggers: Signal<HTMLElement[]>;
@@ -144,7 +146,7 @@ export class RdxDialogRoot {
     private readonly injector = inject(Injector);
     private readonly parentRoot = inject(RdxDialogRoot, { optional: true, skipSelf: true });
     private readonly nestedChildren = signal<ReadonlySet<RdxDialogRoot>>(new Set());
-    private readonly variant = inject(RDX_DIALOG_VARIANT);
+    private readonly variant = injectRdxDialogVariant();
     private readonly registeredTriggers = signal<ReadonlyMap<string, RdxDialogRegisteredTrigger>>(new Map());
     private readonly localTrigger = signal<RdxDialogTriggerSelection>({ id: null });
     private readonly uncontrolledOpen = signal(false);
@@ -259,13 +261,22 @@ export class RdxDialogRoot {
         const active = this.activeTrigger();
         return active ? active.payload : this.detachedTrigger()?.payload;
     });
-    readonly nestedOpenCount = computed(() => {
-        let count = 0;
+    /** @internal Whether this overlay participates in Drawer-specific nesting. */
+    readonly isDrawer = this.variant.isDrawer === true;
+    private readonly nestedOpenCounts = computed<{ dialogs: number; drawers: number }>(() => {
+        let dialogs = 0;
+        let drawers = 0;
         for (const child of this.nestedChildren()) {
-            if (child.open()) count += 1 + child.nestedOpenCount();
+            if (!child.open()) continue;
+            const descendants = child.nestedOpenCounts();
+            dialogs += 1 + descendants.dialogs;
+            drawers += Number(child.isDrawer) + descendants.drawers;
         }
-        return count;
+        return { dialogs, drawers };
     });
+    readonly nestedOpenCount = computed(() => this.nestedOpenCounts().dialogs);
+    /** @internal Number of open Drawer descendants across the Dialog tree. */
+    readonly nestedOpenDrawerCount = computed(() => this.nestedOpenCounts().drawers);
     readonly openInteractionType = signal<RdxInteractionType>(null);
     readonly closeInteractionType = signal<RdxInteractionType>(null);
     private readonly pendingTriggerOpenInteractionType = signal<RdxInteractionType>(null);
@@ -549,6 +560,7 @@ function contextFor(root: RdxDialogRoot): RdxDialogRootContext {
         modal: root.effectiveModal,
         disablePointerDismissal: root.effectiveDisablePointerDismissal,
         role: root.role,
+        isDrawer: root.isDrawer,
         transitionStatus: root.transitionStatus,
         trigger: root.trigger,
         triggers: root.triggers,

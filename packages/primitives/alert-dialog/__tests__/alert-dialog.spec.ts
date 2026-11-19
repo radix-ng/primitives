@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, viewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
     alertDialogImports,
@@ -13,6 +13,7 @@ import {
     RdxAlertDialogTitle,
     RdxAlertDialogTrigger
 } from '@radix-ng/primitives/alert-dialog';
+import { RdxDialogPopup, RdxDialogPortal, RdxDialogRoot } from '@radix-ng/primitives/dialog';
 import { axe } from 'jest-axe';
 
 @Component({
@@ -116,6 +117,37 @@ describe('AlertDialog', () => {
         expect(dialog.getAttribute('aria-modal')).toBe('true');
         expect(dialog.getAttribute('aria-labelledby')).toBe(title.id);
         expect(dialog.getAttribute('aria-describedby')).toBe(description.id);
+    });
+
+    it('scopes the forced role and modality to the AlertDialog Root', () => {
+        @Component({
+            imports: [RdxAlertDialogRoot, RdxAlertDialogPopup, RdxDialogRoot, RdxDialogPopup, RdxDialogPortal],
+            template: `
+                <div rdxAlertDialogRoot defaultOpen>
+                    <div rdxAlertDialogPopup>
+                        <div #nested="rdxDialogRoot" [modal]="false" rdxDialogRoot defaultOpen>
+                            <ng-template rdxDialogPortal>
+                                <div rdxDialogPopup>Nested dialog</div>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+            `
+        })
+        class NestedDialogHost {
+            readonly nested = viewChild.required<RdxDialogRoot>('nested');
+        }
+
+        const nestedFixture = TestBed.createComponent(NestedDialogHost);
+        nestedFixture.detectChanges();
+
+        const outer = nestedFixture.nativeElement.querySelector('[rdxAlertDialogPopup]');
+        const inner = document.body.querySelector('[rdxDialogPopup]');
+        expect(outer).toHaveAttribute('role', 'alertdialog');
+        expect(outer).toHaveAttribute('aria-modal', 'true');
+        expect(inner).toHaveAttribute('role', 'dialog');
+        expect(inner).not.toHaveAttribute('aria-modal');
+        expect(nestedFixture.componentInstance.nested().effectiveDisablePointerDismissal()).toBe(false);
     });
 
     it('does NOT close on an outside pointerdown (alert invariant)', async () => {

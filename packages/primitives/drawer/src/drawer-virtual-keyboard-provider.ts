@@ -1,5 +1,6 @@
 import { DestroyRef, Directive, ElementRef, effect, inject, untracked } from '@angular/core';
 import { clamp } from '@radix-ng/primitives/core';
+import { injectRdxDialogRootContext } from '@radix-ng/primitives/dialog';
 import { injectRdxDrawerRootContext } from './drawer-root';
 
 const KEYBOARD_RESIZE_THRESHOLD = 60;
@@ -50,6 +51,7 @@ const KEYBOARD_TAP_BLOCKED = Symbol('KeyboardTapBlocked');
 })
 export class RdxDrawerVirtualKeyboardProvider {
     private readonly drawerContext = injectRdxDrawerRootContext();
+    private readonly nestedDialogOpen = injectRdxDialogRootContext().nestedDialogOpen;
     private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly destroyRef = inject(DestroyRef);
     private readonly element = this.elementRef.nativeElement;
@@ -63,9 +65,9 @@ export class RdxDrawerVirtualKeyboardProvider {
     constructor() {
         effect((onCleanup) => {
             const open = this.drawerContext.open();
-            const nestedDrawerOpen = this.drawerContext.nestedDrawerOpen();
+            const nestedDialogOpen = this.nestedDialogOpen();
 
-            if (!open || nestedDrawerOpen) {
+            if (!open || nestedDialogOpen) {
                 untracked(() => this.clearFocusedKeyboardTarget());
                 return;
             }
@@ -126,7 +128,7 @@ export class RdxDrawerVirtualKeyboardProvider {
     }
 
     protected onTouchStart(event: TouchEvent): void {
-        if (!this.drawerContext.open() || this.drawerContext.nestedDrawerOpen()) {
+        if (!this.drawerContext.open() || this.nestedDialogOpen()) {
             this.resetTouchTrackingState();
             return;
         }
@@ -159,7 +161,7 @@ export class RdxDrawerVirtualKeyboardProvider {
     protected onTouchEnd(event: TouchEvent): void {
         if (
             !this.drawerContext.open() ||
-            this.drawerContext.nestedDrawerOpen() ||
+            this.nestedDialogOpen() ||
             !this.keyboardTouchStart ||
             this.pendingKeyboardFocusMoved
         ) {
@@ -215,7 +217,7 @@ export class RdxDrawerVirtualKeyboardProvider {
     }
 
     private captureFocusedKeyboardTarget(eventTarget: EventTarget | null): boolean {
-        if (this.drawerContext.nestedDrawerOpen()) {
+        if (this.nestedDialogOpen()) {
             return false;
         }
 
@@ -232,7 +234,7 @@ export class RdxDrawerVirtualKeyboardProvider {
         const target = this.focusedKeyboardTarget;
         const win = this.element.ownerDocument.defaultView;
 
-        if (!win || this.drawerContext.nestedDrawerOpen() || !target || !this.element.contains(target)) {
+        if (!win || this.nestedDialogOpen() || !target || !this.element.contains(target)) {
             this.resetDrawerKeyboardInset();
             this.restoreKeyboardScrollAdjustment();
             return;

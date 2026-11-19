@@ -25,6 +25,7 @@ interface Settings {
     backdrop?: boolean;
     nested?: { grandchild?: boolean; keepMounted?: boolean; forceRender?: boolean; animate?: boolean };
     overlap?: { backdrop: boolean; keepMounted?: boolean };
+    mixed?: 'dialog' | 'alert-dialog';
     detached?: DetachedSettings;
     focus?: FocusMode;
     touch?: TouchMode;
@@ -54,6 +55,8 @@ export const configurations = {
     'overlap-escape': { overlap: { backdrop: false } },
     'overlap-retained-escape': { overlap: { backdrop: false, keepMounted: true } },
     'overlap-retained-backdrops': { overlap: { backdrop: true, keepMounted: true } },
+    'mixed-drawers-dialog': { mixed: 'dialog' },
+    'mixed-drawers-alert-dialog': { mixed: 'alert-dialog' },
     'detached-live-payload': { detached: { secondary: true } },
     'detached-trigger-remount': { detached: { secondary: true, openId: 'secondary' } },
     'detached-root-remount': { detached: { initiallyDetached: true } },

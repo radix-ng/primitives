@@ -58,9 +58,9 @@ export class DialogDriver {
         await this.opened(focus);
     }
 
-    async openNested(layer: NestedLayer) {
+    async openNested(layer: NestedLayer, focus = `${layer}-field`) {
         await this.trigger(`${layer}-trigger`).press('Enter');
-        await expect(this.page.getByTestId(`${layer}-field`)).toBeFocused();
+        await expect(this.page.getByTestId(focus)).toBeFocused();
         await this.waitForNestedCompletion(layer, true);
     }
 
@@ -118,10 +118,11 @@ export class DialogDriver {
                     trigger: document.querySelector<HTMLElement>(`[data-testid="${layer}-trigger"]`)
                 }));
                 const popups = [{ layer: 'root', popup }, ...nested];
-                const nestedCount = (element: HTMLElement | null) => {
-                    const value = element && getComputedStyle(element).getPropertyValue('--nested-dialogs').trim();
+                const cssCount = (element: HTMLElement | null, variable: string) => {
+                    const value = element && getComputedStyle(element).getPropertyValue(variable).trim();
                     return value ? Number(value) : null;
                 };
+                const isDrawer = (element: HTMLElement | null) => element?.hasAttribute('data-swipe-direction');
 
                 return {
                     state: {
@@ -159,12 +160,21 @@ export class DialogDriver {
                             .filter(({ backdrop }) => visibility(backdrop))
                             .map(({ layer }) => layer),
                         nestedMarkers: nested
-                            .filter(({ popup }) => popup?.hasAttribute('data-nested'))
+                            .filter(({ popup }) => !isDrawer(popup) && popup?.hasAttribute('data-nested'))
                             .map(({ layer }) => layer),
                         parentsWithOpenDescendants: popups
-                            .filter(({ popup }) => popup?.hasAttribute('data-nested-dialog-open'))
+                            .filter(({ popup }) => !isDrawer(popup) && popup?.hasAttribute('data-nested-dialog-open'))
                             .map(({ layer }) => layer),
-                        dialogCounts: popups.map(({ popup }) => nestedCount(popup)),
+                        parentsWithOpenDrawers: popups
+                            .filter(({ popup }) => popup?.hasAttribute('data-nested-drawer-open'))
+                            .map(({ layer }) => layer),
+                        dialogCounts: popups.map(({ popup }) =>
+                            isDrawer(popup) ? null : cssCount(popup, '--nested-dialogs')
+                        ),
+                        drawerCounts: popups.map(({ popup }) =>
+                            isDrawer(popup) ? cssCount(popup, '--nested-drawers') : null
+                        ),
+                        nestedRoles: nested.map(({ popup }) => popup?.getAttribute('role') ?? null),
                         linkedNestedTriggers: nested
                             .filter(
                                 ({ popup, trigger }) =>

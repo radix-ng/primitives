@@ -5,6 +5,7 @@ import '../../../../radix-storybook/.storybook/main.css';
 import { chooseFocus, classes, config, installProbe, type NestedLayer } from './contract';
 import { ReactDetachedDialog } from './detached.react';
 import './fixture.css';
+import { ReactMixedDialogs } from './mixed.react';
 import { ReactOverlappingDialogs } from './overlap.react';
 
 const settings = config();
@@ -188,7 +189,9 @@ function ReactDialog() {
 }
 
 createRoot(document.getElementById('root')!).render(
-    settings.overlap ? (
+    settings.mixed ? (
+        <ReactMixedDialogs variant={settings.mixed} trace={trace} />
+    ) : settings.overlap ? (
         <ReactOverlappingDialogs {...settings.overlap} trace={trace} />
     ) : settings.detached ? (
         <ReactDetachedDialog settings={settings.detached} />

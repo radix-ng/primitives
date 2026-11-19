@@ -96,7 +96,7 @@ and [store selectors](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda2
 
 - [Dialog unit tests](__tests__/dialog.spec.ts) cover initial defaults, parent refusal, delayed acceptance, two-way binding and cancellation.
 - [Dialog browser tests](../../../apps/visual-regression/tests/dialog.behavior.spec.ts) include a deferred open/close request with focus, Portal and scroll-lock observations.
-- The [pinned Dialog suite](../../../apps/parity-testing/primitives/dialog/README.md) runs 60 scenarios across Chromium, Firefox and WebKit. It covers open ownership, modal modes, nested and overlapping dialogs, detached handles, configurable focus, touch and close lifetime.
+- The [pinned Dialog suite](../../../apps/parity-testing/primitives/dialog/README.md) runs 62 scenarios across Chromium, Firefox and WebKit. It covers open ownership, modal modes, mixed nesting and overlapping dialogs, detached handles, configurable focus, touch and close lifetime.
 - The [AOT hydration suite](../../../apps/radix-ssr-testing/hydration-audit/README.md) covers initially open Dialog and closing the eager Root before a detached Trigger hydrates.
 
 The directive reference exposes effective `open()` as readonly. Set a bound value to drive a
@@ -225,6 +225,24 @@ remaining Dialog and returns focus to the Trigger in both frameworks.
 [Owner removal scenario](../../../apps/parity-testing/primitives/dialog/tests/scenarios.ts)
 · [Reviewed focus difference](../../../apps/parity-testing/primitives/dialog/expected-differences.json)
 
+## Mixed nesting with Drawer and AlertDialog
+
+Two pinned cases open a Drawer, a nested Drawer, and either a Dialog or an AlertDialog. The outer
+Drawer's `--nested-drawers` stays at 1 and the inner Drawer's at 0 while the leaf opens and closes.
+The general Dialog tree still includes the leaf for dismissal, Android CloseWatcher and the Drawer's
+virtual keyboard provider. The Drawer variant focuses the Popup by default without scrolling its
+container. The tall Drawer regression checks that swiping down can dismiss it from the top.
+[Browser scenarios](../../../apps/parity-testing/primitives/dialog/tests/mixed.scenarios.ts)
+· [Tall Drawer regression](../../../apps/visual-regression/tests/drawer.behavior.spec.ts)
+· [Pinned mixed-nesting tests](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/drawer/popup/DrawerPopup.test.tsx#L485)
+· [Pinned Drawer focus default](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/drawer/popup/DrawerPopup.tsx#L305)
+
+An outside click closes the Dialog leaf and leaves the AlertDialog leaf open. Each successive
+Escape closes the active layer and restores its trigger. Closing the last Drawer releases background
+isolation and scroll lock. The Root reads its variant from its own host. A unit regression checks
+that the AlertDialog's role, modality and dismissal policy stay local when it contains a Dialog.
+[Variant regression](../alert-dialog/__tests__/alert-dialog.spec.ts)
+
 ## Overlapping independent Roots
 
 Five comparisons open three sibling modal Roots one at a time. They verify that Tab wraps in the
@@ -340,4 +358,4 @@ Seven tap cases run in Chromium and WebKit. Five native gesture cases use Chromi
 touch contexts and WebKit pan, cancellation and multi-contact automation are recorded as capability
 skips. Physical-device gesture and soft-keyboard behavior remain outside these emulated checks.
 
-Mixed Dialog variants and Portal destination changes remain pending paired checks.
+Live Portal destination changes remain pending paired checks.

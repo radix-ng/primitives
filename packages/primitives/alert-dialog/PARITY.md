@@ -70,10 +70,10 @@ are permitted; changed observable behavior needs evidence or an explicitly revie
 
 - [Local unit files](__tests__): **1 file discovered**; not a passing-test count.
 - Named browser regression files: [alert-dialog.behavior.spec.ts](../../../apps/visual-regression/tests/alert-dialog.behavior.spec.ts). Scenario scope and freshness still need review; none was run by this inventory.
-- No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
+- [Dialog's pinned suite](../dialog/PARITY.md#mixed-nesting-with-drawer-and-alertdialog) covers AlertDialog inside two Drawers, including role, outside-press immunity and focus restoration on Escape.
 - No conventional same-family SSR page was found; inspect shared SSR/hydration fixtures for applicable cases. No SSR/hydration result is claimed here.
 
-The [TestBed audit](../../../docs/engineering/parity-matrices.md#confirmed-state-gaps) checked Root open state through the Dialog adapter. Paired browser comparisons remain pending.
+The [TestBed audit](../../../docs/engineering/parity-matrices.md#confirmed-state-gaps) checked Root open state through the Dialog adapter. Standalone AlertDialog comparisons remain pending.
 See the
 [verification skill](../../../.agents/skills/radix-testing/SKILL.md),
 [matrix index](../../../docs/engineering/parity-matrices.md) and

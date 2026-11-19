@@ -89,6 +89,9 @@ function isPrimaryOutsidePress(event: Event): boolean {
     providers: [
         provideFloatingFocusManagerConfig(() => {
             const rootContext = injectRdxDialogRootContext();
+            const drawerPopup = rootContext.isDrawer
+                ? inject<ElementRef<HTMLElement>>(ElementRef).nativeElement
+                : undefined;
             return {
                 // Trap for a modal or trap-focus dialog (Base UI `modal={modal !== false}`).
                 modal: () => rootContext.modal() === true || rootContext.modal() === 'trap-focus',
@@ -100,6 +103,7 @@ function isPrimaryOutsidePress(event: Event): boolean {
                 // `FloatingFocusManager disabled={!mounted}` (NOT `open`) for scope/return-focus.
                 // Trapping, marker and isolation are additionally gated on logical `open`.
                 enabled: () => rootContext.mounted(),
+                initialFocus: () => drawerPopup,
                 restoreFocus: () => 'popup',
                 openInteractionType: () => rootContext.openInteractionType(),
                 closeInteractionType: () => rootContext.closeInteractionType(),

@@ -6,6 +6,7 @@ import '../../../../radix-storybook/.storybook/main.css';
 import { chooseFocus, classes, config, installProbe, type NestedLayer } from './contract';
 import { AngularDetachedDialog } from './detached.angular';
 import './fixture.css';
+import { AngularMixedDialogs } from './mixed.angular';
 import { AngularOverlappingDialogs } from './overlap.angular';
 
 @Component({
@@ -277,7 +278,13 @@ class AngularDialog {
 }
 
 const settings = config();
-const app = settings.overlap ? AngularOverlappingDialogs : settings.detached ? AngularDetachedDialog : AngularDialog;
+const app = settings.mixed
+    ? AngularMixedDialogs
+    : settings.overlap
+      ? AngularOverlappingDialogs
+      : settings.detached
+        ? AngularDetachedDialog
+        : AngularDialog;
 void bootstrapApplication(app, {
     providers: [provideZonelessChangeDetection()]
 });

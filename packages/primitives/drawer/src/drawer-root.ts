@@ -14,7 +14,7 @@ import {
     untracked
 } from '@angular/core';
 import { BooleanInput, createContext, rdxPlatform } from '@radix-ng/primitives/core';
-import { RdxDialogRoot } from '@radix-ng/primitives/dialog';
+import { provideRdxDialogVariant, RdxDialogRoot } from '@radix-ng/primitives/dialog';
 import { RdxDrawerProvider } from './drawer-provider';
 import { RdxDrawerSnapPoint } from './drawer-snap';
 import { RdxDrawerSwipeDirection } from './drawer-swipe';
@@ -123,7 +123,7 @@ const context = (): RdxDrawerRootContext => {
             outputs: ['openChange', 'triggerIdChange', 'onOpenChange', 'onOpenChangeComplete']
         }
     ],
-    providers: [provideRdxDrawerRootContext(context)]
+    providers: [provideRdxDrawerRootContext(context), provideRdxDialogVariant({ isDrawer: true })]
 })
 export class RdxDrawerRoot {
     private readonly dialog = inject(RdxDialogRoot);
@@ -169,10 +169,10 @@ export class RdxDrawerRoot {
     readonly normalizedSnapPoints = computed<readonly RdxDrawerSnapPoint[]>(() => this.snapPoints() ?? []);
     readonly hasSnapPoints = computed(() => this.normalizedSnapPoints().length > 0);
 
-    /** Whether a drawer nested inside this one is open (reuses the dialog's nesting detection). */
-    readonly nestedDrawerOpen = this.dialog.nestedDialogOpen;
+    /** Whether a drawer nested inside this one is open. */
+    readonly nestedDrawerOpen = computed(() => this.nestedDrawerCount() > 0);
     /** Number of open drawers nested inside this one. */
-    readonly nestedDrawerCount = this.dialog.nestedOpenCount;
+    readonly nestedDrawerCount = this.dialog.nestedOpenDrawerCount;
     /** The app-wide frontmost drawer's measured size (px); `0` without a provider. */
     readonly frontmostHeight = computed(() => this.provider?.frontmostHeight() ?? 0);
 
@@ -222,7 +222,7 @@ export class RdxDrawerRoot {
         // Android: elsewhere Escape and nesting are already owned by the dismissal layer, and a second
         // close path there would fight it (Base UI `DrawerRoot`).
         effect((onCleanup) => {
-            if (!rdxPlatform.os.android || !this.dialog.open() || this.nestedDrawerCount() > 0) {
+            if (!rdxPlatform.os.android || !this.dialog.open() || this.dialog.nestedDialogOpen()) {
                 return;
             }
 

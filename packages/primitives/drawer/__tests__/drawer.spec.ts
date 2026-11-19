@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RdxDialogPopup, RdxDialogPortal, RdxDialogRoot } from '@radix-ng/primitives/dialog';
 import {
     createRdxDrawerHandle,
     drawerImports,
@@ -171,7 +172,16 @@ class LocalSwipeAreaHostComponent {
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [RdxDrawerRoot, RdxDrawerPortal, RdxDrawerViewport, RdxDrawerVirtualKeyboardProvider, RdxDrawerPopup],
+    imports: [
+        RdxDrawerRoot,
+        RdxDrawerPortal,
+        RdxDrawerViewport,
+        RdxDrawerVirtualKeyboardProvider,
+        RdxDrawerPopup,
+        RdxDialogRoot,
+        RdxDialogPortal,
+        RdxDialogPopup
+    ],
     template: `
         <div [(open)]="open" rdxDrawerRoot>
             <ng-template rdxDrawerPortal>
@@ -187,6 +197,11 @@ class LocalSwipeAreaHostComponent {
                                 <div rdxDrawerPopup>Nested</div>
                             </ng-template>
                         </div>
+                        <div [open]="nestedDialog" rdxDialogRoot>
+                            <ng-template rdxDialogPortal>
+                                <div rdxDialogPopup>Nested dialog</div>
+                            </ng-template>
+                        </div>
                     </div>
                 </div>
             </ng-template>
@@ -196,6 +211,7 @@ class LocalSwipeAreaHostComponent {
 class VirtualKeyboardHostComponent {
     open = true;
     nested = false;
+    nestedDialog = false;
 }
 
 function popup(): HTMLElement | null {
@@ -841,9 +857,12 @@ describe('Drawer virtual keyboard provider', () => {
         expect(clicked).not.toHaveBeenCalled();
     });
 
-    it('suspends keyboard alignment while a nested drawer is open', async () => {
+    it.each([
+        { part: 'Drawer', state: 'nested' },
+        { part: 'Dialog', state: 'nestedDialog' }
+    ] as const)('suspends keyboard alignment while a nested $part is open', async ({ state }) => {
         const input = field();
-        fixture.componentInstance.nested = true;
+        fixture.componentInstance[state] = true;
         fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
