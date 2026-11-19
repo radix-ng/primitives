@@ -25,8 +25,7 @@ export const START_AUTO_CHANGE_DELAY = 400;
 export const SCROLLING_POINTER_MOVE_DISTANCE = 8;
 
 const STEP_EPSILON_FACTOR = 1e-10;
-// Matches Intl.NumberFormat's decimal maximumFractionDigits default.
-const DEFAULT_DIGITS = 3;
+const MAX_FLOATING_POINT_CLEANUP_DELTA = 1e-10;
 
 /** Reactive `Intl`-backed formatter built from the current locale and format options. */
 export function useNumberFormatter(
@@ -60,8 +59,7 @@ export function hasNumberFormatRoundingOptions(format?: Intl.NumberFormatOptions
 }
 
 /**
- * Strips floating-point representation errors (e.g. `0.1 + 0.2`) using the format's
- * rounding options when present, otherwise rounding to {@link DEFAULT_DIGITS} digits.
+ * Applies explicit rounding options or removes arithmetic noise within a bounded tolerance.
  */
 export function removeFloatingPointErrors(value: number, locale: string, format?: Intl.NumberFormatOptions): number {
     if (!Number.isFinite(value)) {
@@ -69,7 +67,9 @@ export function removeFloatingPointErrors(value: number, locale: string, format?
     }
 
     if (!hasNumberFormatRoundingOptions(format)) {
-        return Number(value.toFixed(DEFAULT_DIGITS));
+        const roundedValue = Number(value.toPrecision(15));
+        const tolerance = Math.min(Number.EPSILON * Math.max(1, Math.abs(value)), MAX_FLOATING_POINT_CLEANUP_DELTA);
+        return Math.abs(roundedValue - value) <= tolerance ? roundedValue : value;
     }
 
     const formatter = new NumberFormatter('en-US', {
@@ -142,6 +142,12 @@ export function toValidatedNumber(value: number | null, options: ValidateOptions
 
     if (options.clamp) {
         nextValue = clamp(nextValue, minWithDefault, maxWithDefault);
+    }
+
+    // Parsed numbers already carry the precision supplied by the user. Cleanup is only needed
+    // after stepping arithmetic or when the consumer requests rounding.
+    if (step == null && !hasNumberFormatRoundingOptions(format)) {
+        return nextValue;
     }
 
     const roundedValue = removeFloatingPointErrors(nextValue, locale, format);

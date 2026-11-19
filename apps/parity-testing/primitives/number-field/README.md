@@ -13,5 +13,10 @@ cases also write a value from the parent. The checks read the visible input, nat
 change reasons and commit counts. Both fixtures accept edits through their public model APIs.
 The Angular fixture uses an authored native number input for submission.
 
+Nine additional cases cover untouched empty blur, default numeric precision across repeated blurs,
+compact display, explicit rounding of typed and supplied values, acceptance and cancellation of
+clears, and partial drafts. They compare text, `FormData`, change reasons and commit counts without
+reviewed differences.
+
 Angular form adapters and reset ownership are covered in the
 [Number Field matrix](../../../../packages/primitives/number-field/PARITY.md#form-precedence-cases).

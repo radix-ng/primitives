@@ -106,26 +106,28 @@ export class RdxNumberFieldInput {
             return;
         }
 
-        root.allowInputSync = true;
         const key = event.key;
 
         if (key === 'ArrowUp' || key === 'ArrowDown') {
             event.preventDefault();
-            const parsed = root.parseNumber(root.inputValue());
+            const draftValue = root.allowInputSync ? null : root.parseNumber(root.inputValue());
+            root.allowInputSync = true;
             const amount = root.getStepAmount(event);
             root.incrementValue(amount, {
                 direction: key === 'ArrowUp' ? 1 : -1,
-                currentValue: parsed,
+                currentValue: draftValue,
                 event,
                 reason: 'keyboard'
             });
             root.commitValue(root.lastChangedValue ?? root.currentValue());
         } else if (key === 'Home' && root.min() != null) {
             event.preventDefault();
+            root.allowInputSync = true;
             root.setValue(root.min()!, 'keyboard', event);
             root.commitValue(root.lastChangedValue ?? root.currentValue());
         } else if (key === 'End' && root.max() != null) {
             event.preventDefault();
+            root.allowInputSync = true;
             root.setValue(root.max()!, 'keyboard', event);
             root.commitValue(root.lastChangedValue ?? root.currentValue());
         }
@@ -156,42 +158,7 @@ export class RdxNumberFieldInput {
         }
 
         root.markAsTouched();
-
-        const hadManualInput = !root.allowInputSync;
-        const hadPendingCommit = root.hasPendingCommit;
-        root.allowInputSync = true;
-
-        const text = root.inputValue();
-
-        if (text.trim() === '') {
-            root.setValue(null, 'input-clear', event);
-            root.commitValue(null);
-            return;
-        }
-
-        const parsedValue = root.parseNumber(text);
-        if (parsedValue === null) {
-            return;
-        }
-
-        const value = root.currentValue();
-        const shouldUpdate = value !== parsedValue;
-        const shouldCommit = hadManualInput || shouldUpdate || hadPendingCommit;
-
-        let committedValue = parsedValue;
-        if (shouldUpdate) {
-            root.setValue(parsedValue, 'input-blur', event);
-            committedValue = root.lastChangedValue ?? parsedValue;
-        }
-
-        if (shouldCommit) {
-            root.commitValue(committedValue);
-        }
-
-        const canonicalText = root.formatNumber(committedValue);
-        if (root.inputValue() !== canonicalText) {
-            root.setInputValue(canonicalText);
-        }
+        root.commitInput(event);
     }
 
     onWheel(event: WheelEvent): void {

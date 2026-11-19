@@ -18,10 +18,12 @@ function ReactNumberField() {
                     name="amount"
                     value={value}
                     defaultValue={defaultValue}
+                    format={settings.format}
                     onValueChange={(next, details) => {
                         probe.changes.push({ value: next, reason: details.reason });
                         probe.nativeEvents.push({ type: details.event.type, trusted: details.event.isTrusted });
-                        if (bound) setValue(next);
+                        if (details.reason === settings.cancelReason) details.cancel();
+                        if (bound && !details.isCanceled) setValue(next);
                     }}
                     onValueCommitted={(next) => probe.commits.push(next)}
                 >

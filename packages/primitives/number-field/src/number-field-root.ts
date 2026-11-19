@@ -30,7 +30,14 @@ import {
     watch
 } from '@radix-ng/primitives/core';
 import { provideNumberFieldRootContext } from './number-field-context';
-import { numberOrUndefined, toValidatedNumber, useNumberFormatter, useNumberParser } from './number-field.utils';
+import {
+    hasNumberFormatRoundingOptions,
+    numberOrUndefined,
+    removeFloatingPointErrors,
+    toValidatedNumber,
+    useNumberFormatter,
+    useNumberParser
+} from './number-field.utils';
 import { Direction, InputMode, NumberFieldChangeReason, REASONS } from './types';
 
 const INPUT_REASONS: NumberFieldChangeReason[] = [
@@ -383,6 +390,48 @@ export class RdxNumberFieldRoot
         this.setInputValue(this.formatNumber(this.currentValue()));
     }
 
+    /** @ignore Finishes a text edit when the visible input blurs. */
+    commitInput(event: FocusEvent): void {
+        const hadManualInput = !this.allowInputSync;
+        const hadPendingCommit = this.hasPendingCommit;
+        this.allowInputSync = true;
+
+        const current = this.currentValue();
+        const text = this.inputValue();
+        if (text.trim() === '') {
+            const result = this.updateValue(null, REASONS.inputClear, event);
+            if (result !== 'canceled' && (hadManualInput || hadPendingCommit || current !== null)) {
+                this.commitValue(null);
+            }
+            return;
+        }
+
+        // A synced field may display rounded or compact text. Only a manual draft is parsed.
+        let candidate = hadManualInput ? this.parseNumber(text) : current;
+        if (hadManualInput && candidate === null) {
+            return;
+        }
+        const format = this.format();
+        if (candidate !== null && hasNumberFormatRoundingOptions(format)) {
+            candidate = removeFloatingPointErrors(candidate, this.locale(), format);
+        }
+
+        const shouldUpdate = candidate !== current && !Number.isNaN(candidate);
+        if (shouldUpdate && this.updateValue(candidate, REASONS.inputBlur, event) === 'canceled') {
+            return;
+        }
+
+        const committed = shouldUpdate ? this.lastChangedValue : candidate;
+        if (hadManualInput || shouldUpdate || hadPendingCommit) {
+            this.commitValue(committed);
+        }
+
+        const formatted = this.formatNumber(committed);
+        if (this.inputValue() !== formatted) {
+            this.setInputValue(formatted);
+        }
+    }
+
     /**
      * @ignore
      * Validates and applies a candidate value, emitting `onValueChange` when it changes.
@@ -394,6 +443,15 @@ export class RdxNumberFieldRoot
         event?: Event,
         direction?: Direction
     ): boolean {
+        return this.updateValue(unvalidatedValue, reason, event, direction) === 'changed';
+    }
+
+    private updateValue(
+        unvalidatedValue: number | null,
+        reason: NumberFieldChangeReason,
+        event?: Event,
+        direction?: Direction
+    ): 'changed' | 'unchanged' | 'canceled' {
         const keyState = event as (Event & { altKey?: boolean; shiftKey?: boolean }) | undefined;
         // Step interactions always clamp; direct text entry may go out of range when allowed.
         const shouldClamp = !this.allowOutOfRange() || !INPUT_REASONS.includes(reason);
@@ -425,7 +483,7 @@ export class RdxNumberFieldRoot
             );
             this.onValueChange.emit({ value: validatedValue, eventDetails });
             if (eventDetails.isCanceled()) {
-                return false;
+                return 'canceled';
             }
 
             this.applyValue(validatedValue);
@@ -438,7 +496,7 @@ export class RdxNumberFieldRoot
             this.setInputValue(this.formatNumber(validatedValue));
         }
 
-        return shouldFireChange;
+        return shouldFireChange ? 'changed' : 'unchanged';
     }
 
     /**

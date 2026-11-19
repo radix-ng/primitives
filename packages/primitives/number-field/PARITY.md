@@ -6,8 +6,8 @@ Initial inventory: 2026-11-17. Reference pin: **Base UI 1.9.0**,
 Primary counterpart: [number-field](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/number-field).
 Pinned exported parts/functions: `Root`, `Group`, `Increment`, `Decrement`, `Input`, `ScrubArea`, `ScrubAreaCursor`.
 
-**Scope.** The initial inventory is followed by paired browser coverage for value initialization and
-late defaults. Angular form ownership and reset have focused tests.
+**Scope.** Paired browsers cover value initialization, late defaults, text precision and blur
+commits. Angular form ownership and reset have focused tests.
 
 **Breaking changes are permitted; backward compatibility does not constrain the target.** Apply the
 [state ownership/defaults contract](../../../docs/engineering/state-ownership.md) per field. Inputs,
@@ -60,11 +60,11 @@ boundaries explicitly instead of converting all models to readonly inputs.
 “Source” identifies a local implementation fact. “Compare/verify/audit” is pending work. Priorities
 describe the target work, not a certificate or a reproduced defect count.
 
-| Area                         | Current observation / required target comparison                                                                                                                              | Priority        |
-| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
-| Value ownership and defaults | The model and CVA share one value. The supplied value takes precedence and an uncontrolled default seeds the field once. See [form precedence cases](#form-precedence-cases). | Verified subset |
-| Draft versus committed value | Compare partial input, external writes while editing, formatting and scrub commits.                                                                                           | P1              |
-| Numeric interaction          | Compare locale parsing, min/max/step/clamping, committed-event timing, spin buttons, keyboard/wheel/scrub gestures, native submit and validation.                             | P2              |
+| Area                         | Current observation / required target comparison                                                                                                                                                | Priority        |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
+| Value ownership and defaults | The model and CVA share one value. The supplied value takes precedence and an uncontrolled default seeds the field once. See [form precedence cases](#form-precedence-cases).                   | Verified subset |
+| Draft versus committed value | The [blur cases](#text-precision-and-blur) cover partial input, default display formatting, explicit rounding and cancellation. Compare paste, external writes while editing and scrub commits. | Verified subset |
+| Numeric interaction          | Compare locale parsing, min/max/step/clamping, committed-event timing, spin buttons, keyboard/wheel/scrub gestures, native submit and validation.                                               | P2              |
 
 Also compare the actual emitted per-part attributes/CSS variables with both the pinned declaration
 files and runtime state mapping. Check native hosts, event reasons/details/default prevention,
@@ -95,12 +95,29 @@ adapters, interaction state and native reset.
 ## Evidence inventory and next checks
 
 - [Local units](__tests__/number-field.spec.ts) cover `value`, form writes, reset, disabled state and numeric interactions.
-- [Paired browser comparisons](../../../apps/parity-testing/primitives/number-field/README.md) cover defaults, serialization and keyboard edit acceptance.
+- [Paired browser comparisons](../../../apps/parity-testing/primitives/number-field/README.md) cover defaults, serialization, keyboard edits and blur commits.
 - [Storybook browser regressions](../../../apps/visual-regression/tests/number-field.behavior.spec.ts) cover increment/decrement and press-and-hold.
 - [SSR rendering](../../../apps/radix-ssr-testing/src/ssr-rendering.spec.ts) checks form and model precedence in serialized inputs.
 
-Locale parsing, clamping, gesture handling and commit timing outside keyboard steps remain open.
+Locale parsing, paste, keyboard cancellation, bounds and pointer/gesture commits remain open.
 See the
 [verification skill](../../../.agents/skills/radix-testing/SKILL.md),
 [matrix index](../../../docs/engineering/parity-matrices.md) and
 [upstream preparation guide](../../../docs/engineering/upstream-reference.md).
+
+## Text precision and blur
+
+The pinned cases compare draft text, `FormData`, change reasons and commit counts. With default
+formatting, a typed `1.234567890123456` remains the numeric value and is displayed as `1.235` after
+blur. A later focus/blur cycle keeps the numeric value and commit count. A compact display such as
+`1.2K` uses the supplied numeric value on blur. Explicit rounding options apply to both a typed
+value and the value supplied by the parent.
+[Browser regressions](../../../apps/parity-testing/primitives/number-field/tests/number-field.parity.spec.ts)
+· [Pinned validation](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/number-field/utils/validate.ts#L118)
+
+Blurring an untouched empty field emits no commit. An accepted clear emits one commit, while a
+canceled clear or canceled rounding request emits none. A partial draft such as `-` leaves the
+numeric value in place. Keyboard stepping uses the stored number when the display is synced.
+Arithmetic cleanup removes representational noise within a bounded tolerance.
+[Pinned blur handler](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/number-field/input/NumberFieldInput.tsx#L139)
+· [Arithmetic regressions](__tests__/number-field.spec.ts)

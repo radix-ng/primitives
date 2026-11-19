@@ -27,6 +27,7 @@ class NumberFieldParts {}
                 <div
                     [(value)]="value"
                     [defaultValue]="defaultValue()"
+                    [format]="settings.format"
                     (onValueChange)="recordChange($event)"
                     (onValueCommitted)="probe.commits.push($event)"
                     name="amount"
@@ -37,6 +38,7 @@ class NumberFieldParts {}
             } @else {
                 <div
                     [defaultValue]="defaultValue()"
+                    [format]="settings.format"
                     (onValueChange)="recordChange($event)"
                     (onValueCommitted)="probe.commits.push($event)"
                     name="amount"
@@ -53,13 +55,14 @@ class NumberFieldParts {}
     `
 })
 class AngularNumberField {
-    private readonly settings = config();
+    protected readonly settings = config();
     protected readonly bound = this.settings.value !== undefined;
     protected readonly value = signal<number | null>(this.settings.value ?? null);
     protected readonly defaultValue = signal<number | undefined>(this.settings.defaultValue);
     protected readonly probe = installProbe();
 
     protected recordChange({ value, eventDetails }: RdxNumberFieldValueChangeEvent): void {
+        if (eventDetails.reason === this.settings.cancelReason) eventDetails.cancel();
         this.probe.changes.push({ value, reason: eventDetails.reason });
         this.probe.nativeEvents.push({ type: eventDetails.event.type, trusted: eventDetails.event.isTrusted });
     }

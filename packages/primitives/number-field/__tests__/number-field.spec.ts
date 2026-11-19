@@ -245,6 +245,21 @@ describe('RdxNumberField', () => {
         expect(component.onValueCommitted).toHaveBeenCalled();
     });
 
+    it.each([
+        { value: 1.23456, step: 1, expected: 2.23456 },
+        { value: 0.1, step: 0.2, expected: 0.3 }
+    ])('steps from $value by $step and stores $expected', ({ value, step, expected }) => {
+        component.value.set(value);
+        component.step.set(step);
+        fixture.detectChanges();
+
+        input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
+        fixture.detectChanges();
+
+        expect(component.value()).toBe(expected);
+        expect(component.onValueCommitted).toHaveBeenCalledExactlyOnceWith(expected);
+    });
+
     it('uses largeStep with the Shift modifier', () => {
         component.value.set(0);
         fixture.detectChanges();
