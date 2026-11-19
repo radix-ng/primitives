@@ -1,11 +1,16 @@
 type Response = 'ignore' | 'delay' | 'replace' | 'clear' | 'cancel';
 
-interface Settings {
+export interface Settings {
     value?: string | null;
     defaultValue?: string;
     response?: Response;
     label?: boolean;
     nativeButton?: boolean;
+    keyboard?: 'arrows' | 'disabled-group' | 'cancel' | 'external' | 'space' | 'prevent-space';
+    dir?: 'ltr' | 'rtl';
+    disabled?: boolean;
+    disabledItem?: string;
+    readOnly?: boolean;
 }
 
 export const cases = {
@@ -23,7 +28,19 @@ export const cases = {
     'controlled-label-ignore': { value: 'standard', response: 'ignore', label: true },
     'controlled-label-cancel': { value: 'standard', response: 'cancel', label: true },
     'editable-label': { defaultValue: 'standard', label: true },
-    'native-space': { defaultValue: 'standard', nativeButton: true }
+    'native-space': { defaultValue: 'standard', nativeButton: true },
+    'keys-ltr': { keyboard: 'arrows', defaultValue: 'standard' },
+    'keys-rtl': { keyboard: 'arrows', dir: 'rtl', defaultValue: 'standard' },
+    'keys-empty-disabled-first': { keyboard: 'arrows', disabledItem: '' },
+    'keys-skip-disabled': { keyboard: 'arrows', defaultValue: '', disabledItem: 'standard' },
+    'keys-checked-disabled': { keyboard: 'arrows', defaultValue: 'standard', disabledItem: 'standard' },
+    'keys-disabled-group': { keyboard: 'disabled-group', defaultValue: 'standard', disabled: true },
+    'keys-read-only': { keyboard: 'arrows', defaultValue: 'standard', readOnly: true },
+    'keys-cancel': { keyboard: 'cancel', defaultValue: 'standard' },
+    'keys-controlled-ignore': { keyboard: 'arrows', value: 'standard', response: 'ignore' },
+    'keys-external': { keyboard: 'external', value: 'compact', response: 'ignore' },
+    'keys-custom-space': { keyboard: 'space', defaultValue: 'standard' },
+    'keys-prevent-space': { keyboard: 'prevent-space', defaultValue: 'standard' }
 } satisfies Record<string, Settings>;
 
 export const options = [

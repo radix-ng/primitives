@@ -1,4 +1,5 @@
-import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input, Signal } from '@angular/core';
+import { booleanAttribute, computed, Directive, ElementRef, inject, input, Signal } from '@angular/core';
+import { RdxButtonBehavior } from '@radix-ng/primitives/button';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, createContext } from '@radix-ng/primitives/core';
 import { injectRadioRootContext } from './radio-root.directive';
@@ -33,7 +34,7 @@ export const [injectRadioItemContext, provideRadioItemContext] = createContext<R
 @Directive({
     selector: '[rdxRadioItem]',
     exportAs: 'rdxRadioItem',
-    providers: [provideRadioItemContext(itemContext)],
+    providers: [provideRadioItemContext(itemContext), RdxButtonBehavior],
     hostDirectives: [RdxCompositeItem],
 
     host: {
@@ -50,9 +51,9 @@ export const [injectRadioItemContext, provideRadioItemContext] = createContext<R
         '[attr.data-readonly]': 'readonlyState() ? "" : undefined',
         '[attr.data-required]': 'requiredState() ? "" : undefined',
         '[attr.disabled]': 'isNativeButton && disabledState() ? "" : undefined',
+        '[attr.tabindex]': 'radioTabIndex()',
         '(click)': 'handleClick($event)',
         '(keydown)': 'onKeyDown($event)',
-        '(keyup)': 'onKeyUp()',
         '(focus)': 'onFocus($event)'
     }
 })
@@ -90,15 +91,26 @@ export class RdxRadioItemDirective {
 
     readonly checkedState = computed(() => this.rootContext.value() === this.value());
 
-    private readonly ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'] as const;
+    protected readonly radioTabIndex = computed(() => {
+        const authored = this.compositeItem.tabIndexInput();
+        if (authored !== undefined) return authored;
+        if (this.compositeItem.tabIndex() === null) return null;
+        if (this.rootContext.disabledState()) return -1;
+        const index = this.compositeItem.index();
+        // An aria-disabled current item keeps the roving stop. Arrows still skip disabled targets.
+        return index !== -1 && this.rootContext.tabStopIndex() === index ? 0 : -1;
+    });
 
     constructor() {
-        effect(() => {
-            this.compositeItem.setMetadata({
-                disabled: this.disabledState(),
-                value: this.value()
-            });
-        });
+        inject(RdxButtonBehavior, { self: true }).configure(
+            {
+                disabled: this.disabledState,
+                focusableWhenDisabled: computed(() => !this.isNativeButton && !this.rootContext.disabledState()),
+                native: computed(() => this.isNativeButton),
+                compositeActivation: false
+            },
+            'radio'
+        );
     }
 
     /** @ignore */
@@ -114,40 +126,12 @@ export class RdxRadioItemDirective {
     }
 
     /** @ignore */
-    onKeyDown(event: Event): void {
-        const keyEvent = event as KeyboardEvent;
-        if (keyEvent.key === ' ') {
-            // Native buttons produce their own Space click on keyup.
-            if (!this.isNativeButton) this.requestSelection(keyEvent);
-            return;
-        }
-
-        if (keyEvent.key === 'Enter') {
-            keyEvent.preventDefault();
-            return;
-        }
-
-        if (this.isAllowedArrowKey(keyEvent.key)) {
-            this.rootContext.setArrowNavigation(true);
-        }
+    protected onKeyDown(event: KeyboardEvent): void {
+        if (event.target === this.elementRef.nativeElement && event.key === 'Enter') event.preventDefault();
     }
 
     /** @ignore */
-    onKeyUp() {
-        this.rootContext.setArrowNavigation(false);
-    }
-
-    /** @ignore */
-    onFocus(event?: FocusEvent) {
-        queueMicrotask(() => {
-            if (this.rootContext.isArrowNavigation()) {
-                this.requestSelection(event);
-                this.rootContext.setArrowNavigation(false);
-            }
-        });
-    }
-
-    private isAllowedArrowKey(key: string): boolean {
-        return (this.ARROW_KEYS as readonly string[]).includes(key);
+    protected onFocus(event: FocusEvent): void {
+        if (this.rootContext.isKeyboardFocus(this.elementRef.nativeElement)) this.requestSelection(event);
     }
 }

@@ -223,9 +223,18 @@ and uses composite roving tabindex to manage focus movement among radio items.
 
 | Key          | Description                                                                        |
 |--------------|------------------------------------------------------------------------------------|
-| `Tab`        | Moves focus to either the checked radio item or the first radio item in the group. |
-| `Space`      | When focus is on an unchecked radio item, checks it.                               |
-| `ArrowDown`  | Moves focus and checks the next radio item in the group.                           |
-| `ArrowRight` | Moves focus and checks the next radio item in the group.                           |
-| `ArrowUp`    | Moves focus and checks the previous radio item in the group.                       |
-| `ArrowLeft`  | Moves focus and checks the previous radio item in the group.                       |
+| `Tab` / `Shift` + `Tab` | Enters or leaves the group through its single tab stop. |
+| `Space` | Requests selection when released on the focused radio. |
+| `Enter` | Leaves selection unchanged. |
+| `ArrowDown` | Focuses the next enabled radio and requests its selection. |
+| `ArrowUp` | Focuses the previous enabled radio and requests its selection. |
+| `ArrowRight` | Moves to the next enabled radio in LTR and the previous one in RTL. Requests selection. |
+| `ArrowLeft` | Moves to the previous enabled radio in LTR and the next one in RTL. Requests selection. |
+
+The checked item is the initial tab stop. Without a checked item, focus enters at the first enabled
+item. After navigation, the tab stop follows the last focused item. Programmatic value changes and
+declined requests leave that focus position in place.
+
+Arrow navigation wraps and also supports `Shift`. `Home` and `End` retain their browser behavior.
+Read-only groups allow focus to move without changing selection. A disabled group has no default
+tab stop. A checked custom host with individual `aria-disabled` can retain its existing tab stop.

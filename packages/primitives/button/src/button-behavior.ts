@@ -14,6 +14,8 @@ export interface RdxButtonBehaviorConfig {
     disabled: Signal<boolean>;
     focusableWhenDisabled: Signal<boolean>;
     native: Signal<boolean>;
+    /** Override composite activation without changing how the host participates in navigation. */
+    compositeActivation?: boolean;
 }
 
 /**
@@ -27,7 +29,7 @@ export class RdxButtonBehavior {
     private readonly compositeRoot = injectRdxCompositeRootContext(true);
     private readonly isComposite = !!this.compositeItem || !!this.compositeRoot;
     private config?: RdxButtonBehaviorConfig;
-    private owner?: 'button' | 'toolbar';
+    private owner?: 'button' | 'toolbar' | 'radio';
     private renderedAriaDisabled?: Signal<'true' | undefined>;
     private readonly isDisabled = () => this.config?.disabled() ?? false;
     private readonly isFocusableWhenDisabled = () => this.config?.focusableWhenDisabled() ?? false;
@@ -46,7 +48,7 @@ export class RdxButtonBehavior {
         return this.renderedAriaDisabled ? this.renderedAriaDisabled() : fallback;
     }
 
-    configure(config: RdxButtonBehaviorConfig, owner: 'button' | 'toolbar'): void {
+    configure(config: RdxButtonBehaviorConfig, owner: 'button' | 'toolbar' | 'radio'): void {
         if (owner === 'button' || this.owner !== 'button') {
             this.config = config;
             this.owner = owner;
@@ -126,7 +128,7 @@ export class RdxButtonBehavior {
         if (handledKeydowns.has(event)) return;
         if (event.target !== event.currentTarget) return;
 
-        if (this.isComposite && event.key === ' ') {
+        if ((this.config?.compositeActivation ?? this.isComposite) && event.key === ' ') {
             const role = this.elementRef.nativeElement.getAttribute('role');
             const textNavigation = role?.startsWith('menuitem') || role === 'option' || role === 'gridcell';
             if (event.defaultPrevented && textNavigation) return;
@@ -155,7 +157,7 @@ export class RdxButtonBehavior {
     private handleKeyup(event: KeyboardEvent): void {
         if (this.isDisabled() || event.target !== event.currentTarget) return;
 
-        if (this.isComposite) {
+        if (this.config?.compositeActivation ?? this.isComposite) {
             // Composite Space already dispatched on keydown; cancel the native button's keyup click.
             if (this.isNativeButton() && event.key === ' ') event.preventDefault();
             return;

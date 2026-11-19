@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Directive, inject, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
     RdxCompositeItem,
@@ -57,6 +57,51 @@ class CompositeHostComponent {
     ariaDisableSecond = false;
     itemMap = new Map<HTMLElement, { index: number; id?: unknown }>();
 }
+
+@Directive({ selector: '[innerComposite]', hostDirectives: [RdxCompositeRoot] })
+class InnerComposite {
+    constructor() {
+        inject(RdxCompositeRoot, { self: true }).configureKeyboardNavigation({
+            respectDefaultPrevented: true,
+            stopPropagation: false
+        });
+    }
+}
+
+@Component({
+    imports: [InnerComposite, RdxCompositeRoot, RdxCompositeItem],
+    template: `
+        <div rdxCompositeRoot>
+            <button rdxCompositeItem>Outer first</button>
+            <div innerComposite>
+                <button rdxCompositeItem>Inner first</button>
+                <button rdxCompositeItem>Inner second</button>
+            </div>
+            <button rdxCompositeItem>Outer second</button>
+        </div>
+    `
+})
+class NestedCompositeHost {}
+
+it('lets a composed inner root move focus without letting its bubbling arrow move the outer root', async () => {
+    const fixture = TestBed.createComponent(NestedCompositeHost);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const [outerFirst, innerFirst, innerSecond, outerSecond] = Array.from(
+        fixture.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>
+    );
+    const listener = vi.fn();
+    (fixture.nativeElement as HTMLElement).addEventListener('keydown', listener);
+    innerFirst.focus();
+    const event = keydown(innerFirst, 'ArrowDown');
+    await flushMicrotasks();
+    fixture.detectChanges();
+
+    expect(event.defaultPrevented).toBe(true);
+    expect(listener).toHaveBeenCalledOnce();
+    expect(document.activeElement).toBe(innerSecond);
+    expect([outerFirst.tabIndex, outerSecond.tabIndex]).toEqual([0, -1]);
+});
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,

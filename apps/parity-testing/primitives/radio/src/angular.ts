@@ -1,5 +1,6 @@
 import { Component, provideZonelessChangeDetection, signal } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
+import { RdxDirectionProvider } from '@radix-ng/primitives/direction-provider';
 import {
     RdxRadioGroupDirective,
     RdxRadioItemDirective,
@@ -14,10 +15,18 @@ import { config, installProbe, options } from './contract';
     template: `
         @for (option of choices; track option.value) {
             @if (nativeButton) {
-                <button [value]="option.value" rdxRadioItem>{{ option.label }}</button>
+                <button [value]="option.value" [attr.data-testid]="'radio-' + option.value" rdxRadioItem>
+                    {{ option.label }}
+                </button>
             } @else {
                 <label>
-                    <span [value]="option.value" rdxRadioItem>
+                    <span
+                        [attr.data-testid]="'radio-' + option.value"
+                        [value]="option.value"
+                        [disabled]="settings.disabledItem === option.value"
+                        (keyup)="maybePreventSpace($event)"
+                        rdxRadioItem
+                    >
                         {{ option.label }}
                         <input rdxRadioItemInput />
                     </span>
@@ -29,18 +38,26 @@ import { config, installProbe, options } from './contract';
 })
 class RadioItems {
     protected readonly choices = options;
-    protected readonly nativeButton = config().nativeButton;
+    protected readonly settings = config();
+    protected readonly nativeButton = this.settings.nativeButton;
+
+    protected maybePreventSpace(event: KeyboardEvent): void {
+        if (this.settings.keyboard === 'prevent-space' && event.key === ' ') event.preventDefault();
+    }
 }
 
 @Component({
     selector: 'parity-radio',
-    imports: [RdxRadioGroupDirective, RadioItems],
+    imports: [RdxDirectionProvider, RdxRadioGroupDirective, RadioItems],
     template: `
-        <form>
+        <button type="button" tabindex="0" data-testid="before">Before</button>
+        <form [direction]="settings.dir" [attr.dir]="settings.dir ?? 'ltr'" rdxDirectionProvider>
             @if (response) {
                 <div
                     [controlledValue]="value()"
                     [defaultValue]="defaultValue()"
+                    [disabled]="settings.disabled ?? false"
+                    [readOnly]="settings.readOnly ?? false"
                     (onValueChange)="recordChange($event)"
                     rdxRadioRoot
                     name="density"
@@ -52,6 +69,8 @@ class RadioItems {
                 <div
                     [(value)]="value"
                     [defaultValue]="defaultValue()"
+                    [disabled]="settings.disabled ?? false"
+                    [readOnly]="settings.readOnly ?? false"
                     (onValueChange)="recordChange($event)"
                     rdxRadioRoot
                     name="density"
@@ -62,6 +81,8 @@ class RadioItems {
             } @else {
                 <div
                     [defaultValue]="defaultValue()"
+                    [disabled]="settings.disabled ?? false"
+                    [readOnly]="settings.readOnly ?? false"
                     (onValueChange)="recordChange($event)"
                     rdxRadioRoot
                     name="density"
@@ -71,6 +92,7 @@ class RadioItems {
                 </div>
             }
         </form>
+        <button type="button" tabindex="0" data-testid="after">After</button>
         <button (click)="changeDefault()" type="button">Change default</button>
         @if (bound) {
             <button (click)="value.set('standard')" type="button">Write value</button>
@@ -81,7 +103,7 @@ class RadioItems {
     `
 })
 class AngularRadio {
-    private readonly settings = config();
+    protected readonly settings = config();
     private readonly probe = installProbe();
     protected readonly bound = this.settings.value !== undefined;
     protected readonly response = this.settings.response;

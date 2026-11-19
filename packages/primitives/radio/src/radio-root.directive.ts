@@ -2,7 +2,6 @@ import {
     booleanAttribute,
     computed,
     Directive,
-    effect,
     ElementRef,
     inject,
     input,
@@ -15,7 +14,7 @@ import {
     untracked
 } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
-import { RdxCompositeMetadata, RdxCompositeRoot } from '@radix-ng/primitives/composite';
+import { RdxCompositeRoot } from '@radix-ng/primitives/composite';
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
@@ -50,8 +49,8 @@ export interface RadioRootContext {
     registerNativeInput(value: string, input: HTMLInputElement): () => void;
     syncNativeInputs(): void;
     select(value: string | null, event?: Event, reason?: RdxRadioValueChangeReason, trigger?: HTMLElement): boolean;
-    setArrowNavigation(value: boolean): void;
-    isArrowNavigation(): boolean;
+    tabStopIndex: Signal<number>;
+    isKeyboardFocus(element: HTMLElement): boolean;
 }
 
 const rootContext = (): RadioRootContext => {
@@ -67,8 +66,8 @@ const rootContext = (): RadioRootContext => {
         registerNativeInput: (value, input) => root.registerNativeInput(value, input),
         syncNativeInputs: () => root.syncNativeInputs(),
         select: (value, event, reason, trigger) => root.select(value, event, reason, trigger),
-        setArrowNavigation: (value) => root.setArrowNavigation(value),
-        isArrowNavigation: () => root.isArrowNavigation()
+        tabStopIndex: root.tabStopIndex,
+        isKeyboardFocus: (element) => root.isKeyboardFocus(element)
     };
 };
 
@@ -147,27 +146,12 @@ export class RdxRadioGroupDirective
     readonly invalidState = this.formUi.invalidState;
     readonly touchedState = this.formUi.touchedState;
     readonly dirtyState = this.formUi.dirtyState;
-    private readonly arrowNavigation = signal(false);
+    /** @ignore The last focused index, seeded from the checked Item when the Composite mounts. */
+    readonly tabStopIndex = this.compositeRoot.highlightedIndex.asReadonly();
     private readonly nativeInputs = signal<ReadonlyMap<string, HTMLInputElement>>(new Map());
     private readonly selectedItemHasNativeInput = computed(() => {
         const value = this.currentValue();
         return value !== null && this.nativeInputs().has(value);
-    });
-    private readonly itemMetadata = computed(() =>
-        Array.from(this.compositeRoot.itemMap().values()).filter(isRadioItemMetadata)
-    );
-    private readonly disabledIndices = computed(() =>
-        this.itemMetadata()
-            .filter((metadata) => metadata.disabled)
-            .map((metadata) => metadata.index)
-    );
-    private readonly activeIndex = computed(() => {
-        const value = this.currentValue();
-        if (value === null) {
-            return -1;
-        }
-
-        return this.itemMetadata().find((metadata) => metadata.value === value)?.index ?? -1;
     });
 
     /**
@@ -209,29 +193,8 @@ export class RdxRadioGroupDirective
             this.value.set(this.initialEditableValue());
         });
 
-        effect(() => {
-            this.compositeRoot.setEnableHomeAndEndKeys(false);
-            this.compositeRoot.setModifierKeys(['Shift']);
-        });
-
-        effect(() => {
-            this.compositeRoot.setDisabledIndices(this.disabledIndices());
-        });
-
-        effect(() => {
-            const activeIndex = this.activeIndex();
-
-            if (activeIndex === -1 || this.disabledIndices().includes(activeIndex)) {
-                return;
-            }
-
-            const activeElement = this.elementRef.nativeElement.ownerDocument.activeElement;
-            if (activeElement && this.elementRef.nativeElement.contains(activeElement)) {
-                return;
-            }
-
-            this.compositeRoot.setHighlightedIndex(activeIndex);
-        });
+        this.compositeRoot.setModifierKeys(['Shift']);
+        this.compositeRoot.configureKeyboardNavigation({ respectDefaultPrevented: true, stopPropagation: false });
     }
 
     /** @ignore */
@@ -336,12 +299,9 @@ export class RdxRadioGroupDirective
         this.disable.set(isDisabled);
     }
 
-    setArrowNavigation(value: boolean): void {
-        this.arrowNavigation.set(value);
-    }
-
-    isArrowNavigation(): boolean {
-        return this.arrowNavigation();
+    /** @ignore Limits selection on focus to an actual Composite keyboard move. */
+    isKeyboardFocus(element: HTMLElement): boolean {
+        return this.compositeRoot.isKeyboardFocus(element);
     }
 
     /** @ignore Register an optional native radio input by its item value. */
@@ -370,14 +330,4 @@ export class RdxRadioGroupDirective
             this.formUi.markAsTouched();
         }
     }
-}
-
-interface RdxRadioItemMetadata {
-    [key: string]: unknown;
-    disabled: boolean;
-    value: string;
-}
-
-function isRadioItemMetadata(metadata: RdxCompositeMetadata): metadata is RdxCompositeMetadata<RdxRadioItemMetadata> {
-    return typeof metadata['disabled'] === 'boolean' && typeof metadata['value'] === 'string';
 }

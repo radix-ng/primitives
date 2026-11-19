@@ -140,7 +140,7 @@ describe('RdxRadio', () => {
         expect(host.changes).toEqual([]);
     });
 
-    it('keeps the tab stop on the checked item', () => {
+    it('seeds the tab stop from the checked item and keeps it after an external value write', () => {
         expect(buttons()[0].getAttribute('tabindex')).toBe('0');
         expect(buttons()[1].getAttribute('tabindex')).toBe('-1');
 
@@ -148,8 +148,30 @@ describe('RdxRadio', () => {
         fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
-        expect(buttons()[0].getAttribute('tabindex')).toBe('-1');
-        expect(buttons()[1].getAttribute('tabindex')).toBe('0');
+        expect(buttons()[0].getAttribute('tabindex')).toBe('0');
+        expect(buttons()[1].getAttribute('tabindex')).toBe('-1');
+        expect(buttons()[1].getAttribute('aria-checked')).toBe('true');
+    });
+
+    it('does not select on programmatic focus after an ignored arrow key', async () => {
+        for (const keyEvent of [
+            new KeyboardEvent('keydown', { key: 'ArrowDown', ctrlKey: true, bubbles: true }),
+            new KeyboardEvent('keydown', { key: 'ArrowDown', cancelable: true, bubbles: true })
+        ]) {
+            const [first, second] = buttons();
+            first.focus();
+            keyEvent.preventDefault();
+            first.dispatchEvent(keyEvent);
+            await fixture.whenStable();
+            expect(document.activeElement).toBe(first);
+
+            second.focus();
+            await fixture.whenStable();
+            fixture.detectChanges();
+            expect(document.activeElement).toBe(second);
+            expect(host.changes).toEqual([]);
+            expect(host.value).toBe('default');
+        }
     });
 
     it('selects an item on click and emits once', () => {

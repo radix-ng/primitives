@@ -1,3 +1,4 @@
+import { DirectionProvider } from '@base-ui/react/direction-provider';
 import { Radio } from '@base-ui/react/radio';
 import { RadioGroup } from '@base-ui/react/radio-group';
 import { useRef, useState } from 'react';
@@ -14,11 +15,16 @@ function ReactRadio() {
     const pending = useRef<string | null>(null);
 
     return (
-        <>
-            <form>
+        <DirectionProvider direction={settings.dir ?? 'ltr'}>
+            <button type="button" tabIndex={0} data-testid="before">
+                Before
+            </button>
+            <form dir={settings.dir ?? 'ltr'}>
                 <RadioGroup
                     value={value}
                     defaultValue={defaultValue}
+                    disabled={settings.disabled}
+                    readOnly={settings.readOnly}
                     name="density"
                     aria-label="Density"
                     onValueChange={(next, details) => {
@@ -42,18 +48,37 @@ function ReactRadio() {
                 >
                     {options.map((option) =>
                         settings.nativeButton ? (
-                            <Radio.Root key={option.value} value={option.value} render={<button />} nativeButton>
+                            <Radio.Root
+                                key={option.value}
+                                value={option.value}
+                                render={<button />}
+                                nativeButton
+                                data-testid={'radio-' + option.value}
+                            >
                                 {option.label}
                             </Radio.Root>
                         ) : (
                             <label key={option.value}>
-                                <Radio.Root value={option.value}>{option.label}</Radio.Root>
+                                <Radio.Root
+                                    value={option.value}
+                                    disabled={settings.disabledItem === option.value}
+                                    data-testid={'radio-' + option.value}
+                                    onKeyUp={(event) => {
+                                        if (settings.keyboard === 'prevent-space' && event.key === ' ')
+                                            event.preventDefault();
+                                    }}
+                                >
+                                    {option.label}
+                                </Radio.Root>
                                 <span data-testid={'label-' + option.value}>Select</span>
                             </label>
                         )
                     )}
                 </RadioGroup>
             </form>
+            <button type="button" tabIndex={0} data-testid="after">
+                After
+            </button>
             <button
                 type="button"
                 onClick={() => setDefaultValue((value) => (value === 'standard' ? 'compact' : 'standard'))}
@@ -70,7 +95,7 @@ function ReactRadio() {
                     Apply request
                 </button>
             )}
-        </>
+        </DirectionProvider>
     );
 }
 

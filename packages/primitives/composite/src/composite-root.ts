@@ -39,6 +39,8 @@ import {
     shouldKeepNativeTextInputBehavior
 } from './utils';
 
+const compositeHosts = new WeakSet<HTMLElement>();
+
 const rootContext = (): RdxCompositeRootContext => {
     const root = inject(RdxCompositeRoot);
 
@@ -79,6 +81,8 @@ export class RdxCompositeRoot {
     private hasSetInitialIndex = false;
     private highlightedElement: HTMLElement | null = null;
     private previousItems: readonly RdxCompositeItemRegistration[] | undefined;
+    private keyboardFocusTarget: HTMLElement | null = null;
+    private keyboardPolicy?: { respectDefaultPrevented: boolean; stopPropagation: boolean };
     /** @internal True only while restoring a moved node's existing focus. */
     isRestoringFocus = false;
 
@@ -139,7 +143,11 @@ export class RdxCompositeRoot {
     readonly itemMap = this.compositeList.itemMap;
 
     constructor() {
-        inject(DestroyRef).onDestroy(
+        const destroyRef = inject(DestroyRef);
+        const host = this.elementRef.nativeElement;
+        compositeHosts.add(host);
+        destroyRef.onDestroy(() => compositeHosts.delete(host));
+        destroyRef.onDestroy(
             preserveFocusOnMove(
                 this.elementRef.nativeElement,
                 (element) => this.items().some((item) => item.element.contains(element)),
@@ -258,6 +266,16 @@ export class RdxCompositeRoot {
         this._modifierKeys.set(value);
     }
 
+    /** @internal Allows a composed primitive to own keyboard cancellation and propagation. */
+    configureKeyboardNavigation(policy: { respectDefaultPrevented: boolean; stopPropagation: boolean }): void {
+        this.keyboardPolicy = policy;
+    }
+
+    /** @internal True during focus delivered to this element by composite keyboard navigation. */
+    isKeyboardFocus(element: HTMLElement): boolean {
+        return this.keyboardFocusTarget === element;
+    }
+
     isIndexDisabled(index: number): boolean {
         return isListIndexDisabled(this.elements(), index, this.disabledIndices());
     }
@@ -297,6 +315,7 @@ export class RdxCompositeRoot {
     }
 
     private handleCompositeKeydown(event: KeyboardEvent, relayed: boolean): void {
+        if (!relayed && event.defaultPrevented && this.keyboardPolicy?.respectDefaultPrevented) return;
         const relevantKeys = this.enableHomeAndEndKeys() ? COMPOSITE_KEYS : ARROW_KEYS;
 
         if (!relevantKeys.has(event.key) || isModifierKeySet(event, this.modifierKeys())) {
@@ -306,11 +325,10 @@ export class RdxCompositeRoot {
         const target = event.target;
         const rootElement = this.elementRef.nativeElement;
 
-        if (!relayed && isHTMLElement(target)) {
-            const closestRoot = target.closest('[rdxCompositeRoot]');
-            if (closestRoot && closestRoot !== rootElement) {
-                return;
-            }
+        if (!relayed) {
+            // Host directives need no DOM marker. Use the actual composed root nearest the event.
+            const owner = event.composedPath().find((node) => isHTMLElement(node) && compositeHosts.has(node));
+            if (owner && owner !== rootElement) return;
         }
 
         if (isNativeTextInput(target) && !isElementDisabled(target)) {
@@ -334,7 +352,7 @@ export class RdxCompositeRoot {
             return;
         }
 
-        if (this.stopEventPropagation()) {
+        if (this.keyboardPolicy?.stopPropagation ?? this.stopEventPropagation()) {
             event.stopPropagation();
         }
 
@@ -342,7 +360,14 @@ export class RdxCompositeRoot {
         this.setHighlightedIndex(nextIndex, true);
 
         queueMicrotask(() => {
-            this.elements()[nextIndex]?.focus();
+            const next = this.elements()[nextIndex];
+            if (!next) return;
+            this.keyboardFocusTarget = next;
+            try {
+                next.focus();
+            } finally {
+                this.keyboardFocusTarget = null;
+            }
         });
     }
 
