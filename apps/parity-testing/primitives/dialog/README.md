@@ -7,7 +7,7 @@ pnpm test-parity dialog --grep touch-
 
 The suite exercises real Angular Dialog parts and Base UI React 1.9.0 at the workspace pin
 `cf696d6f6e08c699c5bda24d5a033430909f2285`.
-The suite has 55 cases and reports native-input capability skips by engine. `expected-differences.json` records the focus
+The suite has 60 cases and reports native-input capability skips by engine. `expected-differences.json` records the focus
 destination after nested owner removal and the payload of a new unassociated open after a named session.
 
 | Area              | Cases | Behavior                                                                                                       |
@@ -16,6 +16,7 @@ destination after nested owner removal and the payload of a new unassociated ope
 | Modal background  | 1     | Focus cycling, background isolation, scroll lock, outside press and restored background activation             |
 | Other modal modes | 7     | Non-modal Tab and pointer focus departure, press timing, `trap-focus`, authored Backdrop and dismissal opt-out |
 | Nested Dialogs    | 5     | Deepest dismissal, descendant counts, owner removal and a retained child with an animated exit                 |
+| Overlapping Roots | 5     | Independent focus and isolation, per-layer dismissal, authored and internal Backdrops, and retained Portals    |
 | Detached handles  | 8     | Named and unassociated opens, live payloads, Trigger and Root remount, handle swap and controlled refusal      |
 | Trigger identity  | 2     | Bound ID before the default, null fallback, active trigger removal and replacement                             |
 | Focus targets     | 8     | Explicit and default focus, callback results, interaction type, Trigger removal and retained exits             |
@@ -52,6 +53,11 @@ When the application removes two open nested layers together, Angular focuses th
 parent Popup using its focus recovery policy. Base UI focuses the parent's outside Trigger.
 The exception covers that single focus checkpoint. Both clear descendant styling and dismiss the
 remaining Dialog on Escape.
+
+Three independent modal Roots each return focus to the launcher when closed. The overlapping cases
+check Tab wrapping, one close per Escape or Backdrop click, and continuous background isolation and
+scroll lock. Angular exposes the active retained Popup. Base UI can leave it aria-hidden while
+focusing its controls, so the report includes the actual isolation attributes.
 
 The detached fixtures keep Trigger elements outside Root and call the public handle actions. They
 inspect live rendered payloads, each handle's open state, active Trigger relationships, native

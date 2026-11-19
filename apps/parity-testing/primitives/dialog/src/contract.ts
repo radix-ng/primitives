@@ -24,6 +24,7 @@ interface Settings {
     disablePointerDismissal?: boolean;
     backdrop?: boolean;
     nested?: { grandchild?: boolean; keepMounted?: boolean; forceRender?: boolean; animate?: boolean };
+    overlap?: { backdrop: boolean; keepMounted?: boolean };
     detached?: DetachedSettings;
     focus?: FocusMode;
     touch?: TouchMode;
@@ -48,6 +49,11 @@ export const configurations = {
     'nested-depth': { nested: { grandchild: true } },
     'nested-remove': { nested: { grandchild: true } },
     'nested-retained-exit': { nested: { keepMounted: true, forceRender: true, animate: true } },
+    'overlap-authored-backdrops': { overlap: { backdrop: true } },
+    'overlap-internal-backdrops': { overlap: { backdrop: false } },
+    'overlap-escape': { overlap: { backdrop: false } },
+    'overlap-retained-escape': { overlap: { backdrop: false, keepMounted: true } },
+    'overlap-retained-backdrops': { overlap: { backdrop: true, keepMounted: true } },
     'detached-live-payload': { detached: { secondary: true } },
     'detached-trigger-remount': { detached: { secondary: true, openId: 'secondary' } },
     'detached-root-remount': { detached: { initiallyDetached: true } },
@@ -95,6 +101,8 @@ export const configurations = {
 export type CaseName = keyof typeof configurations;
 export const nestedLayers = ['child', 'grandchild'] as const;
 export type NestedLayer = (typeof nestedLayers)[number];
+export const overlappingLayers = ['first', 'second', 'third'] as const;
+export type OverlappingLayer = (typeof overlappingLayers)[number];
 type Change = { open: boolean; reason: string; trigger: string | null; canceled: boolean };
 type FocusPhase = 'initial' | 'final';
 
@@ -104,7 +112,9 @@ export interface Probe {
     completions: boolean[];
     nestedChanges: (Change & { layer: NestedLayer })[];
     nestedCompletions: { layer: NestedLayer; open: boolean }[];
-    nativeEvents: { type: string; trusted: boolean; layer?: NestedLayer }[];
+    overlappingChanges: (Change & { layer: OverlappingLayer })[];
+    overlappingCompletions: { layer: OverlappingLayer; open: boolean }[];
+    nativeEvents: { type: string; trusted: boolean; layer?: NestedLayer | OverlappingLayer }[];
     activations: number;
     focusPolicies: { phase: FocusPhase; interaction: string | null }[];
     touchEvents: {
@@ -142,6 +152,8 @@ export function installProbe() {
         completions: [],
         nestedChanges: [],
         nestedCompletions: [],
+        overlappingChanges: [],
+        overlappingCompletions: [],
         nativeEvents: [],
         activations: 0,
         focusPolicies: [],
@@ -187,10 +199,11 @@ export function installProbe() {
             event: Event,
             trigger: Element | undefined,
             canceled: boolean,
-            layer?: NestedLayer
+            layer?: NestedLayer | OverlappingLayer
         ) {
             const change = { open, reason, trigger: trigger?.getAttribute('data-testid') ?? null, canceled };
-            if (layer) probe.nestedChanges.push({ layer, ...change });
+            if (layer === 'child' || layer === 'grandchild') probe.nestedChanges.push({ layer, ...change });
+            else if (layer) probe.overlappingChanges.push({ layer, ...change });
             else probe.changes.push(change);
             probe.nativeEvents.push({ type: event.type, trusted: event.isTrusted, layer });
         }

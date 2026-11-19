@@ -11,6 +11,8 @@ import {
 } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
 import {
+    isElement,
+    isNode,
     RDX_FLOATING_REGISTRATION,
     RDX_FLOATING_ROOT_CONTEXT,
     RdxFloatingNodeRegistration,
@@ -22,7 +24,7 @@ import {
     provideFloatingFocusManagerConfig,
     RdxFloatingFocusManager
 } from '@radix-ng/primitives/floating-focus-manager';
-import { RdxFocusScope } from '@radix-ng/primitives/focus-scope';
+import { composedContains, getEventTarget, RdxFocusScope } from '@radix-ng/primitives/focus-scope';
 import { injectRdxDialogRootContext } from './dialog-root';
 
 /** Composite navigation keys a Dialog popup keeps to itself, so they never reach an enclosing Menu / Composite. */
@@ -191,11 +193,12 @@ export class RdxDialogPopup {
                 this.isTopmost() &&
                 !this.rootContext.disablePointerDismissal() &&
                 (outsidePressEnabled?.() ?? true) &&
-                isPrimaryOutsidePress(event),
+                isPrimaryOutsidePress(event) &&
+                this.acceptsOutsidePressTarget(event),
             outsidePressEvent: () => {
                 const modal = this.rootContext.modal();
                 // Dialog's registered floating elements are Popup and any authored or internal backdrops.
-                if (modal === true || this.floatingContext.floatingElements.size > 1) return 'intentional';
+                if (modal === true || this.hasBackdrop()) return 'intentional';
                 return { mouse: modal === 'trap-focus' ? 'sloppy' : 'intentional', touch: 'sloppy' };
             },
             focusOutside: () => false,
@@ -223,6 +226,25 @@ export class RdxDialogPopup {
     /** This dialog is the topmost (deepest open) one — it has no open nested dialog above it. */
     private isTopmost(): boolean {
         return this.rootContext.isOpen() && !this.rootContext.nestedDialogOpen();
+    }
+
+    private hasBackdrop(): boolean {
+        for (const element of this.floatingContext.floatingElements) {
+            if (element !== this.host && !element.hasAttribute('hidden')) return true;
+        }
+        return false;
+    }
+
+    private acceptsOutsidePressTarget(event: Event): boolean {
+        if (!this.rootContext.modal() || !this.hasBackdrop()) return true;
+
+        // Independent modal Roots dismiss through their own backdrop. A wrapping Viewport
+        // can also receive the hit when it covers the backdrop.
+        const target = getEventTarget(event);
+        return (
+            (isElement(target) && this.floatingContext.floatingElements.has(target)) ||
+            (isNode(target) && composedContains(target, this.host))
+        );
     }
 
     /**

@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import type { CaseName } from '../src/contract';
 import type { DialogDriver } from './driver';
+import { overlapScenarios } from './overlap.scenarios';
 import { touchScenarios } from './touch.scenarios';
 
 const closed = { open: false, mounted: false, visible: false, expanded: [] };
@@ -1026,6 +1027,7 @@ export const scenarios = [
     ...ownership,
     ...modalModes,
     ...nesting,
+    ...overlapScenarios,
     ...detachedHandles,
     ...focusTargets,
     ...touchScenarios,

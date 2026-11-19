@@ -56,6 +56,8 @@ import { RDX_PORTAL_ANCHOR } from '@radix-ng/primitives/portal';
 import { registerFocusGuardOwners, resolveFocusGuardOwner } from './focus-guard-ownership';
 import { markOthers } from './mark-others';
 
+const inertOwners = new WeakMap<Document, WritableSignal<readonly HTMLElement[]>>();
+
 /**
  * How a popup was opened / closed (Base UI `InteractionType`). `null` = a **programmatic** open (prefer
  * the previously-focused element); `''` = an **unknown** interaction. The two are deliberately distinct
@@ -404,6 +406,21 @@ export class RdxFloatingFocusManager {
         });
 
         // Independently isolate the background with inert or hide it from assistive technologies.
+        const document = this.host.ownerDocument;
+        const owners = inertOwners.get(document) ?? signal<readonly HTMLElement[]>([]);
+        inertOwners.set(document, owners);
+        const removeInertOwner = () =>
+            owners.update((current) =>
+                current.includes(this.host) ? current.filter((owner) => owner !== this.host) : current
+            );
+        afterRenderEffect((onCleanup) => {
+            if (!this.effectiveEnabled() || !this.isFloatingOpen() || !this.effectiveInert()) return;
+
+            // Retained independent popups can already be inert when they open. The newest
+            // inert owner isolates the document, including any older popup behind it.
+            owners.update((current) => [...current, this.host]);
+            onCleanup(removeInertOwner);
+        });
         let releaseIsolation: (() => void) | undefined;
         const clearIsolation = () => {
             releaseIsolation?.();
@@ -415,11 +432,13 @@ export class RdxFloatingFocusManager {
             if (!this.effectiveEnabled() || !this.isFloatingOpen() || (!inert && !ariaHidden)) {
                 return;
             }
+            if (inert && owners().at(-1) !== this.host) return;
             releaseIsolation = markOthers(this.avoidElements(true), { inert, ariaHidden, mark: false });
             onCleanup(clearIsolation);
         });
         const releaseClosedResources = () => {
             if (this.isFloatingOpen()) return;
+            removeInertOwner();
             clearMarker();
             clearIsolation();
         };

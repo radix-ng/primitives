@@ -204,6 +204,11 @@ real-AT confirmation (see "Follow-up (de-scoped)").
 
 ### 3. `markOthers`-equivalent — independent effects, two implemented + `inert` deferred
 
+> **Implementation update (2026-11-19).** Angular uses `inert` for full modal isolation. The newest
+> open manager using this policy owns the document's inert pass, and the previous open owner
+> resumes when it closes. This releases older isolation from an opening retained Popup. The
+> separate dismissal marker and ARIA-only isolation still follow their own lifecycle.
+
 Owned here (moved from ADR 0016 §1). Base UI does **not** bundle `inert` + `aria-hidden` + marker; it
 makes two separate `markOthers` calls and never passes `inert`:
 

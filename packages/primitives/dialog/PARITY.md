@@ -96,8 +96,8 @@ and [store selectors](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda2
 
 - [Dialog unit tests](__tests__/dialog.spec.ts) cover initial defaults, parent refusal, delayed acceptance, two-way binding and cancellation.
 - [Dialog browser tests](../../../apps/visual-regression/tests/dialog.behavior.spec.ts) include a deferred open/close request with focus, Portal and scroll-lock observations.
-- The [pinned Dialog suite](../../../apps/parity-testing/primitives/dialog/README.md) runs 55 scenarios across Chromium, Firefox and WebKit. It covers open ownership, modal modes, nested dialogs, detached handles, configurable focus, touch and close lifetime.
-- The [AOT hydration suite](../../../apps/radix-ssr-testing/hydration-audit/README.md) covers initially open Dialog in `eager-dialog`.
+- The [pinned Dialog suite](../../../apps/parity-testing/primitives/dialog/README.md) runs 60 scenarios across Chromium, Firefox and WebKit. It covers open ownership, modal modes, nested and overlapping dialogs, detached handles, configurable focus, touch and close lifetime.
+- The [AOT hydration suite](../../../apps/radix-ssr-testing/hydration-audit/README.md) covers initially open Dialog and closing the eager Root before a detached Trigger hydrates.
 
 The directive reference exposes effective `open()` as readonly. Set a bound value to drive a
 controlled Dialog, or use `show()` and `close()` for imperative requests. The latest accepted-request
@@ -225,6 +225,27 @@ remaining Dialog and returns focus to the Trigger in both frameworks.
 [Owner removal scenario](../../../apps/parity-testing/primitives/dialog/tests/scenarios.ts)
 · [Reviewed focus difference](../../../apps/parity-testing/primitives/dialog/expected-differences.json)
 
+## Overlapping independent Roots
+
+Five comparisons open three sibling modal Roots one at a time. They verify that Tab wraps in the
+active Popup, Escape and native Backdrop clicks close one Root per interaction, and focus returns to
+the launch button in the surviving Popup. Scroll lock and background isolation persist until the
+last Root closes. The cases include authored and internal Backdrops and initially retained Portals.
+[Browser scenarios](../../../apps/parity-testing/primitives/dialog/tests/overlap.scenarios.ts)
+· [Pinned sibling-dialog regression](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/dialog/root/DialogRoot.test.tsx#L952)
+
+Angular previously kept a retained sibling inert after it opened, leaving focus on the body.
+The most recently opened owner of full modal isolation now applies `inert` per document. The
+next live owner resumes when it closes. This keeps the active retained Popup exposed. Base UI
+1.9.0 can leave `aria-hidden` on that Popup while it accepts focus. The test asserts Angular's
+exposure and records the reference attributes.
+[Isolation contract](../../../docs/adr/0017-floating-focus-manager.md#3-markothers-equivalent--independent-effects-two-implemented--inert-deferred)
+
+Opening the third retained sibling could also dismiss the first because its launcher belonged to
+a different Root. With an owned Backdrop, a modal Root accepts an outside press on that Backdrop
+or on a wrapping surface such as Viewport. Clicks inside another Root leave it open.
+[Pinned Dialog dismissal policy](https://github.com/mui/base-ui/blob/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/dialog/root/useDialogRoot.ts)
+
 ## Detached handles and payload ownership
 
 Eight [detached scenarios](../../../apps/parity-testing/primitives/dialog/tests/scenarios.ts) use
@@ -319,5 +340,4 @@ Seven tap cases run in Chromium and WebKit. Five native gesture cases use Chromi
 touch contexts and WebKit pan, cancellation and multi-contact automation are recorded as capability
 skips. Physical-device gesture and soft-keyboard behavior remain outside these emulated checks.
 
-Overlapping Dialog Roots, mixed Dialog variants and Portal destination changes remain pending
-paired checks.
+Mixed Dialog variants and Portal destination changes remain pending paired checks.
