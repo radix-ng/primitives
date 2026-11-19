@@ -9,8 +9,8 @@ synchronizes the implementations.
 
 **185 scenarios, 535 passing comparisons and 20 capability skips** across Chromium, Firefox and WebKit.
 The latest complete run is Linux/arm64, 2026-11-18, against Base UI 1.9.0 at `cf696d6f6e08c699c5bda24d5a033430909f2285`.
-There is **one reviewed visibility field**, scoped to Chromium and WebKit. Capability skips apply only to native
-`window.find()` reveal on Chromium and WebKit; their plain-HTML probes do not emit trusted `beforematch`.
+Capability skips apply only to native `window.find()` reveal on Chromium and WebKit; their plain-HTML
+probes do not emit trusted `beforematch`.
 
 - Single/multiple array requests, switching siblings, Item-first/Root-second callback order and
   shared details/native event identity.
@@ -108,28 +108,27 @@ or differential exceptions added for these cases.
 This scope does not certify live host/href/role replacement, external native ancestor listeners,
 React-only event extensions, controlled/multiple combinations or real devices/AT.
 
-## Search reveal difference
+## Search reveal evidence
 
 The `search-fragment-keyframe` case exposes how the pin can suppress keyframes after the
-browser scrolls to the match. Chromium and WebKit leave the revealed text outside the viewport.
-Firefox has produced both outcomes with the same fixture. Angular suppresses both motion
-durations in `beforematch`, before native `hidden` removal, and restores the authored inline
-styles on close, refused controlled reveal, policy removal or destruction.
+browser scrolls to the match. Firefox and WebKit have each produced both visibility outcomes.
+The Linux/x64 WebKit run measured the React target at 3 CSS px from the viewport top.
+Earlier WebKit runs measured it about 78 CSS px above the viewport.
+[CI job](https://github.com/radix-ng/primitives/actions/runs/44388577699/job/135100245985)
+· [Geometry report and trace](https://github.com/radix-ng/primitives/actions/runs/44388577699/artifacts/14471345920)
 
-`expected-differences.json` records the exact `browser match visibility.inViewport` pair
-(Angular `true`, React `false`) for Chromium and WebKit. Angular must still reveal the match in
-Firefox, and the report preserves the raw geometry for both fixtures. Callback, attribute,
-lifetime and later-motion checks still run on all engines. Same-task keyframe height is
-also asserted on Angular and recorded for the pin.
+Both fragment cases require native scroll on both fixtures and viewport visibility on Angular.
+The report preserves both geometries across engines. The callbacks, trusted `beforematch`,
+attributes, lifetime and later motion remain verified on both fixtures. Native-find visibility
+is still compared.
 
-Immediate motion suppression is asserted on Angular. The pin can also lose its one-shot suppression
-when its commit trails the reveal-revert decision in WebKit. Its duration, priority and running motion
-are retained as raw observations. The driver finishes any remaining animations with the same action
-on both fixtures before comparing settled reveal state; temporary open-cycle style values are excluded
-only from those two settled checkpoints. Authored values/priorities on refusal and later close remain
-paired assertions. Transition fragment visibility is asserted on Angular and retained as raw evidence
-for React, since a lost suppression flag can also change its scroll result. Firefox native-find
-visibility remains a paired check.
+Angular suppresses both motion durations in `beforematch`, before native `hidden` removal. It
+restores the authored inline styles on close, refused controlled reveal, policy removal or destruction.
+The test asserts Angular's same-task keyframe height and records it for the pin. The pin can lose
+its one-shot suppression when its commit trails the reveal-revert decision. The driver records
+duration, priority and running motion and finishes any remaining animations on both fixtures before
+comparing settled state. Authored values and priorities on refusal and later close remain paired
+assertions.
 
 ## Other validation
 

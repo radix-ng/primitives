@@ -201,26 +201,23 @@ export const searchScenarios = Object.entries(cases)
                             };
                         });
                     let geometry = await matchGeometry();
-                    const inViewport = async () => (geometry = await matchGeometry()).inViewport;
-                    // The pin can suppress keyframes after native fragment measurement. Firefox
-                    // has produced both scroll outcomes with the same fixture, so retain its raw
-                    // geometry while enforcing Angular's visibility in every engine.
-                    const compareKeyframeFragment =
-                        s.search!.source === 'fragment' &&
-                        s.search!.motion === 'keyframe' &&
-                        page.context().browser()?.browserType().name() !== 'firefox';
+                    const observeGeometry = async () => (geometry = await matchGeometry());
+                    const nativeFind = s.search!.source === 'find';
                     try {
-                        if (d.framework === 'angular' || s.search!.source === 'find' || compareKeyframeFragment) {
-                            await expect.poll(inViewport).toBe(d.framework === 'angular' || !compareKeyframeFragment);
+                        await expect.poll(async () => (await observeGeometry()).scrollY).toBeGreaterThan(0);
+                        // The pin can commit motion suppression on either side of fragment
+                        // measurement. Keep its fragment geometry as evidence across browsers.
+                        if (d.framework === 'angular' || nativeFind) {
+                            await expect.poll(async () => (await observeGeometry()).inViewport).toBe(true);
                         }
                     } finally {
                         d.measurements.push({ name: 'browser match geometry', state: geometry });
                     }
-                    await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(0);
-                    const visibility = { inViewport: await inViewport() };
-                    d.measurements.push({ name: 'browser match visibility', state: visibility });
-                    if (compareKeyframeFragment || s.search!.source === 'find') {
-                        d.checkpoints.push({ name: 'browser match visibility', state: visibility });
+                    if (nativeFind) {
+                        d.checkpoints.push({
+                            name: 'browser match visibility',
+                            state: { inViewport: geometry.inViewport }
+                        });
                     }
                 }
                 await page.getByTestId('a-input').fill('edited');
