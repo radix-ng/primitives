@@ -7,7 +7,9 @@ export type Theme = 'light' | 'dark';
 export class ThemeStore {
     private readonly document = inject(DOCUMENT);
 
-    readonly theme = signal<Theme>('dark');
+    readonly theme = signal<Theme>(
+        this.document.defaultView?.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    );
 
     constructor() {
         effect(() => {

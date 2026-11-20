@@ -6,7 +6,7 @@ import { playgroundServer } from '../../tools/playwright/playground-server.mts';
 const server = playgroundServer(resolve(__dirname, '../..'));
 export default defineConfig({
     testDir: './tests',
-    testMatch: ['agents-playground.behavior.spec.ts', 'playground-styles.behavior.spec.ts'],
+    testMatch: ['agents-playground.behavior.spec.ts', 'landing.behavior.spec.ts', 'playground-styles.behavior.spec.ts'],
     outputDir: './test-results/playground',
     reporter: [['list'], ['html', { outputFolder: 'playwright-report/playground', open: 'never' }]],
     fullyParallel: true,

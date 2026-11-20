@@ -1,0 +1,180 @@
+<section
+    id="a-closer-look"
+    aria-labelledby="accordion-anatomy-heading"
+    class="border-landing-hair border-t pt-8 pb-9 md:pt-[45px] md:pb-[52px]"
+>
+    <div class="mb-7 grid gap-5 md:grid-cols-[23%_minmax(0,1fr)] md:gap-0">
+        <p class="text-landing-muted font-mono text-[13px]">/a-closer-look</p>
+        <div>
+            <h2
+                id="accordion-anatomy-heading"
+                class="text-[clamp(30px,2.8vw,41px)] leading-[1.18] font-[450] tracking-[-0.045em]"
+            >
+                Every interaction has a structure.
+            </h2>
+            <p class="text-landing-muted mt-4 max-w-[660px] text-[17px] leading-[1.52]">
+                Build with familiar HTML. Add accessible behavior with Angular directives. Here’s what makes an
+                Accordion more than three expanding rows.
+            </p>
+        </div>
+    </div>
+
+    <figure class="border-landing-hair bg-anatomy-paper border">
+        <figcaption
+            class="text-landing-muted border-landing-hair flex min-h-12 items-center justify-between gap-4 border-b px-3 font-mono text-[12px] tracking-wide sm:px-5"
+        >
+            <span>FIG. 01 / ACCORDION</span>
+            <span class="hidden sm:inline">SELECT A PART TO INSPECT</span>
+        </figcaption>
+
+        <div
+            #stage
+            class="landing-diagram-grid relative isolate grid md:min-h-[474px] md:grid-cols-[minmax(0,1.62fr)_minmax(245px,0.78fr)]"
+        >
+            <div
+                class="relative z-10 flex min-w-0 flex-col items-center justify-center px-4 pt-9 pb-6 md:pr-5 md:pl-8 lg:pt-[53px] lg:pr-[38px] lg:pb-[53px] lg:pl-[70px]"
+            >
+                <div
+                    aria-hidden="true"
+                    class="text-landing-muted relative flex h-[30px] w-full max-w-[500px] items-start justify-center font-mono text-[11px] tracking-wide"
+                >
+                    <span class="border-landing-muted/75 absolute inset-x-0 top-[10px] h-[14px] border-x"></span>
+                    <span class="bg-landing-muted/75 absolute inset-x-0 top-[17px] h-px"></span>
+                    <span class="bg-anatomy-paper relative mt-2.5 px-3">COMPOSABLE WIDTH</span>
+                </div>
+
+                <div
+                    #accordion
+                    id="anatomy-accordion"
+                    aria-label="Accordion example"
+                    rdxAccordionRoot
+                    role="region"
+                    class="border-landing-hair bg-anatomy-paper data-[inspected]:border-anatomy-accent data-[inspected]:outline-anatomy-accent w-full max-w-[500px] border data-[inspected]:outline"
+                    [attr.data-inspected]="activePart() === 'root' ? '' : null"
+                    [defaultValue]="defaultValue"
+                >
+                    @for (item of items; track item.id) {
+                        <div rdxAccordionItem class="border-landing-hair not-first:border-t" [value]="item.id">
+                            <h3 rdxAccordionHeader>
+                                <button
+                                    #trigger
+                                    rdxAccordionTrigger
+                                    type="button"
+                                    class="group hover:bg-anatomy-hover data-[inspected]:bg-anatomy-highlight flex w-full cursor-pointer items-center justify-between gap-4 px-4 py-[18px] text-left text-[18px] leading-[1.35] font-medium tracking-[-0.015em] data-[inspected]:shadow-[inset_3px_0_var(--anatomy-accent)] md:px-5 lg:px-6 lg:py-5 lg:text-[22px]"
+                                    [attr.data-inspected]="
+                                        activePart() === 'trigger' && item.id === (openItem() ?? defaultValue[0])
+                                            ? ''
+                                            : null
+                                    "
+                                >
+                                    {{ item.question }}
+                                    <svg
+                                        aria-hidden="true"
+                                        lucideChevronDown
+                                        class="size-4 shrink-0 group-data-[panel-open]:rotate-180 motion-safe:transition-transform"
+                                    ></svg>
+                                </button>
+                            </h3>
+                            <div
+                                *rdxAccordionPanelPresence
+                                #panel
+                                rdxAccordionPanel
+                                class="text-landing-muted data-[inspected]:bg-anatomy-highlight min-h-[62px] px-4 py-1 pb-5 text-[15px] leading-[1.55] data-[inspected]:shadow-[inset_3px_0_var(--anatomy-accent)] md:px-5 lg:px-6"
+                                [attr.data-inspected]="activePart() === 'panel' ? '' : null"
+                            >
+                                {{ item.answer }}
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <svg
+                aria-hidden="true"
+                class="pointer-events-none absolute inset-0 hidden size-full overflow-visible md:block"
+            >
+                @for (connector of connectors(); track connector.part) {
+                    <g
+                        class="text-landing-muted/45 data-[inspected]:text-anatomy-accent"
+                        [attr.data-connector]="connector.part"
+                        [attr.data-inspected]="connector.part === activePart() ? '' : null"
+                    >
+                        <path
+                            class="fill-none stroke-current"
+                            [attr.d]="connector.path"
+                            [attr.stroke-width]="connector.part === activePart() ? 1.5 : 1"
+                        />
+                        <circle
+                            class="fill-current"
+                            [attr.cx]="connector.x"
+                            [attr.cy]="connector.y"
+                            [attr.r]="connector.part === activePart() ? 4 : 3"
+                        />
+                    </g>
+                }
+            </svg>
+
+            <div
+                aria-label="Accordion parts"
+                role="group"
+                class="relative z-20 mx-3 mt-2 mb-5 grid gap-2 self-center sm:grid-cols-3 md:my-6 md:mr-4 md:ml-3 md:grid-cols-1 md:gap-4 lg:mt-[38px] lg:mr-10 lg:mb-[34px] lg:ml-[30px] lg:gap-[19px]"
+                (pointerleave)="hoveredPart.set(null)"
+            >
+                @for (part of parts; track part.id; let number = $index) {
+                    <button
+                        #callout
+                        type="button"
+                        class="group data-[inspected]:border-anatomy-accent data-[inspected]:bg-anatomy-highlight flex min-w-0 cursor-pointer items-start gap-3 border-l-2 border-transparent p-2.5 text-left lg:gap-4"
+                        [attr.aria-pressed]="selectedPart() === part.id"
+                        [attr.data-inspected]="activePart() === part.id ? '' : null"
+                        (blur)="focusedPart.set(null)"
+                        (click)="selectedPart.set(part.id)"
+                        (focus)="focusPart(part.id)"
+                        (pointerenter)="$event.pointerType !== 'touch' && hoveredPart.set(part.id)"
+                    >
+                        <span
+                            aria-hidden="true"
+                            class="bg-landing-ink text-landing-paper group-data-[inspected]:bg-anatomy-accent group-data-[inspected]:text-anatomy-paper grid size-[29px] shrink-0 place-items-center font-mono text-[12px]"
+                        >
+                            0{{ number + 1 }}
+                        </span>
+                        <span class="flex min-w-0 flex-col gap-1">
+                            <span class="text-[17px] leading-tight font-medium tracking-[-0.025em]">
+                                {{ part.name }}
+                            </span>
+                            <code class="text-anatomy-accent font-mono text-[12px] wrap-anywhere">
+                                {{ part.directive }}
+                            </code>
+                            <span class="text-landing-muted text-[13px] leading-snug">
+                                {{
+                                    part.id === 'panel' && openItem() === undefined
+                                        ? 'Open a row to inspect its panel.'
+                                        : part.description
+                                }}
+                            </span>
+                        </span>
+                    </button>
+                }
+            </div>
+        </div>
+
+        <div
+            class="text-landing-muted border-landing-hair flex min-h-[55px] flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t px-3 py-3 sm:px-5"
+        >
+            <p class="font-mono text-[11px] tracking-wide">ROOT / ITEM / HEADER / TRIGGER / PANEL / PANEL PRESENCE</p>
+            <a
+                href="/docs/?path=/docs/primitives-accordion--docs"
+                class="text-landing-ink inline-flex items-center gap-1 text-sm"
+            >
+                Explore Accordion
+                <svg aria-hidden="true" lucideArrowUpRight class="size-3"></svg>
+            </a>
+        </div>
+    </figure>
+    <div class="mt-4 flex justify-end">
+        <a href="/docs/" class="inline-flex items-center gap-1 text-sm">
+            Browse all components
+            <svg aria-hidden="true" lucideArrowUpRight class="size-3"></svg>
+        </a>
+    </div>
+</section>

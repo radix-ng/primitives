@@ -6,7 +6,6 @@ import {
     RdxDialogDescription,
     RdxDialogPopup,
     RdxDialogPortal,
-    RdxDialogPortalMisuseGuard,
     RdxDialogRoot,
     RdxDialogTitle,
     RdxDialogTrigger
@@ -21,7 +20,6 @@ import { DemoPage } from '../shared/demo-page';
         RdxDialogRoot,
         RdxDialogTrigger,
         RdxDialogPortal,
-        RdxDialogPortalMisuseGuard,
         RdxDialogBackdrop,
         RdxDialogPopup,
         RdxDialogTitle,

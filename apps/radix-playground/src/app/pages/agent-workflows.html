@@ -1,0 +1,122 @@
+<figure class="border-landing-hair bg-anatomy-paper border">
+    <figcaption
+        class="text-landing-muted border-landing-hair flex min-h-12 items-center border-b px-4 font-mono text-[12px] tracking-wide uppercase sm:px-6"
+    >
+        Agent workflows
+    </figcaption>
+    <div class="landing-diagram-grid">
+        <section aria-labelledby="build-with-skills-heading" class="px-4 py-7 sm:px-6 lg:px-8">
+            <h3
+                id="build-with-skills-heading"
+                class="text-landing-muted mb-4 font-mono text-xs tracking-wide uppercase"
+            >
+                Build Angular UI
+            </h3>
+            <ol role="list" class="grid items-center gap-7 lg:grid-cols-3 lg:gap-9">
+                <li class="landing-flow-node">
+                    <p class="text-sm font-semibold">Skills &amp; docs</p>
+                    <ul role="list" class="text-anatomy-accent mt-2 flex flex-wrap gap-x-3 gap-y-1 font-mono text-xs">
+                        <li><code>SKILL.md</code></li>
+                        <li class="flex flex-wrap gap-x-1">
+                            <code>AGENTS.md</code>
+                            <span class="text-landing-muted">(optional)</span>
+                        </li>
+                        <li><code>llms.txt</code></li>
+                    </ul>
+                </li>
+                <li class="landing-flow-node border-anatomy-accent bg-anatomy-highlight">
+                    <svg aria-hidden="true" lucideArrowRight class="landing-flow-connector"></svg>
+                    <p class="text-sm font-semibold">Coding agent</p>
+                    <p class="text-landing-muted mt-1 text-sm">Uses API contracts and examples</p>
+                </li>
+                <li class="landing-flow-node">
+                    <svg aria-hidden="true" lucideArrowRight class="landing-flow-connector"></svg>
+                    <p class="text-sm font-semibold">Angular components</p>
+                    <p class="text-landing-muted mt-1 text-sm">Integrated with your styles and forms</p>
+                </li>
+            </ol>
+        </section>
+
+        <section
+            aria-labelledby="inspect-running-demo-heading"
+            class="border-landing-hair border-t px-4 py-7 sm:px-6 lg:px-8"
+        >
+            <div
+                class="mb-4 flex flex-wrap items-baseline justify-between gap-2 font-mono text-xs tracking-wide uppercase"
+            >
+                <h3 id="inspect-running-demo-heading" class="text-landing-muted">Inspect a running demo</h3>
+                <span class="text-anatomy-accent">Experimental</span>
+            </div>
+            <ol
+                role="list"
+                class="grid items-center gap-7 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,0.8fr)_minmax(0,1.25fr)_minmax(0,1.4fr)] lg:gap-9"
+            >
+                <li class="landing-flow-node">
+                    <p class="text-sm font-semibold">Coding agent</p>
+                    <p class="text-landing-muted mt-1 text-sm">OpenAI API or Codex CLI</p>
+                </li>
+                <li class="landing-flow-node">
+                    <svg aria-hidden="true" lucideArrowLeftRight class="landing-flow-connector"></svg>
+                    <p class="text-sm font-semibold">Local executor</p>
+                    <p class="text-landing-muted mt-1 text-sm">Node.js and Playwright</p>
+                </li>
+                <li class="landing-flow-node border-anatomy-accent">
+                    <svg aria-hidden="true" lucideArrowLeftRight class="landing-flow-connector"></svg>
+                    <p class="text-sm font-semibold">Agent Playground runtime</p>
+                    <dl class="divide-landing-hair mt-2 divide-y text-xs">
+                        <div class="flex flex-wrap items-baseline justify-between gap-x-3 py-1.5">
+                            <dt class="text-anatomy-accent font-mono">snapshot</dt>
+                            <dd class="text-landing-muted">Read state</dd>
+                        </div>
+                        <div class="flex flex-wrap items-baseline justify-between gap-x-3 py-1.5">
+                            <dt class="text-anatomy-accent font-mono">query</dt>
+                            <dd class="text-landing-muted">Find controls</dd>
+                        </div>
+                        <div class="flex flex-wrap items-baseline justify-between gap-x-3 pt-1.5">
+                            <dt class="text-anatomy-accent font-mono">act</dt>
+                            <dd class="text-landing-muted">Run allowed actions</dd>
+                        </div>
+                    </dl>
+                </li>
+                <li class="landing-flow-node border-anatomy-accent">
+                    <svg aria-hidden="true" lucideArrowLeftRight class="landing-flow-connector"></svg>
+                    <p class="text-sm font-semibold">Project settings</p>
+                    <dl class="mt-3 grid gap-2 text-xs">
+                        <div>
+                            <dt class="text-landing-muted mb-1">Change note</dt>
+                            <dd class="border-landing-hair rounded-sm border px-2 py-1.5">Ready for production</dd>
+                        </div>
+                        <div>
+                            <dt class="text-landing-muted mb-1">Environment</dt>
+                            <dd
+                                class="border-landing-hair flex items-center justify-between gap-2 rounded-sm border px-2 py-1.5"
+                            >
+                                Production
+                                <svg
+                                    aria-hidden="true"
+                                    lucideChevronDown
+                                    class="text-landing-muted size-3 shrink-0"
+                                ></svg>
+                            </dd>
+                        </div>
+                    </dl>
+                    <p class="mt-2 flex justify-end">
+                        <span class="bg-anatomy-accent text-anatomy-paper rounded-sm px-2.5 py-1 text-xs font-semibold">
+                            Done
+                        </span>
+                    </p>
+                </li>
+            </ol>
+            <dl class="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-xs">
+                <div class="flex flex-wrap items-baseline gap-x-2">
+                    <dt class="text-anatomy-accent font-mono">Runtime checks</dt>
+                    <dd class="text-landing-muted">Modal scope, disabled and read-only</dd>
+                </div>
+                <div class="flex flex-wrap items-baseline gap-x-2">
+                    <dt class="text-anatomy-accent font-mono">Primitive behavior</dt>
+                    <dd class="text-landing-muted">Keyboard and focus</dd>
+                </div>
+            </dl>
+        </section>
+    </div>
+</figure>

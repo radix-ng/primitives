@@ -86,8 +86,9 @@ deliverable. Prefer one interaction you can run and inspect before expanding the
 
 ## Separate runtime experiment
 
-Agent Playground's `snapshot` / `query` / `act` experiment controls an already running application.
-It is separate from creating UI components and is not installed with the consumer skills.
+The [Agent Playground](https://www.radix-ng.com/playground/agents/) is a runtime experiment for
+inspecting and interacting with controls in a running demo. Try a built-in command in the browser
+or follow the local Codex setup. Use the consumer skills above to build components in your application.
 
 ## Continue
 

@@ -20,6 +20,11 @@
                     {
                         "glob": "**/*",
                         "input": "apps/radix-playground/public"
+                    },
+                    {
+                        "glob": "project-settings.ts",
+                        "input": "apps/radix-playground/src/app/examples",
+                        "output": "/examples"
                     }
                 ],
                 "styles": ["apps/radix-playground/src/styles.css"],

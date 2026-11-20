@@ -626,16 +626,50 @@ test('navigation destroys registrations, rejects stale IDs and leaves other play
 });
 
 test('predefined buttons use the runtime and show outcomes and refusals in the journal', async ({ page }) => {
-    await page.getByRole('button', { name: 'Rename via runtime', exact: true }).click();
-    await expect(page.getByRole('textbox', { name: 'Project name', exact: true })).toHaveValue('Agent project');
+    const guide = page.getByRole('region', { name: 'See how a command changes an Angular form' });
+    const rename = guide.getByRole('button', { name: 'Rename via runtime', exact: true });
+    const name = page.getByRole('textbox', { name: 'Project name', exact: true });
+    await rename.click();
+    await expect(name).toHaveValue('Agent project');
+    await expect(guide.getByRole('status')).toHaveText('Project name changed.');
     await expect(page.getByTestId('runtime-result')).toContainText('applied');
+
+    await guide.getByRole('checkbox', { name: 'Read-only form controls', exact: true }).check();
+    await rename.click();
+    await expect(name).toHaveValue('Agent project');
+    await expect(guide.getByRole('status')).toHaveText('This control is read-only.');
+    await expect(page.getByTestId('runtime-result')).toContainText('read-only');
+
     await page.getByRole('button', { name: 'Unsupported action', exact: true }).click();
     await expect(page.getByTestId('runtime-result')).toContainText('unsupported-action');
     await page.getByRole('button', { name: 'Unknown instance', exact: true }).click();
     await expect(page.getByTestId('runtime-result')).toContainText('unknown-id');
-    expect((await journal(page)).filter(({ type }) => type === 'command').length).toBe(3);
+    expect((await journal(page)).filter(({ type }) => type === 'command').length).toBe(4);
     await page.getByRole('button', { name: 'Clear journal', exact: true }).click();
     await expect.poll(() => journal(page)).toEqual([]);
+});
+
+test('the recorded Codex run can be explored without changing the live demo', async ({ page }) => {
+    await page.getByText('Watch a recorded Codex run', { exact: true }).click();
+    const replay = page.locator('app-agent-run-replay');
+    await expect(replay.getByRole('status')).toContainText('Step 1 of 3');
+    await expect(replay.getByRole('status')).toContainText('Radix project');
+    const next = replay.getByRole('button', { name: 'Next step', exact: true });
+    await next.click();
+    await expect(replay.getByRole('status')).toContainText('Agent workspace');
+    await expect(replay.getByRole('status')).toContainText('Private');
+    await next.click();
+    await expect(replay.getByRole('status')).toContainText('Public');
+    await replay.getByRole('button', { name: 'Replay from start', exact: true }).click();
+    await expect(replay.getByRole('status')).toContainText('Step 1 of 3');
+    await expect(page.getByRole('textbox', { name: 'Project name', exact: true })).toHaveValue('Radix project');
+    expect(await journal(page)).toEqual([]);
+
+    const diagram = page.getByRole('figure', { name: 'Agent workflows' });
+    await expect(diagram).toBeHidden();
+    await page.getByText('How it works', { exact: true }).click();
+    await expect(diagram.getByRole('region', { name: 'Build Angular UI' })).toBeVisible();
+    await expect(diagram.getByRole('region', { name: 'Inspect a running demo' })).toBeVisible();
 });
 
 test('production route exists on disk, loads assets, refreshes directly and is linked by the shell', async ({

@@ -4,7 +4,7 @@ import { expect, type Locator } from '@playwright/test';
 export async function expectDemoSurface(
     surface: Locator,
     shadow: 'shadow-none' | 'shadow-lg' = 'shadow-none',
-    border: 'border-transparent' | 'border-primary/30' = 'border-transparent'
+    border: 'border-transparent' | 'data-[invalid]:border-destructive' = 'border-transparent'
 ) {
     const result = await surface.evaluate(
         (element, { shadow, border }) => {
@@ -30,6 +30,12 @@ export async function expectDemoSurface(
             const tokens = read(reference);
             reference.removeAttribute('style');
             reference.className = `bg-muted border ${border} ${shadow}`;
+            const applyInvalid = border === 'data-[invalid]:border-destructive';
+            const wasInvalid = element.hasAttribute('data-invalid');
+            if (applyInvalid) {
+                reference.setAttribute('data-invalid', '');
+                if (!wasInvalid) element.setAttribute('data-invalid', '');
+            }
             const overrides = read(reference);
             const classes = element.className;
             const results = [];
@@ -38,6 +44,7 @@ export async function expectDemoSurface(
                 results.push(read(element));
             }
             element.className = classes;
+            if (applyInvalid && !wasInvalid) element.removeAttribute('data-invalid');
             reference.remove();
             return { base, tokens, overrides, results };
         },

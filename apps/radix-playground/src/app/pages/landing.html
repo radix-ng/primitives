@@ -1,0 +1,392 @@
+<div class="landing bg-landing-paper text-landing-ink font-landing min-h-screen">
+    <a
+        href="#main-content"
+        class="bg-landing-paper sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:px-3 focus:py-2"
+    >
+        Skip to content
+    </a>
+
+    <header class="border-landing-hair border-b">
+        <div
+            class="mx-auto grid max-w-[1420px] grid-cols-[1fr_auto] items-center gap-x-4 gap-y-3 px-[22px] py-5 sm:px-8 lg:min-h-[88px] lg:grid-cols-[1fr_auto_1fr_auto] lg:px-[58px]"
+        >
+            <a
+                aria-label="Radix Angular home"
+                routerLink="/"
+                class="col-start-1 row-start-1 inline-flex w-fit items-center gap-2"
+            >
+                <span aria-hidden="true" class="landing-brand-mark size-[30px] shrink-0 bg-current"></span>
+                <span
+                    class="[font-family:system-ui] text-[25px] leading-none font-normal tracking-[-0.01em] whitespace-nowrap"
+                >
+                    <span class="font-extrabold">Radix</span>
+                    Angular
+                </span>
+            </a>
+            <div class="col-span-2 row-start-2 flex flex-wrap items-center justify-between gap-x-1 gap-y-2 lg:contents">
+                <nav
+                    aria-label="Main"
+                    class="flex flex-wrap items-center gap-x-2 gap-y-2 text-[14px] sm:gap-x-6 lg:col-start-2 lg:row-start-1 lg:gap-x-8"
+                >
+                    <a [href]="docsUrl">Docs</a>
+                    <a routerLink="/playground">Components</a>
+                    <a href="#work-with-agents">Agents</a>
+                </nav>
+                <nav
+                    aria-label="Project links"
+                    class="ml-auto flex items-center gap-0.5 lg:col-start-3 lg:row-start-1 lg:justify-self-end"
+                >
+                    <ng-container [ngTemplateOutlet]="projectLinks" />
+                </nav>
+            </div>
+            <button
+                type="button"
+                class="border-landing-hair hover:bg-landing-subtle col-start-2 row-start-1 grid size-8 cursor-pointer place-items-center justify-self-end rounded-full border lg:col-start-4"
+                [attr.aria-label]="'Switch to ' + (theme.theme() === 'light' ? 'dark' : 'light') + ' theme'"
+                (click)="theme.toggle()"
+            >
+                @if (theme.theme() === 'light') {
+                    <svg aria-hidden="true" lucideMoon class="size-4"></svg>
+                } @else {
+                    <svg aria-hidden="true" lucideSun class="size-4"></svg>
+                }
+            </button>
+        </div>
+    </header>
+
+    <main id="main-content" tabindex="-1" class="mx-auto max-w-[1420px] px-[22px] sm:px-8 lg:px-[58px]">
+        <section aria-labelledby="landing-heading" class="pt-[54px] pb-[56px] md:pt-[69px] md:pb-[75px]">
+            <p class="text-landing-muted mb-5 font-mono text-[12px] tracking-[0.11em] uppercase">
+                Angular primitives · headless by default
+            </p>
+            <h1
+                id="landing-heading"
+                class="max-w-[1080px] text-[clamp(40px,5.35vw,80px)] leading-[1.105] font-[550] tracking-[-0.065em]"
+            >
+                Build the interface you want. The behavior is already there.
+            </h1>
+            <div class="mt-7 grid items-end gap-6 md:mt-[54px] md:grid-cols-[1fr_auto] md:gap-10">
+                <div class="max-w-[570px]">
+                    <p class="text-[18px] leading-[1.55] tracking-[-0.02em] md:text-[20px]">
+                        Accessible building blocks for Angular applications, designed to work with your styles, your
+                        forms, and your coding agents.
+                    </p>
+                    <p class="text-landing-muted mt-3 text-sm">
+                        Our design principles and component APIs follow
+                        <a href="https://base-ui.com/" class="text-landing-ink underline underline-offset-4">Base UI</a>
+                        conventions.
+                    </p>
+                </div>
+                <div class="flex flex-wrap items-baseline gap-x-6 gap-y-3 text-sm lg:gap-x-8">
+                    <a class="inline-flex items-center gap-1 underline underline-offset-[8px]" [href]="docsUrl">
+                        Read the docs
+                        <svg aria-hidden="true" lucideArrowUpRight class="size-3"></svg>
+                    </a>
+                    <a class="inline-flex items-center gap-1" [href]="repositoryUrl">
+                        View on GitHub
+                        <svg aria-hidden="true" lucideArrowUpRight class="size-3"></svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <app-landing-accordion />
+
+        <section
+            id="work-with-agents"
+            aria-labelledby="agents-heading"
+            class="border-landing-hair border-t py-12 md:py-[60px]"
+        >
+            <div class="grid gap-5 md:grid-cols-[23%_minmax(0,1fr)] md:gap-0">
+                <p class="text-landing-muted font-mono text-[13px]">/work-with-agents</p>
+                <div class="min-w-0">
+                    <h2
+                        id="agents-heading"
+                        class="max-w-[880px] text-[clamp(34px,4.65vw,68px)] leading-[1.13] font-medium tracking-[-0.06em]"
+                    >
+                        Build Angular UI with your coding agent.
+                    </h2>
+                    <p class="text-landing-muted mt-5 max-w-[670px] text-[17px] leading-[1.6]">
+                        Try this Project settings dialog. Choose a deployment environment, then save it to the form.
+                        Dialog and Select handle keyboard navigation and return focus as each overlay closes.
+                    </p>
+
+                    <div class="mt-6 max-w-[670px]">
+                        <app-project-settings />
+                        <p class="text-landing-muted mt-3 text-sm">
+                            Try Tab inside the dialog. Press Escape with the Select open to close it first, then press
+                            Escape again to return to the button that opened the dialog.
+                        </p>
+                    </div>
+
+                    @let copyResult = copyStatus();
+                    @let codeCopied = copyResult?.copied && copyResult.label === 'Angular code';
+                    <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+                        <button
+                            type="button"
+                            class="min-h-8 cursor-pointer font-medium underline underline-offset-4 disabled:cursor-default disabled:opacity-60"
+                            [attr.aria-label]="codeCopied ? 'Copied. Copy Angular code' : 'Copy Angular code'"
+                            [disabled]="!exampleSource.hasValue()"
+                            (click)="copy(exampleSource.value() ?? '', 'Angular code')"
+                        >
+                            {{ codeCopied ? 'Copied' : 'Copy Angular code' }}
+                        </button>
+                    </div>
+                    <p
+                        role="status"
+                        class="text-landing-muted text-sm"
+                        [class.sr-only]="!copyResult || copyResult.copied"
+                    >
+                        @if (copyResult) {
+                            {{
+                                copyResult.copied
+                                    ? copyResult.label + ' copied.'
+                                    : 'Select the text and copy it manually.'
+                            }}
+                        }
+                    </p>
+
+                    <div class="border-landing-hair mt-3 max-w-[800px] border-y text-sm">
+                        <details>
+                            <summary class="cursor-pointer py-3 font-medium">Angular code and setup</summary>
+                            <p class="text-landing-muted mb-3 leading-relaxed">
+                                Install
+                                <code>@radix-ng/primitives</code>
+                                in your Angular app. Save the code in
+                                <code>project-settings.ts</code>
+                                and import
+                                <code>ProjectSettings</code>
+                                in your standalone component. Place
+                                <code>&lt;app-project-settings /&gt;</code>
+                                in its template. The file includes its styles.
+                            </p>
+                            @if (exampleSource.hasValue()) {
+                                <pre
+                                    class="bg-landing-subtle mb-4 max-h-80 overflow-auto rounded-sm p-4 font-mono text-xs"
+                                ><code>{{ exampleSource.value() }}</code></pre>
+                            } @else if (exampleSource.error()) {
+                                <p class="text-landing-muted mb-4">
+                                    Couldn’t load the code. Reload the page to try again.
+                                </p>
+                            } @else {
+                                <p class="text-landing-muted mb-4">Loading Angular code…</p>
+                            }
+                        </details>
+                    </div>
+
+                    <div class="mt-9">
+                        <h3 class="text-xl font-medium tracking-tight">Quick start</h3>
+                        <p class="text-landing-muted mt-2 text-sm">
+                            Paste the setup prompt into your coding agent, then ask it to adapt the example.
+                        </p>
+
+                        <div class="mt-4 grid gap-4 xl:grid-cols-2">
+                            @for (prompt of prompts; track prompt.id) {
+                                @let promptCopied = copyResult?.copied && copyResult.label === prompt.copyLabel;
+                                <section
+                                    class="border-landing-hair overflow-hidden rounded-md border"
+                                    [attr.aria-labelledby]="prompt.id"
+                                >
+                                    <header
+                                        class="border-landing-hair bg-landing-subtle/60 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b px-4 py-2.5"
+                                    >
+                                        <h4 class="text-sm font-medium" [id]="prompt.id">{{ prompt.title }}</h4>
+                                        <button
+                                            type="button"
+                                            class="border-landing-hair bg-landing-paper hover:bg-landing-subtle min-h-9 cursor-pointer rounded-sm border px-3 text-sm"
+                                            [attr.aria-label]="
+                                                (promptCopied ? 'Copied. Copy prompt — ' : 'Copy prompt — ') +
+                                                prompt.title
+                                            "
+                                            (click)="copy(prompt.text, prompt.copyLabel)"
+                                        >
+                                            {{ promptCopied ? 'Copied' : 'Copy prompt' }}
+                                        </button>
+                                    </header>
+                                    <pre
+                                        class="px-4 py-4 font-mono text-[13px] leading-relaxed wrap-anywhere whitespace-pre-wrap"
+                                    ><code>{{ prompt.text }}</code></pre>
+                                </section>
+                            }
+                        </div>
+
+                        <div class="mt-4 flex flex-wrap items-start justify-between gap-x-5 gap-y-3 text-sm">
+                            <details class="min-w-0">
+                                @let installCopied = copyResult?.copied && copyResult.label === 'Install command';
+                                <summary class="cursor-pointer">Install skills manually</summary>
+                                <div
+                                    class="bg-landing-subtle mt-2 flex min-w-0 flex-wrap items-center gap-x-4 rounded-sm px-3 py-1"
+                                >
+                                    <code class="font-mono text-[12px] wrap-anywhere">{{ skillCommand }}</code>
+                                    <button
+                                        type="button"
+                                        class="min-h-9 cursor-pointer font-mono text-[12px] hover:underline hover:underline-offset-4"
+                                        [attr.aria-label]="
+                                            installCopied
+                                                ? 'Copied. Copy skills install command'
+                                                : 'Copy skills install command'
+                                        "
+                                        (click)="copy(skillCommand, 'Install command')"
+                                    >
+                                        {{ installCopied ? 'Copied' : 'Copy' }}
+                                    </button>
+                                </div>
+                            </details>
+                            <a class="inline-flex items-center gap-1.5 underline underline-offset-4" [href]="agentsUrl">
+                                Read agent docs
+                                <svg aria-hidden="true" lucideArrowUpRight class="size-3.5"></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section
+            id="contributors"
+            aria-labelledby="contributors-heading"
+            class="border-landing-hair grid gap-5 border-t py-12 md:grid-cols-[23%_minmax(0,1fr)] md:gap-0 md:py-[70px]"
+        >
+            <p class="text-landing-muted font-mono text-[13px]">/built-in-the-open</p>
+            <div class="min-w-0">
+                <div class="flex flex-wrap items-end justify-between gap-x-8 gap-y-5">
+                    <div>
+                        <h2
+                            id="contributors-heading"
+                            class="text-[clamp(30px,3.2vw,45px)] leading-[1.18] font-[450] tracking-[-0.055em]"
+                        >
+                            The people behind Radix NG.
+                        </h2>
+                        <p class="text-landing-muted mt-5 max-w-[590px] leading-relaxed">
+                            An MIT-licensed library maintained by a small core team and a growing community. Every
+                            primitive, fix, and doc page is someone's contribution.
+                        </p>
+                    </div>
+                    <a
+                        class="inline-flex items-center gap-1 text-sm underline underline-offset-[8px]"
+                        [href]="repositoryUrl + '/graphs/contributors'"
+                    >
+                        All contributors
+                        <svg aria-hidden="true" lucideArrowUpRight class="size-3"></svg>
+                    </a>
+                </div>
+
+                <ul
+                    aria-label="Core contributors"
+                    role="list"
+                    class="border-landing-hair bg-landing-hair mt-9 grid gap-px border-y sm:grid-cols-2 xl:grid-cols-4"
+                >
+                    @for (person of coreTeam; track person.login) {
+                        <li class="bg-landing-paper min-w-0 py-5 pr-4 sm:even:pl-5 xl:not-first:pl-5">
+                            <a
+                                class="inline-flex max-w-full items-center gap-3"
+                                [href]="'https://github.com/' + person.login"
+                            >
+                                <span class="size-12 shrink-0">
+                                    <ng-container
+                                        [ngTemplateOutlet]="avatar"
+                                        [ngTemplateOutletContext]="{ $implicit: person }"
+                                    />
+                                </span>
+                                <span class="min-w-0">
+                                    <span class="block text-sm font-semibold wrap-anywhere">{{ person.login }}</span>
+                                    <span class="text-landing-muted mt-1 block text-[12px]">{{ person.role }}</span>
+                                </span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+
+                <h3 class="mt-8 text-lg font-medium tracking-tight">Community contributors</h3>
+                <ul class="mt-2 grid gap-x-5 sm:grid-cols-2 lg:grid-cols-3">
+                    @for (person of community; track person.login) {
+                        <li class="border-landing-hair min-w-0 border-b py-3">
+                            <a
+                                class="inline-flex max-w-full items-center gap-3 text-sm wrap-anywhere"
+                                [href]="'https://github.com/' + person.login"
+                            >
+                                <span class="size-9 shrink-0">
+                                    <ng-container
+                                        [ngTemplateOutlet]="avatar"
+                                        [ngTemplateOutletContext]="{ $implicit: person }"
+                                    />
+                                </span>
+                                {{ person.login }}
+                            </a>
+                        </li>
+                    }
+                </ul>
+
+                <div class="mt-7 flex justify-end">
+                    <a
+                        class="border-landing-hair hover:border-landing-muted inline-flex items-center gap-2 rounded-md border px-3.5 py-2.5 text-sm"
+                        [href]="repositoryUrl + '/blob/main/CONTRIBUTING.md'"
+                    >
+                        Become a contributor
+                        <svg aria-hidden="true" lucideArrowUpRight class="size-3"></svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="mx-auto max-w-[1420px] px-[22px] pb-12 sm:px-8 md:pb-[100px] lg:px-[58px]">
+        <div
+            class="border-landing-hair text-landing-muted flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t pt-5 text-[12px]"
+        >
+            <p>Radix NG · Your components, your design.</p>
+            <nav aria-label="Project links in footer" class="flex flex-wrap items-center gap-0.5">
+                <ng-container [ngTemplateOutlet]="projectLinks" />
+                <a class="ml-3" [href]="repositoryUrl + '/blob/main/LICENSE'">MIT License</a>
+            </nav>
+        </div>
+    </footer>
+
+    <ng-template #projectLinks>
+        <a
+            aria-label="GitHub"
+            title="GitHub"
+            class="hover:bg-landing-subtle grid size-8 place-items-center rounded-md"
+            [href]="repositoryUrl"
+        >
+            <svg aria-hidden="true" fill="currentColor" viewBox="0 0 16 16" class="size-4">
+                <path
+                    d="M6.766 11.328c-2.063-.25-3.516-1.734-3.516-3.656 0-.781.281-1.625.75-2.188-.203-.515-.172-1.609.063-2.062.625-.078 1.468.25 1.968.703.594-.187 1.219-.281 1.985-.281.765 0 1.39.094 1.953.265.484-.437 1.344-.765 1.969-.687.218.422.25 1.515.046 2.047.5.593.766 1.39.766 2.203 0 1.922-1.453 3.375-3.547 3.64.531.344.89 1.094.89 1.954v1.625c0 .468.391.734.86.547C13.781 14.359 16 11.53 16 8.03 16 3.61 12.406 0 7.984 0 3.563 0 0 3.61 0 8.031a7.88 7.88 0 0 0 5.172 7.422c.422.156.828-.125.828-.547v-1.25c-.219.094-.5.156-.75.156-1.031 0-1.64-.562-2.078-1.609-.172-.422-.36-.672-.719-.719-.187-.015-.25-.093-.25-.187 0-.188.313-.328.625-.328.453 0 .844.281 1.25.86.313.452.64.655 1.031.655s.641-.14 1-.5c.266-.265.47-.5.657-.656"
+                />
+            </svg>
+        </a>
+        <a
+            aria-label="Telegram"
+            title="Telegram"
+            class="hover:bg-landing-subtle grid size-8 place-items-center rounded-md"
+            [href]="telegramUrl"
+        >
+            <svg aria-hidden="true" lucideSend class="size-4"></svg>
+        </a>
+        <a
+            class="hover:bg-landing-subtle inline-flex h-8 items-center rounded-md px-1.5 text-[12px] font-medium whitespace-nowrap"
+            [href]="npmUrl"
+        >
+            npm v{{ npmVersion }}
+        </a>
+    </ng-template>
+
+    <ng-template #avatar let-person>
+        <span
+            aria-hidden="true"
+            class="border-landing-hair bg-landing-subtle text-landing-muted relative grid size-full place-items-center overflow-hidden rounded-full border text-[11px] font-medium"
+        >
+            {{ person.login.slice(0, 2).toUpperCase() }}
+            <img
+                #image
+                alt=""
+                decoding="async"
+                loading="lazy"
+                referrerpolicy="no-referrer"
+                class="bg-landing-subtle absolute inset-0 size-full object-cover"
+                [src]="'https://avatars.githubusercontent.com/u/' + person.avatarId + '?s=96'"
+                (error)="image.hidden = true"
+            />
+        </span>
+    </ng-template>
+</div>

@@ -1,12 +1,65 @@
 <div class="mx-auto max-w-6xl space-y-6">
     <header>
-        <p class="text-muted-foreground text-xs font-semibold uppercase">Local experiment</p>
-        <h1 class="text-foreground mt-1 text-2xl font-semibold tracking-tight">Agent Playground</h1>
+        <h1 class="text-foreground text-3xl font-semibold tracking-tight">Agent Playground</h1>
         <p class="text-muted-foreground mt-2 max-w-prose text-sm">
-            Inspect explicitly registered controls and run predefined commands against real primitives. No model or
-            external service runs in this page. The opt-in local CLI can connect an LLM to this runtime.
+            Try a built-in command in your browser and see how an Angular form responds.
         </p>
     </header>
+
+    <section aria-labelledby="guided-demo-heading" class="border-border bg-background rounded-xl border p-5 sm:p-6">
+        <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-8">
+            <div>
+                <h2 id="guided-demo-heading" class="text-lg font-semibold">
+                    See how a command changes an Angular form
+                </h2>
+                <ol role="list" class="text-muted-foreground mt-3 list-decimal space-y-2 pl-5 text-sm">
+                    <li>
+                        Click
+                        <strong class="text-foreground font-medium">Rename via runtime</strong>
+                        and watch the project name update.
+                    </li>
+                    <li>
+                        Enable
+                        <strong class="text-foreground font-medium">Read-only form controls</strong>
+                        and try again.
+                    </li>
+                </ol>
+            </div>
+            <div class="border-border bg-muted/30 min-w-0 rounded-md border p-4">
+                <p class="text-muted-foreground text-xs">Current project name</p>
+                <p class="mt-1 font-medium wrap-anywhere">{{ demo.model().name }}</p>
+                <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-3">
+                    <button
+                        type="button"
+                        class="demo-button demo-button-primary h-8 px-3 text-xs"
+                        [disabled]="runtime.pending()"
+                        (click)="renameProject()"
+                    >
+                        Rename via runtime
+                    </button>
+                    <label class="flex items-center gap-2 text-sm">
+                        <input
+                            #readOnly
+                            type="checkbox"
+                            [checked]="demo.readOnly()"
+                            (change)="demo.readOnly.set(readOnly.checked)"
+                        />
+                        Read-only form controls
+                    </label>
+                </div>
+                <p role="status" class="text-muted-foreground mt-2 text-sm">{{ renameMessage() }}</p>
+            </div>
+        </div>
+    </section>
+
+    <details class="border-border bg-background rounded-xl border">
+        <summary
+            class="focus-visible:ring-ring cursor-pointer rounded-xl px-5 py-3.5 text-sm font-medium focus-visible:ring-2 sm:px-6"
+        >
+            Watch a recorded Codex run
+        </summary>
+        <app-agent-run-replay class="px-5 pb-5 sm:px-6 sm:pb-6" />
+    </details>
 
     <div class="grid gap-6 xl:grid-cols-2">
         <section aria-labelledby="agent-form-heading" class="border-border bg-background rounded-xl border p-6">
@@ -109,10 +162,7 @@
 
         <section aria-labelledby="agent-command-heading" class="border-border bg-background rounded-xl border p-6">
             <h2 id="agent-command-heading" class="text-lg font-semibold">Runtime commands</h2>
-            <p class="text-muted-foreground mt-1 text-sm">
-                Only the controls in this demo are registered. Reads do not move focus. IDs belong to an instance and
-                expire when it is destroyed.
-            </p>
+            <p class="text-muted-foreground mt-1 text-sm">Try more commands and inspect their results as JSON.</p>
             <fieldset class="my-4 grid gap-2 text-sm">
                 <legend class="mb-2 font-medium">Demo constraints</legend>
                 <label class="flex items-center gap-2">
@@ -123,15 +173,6 @@
                         (change)="demo.locked.set(locked.checked)"
                     />
                     Disable form controls
-                </label>
-                <label class="flex items-center gap-2">
-                    <input
-                        #readOnly
-                        type="checkbox"
-                        [checked]="demo.readOnly()"
-                        (change)="demo.readOnly.set(readOnly.checked)"
-                    />
-                    Read-only form controls
                 </label>
                 <label class="flex items-center gap-2">
                     <input
@@ -176,14 +217,6 @@
                 </button>
                 <button type="button" class="demo-button demo-button-outline h-8 px-3 text-xs" (click)="findInput()">
                     Find project name
-                </button>
-                <button
-                    type="button"
-                    class="demo-button demo-button-outline h-8 px-3 text-xs"
-                    [disabled]="runtime.pending()"
-                    (click)="run('input', 'Project name', 'set-value', 'Agent project')"
-                >
-                    Rename via runtime
                 </button>
                 <button
                     type="button"
@@ -273,5 +306,66 @@
         <pre data-testid="runtime-journal" class="bg-muted mt-3 max-h-96 overflow-auto rounded-md p-3 text-xs">{{
             runtime.journal() | json
         }}</pre>
+    </section>
+    <details class="border-border bg-background rounded-xl border">
+        <summary
+            class="focus-visible:ring-ring cursor-pointer rounded-xl px-5 py-3.5 text-sm font-medium focus-visible:ring-2 sm:px-6"
+        >
+            How it works
+        </summary>
+        <div class="px-5 pb-5 sm:px-6 sm:pb-6">
+            <p class="text-muted-foreground mb-4 max-w-prose text-sm">
+                The buttons run built-in commands against the form. A local executor can give a model access to the same
+                commands for registered controls in the running demo.
+            </p>
+            <app-agent-workflows />
+        </div>
+    </details>
+
+    <section
+        id="run-with-codex"
+        aria-labelledby="local-codex-heading"
+        class="border-border bg-background scroll-mt-36 rounded-xl border p-5 sm:p-6 md:scroll-mt-6"
+    >
+        <h2 id="local-codex-heading" class="text-lg font-semibold">Run with Codex locally</h2>
+        <p class="text-muted-foreground mt-2 max-w-prose text-sm">
+            This runs a real Codex model against a local copy of the demo. Have Node 24, pnpm, and Codex CLI ready. Use
+            your existing checkout or clone the repository below.
+        </p>
+        <ol role="list" class="mt-4 grid gap-4 text-sm">
+            <li>
+                <h3 class="font-medium">Start the site</h3>
+                <pre
+                    class="bg-muted mt-2 rounded-md p-3 text-xs wrap-anywhere whitespace-pre-wrap"
+                ><code>git clone https://github.com/radix-ng/primitives.git
+cd primitives
+pnpm install
+pnpm exec playwright install chromium
+pnpm build-site
+pnpm exec http-server dist/radix-site -a 127.0.0.1 -p 4496 -c-1</code></pre>
+            </li>
+            <li>
+                <h3 class="font-medium">Run the rename scenario</h3>
+                <p class="text-muted-foreground mt-1">
+                    Leave the site running. Open a second terminal in the repository, sign in to Codex with ChatGPT, and
+                    replace
+                    <code>YOUR_CODEX_MODEL_ID</code>
+                    with a model available to your account.
+                </p>
+                <pre class="bg-muted mt-2 rounded-md p-3 text-xs wrap-anywhere whitespace-pre-wrap"><code>codex login
+pnpm agent:run --provider codex --scenario rename --model YOUR_CODEX_MODEL_ID</code></pre>
+                <p class="text-muted-foreground mt-2">
+                    The executor writes the result to
+                    <code>dist/agent-testing/</code>
+                    .
+                </p>
+            </li>
+        </ol>
+        <a
+            href="https://github.com/radix-ng/primitives/blob/main/tools/agent-testing/README.md#run-a-real-model"
+            class="mt-3 inline-block text-sm font-medium underline underline-offset-4"
+        >
+            Full executor guide
+        </a>
     </section>
 </div>
