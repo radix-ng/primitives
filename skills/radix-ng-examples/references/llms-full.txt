@@ -6942,6 +6942,7 @@ import { LucideCheck } from '@lucide/angular';
 import {
     RdxCheckboxButtonDirective,
     RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
@@ -6956,6 +6957,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
         RdxLabelDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         RdxCheckboxInputDirective,
         RdxCheckboxRootDirective
     ],
@@ -6967,7 +6969,13 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                     id="checkbox-1"
                     rdxCheckboxButton
                 >
-                    <svg class="text-primary flex items-center" rdxCheckboxIndicator size="16" lucideCheck />
+                    <svg
+                        class="text-primary flex items-center"
+                        *rdxCheckboxIndicatorPresence
+                        rdxCheckboxIndicator
+                        size="16"
+                        lucideCheck
+                    />
                 </button>
                 <input rdxCheckboxInput />
             </div>
@@ -6998,6 +7006,7 @@ import {
   RdxCheckboxRootDirective,
   RdxCheckboxButtonDirective,
   RdxCheckboxIndicatorDirective,
+  RdxCheckboxIndicatorPresenceDirective,
   RdxCheckboxInputDirective
 } from '@radix-ng/primitives/checkbox';
 ```
@@ -7009,7 +7018,7 @@ Assemble the root, button trigger, and indicator. The native input is optional.
 ```html
 <div rdxCheckboxRoot>
   <button rdxCheckboxButton>
-    <svg rdxCheckboxIndicator lucideCheck />
+    <svg *rdxCheckboxIndicatorPresence rdxCheckboxIndicator lucideCheck />
   </button>
   <input rdxCheckboxInput />
 </div>
@@ -7030,6 +7039,7 @@ import { LucideCheck } from '@lucide/angular';
 import {
     RdxCheckboxButtonDirective,
     RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
@@ -7044,6 +7054,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
         RdxLabelDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         RdxCheckboxInputDirective,
         RdxCheckboxRootDirective
     ],
@@ -7055,7 +7066,13 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                     id="checkbox-1"
                     rdxCheckboxButton
                 >
-                    <svg class="text-primary flex items-center" rdxCheckboxIndicator size="16" lucideCheck />
+                    <svg
+                        class="text-primary flex items-center"
+                        *rdxCheckboxIndicatorPresence
+                        rdxCheckboxIndicator
+                        size="16"
+                        lucideCheck
+                    />
                 </button>
                 <input rdxCheckboxInput />
             </div>
@@ -7078,7 +7095,7 @@ Always associate a checkbox with a label. Link a sibling `rdxLabel` to the butto
 ```html
 <div rdxCheckboxRoot>
   <button id="terms" rdxCheckboxButton>
-    <svg rdxCheckboxIndicator lucideCheck />
+    <svg *rdxCheckboxIndicatorPresence rdxCheckboxIndicator lucideCheck />
   </button>
   <input rdxCheckboxInput />
 </div>
@@ -7128,6 +7145,7 @@ import { LucideDynamicIcon } from '@lucide/angular';
 import {
     RdxCheckboxButtonDirective,
     RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
@@ -7141,6 +7159,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         LucideDynamicIcon,
         RdxCheckboxInputDirective,
         JsonPipe
@@ -7160,6 +7179,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                 >
                     <svg
                         class="text-primary flex items-center"
+                        *rdxCheckboxIndicatorPresence
                         [lucideIcon]="iconName()"
                         rdxCheckboxIndicator
                         size="16"
@@ -7197,8 +7217,10 @@ export class CheckboxIndeterminate {
 
 ### Keep mounted
 
-The indicator stays in layout through its exit animation, then hides with `display: none`.
-Add `keepMounted` to keep it in layout after the animation.
+The indicator leaves the DOM after its exit animation finishes. Reopening during the exit
+retains its existing view. To retain the unchecked view, use
+`*rdxCheckboxIndicatorPresence="{ keepMounted: true }"` in place of the former `keepMounted`
+attribute on the indicator.
 
 ```typescript
 import { JsonPipe } from '@angular/common';
@@ -7207,6 +7229,7 @@ import { LucideCheck as Check, LucideDynamicIcon } from '@lucide/angular';
 import {
     RdxCheckboxButtonDirective,
     RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
@@ -7220,6 +7243,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         RdxCheckboxInputDirective,
         LucideDynamicIcon,
         JsonPipe
@@ -7234,8 +7258,8 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                 >
                     <svg
                         class="text-primary flex items-center transition-opacity data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[unchecked]:opacity-0"
+                        *rdxCheckboxIndicatorPresence="{ keepMounted: true }"
                         [lucideIcon]="Check"
-                        keepMounted
                         rdxCheckboxIndicator
                         size="16"
                     />
@@ -7269,6 +7293,7 @@ import { LucideCheck } from '@lucide/angular';
 import {
     RdxCheckboxButtonDirective,
     RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
@@ -7286,6 +7311,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         RdxCheckboxInputDirective,
         LucideCheck
     ],
@@ -7297,7 +7323,13 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                     id="sub"
                     rdxCheckboxButton
                 >
-                    <svg class="text-primary flex items-center" rdxCheckboxIndicator size="16" lucideCheck />
+                    <svg
+                        class="text-primary flex items-center"
+                        *rdxCheckboxIndicatorPresence
+                        rdxCheckboxIndicator
+                        size="16"
+                        lucideCheck
+                    />
                 </button>
                 <input rdxCheckboxInput />
             </div>
@@ -7326,6 +7358,7 @@ import { LucideCheck } from '@lucide/angular';
 import {
     RdxCheckboxButtonDirective,
     RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
@@ -7343,7 +7376,13 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                         id="r1"
                         rdxCheckboxButton
                     >
-                        <svg class="text-primary flex items-center" rdxCheckboxIndicator size="16" lucideCheck />
+                        <svg
+                            class="text-primary flex items-center"
+                            *rdxCheckboxIndicatorPresence
+                            rdxCheckboxIndicator
+                            size="16"
+                            lucideCheck
+                        />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -7357,7 +7396,13 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                         id="r2"
                         rdxCheckboxButton
                     >
-                        <svg class="text-primary flex items-center" rdxCheckboxIndicator size="16" lucideCheck />
+                        <svg
+                            class="text-primary flex items-center"
+                            *rdxCheckboxIndicatorPresence
+                            rdxCheckboxIndicator
+                            size="16"
+                            lucideCheck
+                        />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -7373,7 +7418,13 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                         id="r3"
                         rdxCheckboxButton
                     >
-                        <svg class="text-primary flex items-center" rdxCheckboxIndicator size="16" lucideCheck />
+                        <svg
+                            class="text-primary flex items-center"
+                            *rdxCheckboxIndicatorPresence
+                            rdxCheckboxIndicator
+                            size="16"
+                            lucideCheck
+                        />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -7398,6 +7449,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         LucideCheck,
         RdxCheckboxInputDirective
     ]
@@ -7431,6 +7483,7 @@ import { LucideCheck } from '@lucide/angular';
 import {
     RdxCheckboxButtonDirective,
     RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
@@ -7449,6 +7502,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         RdxCheckboxInputDirective,
         LucideCheck
     ],
@@ -7461,7 +7515,13 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                         id="terms"
                         rdxCheckboxButton
                     >
-                        <svg class="text-primary flex items-center" rdxCheckboxIndicator size="16" lucideCheck />
+                        <svg
+                            class="text-primary flex items-center"
+                            *rdxCheckboxIndicatorPresence
+                            rdxCheckboxIndicator
+                            size="16"
+                            lucideCheck
+                        />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -7527,6 +7587,7 @@ import {
     CheckedState,
     RdxCheckboxButtonDirective,
     RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
@@ -7550,6 +7611,7 @@ interface Item {
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         RdxCheckboxInputDirective,
         LucideDynamicIcon,
         LucideCheck
@@ -7570,6 +7632,7 @@ interface Item {
                     >
                         <svg
                             class="text-primary flex items-center"
+                            *rdxCheckboxIndicatorPresence
                             [lucideIcon]="parentState() === 'indeterminate' ? 'minus' : 'check'"
                             rdxCheckboxIndicator
                             size="16"
@@ -7591,6 +7654,7 @@ interface Item {
                             >
                                 <svg
                                     class="text-primary flex items-center"
+                                    *rdxCheckboxIndicatorPresence
                                     rdxCheckboxIndicator
                                     size="16"
                                     lucideCheck
@@ -7653,6 +7717,11 @@ such as `aria-label="Select all features"`. If the Field has a `name`, each enab
 submits under that name. A child with `required` and an authored `rdxCheckboxInput` must be checked
 individually. Use `rdxFieldError` to display its native validation failure.
 
+A group moved through `rdxPortal` can still submit via its declaring `rdxFormRoot` when it lives
+inside a Field. The form collects values from the group's connected, enabled native inputs.
+An explicit `form` attribute assigns native form ownership. Resetting the declaring form restores
+the editable selection even when the group has moved outside it.
+
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideDynamicIcon } from '@lucide/angular';
@@ -7660,6 +7729,7 @@ import {
     RdxCheckboxButtonDirective,
     RdxCheckboxGroupDirective,
     RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
@@ -7681,6 +7751,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         LucideDynamicIcon,
         LucideCheck
     ],
@@ -7695,6 +7766,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                     >
                         <svg
                             class="text-primary flex items-center"
+                            *rdxCheckboxIndicatorPresence
                             [lucideIcon]="group.parentState() === 'indeterminate' ? 'minus' : 'check'"
                             rdxCheckboxIndicator
                             size="16"
@@ -7715,6 +7787,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                             >
                                 <svg
                                     class="text-primary flex items-center"
+                                    *rdxCheckboxIndicatorPresence
                                     rdxCheckboxIndicator
                                     size="16"
                                     lucideCheck
@@ -7823,8 +7896,9 @@ Enter activates the owning form's default submit button, when present.
 
 ### Indicator
 
-Apply `RdxCheckboxIndicatorDirective` to the mark element, such as an `<svg>`.
-The directive retains the authored element and manages its layout visibility.
+Apply `*rdxCheckboxIndicatorPresence` and `rdxCheckboxIndicator` to the mark element, such as
+an `<svg>`. The structural directive owns the view. The attribute directive exposes checkbox and
+transition state on the element, and can also decorate an indicator whose view your template owns.
 
 **Data attributes**
 
@@ -18188,6 +18262,7 @@ import { RdxButtonDirective } from '@radix-ng/primitives/button';
 import {
     RdxCheckboxButtonDirective,
     RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
@@ -18210,6 +18285,7 @@ import { RdxInputDirective } from '@radix-ng/primitives/input';
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         RdxCheckboxInputDirective,
         RdxFieldRoot,
         RdxFieldLabel,
@@ -18285,7 +18361,13 @@ import { RdxInputDirective } from '@radix-ng/primitives/input';
                         type="button"
                         rdxCheckboxButton
                     >
-                        <svg class="text-primary flex items-center" rdxCheckboxIndicator size="16" lucideCheck />
+                        <svg
+                            class="text-primary flex items-center"
+                            *rdxCheckboxIndicatorPresence
+                            rdxCheckboxIndicator
+                            size="16"
+                            lucideCheck
+                        />
                     </button>
                     <input rdxCheckboxInput />
                 </div>
@@ -47215,6 +47297,7 @@ import {
     RdxCheckboxButtonDirective,
     RdxCheckboxGroupDirective,
     RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
 import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
@@ -47304,6 +47387,7 @@ const LABELS = [
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         RdxSwitchRoot,
         RdxSwitchThumb,
         LucideCheck,
@@ -47423,6 +47507,7 @@ const LABELS = [
                                 >
                                     <svg
                                         class="text-primary flex items-center"
+                                        *rdxCheckboxIndicatorPresence
                                         rdxCheckboxIndicator
                                         size="16"
                                         lucideCheck
@@ -48473,6 +48558,7 @@ import {
     RdxCheckboxButtonDirective,
     RdxCheckboxGroupDirective,
     RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
 import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
@@ -48559,6 +48645,7 @@ const formSchema = z.object({
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         RdxSwitchRoot,
         RdxSwitchThumb,
         LucideCheck,
@@ -48713,6 +48800,7 @@ const formSchema = z.object({
                                     >
                                         <svg
                                             class="text-primary flex items-center"
+                                            *rdxCheckboxIndicatorPresence
                                             rdxCheckboxIndicator
                                             size="16"
                                             lucideCheck

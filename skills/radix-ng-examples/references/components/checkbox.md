@@ -21,6 +21,7 @@ import {
   RdxCheckboxRootDirective,
   RdxCheckboxButtonDirective,
   RdxCheckboxIndicatorDirective,
+  RdxCheckboxIndicatorPresenceDirective,
   RdxCheckboxInputDirective
 } from '@radix-ng/primitives/checkbox';
 ```
@@ -32,7 +33,7 @@ Assemble the root, button trigger, and indicator. The native input is optional.
 ```html
 <div rdxCheckboxRoot>
   <button rdxCheckboxButton>
-    <svg rdxCheckboxIndicator lucideCheck />
+    <svg *rdxCheckboxIndicatorPresence rdxCheckboxIndicator lucideCheck />
   </button>
   <input rdxCheckboxInput />
 </div>

@@ -303,6 +303,46 @@ const scenarios: { name: string; run(driver: CheckboxDriver): Promise<void> }[] 
         }
     },
     {
+        name: 'indicator-lifetime',
+        async run(driver) {
+            const indicator = driver.page.getByTestId('indicator');
+            const ending = indicator.and(driver.page.locator('[data-ending-style]'));
+            await expect(indicator).toHaveCount(0);
+            await driver.terms.press('Space');
+            await expect(indicator).toHaveCount(1);
+            const initial = await indicator.elementHandle();
+            if (!initial) throw new Error('Expected a mounted Checkbox indicator');
+
+            await driver.terms.press('Space');
+            await expect(ending).toHaveCount(1);
+            await expect
+                .poll(() =>
+                    ending.evaluate((node) =>
+                        node.getAnimations().some((animation) => animation.playState === 'paused')
+                    )
+                )
+                .toBe(true);
+            await driver.terms.press('Space');
+            await expect(ending).toHaveCount(0);
+            await expect.poll(() => indicator.evaluate((node, original) => node === original, initial)).toBe(true);
+            driver.checkpoints.push({ name: 'reopening reuses the exiting node', state: { reused: true } });
+
+            await driver.terms.press('Space');
+            await expect(ending).toHaveCount(1);
+            await ending.evaluate((node) => {
+                for (const animation of node.getAnimations()) animation.finish();
+            });
+            await expect(indicator).toHaveCount(0);
+            await driver.terms.press('Space');
+            await expect(indicator).toHaveCount(1);
+            await expect.poll(() => indicator.evaluate((node, original) => node !== original, initial)).toBe(true);
+            driver.checkpoints.push({
+                name: 'completed exit removes the node and reopening mounts a new one',
+                state: { remounted: true }
+            });
+        }
+    },
+    {
         name: 'group-cycle',
         async run(driver) {
             const parent = driver.item('All');
@@ -480,6 +520,112 @@ const scenarios: { name: string; run(driver: CheckboxDriver): Promise<void> }[] 
             });
         }
     })),
+    {
+        name: 'group-portal',
+        async run(driver) {
+            const { page } = driver;
+            const alpha = driver.item('Alpha');
+            const beta = driver.item('Beta');
+            const group = page.getByTestId('destination').getByRole('group', { name: 'Features' });
+            const submit = page.getByRole('button', { name: 'Submit' });
+            const result = page.getByTestId('submitted');
+            const submissions = page.getByTestId('submissions');
+            const valuesFor = (id: string) =>
+                page.locator('#' + id).evaluate((form) => new FormData(form as HTMLFormElement).getAll('features'));
+            await expect(group).toMatchAriaSnapshot(`
+                - group "Features":
+                  - checkbox "All" [checked=mixed]
+                  - checkbox "Alpha" [checked]
+                  - checkbox "Beta"
+            `);
+            await expect(group).toHaveAccessibleDescription('Choose your features.');
+            await driver.accessibilityCheckpoint('the portaled group exposes distinct controls', [
+                { role: 'group', name: 'Features', description: 'Choose your features.' },
+                { role: 'checkbox', name: 'All', checked: 'mixed', controls: ['feature-a', 'feature-b'] },
+                { role: 'checkbox', name: 'Alpha', checked: 'true' },
+                { role: 'checkbox', name: 'Beta', checked: 'false' }
+            ]);
+
+            await beta.press('Space');
+            await submit.click();
+            await expect(result).toHaveText('a,b');
+            await expect(submissions).toHaveText('1');
+            expect(await valuesFor('owner')).toEqual([]);
+            driver.checkpoints.push({
+                name: 'declaring Form submits both portaled values',
+                state: { projected: await result.textContent(), native: await valuesFor('owner') }
+            });
+
+            const disable = page.getByRole('button', { name: 'Toggle disabled Beta' });
+            await disable.click();
+            await submit.click();
+            await expect(result).toHaveText('a');
+            await expect(submissions).toHaveText('2');
+            await expect(beta).toBeDisabled();
+            await disable.click();
+
+            await alpha.press('Space');
+            await submit.click();
+            await expect(alpha).toBeFocused();
+            await expect(alpha).toHaveAccessibleDescription(/Choose Alpha/);
+            await expect(submissions).toHaveText('2');
+            await alpha.press('Space');
+            await expect(page.locator('#feature-required')).toBeHidden();
+
+            await page.getByRole('button', { name: 'Use owner form' }).click();
+            await expect.poll(() => valuesFor('owner')).toEqual(['a', 'b']);
+            await submit.click();
+            await expect(submissions).toHaveText('3');
+            const ownValues = await result.textContent();
+            expect(ownValues?.split(',').sort()).toEqual(['a', 'b']);
+            driver.checkpoints.push({
+                name: 'explicit owner form avoids duplicate values',
+                state: { submitted: ownValues?.split(',').sort(), native: await valuesFor('owner') }
+            });
+
+            await page.getByRole('button', { name: 'Use external form' }).click();
+            await expect.poll(() => valuesFor('external')).toEqual(['a', 'b']);
+            await submit.click();
+            await expect(submissions).toHaveText('4');
+            await expect(result).toBeEmpty();
+            driver.checkpoints.push({
+                name: 'external form takes ownership',
+                state: { submitted: await result.textContent(), external: await valuesFor('external') }
+            });
+        }
+    },
+    {
+        name: 'group-portal-reset',
+        async run(driver) {
+            const { page } = driver;
+            const reset = page.getByRole('button', { name: 'Reset', exact: true });
+            const submit = page.getByRole('button', { name: 'Submit' });
+            const beta = driver.item('Beta');
+            const result = page.getByTestId('submitted');
+            const submissions = page.getByTestId('submissions');
+            await beta.press('Space');
+            await expect(beta).toBeChecked();
+            await page.getByRole('button', { name: 'Cancel next reset' }).click();
+            await reset.click();
+            await submit.click();
+            await expect(submissions).toHaveText('1');
+            await expect(result).toHaveText('a,b');
+            driver.checkpoints.push({
+                name: 'canceled reset preserves the portaled selection',
+                state: { values: await result.textContent() }
+            });
+
+            await reset.click();
+            await expect(beta).toHaveAttribute('aria-checked', driver.framework === 'angular' ? 'false' : 'true');
+            await submit.click();
+            await expect(submissions).toHaveText('2');
+            await expect(result).toHaveText(driver.framework === 'angular' ? 'a' : 'a,b');
+            driver.checkpoints.push({
+                name: 'accepted reset from the declaring form',
+                state: { values: await result.textContent() }
+            });
+        }
+    },
     {
         name: 'group-form',
         async run(driver) {

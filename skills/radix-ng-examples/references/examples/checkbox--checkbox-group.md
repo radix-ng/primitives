@@ -19,6 +19,11 @@ such as `aria-label="Select all features"`. If the Field has a `name`, each enab
 submits under that name. A child with `required` and an authored `rdxCheckboxInput` must be checked
 individually. Use `rdxFieldError` to display its native validation failure.
 
+A group moved through `rdxPortal` can still submit via its declaring `rdxFormRoot` when it lives
+inside a Field. The form collects values from the group's connected, enabled native inputs.
+An explicit `form` attribute assigns native form ownership. Resetting the declaring form restores
+the editable selection even when the group has moved outside it.
+
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { LucideCheck, LucideDynamicIcon } from '@lucide/angular';
@@ -26,6 +31,7 @@ import {
     RdxCheckboxButtonDirective,
     RdxCheckboxGroupDirective,
     RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
@@ -47,6 +53,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         LucideDynamicIcon,
         LucideCheck
     ],
@@ -61,6 +68,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                     >
                         <svg
                             class="text-primary flex items-center"
+                            *rdxCheckboxIndicatorPresence
                             [lucideIcon]="group.parentState() === 'indeterminate' ? 'minus' : 'check'"
                             rdxCheckboxIndicator
                             size="16"
@@ -81,6 +89,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                             >
                                 <svg
                                     class="text-primary flex items-center"
+                                    *rdxCheckboxIndicatorPresence
                                     rdxCheckboxIndicator
                                     size="16"
                                     lucideCheck

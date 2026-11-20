@@ -9,7 +9,7 @@ Always associate a checkbox with a label. Link a sibling `rdxLabel` to the butto
 ```html
 <div rdxCheckboxRoot>
   <button id="terms" rdxCheckboxButton>
-    <svg rdxCheckboxIndicator lucideCheck />
+    <svg *rdxCheckboxIndicatorPresence rdxCheckboxIndicator lucideCheck />
   </button>
   <input rdxCheckboxInput />
 </div>

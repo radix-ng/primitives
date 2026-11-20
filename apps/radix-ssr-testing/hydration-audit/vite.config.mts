@@ -37,6 +37,8 @@ export default defineConfig({
                     'packages/primitives/checkbox/src/checkbox-group.ts',
                     'packages/primitives/checkbox/src/checkbox-button.ts',
                     'packages/primitives/checkbox/src/checkbox-input.ts',
+                    'packages/primitives/checkbox/src/checkbox-indicator.ts',
+                    'packages/primitives/checkbox/src/checkbox-indicator-presence.ts',
                     'packages/primitives/checkbox/src/checkbox-field.ts',
                     'packages/primitives/field/src/field-root.ts',
                     'packages/primitives/field/src/field-description-ids.ts',

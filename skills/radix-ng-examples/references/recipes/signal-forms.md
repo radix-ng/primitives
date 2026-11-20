@@ -229,6 +229,7 @@ import {
     RdxCheckboxButtonDirective,
     RdxCheckboxGroupDirective,
     RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
 import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
@@ -318,6 +319,7 @@ const LABELS = [
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         RdxSwitchRoot,
         RdxSwitchThumb,
         LucideCheck,
@@ -437,6 +439,7 @@ const LABELS = [
                                 >
                                     <svg
                                         class="text-primary flex items-center"
+                                        *rdxCheckboxIndicatorPresence
                                         rdxCheckboxIndicator
                                         size="16"
                                         lucideCheck

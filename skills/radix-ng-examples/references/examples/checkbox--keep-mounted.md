@@ -4,8 +4,10 @@
 
 > Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
-The indicator stays in layout through its exit animation, then hides with `display: none`.
-Add `keepMounted` to keep it in layout after the animation.
+The indicator leaves the DOM after its exit animation finishes. Reopening during the exit
+retains its existing view. To retain the unchecked view, use
+`*rdxCheckboxIndicatorPresence="{ keepMounted: true }"` in place of the former `keepMounted`
+attribute on the indicator.
 
 ```typescript
 import { JsonPipe } from '@angular/common';
@@ -14,6 +16,7 @@ import { LucideCheck as Check, LucideDynamicIcon } from '@lucide/angular';
 import {
     RdxCheckboxButtonDirective,
     RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
@@ -27,6 +30,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         RdxCheckboxInputDirective,
         LucideDynamicIcon,
         JsonPipe
@@ -41,8 +45,8 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                 >
                     <svg
                         class="text-primary flex items-center transition-opacity data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[unchecked]:opacity-0"
+                        *rdxCheckboxIndicatorPresence="{ keepMounted: true }"
                         [lucideIcon]="Check"
-                        keepMounted
                         rdxCheckboxIndicator
                         size="16"
                     />

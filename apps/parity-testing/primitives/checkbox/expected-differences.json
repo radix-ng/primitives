@@ -1,1 +1,10 @@
-[]
+[
+    {
+        "scenario": "group-portal-reset",
+        "checkpoint": "accepted reset from the declaring form",
+        "field": "values",
+        "angular": "a",
+        "react": "a,b",
+        "category": "portaled-native-reset-selection"
+    }
+]

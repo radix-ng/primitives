@@ -23,6 +23,7 @@ import {
     BooleanInput,
     createCancelableChangeEventDetails,
     createContext,
+    hasNoNativeFormOwner,
     injectId,
     injectTabIndexAttribute,
     provideValueAccessor,
@@ -39,7 +40,7 @@ import {
 } from '@radix-ng/primitives/core';
 import { fieldDescribedBy, injectFieldRootContext, type RdxFieldRootContext } from '@radix-ng/primitives/field';
 import { injectFieldsetRootContext } from '@radix-ng/primitives/fieldset';
-import { injectFormRootContext } from '@radix-ng/primitives/form';
+import { injectFormRootContext, type RdxPortaledFormEntry } from '@radix-ng/primitives/form';
 import type { RadioItemRegistration } from './radio-field';
 import { useRadioInputRef } from './radio-input-ref';
 import { RdxRadioValueChangeReason } from './radio-tokens';
@@ -51,11 +52,6 @@ export type RdxRadioValueChangeEventDetails = RdxCancelableChangeEventDetails<Rd
 interface RadioRequiredError {
     readonly target: HTMLElement;
     readonly message: string;
-}
-
-/** An explicit form attribute takes precedence even when the specified form does not exist. */
-function hasNoFormOwner(input: HTMLInputElement): boolean {
-    return input.form === null && !input.hasAttribute('form');
 }
 
 export interface RdxRadioValueChangeEvent<Value = string> {
@@ -331,7 +327,7 @@ export class RdxRadioGroupDirective<Value = string>
                 nativeErrors: this.nativeErrors,
                 refreshNativeValidity: () => this.refreshNativeValidity(),
                 invalidFocusTarget: () => this.requiredError()?.target ?? null,
-                portaledEntry: () => this.portaledEntry()
+                portaledEntries: () => this.portaledEntries()
             });
             afterEveryRender({ read: () => this.refreshNativeValidity() });
             inject(DestroyRef).onDestroy(() => {
@@ -415,7 +411,7 @@ export class RdxRadioGroupDirective<Value = string>
         for (const { element, nativeInput } of this.items()) {
             const input = nativeInput()?.element;
             if (!input?.isConnected || !input.willValidate) continue;
-            if (form && input.form !== form && !hasNoFormOwner(input)) continue;
+            if (form && input.form !== form && !hasNoNativeFormOwner(input)) continue;
             if (input.validity.valueMissing) {
                 this.requiredError.set({ target: element, message: input.validationMessage });
                 return;
@@ -424,17 +420,17 @@ export class RdxRadioGroupDirective<Value = string>
         this.requiredError.set(null);
     }
 
-    private portaledEntry(): readonly [name: string, value: string] | undefined {
+    private portaledEntries(): readonly RdxPortaledFormEntry[] | undefined {
         const input = this.selectedItem()?.nativeInput()?.element;
         if (
             !input?.isConnected ||
-            !hasNoFormOwner(input) ||
+            !hasNoNativeFormOwner(input) ||
             !input.checked ||
             !input.name ||
             input.matches(':disabled')
         )
             return undefined;
-        return [input.name, input.value];
+        return [[input.name, input.value]];
     }
 
     private portaledResetForm(): HTMLFormElement | null {
@@ -443,7 +439,7 @@ export class RdxRadioGroupDirective<Value = string>
 
         const hasPortaledInput = this.items().some(({ nativeInput }) => {
             const input = nativeInput()?.element;
-            return input?.isConnected && hasNoFormOwner(input);
+            return input?.isConnected && hasNoNativeFormOwner(input);
         });
         return hasPortaledInput ? form : null;
     }

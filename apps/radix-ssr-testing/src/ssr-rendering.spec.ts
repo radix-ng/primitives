@@ -16,6 +16,8 @@ import { RdxAutocompleteInput, RdxAutocompleteRoot } from '@radix-ng/primitives/
 import {
     RdxCheckboxButtonDirective,
     RdxCheckboxGroupDirective,
+    RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
@@ -152,20 +154,35 @@ class NumberFieldDefaultsPage {
         ReactiveFormsModule,
         RdxCheckboxButtonDirective,
         RdxCheckboxGroupDirective,
+        RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         RdxCheckboxInputDirective,
         RdxCheckboxRootDirective
     ],
     template: `
         <div [formControl]="terms" defaultChecked rdxCheckboxRoot>
-            <button rdxCheckboxButton>Form</button>
+            <button rdxCheckboxButton>
+                Form
+                <span id="unchecked-indicator" *rdxCheckboxIndicatorPresence rdxCheckboxIndicator></span>
+            </button>
             <input rdxCheckboxInput />
         </div>
         <div [checked]="false" defaultChecked rdxCheckboxRoot>
-            <button rdxCheckboxButton>Explicit</button>
+            <button rdxCheckboxButton>
+                Explicit
+                <span
+                    id="retained-indicator"
+                    *rdxCheckboxIndicatorPresence="{ keepMounted: true }"
+                    rdxCheckboxIndicator
+                ></span>
+            </button>
             <input rdxCheckboxInput />
         </div>
         <div defaultChecked rdxCheckboxRoot>
-            <button rdxCheckboxButton>Default</button>
+            <button rdxCheckboxButton>
+                Default
+                <span id="checked-indicator" *rdxCheckboxIndicatorPresence rdxCheckboxIndicator></span>
+            </button>
             <input rdxCheckboxInput />
         </div>
         <div [defaultValue]="['a']" [allValues]="['a']" rdxCheckboxGroup>
@@ -660,6 +677,9 @@ describe('SSR rendering', () => {
         expect(inputs.map((input) => input.checked)).toEqual([false, false, true]);
         expect(controls[3].getAttribute('aria-controls')).toBe(controls[4].id);
         expect(controls[4].id).toMatch(/^rdx-checkbox-/);
+        expect(parsed.querySelector('#unchecked-indicator')).toBeNull();
+        expect(parsed.querySelector('#retained-indicator')?.hasAttribute('data-unchecked')).toBe(true);
+        expect(parsed.querySelector('#checked-indicator')?.hasAttribute('data-checked')).toBe(true);
         expect(html).toMatch(/ngh=/);
     });
     it('resolves Radio form and model values before server serialization', async () => {

@@ -1548,16 +1548,23 @@
           ]
         },
         {
-          "directive": "RdxCheckboxIndicatorDirective",
-          "selector": "[rdxCheckboxIndicator]",
+          "directive": "RdxCheckboxIndicatorPresenceDirective",
+          "selector": "ng-template[rdxCheckboxIndicatorPresence]",
+          "description": "Owns the indicator view until its exit motion completes.",
           "inputs": [
             {
-              "name": "keepMounted",
-              "type": "boolean",
-              "default": "false",
-              "description": "Keep the indicator in layout after it has finished animating out."
+              "name": "rdxCheckboxIndicatorPresence",
+              "type": "RdxCheckboxIndicatorPresenceOptions | undefined",
+              "default": "undefined",
+              "description": "Use `{ keepMounted: true }` to retain the unchecked view."
             }
           ],
+          "outputs": []
+        },
+        {
+          "directive": "RdxCheckboxIndicatorDirective",
+          "selector": "[rdxCheckboxIndicator]",
+          "inputs": [],
           "outputs": []
         },
         {

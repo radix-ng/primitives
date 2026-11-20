@@ -7,12 +7,12 @@ Reference: Base UI 1.9.0 at `cf696d6f6e08c699c5bda24d5a033430909f2285`.
 
 ## Parts and state
 
-| Base UI                | Angular                                                           | Contract                                                                                                                                                                                        |
-| ---------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Checkbox.Root          | [Root](src/checkbox-root.ts) and [Button](src/checkbox-button.ts) | Root owns form and state wiring. Button renders the `checkbox` role, mixed state, native disabled state, and select-all relationships.                                                          |
-| Root's native checkbox | [Input](src/checkbox-input.ts)                                    | The optional authored input owns browser validity and activation, with `nativeInput()` and `inputRef` on Root. A named Root can serialize through the browser bridge when the input is omitted. |
-| Checkbox.Indicator     | [Indicator](src/checkbox-indicator.ts)                            | Shared enter and exit lifecycle. The directive hides its authored host after exit unless `keepMounted` is enabled.                                                                              |
-| CheckboxGroup          | [Group](src/checkbox-group.ts)                                    | One array value, optional select-all cycle, and Angular Forms integration. The entry point contains both widget families.                                                                       |
+| Base UI                | Angular                                                                                             | Contract                                                                                                                                                                                        |
+| ---------------------- | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Checkbox.Root          | [Root](src/checkbox-root.ts) and [Button](src/checkbox-button.ts)                                   | Root owns form and state wiring. Button renders the `checkbox` role, mixed state, native disabled state, and select-all relationships.                                                          |
+| Root's native checkbox | [Input](src/checkbox-input.ts)                                                                      | The optional authored input owns browser validity and activation, with `nativeInput()` and `inputRef` on Root. A named Root can serialize through the browser bridge when the input is omitted. |
+| Checkbox.Indicator     | [Indicator](src/checkbox-indicator.ts) and [Indicator Presence](src/checkbox-indicator-presence.ts) | Structural `rdxCheckboxIndicatorPresence` owns the mark view. The view unmounts after exit unless `keepMounted` is enabled, and reopening during exit reuses the view.                          |
+| CheckboxGroup          | [Group](src/checkbox-group.ts)                                                                      | One array value, optional select-all cycle, and Angular Forms integration. The entry point contains both widget families.                                                                       |
 
 Root and Button expose `data-checked`, `data-unchecked`, `data-indeterminate`, `data-disabled`,
 `data-readonly` and `data-required`. Button also exposes `data-parent` for select-all.
@@ -36,6 +36,8 @@ public CSS variables.
 | P2 · Deferred group hydration    | Two server-rendered groups can hydrate in reverse order. Group labels, item labels, control IDs and authored form input nodes retain their identity. Each select-all activation replays once.                                                                                                                             | Angular AOT `reverse-checkbox-group` case in the [hydration audit](../../../apps/radix-ssr-testing/hydration-audit/README.md).                                                                                                   |
 | P2 · Browser history and reload  | After `pageshow`, the authored input resyncs from the effective checked and mixed state. A rebuilt document uses its initial application state. A retained document keeps its live model. Reconciliation emits no change requests.                                                                                        | Paired `history` and `history-controlled` assert ARIA, checkedness, native notifications and `FormData` after browser Back and reload. A local Chromium run also verified a retained document with BFCache enabled.              |
 | P2 · Browser accessibility       | The technical inputs are hidden from accessibility. The exposed group and checkboxes carry accessible names, descriptions, checked/mixed state, disabled state, focus and validation information.                                                                                                                         | Accessible-name/description and ARIA snapshot checks across three engines. Chromium native AX checkpoints additionally cover the exposed controls, `aria-controls` targets, focus and the error description.                     |
+| P2 · Portaled group and Form     | A group in a Field contributes repeated values to the declaring Form, honors explicit form ownership, and can focus its invalid portaled child. Native reset restores the editable selection after the group moves outside the form.                                                                                      | Paired `group-portal` and `group-portal-reset` cover repeated values, disabled children, explicit owners, focus, and canceled and accepted reset.                                                                                |
+| P2 · Indicator view lifetime     | With default structural presence, the unchecked view is absent. Reopening during exit reuses the existing view. A completed exit destroys it. The `keepMounted` option retains the view.                                                                                                                                  | Paired `indicator` and `indicator-lifetime` checks use real CSS animation. SSR asserts absent, checked, and retained indicator output.                                                                                           |
 
 ## Angular contracts and remaining cases
 
@@ -45,8 +47,9 @@ public CSS variables.
 - A named Angular group serializes its enabled selections under its own name. A surrounding Field's
   name takes precedence and is applied to the individual children. An unnamed group without a Field
   name uses each child's native name. Grouped children omit the standalone unchecked fallback entry.
-- The Angular indicator remains authored in the DOM. The comparison asserts exit timing and
-  settled attributes. Base UI removes its rendered indicator after exit with `keepMounted=false`.
+- An accepted native reset from the declaring Form restores the editable portaled group in Angular.
+  The pin retains its selection when the author moves the inputs outside the native form. The
+  paired reset case records this difference.
 - Angular Field applies its validation reveal policy to browser constraints. In `onBlur` mode it can
   show a native required failure on the first blur. The pin can suppress an untouched value-missing
   message until the field has changed. The paired constraint cases exercise an edit followed by blur.
@@ -54,8 +57,10 @@ public CSS variables.
   excludes `autocomplete`. Browser navigation can still restore
   [persisted form state](https://html.spec.whatwg.org/multipage/browsing-the-web.html#persisted-history-entry-state).
   The navigation checks exercise that restoration.
-- Actual screen-reader announcements and assistive-technology activation remain separate
-  verification cases.
+- The portaled group has paired ARIA snapshots and a Chromium AX checkpoint. Actual
+  screen-reader announcements and activation are pending a platform run. The
+  [manual checks](../../../apps/parity-testing/primitives/checkbox/README.md#screen-reader-checks)
+  use the same fixtures.
 
 Run `pnpm test-parity checkbox` for the [paired browser suite](../../../apps/parity-testing/primitives/checkbox/README.md).
 The [units](__tests__) and [SSR assertions](../../../apps/radix-ssr-testing/src/ssr-rendering.spec.ts)

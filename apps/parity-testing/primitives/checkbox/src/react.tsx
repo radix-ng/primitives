@@ -17,6 +17,7 @@ import {
 } from './contract';
 
 import { ReactCheckboxField } from './field.react';
+import { ReactCheckboxPortal } from './portal.react';
 
 const probe = installProbe();
 
@@ -34,6 +35,7 @@ function CheckboxFixture() {
             <style>{`
                 [data-testid=indicator] { display: inline-block; }
                 [data-testid=indicator][data-ending-style] { animation: leave 400ms linear; }
+                [data-paused][data-ending-style] { animation-play-state: paused; }
                 @keyframes leave { from { opacity: 1; } to { opacity: 0; } }
             `}</style>
             <form
@@ -97,7 +99,12 @@ function CheckboxFixture() {
                                 if (record('terms', next, details)) nextChecked.current = next;
                             }}
                         >
-                            <Checkbox.Indicator keepMounted={keepMounted} data-testid="indicator" aria-hidden="true">
+                            <Checkbox.Indicator
+                                keepMounted={keepMounted}
+                                data-testid="indicator"
+                                data-paused={scenario === 'indicator-lifetime' ? '' : undefined}
+                                aria-hidden="true"
+                            >
                                 ✓
                             </Checkbox.Indicator>
                         </Checkbox.Root>
@@ -129,4 +136,14 @@ function CheckboxFixture() {
 }
 
 const root = document.getElementById('root');
-if (root) createRoot(root).render(scenario.startsWith('field-') ? <ReactCheckboxField /> : <CheckboxFixture />);
+if (root) {
+    createRoot(root).render(
+        scenario.startsWith('group-portal') ? (
+            <ReactCheckboxPortal />
+        ) : scenario.startsWith('field-') ? (
+            <ReactCheckboxField />
+        ) : (
+            <CheckboxFixture />
+        )
+    );
+}

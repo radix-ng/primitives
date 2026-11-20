@@ -1,5 +1,5 @@
 import { afterEveryRender, computed, signal } from '@angular/core';
-import type { RdxValidationError } from '@radix-ng/primitives/core';
+import { hasNoNativeFormOwner, type RdxValidationError } from '@radix-ng/primitives/core';
 import type { RdxFieldControlState } from '@radix-ng/primitives/field';
 import { injectFormRootContext } from '@radix-ng/primitives/form';
 
@@ -23,7 +23,7 @@ export function useCheckboxFieldValidity(
         for (const input of inputs()) {
             const element = input.element;
             if (!input.participates() || !element.isConnected || !element.willValidate) continue;
-            if (form && element.form !== form && (element.form || element.hasAttribute('form'))) continue;
+            if (form && element.form !== form && !hasNoNativeFormOwner(element)) continue;
             if (!element.validity.valueMissing) continue;
             if (!invalid || element.compareDocumentPosition(invalid.element) & Node.DOCUMENT_POSITION_FOLLOWING) {
                 invalid = input;

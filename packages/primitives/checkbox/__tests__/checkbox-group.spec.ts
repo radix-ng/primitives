@@ -20,13 +20,13 @@ import { RdxCheckboxModule } from '../index';
                 name="features"
             >
                 <div parent rdxCheckboxRoot>
-                    <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
+                    <button rdxCheckboxButton><span *rdxCheckboxIndicatorPresence rdxCheckboxIndicator></span></button>
                 </div>
                 <div rdxCheckboxRoot value="fizz">
-                    <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
+                    <button rdxCheckboxButton><span *rdxCheckboxIndicatorPresence rdxCheckboxIndicator></span></button>
                 </div>
                 <div rdxCheckboxRoot value="buzz">
-                    <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
+                    <button rdxCheckboxButton><span *rdxCheckboxIndicatorPresence rdxCheckboxIndicator></span></button>
                 </div>
             </div>
         </form>
@@ -55,13 +55,13 @@ class GroupHost {
     template: `
         <div [(value)]="value" [allValues]="all" rdxCheckboxGroup>
             <div parent rdxCheckboxRoot>
-                <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
+                <button rdxCheckboxButton><span *rdxCheckboxIndicatorPresence rdxCheckboxIndicator></span></button>
             </div>
             <div name="a" rdxCheckboxRoot>
-                <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
+                <button rdxCheckboxButton><span *rdxCheckboxIndicatorPresence rdxCheckboxIndicator></span></button>
             </div>
             <div [disabled]="true" name="b" rdxCheckboxRoot>
-                <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
+                <button rdxCheckboxButton><span *rdxCheckboxIndicatorPresence rdxCheckboxIndicator></span></button>
             </div>
         </div>
     `
@@ -315,10 +315,10 @@ describe('RdxCheckboxGroup native form contract', () => {
     template: `
         <div [invalid]="invalid()" [errors]="errors()" [dirty]="dirty()" [allValues]="all" rdxCheckboxGroup>
             <div name="a" rdxCheckboxRoot>
-                <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
+                <button rdxCheckboxButton><span *rdxCheckboxIndicatorPresence rdxCheckboxIndicator></span></button>
             </div>
             <div name="b" rdxCheckboxRoot>
-                <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
+                <button rdxCheckboxButton><span *rdxCheckboxIndicatorPresence rdxCheckboxIndicator></span></button>
             </div>
         </div>
     `
@@ -386,10 +386,10 @@ describe('RdxCheckboxGroup validation state', () => {
     template: `
         <div [formField]="picks" [allValues]="all" [defaultValue]="['a']" rdxCheckboxGroup>
             <div name="a" rdxCheckboxRoot>
-                <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
+                <button rdxCheckboxButton><span *rdxCheckboxIndicatorPresence rdxCheckboxIndicator></span></button>
             </div>
             <div name="b" rdxCheckboxRoot>
-                <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
+                <button rdxCheckboxButton><span *rdxCheckboxIndicatorPresence rdxCheckboxIndicator></span></button>
             </div>
         </div>
     `

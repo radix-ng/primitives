@@ -14,6 +14,7 @@ import { RdxButtonDirective } from '@radix-ng/primitives/button';
 import {
     RdxCheckboxButtonDirective,
     RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
@@ -36,6 +37,7 @@ import { RdxInputDirective } from '@radix-ng/primitives/input';
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         RdxCheckboxInputDirective,
         RdxFieldRoot,
         RdxFieldLabel,
@@ -111,7 +113,13 @@ import { RdxInputDirective } from '@radix-ng/primitives/input';
                         type="button"
                         rdxCheckboxButton
                     >
-                        <svg class="text-primary flex items-center" rdxCheckboxIndicator size="16" lucideCheck />
+                        <svg
+                            class="text-primary flex items-center"
+                            *rdxCheckboxIndicatorPresence
+                            rdxCheckboxIndicator
+                            size="16"
+                            lucideCheck
+                        />
                     </button>
                     <input rdxCheckboxInput />
                 </div>

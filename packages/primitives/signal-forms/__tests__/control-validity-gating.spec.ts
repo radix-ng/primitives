@@ -105,7 +105,9 @@ class RadioHost {
             <div rdxFieldRoot name="picks">
                 <div [formField]="f.picks" [allValues]="all" rdxCheckboxGroup rdxSignalField>
                     <div name="a" rdxCheckboxRoot>
-                        <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
+                        <button rdxCheckboxButton>
+                            <span *rdxCheckboxIndicatorPresence rdxCheckboxIndicator></span>
+                        </button>
                     </div>
                 </div>
             </div>

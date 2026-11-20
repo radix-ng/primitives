@@ -3,6 +3,8 @@ import { Component, inject, input, PLATFORM_ID, signal } from '@angular/core';
 import {
     RdxCheckboxButtonDirective,
     RdxCheckboxGroupDirective,
+    RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
@@ -13,6 +15,8 @@ import { RdxFieldDescription, RdxFieldItem, RdxFieldLabel, RdxFieldRoot } from '
     imports: [
         RdxCheckboxButtonDirective,
         RdxCheckboxGroupDirective,
+        RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         RdxCheckboxInputDirective,
         RdxCheckboxRootDirective,
         RdxFieldDescription,
@@ -39,7 +43,17 @@ import { RdxFieldDescription, RdxFieldItem, RdxFieldLabel, RdxFieldRoot } from '
                         <div rdxFieldItem>
                             <label [attr.data-checkbox-node]="'label-' + value" rdxFieldLabel>Option {{ value }}</label>
                             <div [value]="value" rdxCheckboxRoot>
-                                <button [attr.data-checkbox-node]="value" rdxCheckboxButton>{{ value }}</button>
+                                <button [attr.data-checkbox-node]="value" rdxCheckboxButton>
+                                    {{ value }}
+                                    <span
+                                        *rdxCheckboxIndicatorPresence
+                                        [attr.data-checkbox-indicator]="value"
+                                        rdxCheckboxIndicator
+                                        aria-hidden="true"
+                                    >
+                                        ✓
+                                    </span>
+                                </button>
                                 <input [attr.data-checkbox-node]="'input-' + value" rdxCheckboxInput />
                             </div>
                         </div>

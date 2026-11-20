@@ -3,6 +3,7 @@ import {
     RdxCheckboxButtonDirective,
     RdxCheckboxGroupDirective,
     RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
@@ -22,6 +23,7 @@ import { scenario } from './contract';
         RdxCheckboxButtonDirective,
         RdxCheckboxGroupDirective,
         RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         RdxCheckboxInputDirective,
         RdxCheckboxRootDirective,
         RdxFieldDescription,
@@ -78,7 +80,14 @@ import { scenario } from './contract';
                     <span id="extra-description">Additional details.</span>
                     <div [required]="required" [defaultChecked]="required" rdxCheckboxRoot name="ignored" value="yes">
                         <button id="terms" rdxCheckboxButton aria-describedby="extra-description">
-                            <span rdxCheckboxIndicator keepMounted aria-hidden="true" data-testid="indicator">✓</span>
+                            <span
+                                *rdxCheckboxIndicatorPresence="{ keepMounted: true }"
+                                rdxCheckboxIndicator
+                                aria-hidden="true"
+                                data-testid="indicator"
+                            >
+                                ✓
+                            </span>
                         </button>
                         <input rdxCheckboxInput />
                     </div>

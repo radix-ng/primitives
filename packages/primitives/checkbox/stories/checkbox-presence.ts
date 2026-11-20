@@ -4,6 +4,7 @@ import { LucideCheck as Check, LucideDynamicIcon } from '@lucide/angular';
 import {
     RdxCheckboxButtonDirective,
     RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
@@ -17,6 +18,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         RdxCheckboxInputDirective,
         LucideDynamicIcon,
         JsonPipe
@@ -31,8 +33,8 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                 >
                     <svg
                         class="text-primary flex items-center transition-opacity data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[unchecked]:opacity-0"
+                        *rdxCheckboxIndicatorPresence="{ keepMounted: true }"
                         [lucideIcon]="Check"
-                        keepMounted
                         rdxCheckboxIndicator
                         size="16"
                     />

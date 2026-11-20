@@ -1,5 +1,5 @@
-import { booleanAttribute, computed, DestroyRef, Directive, ElementRef, inject, input } from '@angular/core';
-import { BooleanInput, useRenderLifecycle, watch } from '@radix-ng/primitives/core';
+import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
+import { injectCheckboxIndicatorPresence } from './checkbox-indicator-presence';
 import { injectCheckboxRootContext } from './checkbox-root';
 
 @Directive({
@@ -17,27 +17,22 @@ import { injectCheckboxRootContext } from './checkbox-root';
         '[attr.data-filled]': 'rootContext.filledState() ? "" : undefined',
         '[attr.data-focused]': 'rootContext.focusedState() ? "" : undefined',
         '[attr.data-required]': 'rootContext.required() ? "" : undefined',
-        '[attr.data-starting-style]': 'lifecycle.status() === "starting" ? "" : undefined',
-        '[attr.data-ending-style]': 'lifecycle.status() === "ending" ? "" : undefined',
-        '[style.display]': '!keepMounted() && !isVisible() && !lifecycle.mounted() ? "none" : null',
+        '[attr.data-starting-style]': 'transition?.status() === "starting" ? "" : undefined',
+        '[attr.data-ending-style]': 'transition?.status() === "ending" ? "" : undefined',
         '[style.pointer-events]': '"none"'
     }
 })
 export class RdxCheckboxIndicatorDirective {
     protected readonly rootContext = injectCheckboxRootContext();
 
-    /** Keep the indicator in layout after it has finished animating out. */
-    readonly keepMounted = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
-
-    protected readonly isVisible = computed(() => this.rootContext.checked() || this.rootContext.indeterminate());
-    protected readonly lifecycle = useRenderLifecycle(undefined, {
-        open: this.isVisible,
-        debugName: 'RdxCheckboxIndicator'
-    });
+    protected readonly transition = (() => {
+        const presence = injectCheckboxIndicatorPresence(true);
+        return presence?.root === this.rootContext ? presence.transition : undefined;
+    })();
 
     constructor() {
         const element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
-        inject(DestroyRef).onDestroy(this.lifecycle.registerElement(element));
-        watch([this.isVisible], ([visible]) => this.lifecycle.start(visible), { defer: true });
+        const unregister = this.transition?.registerElement(element);
+        if (unregister) inject(DestroyRef).onDestroy(unregister);
     }
 }

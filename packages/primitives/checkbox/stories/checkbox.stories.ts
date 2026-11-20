@@ -2,6 +2,7 @@ import { LucideCheck } from '@lucide/angular';
 import {
     RdxCheckboxButtonDirective,
     RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
@@ -51,6 +52,7 @@ export default {
                 RdxCheckboxRootDirective,
                 RdxCheckboxButtonDirective,
                 RdxCheckboxIndicatorDirective,
+                RdxCheckboxIndicatorPresenceDirective,
                 RdxCheckboxInputDirective,
                 LucideCheck,
                 CheckboxReactiveFormsExampleComponent,

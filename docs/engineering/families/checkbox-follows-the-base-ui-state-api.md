@@ -7,6 +7,7 @@ Checkbox retains the editable `checked` model for Angular Forms and exposes `con
 for parent-owned requests. CheckboxGroup offers the corresponding `value` and `controlledValue`.
 Mixed presentation follows the `indeterminate` input or the group's select-all state.
 
-The indicator's `keepMounted` input retains its layout after the shared exit lifecycle.
+The indicator uses `*rdxCheckboxIndicatorPresence` for its Angular view lifetime. Passing
+`{ keepMounted: true }` keeps the unchecked view after the shared exit lifecycle completes.
 See the [Checkbox matrix](../../../packages/primitives/checkbox/PARITY.md) for the paired comparisons
 and Angular-specific contracts.

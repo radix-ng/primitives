@@ -77,8 +77,8 @@ export interface RdxFieldControlState {
     refreshNativeValidity?: () => void;
     /** Visible control for the active browser constraint error, if any. */
     invalidFocusTarget?: () => HTMLElement | null;
-    /** Entry for the enclosing Form when the control is portaled without a native form owner. */
-    portaledEntry?: RdxFormFieldRegistration['portaledEntry'];
+    /** Entries for the enclosing Form when the control is portaled without a native form owner. */
+    portaledEntries?: RdxFormFieldRegistration['portaledEntries'];
 }
 
 export interface RdxFieldRootContext extends RdxLabelRegistry {
@@ -447,7 +447,7 @@ export class RdxFieldRoot {
                 focus: () => this.focusControl(),
                 focusTarget: () => this.invalidFocusTarget(),
                 refreshNativeValidity: () => this.controlState()?.refreshNativeValidity?.(),
-                portaledEntry: () => this.controlState()?.portaledEntry?.(),
+                portaledEntries: () => this.controlState()?.portaledEntries?.(),
                 resetState: () => this.resetState()
             };
             const unregister = formContext.register(registration);

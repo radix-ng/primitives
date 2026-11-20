@@ -5,6 +5,7 @@ import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
 import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
+import { RdxCheckboxIndicatorPresenceDirective } from '../src/checkbox-indicator-presence';
 import { RdxCheckboxInputDirective } from '../src/checkbox-input';
 import {
     getState,
@@ -15,7 +16,12 @@ import {
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective, RdxCheckboxIndicatorDirective],
+    imports: [
+        RdxCheckboxRootDirective,
+        RdxCheckboxButtonDirective,
+        RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective
+    ],
     template: `
         <div
             [checked]="checked"
@@ -28,7 +34,7 @@ import {
             rdxCheckboxRoot
         >
             <button rdxCheckboxButton>
-                <span rdxCheckboxIndicator></span>
+                <span *rdxCheckboxIndicatorPresence rdxCheckboxIndicator></span>
             </button>
         </div>
     `
@@ -58,6 +64,7 @@ class CheckboxHost {
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         RdxCheckboxInputDirective
     ],
     template: `
@@ -71,7 +78,7 @@ class CheckboxHost {
                 rdxCheckboxRoot
             >
                 <button rdxCheckboxButton>
-                    <span rdxCheckboxIndicator></span>
+                    <span *rdxCheckboxIndicatorPresence rdxCheckboxIndicator></span>
                 </button>
                 <input rdxCheckboxInput />
             </div>
@@ -133,7 +140,7 @@ describe('RdxCheckbox', () => {
     let host: CheckboxHost;
 
     const button = () => fixture.debugElement.query(By.css('button')).nativeElement as HTMLButtonElement;
-    const indicator = () => fixture.debugElement.query(By.css('[rdxCheckboxIndicator]')).nativeElement as HTMLElement;
+    const indicator = () => fixture.debugElement.query(By.css('[rdxCheckboxIndicator]'))?.nativeElement;
 
     function setup(
         initial: Partial<
@@ -184,7 +191,7 @@ describe('RdxCheckbox', () => {
             expect(button().getAttribute('role')).toBe('checkbox');
             expect(button().getAttribute('aria-checked')).toBe('false');
             expect(state(button())).toBe('unchecked');
-            expect(indicator().style.display).toBe('none');
+            expect(indicator()).toBeUndefined();
         });
 
         it('exposes Base UI parity attributes on the root', () => {
@@ -212,14 +219,14 @@ describe('RdxCheckbox', () => {
             setup({ checked: true });
             expect(button().getAttribute('aria-checked')).toBe('true');
             expect(state(button())).toBe('checked');
-            expect(indicator().style.display).not.toBe('none');
+            expect(indicator()).toBeInstanceOf(HTMLElement);
         });
 
         it('reflects the indeterminate state as aria-checked="mixed"', () => {
             setup({ indeterminate: true });
             expect(button().getAttribute('aria-checked')).toBe('mixed');
             expect(state(button())).toBe('indeterminate');
-            expect(indicator().style.display).not.toBe('none');
+            expect(indicator()).toBeInstanceOf(HTMLElement);
         });
 
         it('treats indeterminate as orthogonal to checked, with the mixed state taking priority', () => {
@@ -228,7 +235,7 @@ describe('RdxCheckbox', () => {
             expect(button().getAttribute('aria-checked')).toBe('mixed');
             expect(state(button())).toBe('indeterminate');
             // Indicator is visible for either checked or indeterminate.
-            expect(indicator().style.display).not.toBe('none');
+            expect(indicator()).toBeInstanceOf(HTMLElement);
         });
 
         it('exposes required, read-only, and native disabled state', () => {
@@ -523,11 +530,16 @@ describe('RdxCheckboxRoot native form contract', () => {
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective, RdxCheckboxIndicatorDirective],
+    imports: [
+        RdxCheckboxRootDirective,
+        RdxCheckboxButtonDirective,
+        RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective
+    ],
     template: `
         <div [invalid]="invalid()" [errors]="errors()" rdxCheckboxRoot>
             <button rdxCheckboxButton>
-                <span rdxCheckboxIndicator></span>
+                <span *rdxCheckboxIndicatorPresence rdxCheckboxIndicator></span>
             </button>
         </div>
     `
@@ -589,11 +601,17 @@ describe('RdxCheckboxRoot validation state (batch #4)', () => {
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [FormField, RdxCheckboxRootDirective, RdxCheckboxButtonDirective, RdxCheckboxIndicatorDirective],
+    imports: [
+        FormField,
+        RdxCheckboxRootDirective,
+        RdxCheckboxButtonDirective,
+        RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective
+    ],
     template: `
         <div [formField]="terms" rdxCheckboxRoot defaultChecked>
             <button rdxCheckboxButton>
-                <span rdxCheckboxIndicator></span>
+                <span *rdxCheckboxIndicatorPresence rdxCheckboxIndicator></span>
             </button>
         </div>
     `

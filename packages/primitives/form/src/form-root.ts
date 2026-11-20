@@ -30,6 +30,8 @@ export interface RdxFormSubmitEvent {
     event: SubmitEvent;
 }
 
+export type RdxPortaledFormEntry = readonly [name: string, value: string];
+
 /**
  * What a {@link RdxFieldRoot} registers with an enclosing Form. Structural `() =>` accessors keep the
  * Form entry free of any import from `field` (acyclic ng-packagr graph: `field` → `form`).
@@ -53,8 +55,8 @@ export interface RdxFormFieldRegistration {
     focusTarget?: () => HTMLElement | null;
     /** Refresh DOM-owned constraints before this form reads actual validity. */
     refreshNativeValidity?: () => void;
-    /** A successful portaled control's entry when it belongs to this Form through Field context. */
-    portaledEntry?: () => readonly [name: string, value: string] | undefined;
+    /** Successful portaled controls that belong to this Form through Field context. */
+    portaledEntries?: () => readonly RdxPortaledFormEntry[] | undefined;
     /** Reset the field's interaction state (touched/dirty/focused → false, filled re-sync). */
     resetState: () => void;
 }
@@ -404,8 +406,7 @@ export class RdxFormRoot {
 
         const data = new FormData(this.form);
         for (const field of this.fields()) {
-            const entry = field.portaledEntry?.();
-            if (entry) data.append(...entry);
+            for (const entry of field.portaledEntries?.() ?? []) data.append(...entry);
         }
         const values = serializeFormData(data);
         this.onFormSubmit.emit({ values, reason: 'none', event });

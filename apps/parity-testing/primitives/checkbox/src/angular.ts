@@ -4,6 +4,7 @@ import {
     RdxCheckboxButtonDirective,
     RdxCheckboxGroupDirective,
     RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective,
     type RdxCheckboxCheckedChangeEvent,
@@ -24,6 +25,7 @@ import {
 } from './contract';
 
 import { AngularCheckboxField } from './field.angular';
+import { AngularCheckboxPortal } from './portal.angular';
 
 const probe = installProbe();
 
@@ -33,9 +35,11 @@ const probe = installProbe();
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         RdxCheckboxInputDirective,
         RdxCheckboxGroupDirective,
-        AngularCheckboxField
+        AngularCheckboxField,
+        AngularCheckboxPortal
     ],
     styles: [
         `
@@ -44,6 +48,9 @@ const probe = installProbe();
             }
             [data-testid='indicator'][data-ending-style] {
                 animation: leave 400ms linear;
+            }
+            [data-paused][data-ending-style] {
+                animation-play-state: paused;
             }
             @keyframes leave {
                 from {
@@ -56,7 +63,9 @@ const probe = installProbe();
         `
     ],
     template: `
-        @if (isField) {
+        @if (isPortal) {
+            <parity-checkbox-portal />
+        } @else if (isField) {
             <parity-checkbox-field />
         } @else {
             <form id="form" (keydown.enter)="maybeCancelEnter($event)">
@@ -105,7 +114,8 @@ const probe = installProbe();
                     >
                         <button id="terms" rdxCheckboxButton>
                             <span
-                                [keepMounted]="keepMounted"
+                                *rdxCheckboxIndicatorPresence="{ keepMounted: keepMounted }"
+                                [attr.data-paused]="pauseIndicator ? '' : undefined"
                                 rdxCheckboxIndicator
                                 data-testid="indicator"
                                 aria-hidden="true"
@@ -126,8 +136,10 @@ const probe = installProbe();
 })
 class CheckboxFixture {
     protected readonly isGroup = group;
+    protected readonly isPortal = scenario.startsWith('group-portal');
     protected readonly isField = scenario.startsWith('field-');
     protected readonly mixed = mixed;
+    protected readonly pauseIndicator = scenario === 'indicator-lifetime';
     protected readonly keepMounted = keepMounted;
     protected readonly readOnly = scenario === 'readonly';
     protected readonly disabled = scenario === 'disabled';

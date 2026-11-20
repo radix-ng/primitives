@@ -38,6 +38,8 @@ async function snapshot(page: Page) {
                 const parent = view.querySelector('[data-checkbox-node="parent"]');
                 const children = [...view.querySelectorAll<HTMLElement>('[role="checkbox"]:not([data-parent])')];
                 const nodes = [...view.querySelectorAll<HTMLElement>('[data-checkbox-node]')];
+                const indicators = [...view.querySelectorAll<HTMLElement>('[data-checkbox-indicator]')];
+                const initialIndicator = view.querySelector('[data-checkbox-indicator="a"]');
                 const form = view.querySelector('form');
                 return {
                     name: view.dataset.checkboxAudit,
@@ -48,6 +50,11 @@ async function snapshot(page: Page) {
                     ),
                     checked: parent?.getAttribute('aria-checked'),
                     submitted: form ? new FormData(form).getAll('features') : [],
+                    indicators: indicators.map((indicator) => indicator.dataset.checkboxIndicator),
+                    initialIndicatorReused:
+                        !!initialIndicator &&
+                        window.auditServerNodes?.[view.dataset.checkboxAudit + ':checkbox:indicator-a'] ===
+                            initialIndicator,
                     ids: nodes.map((node) => node.id),
                     reused: nodes.every(
                         (node) =>
@@ -215,6 +222,8 @@ async function checkCheckboxHydration(
             for (const node of view.querySelectorAll<HTMLElement>('[data-checkbox-node]')) {
                 window.auditServerNodes![view.dataset.checkboxAudit + ':checkbox:' + node.dataset.checkboxNode] = node;
             }
+            const indicator = view.querySelector('[data-checkbox-indicator="a"]');
+            if (indicator) window.auditServerNodes![view.dataset.checkboxAudit + ':checkbox:indicator-a'] = indicator;
         }
     });
     const { checkboxGroups: before } = await record('server-rendered groups and labels');
@@ -257,6 +266,10 @@ async function checkCheckboxHydration(
                 group.reused && group.controls && group.associations && group.ids.join() === before[index].ids.join()
         );
 
+    observation.checks.indicatorsHydrateAndMount =
+        before.every((group) => group.indicators.join() === 'a') &&
+        afterBoth.checkboxGroups.every((group) => group.indicators.join() === 'a,b' && group.initialIndicatorReused);
+
     await second.locator('[data-checkbox-node="label-b"]').click();
     const { checkboxGroups: afterLabel } = await record('native label activates its original control');
     observation.checks.nativeLabelAfterHydration =
@@ -270,6 +283,7 @@ async function checkCheckboxHydration(
     const { checkboxGroups: beforeReset } = await record('the edited group is dirty and touched');
     await first.locator('form').evaluate((form) => (form as HTMLFormElement).reset());
     await first.locator('[data-checkbox-node="parent"][aria-checked="mixed"]').waitFor({ timeout: 5000 });
+    await first.locator('[data-checkbox-indicator="b"]').waitFor({ state: 'detached', timeout: 5000 });
     const { checkboxGroups: afterReset } = await record('native reset restores the initial selection and Field state');
     observation.checks.resetRestoresHydratedGroup =
         beforeReset[0]?.fieldState.join() === 'filled,dirty,touched' &&
@@ -277,6 +291,8 @@ async function checkCheckboxHydration(
         afterReset[0]?.fieldState.join() === 'filled' &&
         afterReset[0]?.requests === 1 &&
         afterReset[0]?.reused &&
+        afterReset[0]?.initialIndicatorReused &&
+        afterReset[0]?.indicators.join() === 'a' &&
         afterReset[1]?.requests === 2;
 }
 

@@ -14,6 +14,7 @@ import {
     CheckedState,
     RdxCheckboxButtonDirective,
     RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
@@ -37,6 +38,7 @@ interface Item {
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         RdxCheckboxInputDirective,
         LucideDynamicIcon,
         LucideCheck
@@ -57,6 +59,7 @@ interface Item {
                     >
                         <svg
                             class="text-primary flex items-center"
+                            *rdxCheckboxIndicatorPresence
                             [lucideIcon]="parentState() === 'indeterminate' ? 'minus' : 'check'"
                             rdxCheckboxIndicator
                             size="16"
@@ -78,6 +81,7 @@ interface Item {
                             >
                                 <svg
                                     class="text-primary flex items-center"
+                                    *rdxCheckboxIndicatorPresence
                                     rdxCheckboxIndicator
                                     size="16"
                                     lucideCheck

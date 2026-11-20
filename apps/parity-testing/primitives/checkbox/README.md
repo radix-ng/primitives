@@ -39,3 +39,40 @@ that the technical input yields no extra exposed checkbox and that the visible c
 the expected names, checked states, relationship targets, focus and error description.
 Screen-reader speech and screen-reader activation require a separate platform run.
 [Chromium Accessibility protocol](https://chromedevtools.github.io/devtools-protocol/tot/Accessibility/#method-getFullAXTree)
+
+## Portal and Indicator
+
+The `group-portal` case compares registration with the declaring Form, repeated values,
+native form association, disabled items and focus on an invalid portaled checkbox. The
+`group-portal-reset` case checks cancellation and the Angular reset baseline. The pinned Base UI
+group retains its selection after the accepted reset because the native inputs are outside the form.
+The comparison records that difference.
+
+The structural Indicator cases check initial absence, interrupted exit, removal after real
+CSS animation completes, and retention with `keepMounted`.
+
+## Screen reader checks
+
+Build and serve the fixtures locally.
+
+```sh
+pnpm parity:build checkbox
+PARITY_PRIMITIVE=checkbox pnpm exec vite preview --config apps/parity-testing/vite.config.mts
+```
+
+Use `/angular.html` and `/react.html` under the preview URL at port 4518. Run the same actions with
+VoiceOver and Safari or NVDA and Firefox. For VoiceOver, navigate with VO-Right Arrow and activate
+with VO-Space. For NVDA, move focus to the checkbox and use Space. Record spoken output with NVDA's
+Speech Viewer when available. [VoiceOver keyboard commands](https://support.apple.com/guide/voiceover/vo2681/mac),
+[NVDA Speech Viewer](https://download.nvaccess.org/releases/2025.3.3/documentation/userGuide.html#SpeechViewer)
+
+| Query                | Action                                                        | Observe                                                                                                                                        |
+| -------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `?case=mixed`        | Focus Terms and activate it once with the screen reader.      | One checkbox named Terms with a mixed state. The fixture holds the mixed presentation while its checked value changes.                         |
+| `?case=group-portal` | Navigate to Features and its three checkboxes. Activate All.  | Group and item names are available. All changes from mixed to checked and both options become checked.                                         |
+| `?case=group-portal` | Uncheck Alpha and activate Submit on the declaring form.      | Focus lands on Alpha and its accessible description includes Choose Alpha. The other checked option leaves Alpha's required constraint active. |
+| `?case=disabled`     | Navigate through the visible controls and attempt activation. | Terms is exposed as disabled and the screen-reader action leaves it unchecked.                                                                 |
+
+Record browser, operating system, screen-reader version, inputs used, and what was spoken.
+Playwright ARIA snapshots and the Chromium AX tree are available as automated evidence for the
+same fixtures. A platform run is pending.

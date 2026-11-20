@@ -17,6 +17,7 @@ import { ControlValueAccessor } from '@angular/forms';
 import {
     BooleanInput,
     createContext,
+    hasNoNativeFormOwner,
     provideValueAccessor,
     RdxCancelableChangeEventDetails,
     RdxFormUiControlBase,
@@ -27,6 +28,7 @@ import {
     watch
 } from '@radix-ng/primitives/core';
 import { fieldDescribedBy, injectFieldRootContext, type RdxFieldRootContext } from '@radix-ng/primitives/field';
+import { injectFormRootContext, type RdxPortaledFormEntry } from '@radix-ng/primitives/form';
 import { type CheckboxFieldInput, useCheckboxFieldValidity } from './checkbox-field';
 import type { CheckedState } from './checkbox-root';
 
@@ -125,6 +127,7 @@ export class RdxCheckboxGroupDirective
     readonly field = injectFieldRootContext(true);
     private readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
     private readonly fieldInputs = new Set<CheckboxFieldInput>();
+    private readonly formRoot = injectFormRootContext(true);
 
     /** Override the group's accessible label supplied by Field. */
     readonly ariaLabelledBy = input<string>(undefined, { alias: 'aria-labelledby' });
@@ -217,8 +220,9 @@ export class RdxCheckboxGroupDirective
         form: this.form,
         disabled: this.disabledState,
         value: this.currentValue,
-        serialize: (values) => serializeNativeFormValue(values.filter((value) => !this.isValueDisabled(value))),
+        serialize: (values) => this.serializeSelection(values),
         defaultValue: () => [...this.initialValue()],
+        resetFormFallback: () => this.portaledResetForm(),
         onReset: (value) => {
             if (this.controlledValue() !== undefined) return;
 
@@ -251,7 +255,8 @@ export class RdxCheckboxGroupDirective
                 ...useCheckboxFieldValidity(
                     () => this.fieldInputs,
                     () => this.firstEnabledItem()
-                )
+                ),
+                portaledEntries: () => this.portaledEntries()
             });
             inject(DestroyRef).onDestroy(() => {
                 unregister();
@@ -293,6 +298,41 @@ export class RdxCheckboxGroupDirective
                 )
             ).find((button) => button.closest('[rdxCheckboxGroup]') === this.element) ?? null
         );
+    }
+
+    private serializeSelection(values: string[]): readonly string[] {
+        return serializeNativeFormValue(values.filter((value) => !this.isValueDisabled(value)));
+    }
+
+    private canProjectNamedGroup(): boolean {
+        return Boolean(
+            this.centralName() && this.form() === undefined && this.element.isConnected && !this.element.closest('form')
+        );
+    }
+
+    private ownerlessInputs(): CheckboxFieldInput[] {
+        return [...this.fieldInputs].filter(
+            ({ element, participates }) => participates() && element.isConnected && hasNoNativeFormOwner(element)
+        );
+    }
+
+    private portaledEntries(): readonly RdxPortaledFormEntry[] {
+        if (this.disabledState()) return [];
+        const name = this.centralName();
+        if (name && this.canProjectNamedGroup()) {
+            return this.serializeSelection(this.currentValue()).map((value) => [name, value]);
+        }
+
+        return this.ownerlessInputs()
+            .filter(({ element }) => element.checked && element.name && !element.matches(':disabled'))
+            .map(({ element }) => [element.name, element.value]);
+    }
+
+    private portaledResetForm(): HTMLFormElement | null {
+        if (!this.field || this.form() !== undefined) return null;
+        return this.canProjectNamedGroup() || this.ownerlessInputs().length > 0
+            ? (this.formRoot?.element ?? null)
+            : null;
     }
 
     /** @ignore Bridge the CVA `onTouched` so `markAsTouched()` also notifies Reactive/template forms. */

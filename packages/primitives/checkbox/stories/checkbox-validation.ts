@@ -4,6 +4,7 @@ import { LucideCheck } from '@lucide/angular';
 import {
     RdxCheckboxButtonDirective,
     RdxCheckboxIndicatorDirective,
+    RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
@@ -22,6 +23,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
+        RdxCheckboxIndicatorPresenceDirective,
         RdxCheckboxInputDirective,
         LucideCheck
     ],
@@ -34,7 +36,13 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                         id="terms"
                         rdxCheckboxButton
                     >
-                        <svg class="text-primary flex items-center" rdxCheckboxIndicator size="16" lucideCheck />
+                        <svg
+                            class="text-primary flex items-center"
+                            *rdxCheckboxIndicatorPresence
+                            rdxCheckboxIndicator
+                            size="16"
+                            lucideCheck
+                        />
                     </button>
                     <input rdxCheckboxInput />
                 </div>

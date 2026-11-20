@@ -10,10 +10,11 @@ Radio Group supplies browser `valueMissing` errors from authored `rdxRadioItemIn
 to its enclosing Field. In Form, Field refreshes the native constraint before the submit guard.
 See the [Radio matrix](../../packages/primitives/radio/PARITY.md#native-required-constraints).
 
-Field can supply a portaled selection to Form alongside the native `FormData` entries. Radio
-uses this path for a connected, checked input with no native owner and no explicit `form` attribute.
-The native form bridge also lets the declaring Form reset a connected portaled Radio in this
-scope. The bridge waits for the reset event to finish so cancellation applies to both paths.
+Field can supply portaled entries to Form alongside native `FormData`. Radio supplies its
+selected entry and CheckboxGroup can supply multiple entries under the Field name. The controls
+use this path for connected, enabled inputs with no native owner or explicit `form` association.
+The native form bridge lets the declaring Form reset editable selections in this scope. The bridge
+waits for reset dispatch to finish so it respects cancellation.
 
 Form chooses the first invalid control in DOM order, using the actual control or the visible
 focus target supplied by a composite control. A registered invalid field without a target still

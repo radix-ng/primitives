@@ -4,7 +4,7 @@ import { Source, ArgTypes, Canvas, Meta, Primary } from '@storybook/addon-docs/b
 import * as CheckboxStories from './checkbox.stories';
 import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
 import { RdxCheckboxGroupDirective } from '../src/checkbox-group';
-import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
+import { RdxCheckboxIndicatorPresenceDirective } from '../src/checkbox-indicator-presence';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
 
 <Meta title="Primitives/Checkbox" of={CheckboxStories} />
@@ -30,6 +30,7 @@ import {
   RdxCheckboxRootDirective,
   RdxCheckboxButtonDirective,
   RdxCheckboxIndicatorDirective,
+  RdxCheckboxIndicatorPresenceDirective,
   RdxCheckboxInputDirective
 } from '@radix-ng/primitives/checkbox';
 ```
@@ -41,7 +42,7 @@ Assemble the root, button trigger, and indicator. The native input is optional.
 ```html
 <div rdxCheckboxRoot>
   <button rdxCheckboxButton>
-    <svg rdxCheckboxIndicator lucideCheck />
+    <svg *rdxCheckboxIndicatorPresence rdxCheckboxIndicator lucideCheck />
   </button>
   <input rdxCheckboxInput />
 </div>
@@ -65,7 +66,7 @@ Always associate a checkbox with a label. Link a sibling `rdxLabel` to the butto
 ```html
 <div rdxCheckboxRoot>
   <button id="terms" rdxCheckboxButton>
-    <svg rdxCheckboxIndicator lucideCheck />
+    <svg *rdxCheckboxIndicatorPresence rdxCheckboxIndicator lucideCheck />
   </button>
   <input rdxCheckboxInput />
 </div>
@@ -112,8 +113,10 @@ To clear the mixed state after an accepted edit, update the value bound to `[ind
 
 ### Keep mounted
 
-The indicator stays in layout through its exit animation, then hides with `display: none`.
-Add `keepMounted` to keep it in layout after the animation.
+The indicator leaves the DOM after its exit animation finishes. Reopening during the exit
+retains its existing view. To retain the unchecked view, use
+`*rdxCheckboxIndicatorPresence="{ keepMounted: true }"` in place of the former `keepMounted`
+attribute on the indicator.
 
 <Canvas of={CheckboxStories.KeepMounted} />
 
@@ -172,6 +175,11 @@ descriptions also apply to its children. Give the select-all button an explicit 
 such as `aria-label="Select all features"`. If the Field has a `name`, each enabled checked child
 submits under that name. A child with `required` and an authored `rdxCheckboxInput` must be checked
 individually. Use `rdxFieldError` to display its native validation failure.
+
+A group moved through `rdxPortal` can still submit via its declaring `rdxFormRoot` when it lives
+inside a Field. The form collects values from the group's connected, enabled native inputs.
+An explicit `form` attribute assigns native form ownership. Resetting the declaring form restores
+the editable selection even when the group has moved outside it.
 
 <Canvas of={CheckboxStories.Group} />
 
@@ -261,10 +269,11 @@ Enter activates the owning form's default submit button, when present.
 
 ### Indicator
 
-Apply `RdxCheckboxIndicatorDirective` to the mark element, such as an `<svg>`.
-The directive retains the authored element and manages its layout visibility.
+Apply `*rdxCheckboxIndicatorPresence` and `rdxCheckboxIndicator` to the mark element, such as
+an `<svg>`. The structural directive owns the view. The attribute directive exposes checkbox and
+transition state on the element, and can also decorate an indicator whose view your template owns.
 
-<ArgTypes of={RdxCheckboxIndicatorDirective} />
+<ArgTypes of={RdxCheckboxIndicatorPresenceDirective} />
 
 **Data attributes**
 

@@ -89,6 +89,11 @@ export function serializeNativeFormValue<Value = unknown>(
     return values.flatMap((entry) => (entry == null ? [] : [itemToStringValue(entry)]));
 }
 
+/** @internal An explicit form attribute takes precedence even when the form does not exist. */
+export function hasNoNativeFormOwner(input: HTMLInputElement): boolean {
+    return input.form === null && !input.hasAttribute('form');
+}
+
 const NOOP_NATIVE_FORM_CONTROL: RdxNativeFormControl = {
     inputElement: signal<HTMLInputElement | null>(null).asReadonly(),
     ownerForm: () => null,
