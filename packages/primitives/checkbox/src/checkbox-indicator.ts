@@ -14,6 +14,8 @@ import { injectCheckboxRootContext } from './checkbox-root';
         '[attr.data-valid]': 'rootContext.displayValid() === true ? "" : undefined',
         '[attr.data-touched]': 'rootContext.touchedState() ? "" : undefined',
         '[attr.data-dirty]': 'rootContext.dirtyState() ? "" : undefined',
+        '[attr.data-filled]': 'rootContext.filledState() ? "" : undefined',
+        '[attr.data-focused]': 'rootContext.focusedState() ? "" : undefined',
         '[attr.data-required]': 'rootContext.required() ? "" : undefined',
         '[attr.data-starting-style]': 'lifecycle.status() === "starting" ? "" : undefined',
         '[attr.data-ending-style]': 'lifecycle.status() === "ending" ? "" : undefined',

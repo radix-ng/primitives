@@ -35,7 +35,9 @@ class CheckboxDriver {
 
     async goto(name: string) {
         await this.page.goto('/' + this.framework + '.html?case=' + name);
-        await expect(this.page.getByRole('checkbox')).toHaveCount(name.startsWith('group-') ? 3 : 1);
+        await expect(this.page.getByRole('checkbox')).toHaveCount(
+            name.startsWith('group-') || name.startsWith('field-group') ? 3 : 1
+        );
         this.metadata = await this.page.evaluate(() => window.checkboxParity.reference);
     }
 
@@ -75,6 +77,30 @@ class CheckboxDriver {
                 };
             });
         await expect.poll(read, name).toEqual({ checked, controls: ids, changes: expectedChanges });
+        this.checkpoints.push({ name, state: await read() });
+    }
+
+    async fieldCheckpoint(name: string, attributes: string[], submitted: string[]) {
+        const read = () =>
+            this.page.getByTestId('field').evaluate((field) => {
+                const stateAttributes = ['data-dirty', 'data-filled', 'data-focused', 'data-touched'];
+                const activeAttributes = (element: Element) =>
+                    stateAttributes.filter((attribute) => element.hasAttribute(attribute));
+                const parts = [
+                    ...field.querySelectorAll('[role="checkbox"], [role="group"], [data-testid="indicator"]')
+                ];
+                const form = field.closest('form');
+                return {
+                    field: activeAttributes(field),
+                    controls: parts.map(activeAttributes),
+                    submitted: form ? Array.from(new FormData(form).values()) : []
+                };
+            });
+        await expect.poll(read, name).toEqual({
+            field: attributes,
+            controls: Array(this.page.url().includes('field-group') ? 4 : 2).fill(attributes),
+            submitted
+        });
         this.checkpoints.push({ name, state: await read() });
     }
 
@@ -230,6 +256,125 @@ const scenarios: { name: string; run(driver: CheckboxDriver): Promise<void> }[] 
             await driver.group('apply requested selection', ['mixed', 'true', 'false'], changes);
         }
     },
+    {
+        name: 'field-standalone',
+        async run(driver) {
+            const { page } = driver;
+            const checkbox = driver.item('Terms');
+            await expect(checkbox).toHaveAttribute('aria-labelledby', 'terms-label');
+            await expect(checkbox).toHaveAttribute('aria-describedby', 'extra-description terms-description');
+            await expect(page.locator('#terms-label')).toHaveAttribute('for', 'terms');
+            await expect(page.locator('input[type=checkbox]')).toHaveAttribute('name', 'terms');
+            await driver.fieldCheckpoint('empty field', [], []);
+
+            await checkbox.focus();
+            await driver.fieldCheckpoint('focused field', ['data-focused'], []);
+            await checkbox.press('Space');
+            await driver.fieldCheckpoint('filled field', ['data-dirty', 'data-filled', 'data-focused'], ['yes']);
+            await page.getByRole('button', { name: 'Outside' }).focus();
+            await driver.fieldCheckpoint('blurred field', ['data-dirty', 'data-filled', 'data-touched'], ['yes']);
+            await page.locator('#terms-label').click();
+            await expect(checkbox).toHaveAttribute('aria-checked', 'false');
+        }
+    },
+    {
+        name: 'field-group',
+        async run(driver) {
+            const { page } = driver;
+            const group = page.getByRole('group', { name: 'Features' });
+            const parent = driver.item('All');
+            const first = driver.item('Option a');
+            const second = driver.item('Option b');
+            await expect(group).toHaveAttribute('aria-describedby', 'group-description');
+            await expect(page.locator('#group-label')).not.toHaveAttribute('for');
+            await expect(parent).not.toHaveAttribute('aria-labelledby');
+            await expect(parent).toHaveAttribute('aria-describedby', 'group-description');
+            await expect(parent).toHaveAttribute('aria-controls', 'item-a item-b');
+            await expect(first).toHaveAttribute('aria-describedby', 'group-description description-a');
+            await expect(second).toHaveAttribute('aria-describedby', 'group-description description-b');
+            await expect(page.locator('#label-a')).toHaveAttribute('for', 'item-a');
+            await expect(page.locator('#label-b')).toHaveAttribute('for', 'item-b');
+            await driver.fieldCheckpoint('empty group', [], []);
+
+            await first.focus();
+            await first.press('Space');
+            await driver.fieldCheckpoint('item fills group', ['data-dirty', 'data-filled', 'data-focused'], ['a']);
+            await second.focus();
+            await driver.fieldCheckpoint(
+                'sibling retains shared focus',
+                ['data-dirty', 'data-filled', 'data-focused', 'data-touched'],
+                ['a']
+            );
+            await first.focus();
+            await first.press('F2');
+            await expect(first).toBeDisabled();
+            await expect(second).toBeEnabled();
+            await driver.fieldCheckpoint(
+                'disabled item releases focus and submission',
+                ['data-dirty', 'data-filled', 'data-touched'],
+                []
+            );
+        }
+    },
+    ...[false, true].map((grouped) => ({
+        name: grouped ? 'field-group-required' : 'field-required',
+        async run(driver: CheckboxDriver) {
+            const { page } = driver;
+            const required = driver.item(grouped ? 'Option a' : 'Terms');
+            const error = page.locator(grouped ? '#features-error' : '#terms-error');
+            const next = grouped ? driver.item('Option b') : page.getByRole('button', { name: 'Outside' });
+            const submit = page.getByRole('button', { name: 'Submit' });
+            const submissions = page.getByTestId('submissions');
+            const fieldName = grouped ? 'features' : 'terms';
+            const read = () =>
+                required.evaluate(
+                    (control, fieldName) => ({
+                        checked: control.getAttribute('aria-checked'),
+                        invalid: control.getAttribute('aria-invalid'),
+                        describesError:
+                            control
+                                .getAttribute('aria-describedby')
+                                ?.split(/\s+/)
+                                .includes(fieldName + '-error') ?? false,
+                        submitted: new FormData(control.closest('form')!).getAll(fieldName)
+                    }),
+                    fieldName
+                );
+            await expect(required).toHaveAttribute('aria-required', 'true');
+            await expect(error).toBeHidden();
+            await required.press('Space');
+            await next.focus();
+            if (grouped) await next.press('Space');
+            await expect(error).toBeVisible();
+            const missing = {
+                checked: 'false',
+                invalid: 'true',
+                describesError: true,
+                submitted: grouped ? ['b'] : []
+            };
+            await expect.poll(read).toEqual(missing);
+            driver.checkpoints.push({
+                name: 'required checkbox reports a Field error after blur',
+                state: await read()
+            });
+
+            await required.press('Space');
+            await expect(error).toBeHidden();
+            const valid = {
+                checked: 'true',
+                invalid: null,
+                describesError: false,
+                submitted: grouped ? ['a', 'b'] : ['yes']
+            };
+            await expect.poll(read).toEqual(valid);
+            await submit.click();
+            await expect(submissions).toHaveText('1');
+            driver.checkpoints.push({
+                name: 'accepting the required value clears the Field error',
+                state: await read()
+            });
+        }
+    })),
     {
         name: 'group-form',
         async run(driver) {

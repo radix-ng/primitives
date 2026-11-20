@@ -447,6 +447,36 @@
           "values": "The checkbox is required."
         },
         {
+          "attribute": "data-valid",
+          "parts": "Root",
+          "values": "The displayed validity is valid."
+        },
+        {
+          "attribute": "data-invalid",
+          "parts": "Root",
+          "values": "The displayed validity is invalid."
+        },
+        {
+          "attribute": "data-touched",
+          "parts": "Root",
+          "values": "The control or its Field was touched."
+        },
+        {
+          "attribute": "data-dirty",
+          "parts": "Root",
+          "values": "The control or its Field is dirty."
+        },
+        {
+          "attribute": "data-filled",
+          "parts": "Root",
+          "values": "The enclosing Field has a checked value."
+        },
+        {
+          "attribute": "data-focused",
+          "parts": "Root",
+          "values": "A checkbox in the Field has focus."
+        },
+        {
           "attribute": "data-checked",
           "parts": "Button",
           "values": "The checkbox is checked."
@@ -477,6 +507,36 @@
           "values": "The checkbox is required."
         },
         {
+          "attribute": "data-valid",
+          "parts": "Button",
+          "values": "The displayed validity is valid."
+        },
+        {
+          "attribute": "data-invalid",
+          "parts": "Button",
+          "values": "The displayed validity is invalid."
+        },
+        {
+          "attribute": "data-touched",
+          "parts": "Button",
+          "values": "The control or its Field was touched."
+        },
+        {
+          "attribute": "data-dirty",
+          "parts": "Button",
+          "values": "The control or its Field is dirty."
+        },
+        {
+          "attribute": "data-filled",
+          "parts": "Button",
+          "values": "The enclosing Field has a checked value."
+        },
+        {
+          "attribute": "data-focused",
+          "parts": "Button",
+          "values": "A checkbox in the Field has focus."
+        },
+        {
           "attribute": "data-checked",
           "parts": "Indicator",
           "values": "The checkbox is checked."
@@ -505,6 +565,36 @@
           "attribute": "data-required",
           "parts": "Indicator",
           "values": "The checkbox is required."
+        },
+        {
+          "attribute": "data-valid",
+          "parts": "Indicator",
+          "values": "The displayed validity is valid."
+        },
+        {
+          "attribute": "data-invalid",
+          "parts": "Indicator",
+          "values": "The displayed validity is invalid."
+        },
+        {
+          "attribute": "data-touched",
+          "parts": "Indicator",
+          "values": "The control or its Field was touched."
+        },
+        {
+          "attribute": "data-dirty",
+          "parts": "Indicator",
+          "values": "The control or its Field is dirty."
+        },
+        {
+          "attribute": "data-filled",
+          "parts": "Indicator",
+          "values": "The enclosing Field has a checked value."
+        },
+        {
+          "attribute": "data-focused",
+          "parts": "Indicator",
+          "values": "A checkbox in the Field has focus."
         },
         {
           "attribute": "data-starting-style",
@@ -520,6 +610,36 @@
           "attribute": "data-disabled",
           "parts": "Checkbox Group",
           "values": "The group is disabled."
+        },
+        {
+          "attribute": "data-valid",
+          "parts": "Checkbox Group",
+          "values": "The displayed validity is valid."
+        },
+        {
+          "attribute": "data-invalid",
+          "parts": "Checkbox Group",
+          "values": "The displayed validity is invalid."
+        },
+        {
+          "attribute": "data-touched",
+          "parts": "Checkbox Group",
+          "values": "The control or its Field was touched."
+        },
+        {
+          "attribute": "data-dirty",
+          "parts": "Checkbox Group",
+          "values": "The control or its Field is dirty."
+        },
+        {
+          "attribute": "data-filled",
+          "parts": "Checkbox Group",
+          "values": "The enclosing Field has a checked value."
+        },
+        {
+          "attribute": "data-focused",
+          "parts": "Checkbox Group",
+          "values": "A checkbox in the Field has focus."
         }
       ]
     },

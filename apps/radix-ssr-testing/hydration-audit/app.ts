@@ -57,6 +57,7 @@ import {
     RdxSelectTrigger
 } from '@radix-ng/primitives/select';
 import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
+import { CheckboxAuditView } from './checkbox-view';
 import { LazyPortalView } from './lazy-view';
 import { RadioAuditView } from './radio-view';
 import { AuditProbe, Settings } from './settings';
@@ -346,7 +347,15 @@ export class DetachedDialogView {
 
 @Component({
     selector: 'portal-hydration-audit',
-    imports: [RdxPortal, AuditPortal, PortalView, HydrationProbe, LazyPortalView, DetachedDialogView],
+    imports: [
+        CheckboxAuditView,
+        RdxPortal,
+        AuditPortal,
+        PortalView,
+        HydrationProbe,
+        LazyPortalView,
+        DetachedDialogView
+    ],
     providers: [provideRdxPresenceContext(() => ({ present: inject(AuditState).present }))],
     template: `
         <nav [attr.data-extra]="state.extra()" aria-label="Hydration audit controls">
@@ -361,6 +370,14 @@ export class DetachedDialogView {
             </button>
         </nav>
         @switch (state.settings.placement) {
+            @case ('checkbox-reverse') {
+                @defer (hydrate on interaction) {
+                    <audit-checkbox-view name="first" />
+                }
+                @defer (hydrate on interaction) {
+                    <audit-checkbox-view name="second" />
+                }
+            }
             @case ('detached-trigger') {
                 <audit-detached-dialog />
             }

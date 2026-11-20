@@ -1419,6 +1419,24 @@
           "description": "The visible, focusable checkbox control.",
           "inputs": [
             {
+              "name": "aria-describedby",
+              "type": "string",
+              "default": "undefined",
+              "description": "Additional description IDs, followed by the Field and Field.Item descriptions and errors."
+            },
+            {
+              "name": "aria-label",
+              "type": "string",
+              "default": "undefined",
+              "description": "Explicit accessible name."
+            },
+            {
+              "name": "aria-labelledby",
+              "type": "string",
+              "default": "undefined",
+              "description": "Override the label supplied by Field or Field.Item."
+            },
+            {
               "name": "id",
               "type": "string",
               "description": "ID used by labels and the parent checkbox's `aria-controls`."
@@ -1431,14 +1449,23 @@
           "selector": "[rdxCheckboxGroup]",
           "exportAs": "rdxCheckboxGroup",
           "description": "Groups a set of checkboxes that share a single array value (the values of the checked boxes).\n\nEach child `rdxCheckboxRoot` participates by its `value` (falling back to `name`). A child marked\n`parent` becomes a \"select all\" checkbox whose state is derived from `allValues`.",
-          "hostDirectives": [
-            "RdxFormUiStateHost"
-          ],
           "inputs": [
             {
               "name": "allValues",
               "type": "string[]",
               "description": "All checkbox values in the group. Required for a `parent` (select-all) checkbox."
+            },
+            {
+              "name": "aria-describedby",
+              "type": "string",
+              "default": "undefined",
+              "description": "Additional description IDs, followed by the Field descriptions and errors."
+            },
+            {
+              "name": "aria-labelledby",
+              "type": "string",
+              "default": "undefined",
+              "description": "Override the group's accessible label supplied by Field."
             },
             {
               "name": "controlledValue",

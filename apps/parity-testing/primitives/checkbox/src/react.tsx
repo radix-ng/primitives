@@ -16,6 +16,8 @@ import {
     values
 } from './contract';
 
+import { ReactCheckboxField } from './field.react';
+
 const probe = installProbe();
 
 function CheckboxFixture() {
@@ -127,4 +129,4 @@ function CheckboxFixture() {
 }
 
 const root = document.getElementById('root');
-if (root) createRoot(root).render(<CheckboxFixture />);
+if (root) createRoot(root).render(scenario.startsWith('field-') ? <ReactCheckboxField /> : <CheckboxFixture />);

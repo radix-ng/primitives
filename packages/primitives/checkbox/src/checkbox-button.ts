@@ -1,4 +1,4 @@
-import { computed, DestroyRef, Directive, effect, ElementRef, inject, input } from '@angular/core';
+import { afterNextRender, computed, DestroyRef, Directive, effect, ElementRef, inject, input } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
 import { injectCheckboxGroupContext } from './checkbox-group';
 import { injectCheckboxRootContext } from './checkbox-root';
@@ -13,10 +13,13 @@ import { injectCheckboxRootContext } from './checkbox-root';
         '[attr.data-parent]': 'rootContext.parent() ? "" : undefined',
         '[attr.aria-checked]': 'rootContext.indeterminate() ? "mixed" : rootContext.checked()',
         '[attr.aria-controls]': 'ariaControls()',
+        '[attr.aria-label]': 'ariaLabel()',
+        '[attr.aria-labelledby]': 'labelledBy()',
+        '[attr.aria-describedby]': 'rootContext.describedBy(ariaDescribedBy())',
         '[disabled]': 'rootContext.disabled()',
         '[attr.aria-required]': 'rootContext.required() || undefined',
         '[attr.aria-readonly]': 'rootContext.readonly() || undefined',
-        '[attr.aria-invalid]': 'rootContext.displayValid() === false ? "true" : undefined',
+        '[attr.aria-invalid]': '!rootContext.disabled() && rootContext.displayValid() === false ? "true" : undefined',
         '[attr.data-checked]': 'rootContext.checked() && !rootContext.indeterminate() ? "" : undefined',
         '[attr.data-unchecked]': '!rootContext.checked() && !rootContext.indeterminate() ? "" : undefined',
         '[attr.data-indeterminate]': 'rootContext.indeterminate() ? "" : undefined',
@@ -27,6 +30,9 @@ import { injectCheckboxRootContext } from './checkbox-root';
         '[attr.data-valid]': 'rootContext.displayValid() === true ? "" : undefined',
         '[attr.data-touched]': 'rootContext.touchedState() ? "" : undefined',
         '[attr.data-dirty]': 'rootContext.dirtyState() ? "" : undefined',
+        '[attr.data-filled]': 'rootContext.filledState() ? "" : undefined',
+        '[attr.data-focused]': 'rootContext.focusedState() ? "" : undefined',
+        '(focus)': 'rootContext.onButtonFocus()',
         '(click)': 'rootContext.activate($event)',
         '(blur)': 'rootContext.blur()',
         '(keydown.enter)': 'rootContext.onEnter($event)'
@@ -40,6 +46,16 @@ export class RdxCheckboxButtonDirective {
 
     /** ID used by labels and the parent checkbox's `aria-controls`. */
     readonly id = input<string>();
+    /** Explicit accessible name. */
+    readonly ariaLabel = input<string>(undefined, { alias: 'aria-label' });
+    /** Override the label supplied by Field or Field.Item. */
+    readonly ariaLabelledBy = input<string>(undefined, { alias: 'aria-labelledby' });
+    /** Additional description IDs, followed by the Field and Field.Item descriptions and errors. */
+    readonly ariaDescribedBy = input<string>(undefined, { alias: 'aria-describedby' });
+
+    protected readonly labelledBy = computed(
+        () => this.ariaLabelledBy() ?? (this.ariaLabel()?.trim() ? undefined : this.rootContext.labelId())
+    );
     private readonly generatedId = injectId('rdx-checkbox-');
     protected readonly controlId = computed(() => this.id() || this.generatedId);
 
@@ -49,7 +65,16 @@ export class RdxCheckboxButtonDirective {
     );
 
     constructor() {
-        inject(DestroyRef).onDestroy(this.rootContext.registerButton(this.elementRef.nativeElement));
+        const button = this.elementRef.nativeElement;
+        inject(DestroyRef).onDestroy(this.rootContext.registerButton(button));
+        const field = this.rootContext.labelField;
+        if (field) {
+            effect(() => field.setControlId(this.controlId()));
+            afterNextRender(() => {
+                const owner = button.getRootNode() as Document | ShadowRoot;
+                if (owner.activeElement === button) this.rootContext.onButtonFocus();
+            });
+        }
         effect((onCleanup) => {
             const value = this.rootContext.itemValue();
             if (this.group && !this.rootContext.parent() && value !== undefined) {

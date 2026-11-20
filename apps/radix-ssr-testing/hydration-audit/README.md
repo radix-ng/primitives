@@ -53,3 +53,11 @@ The moved group preserves its selection on canceled reset and restores its defau
 ```bash
 node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=eager-radio
 ```
+
+The `reverse-checkbox-group` case renders two CheckboxGroups in deferred views. It checks that
+hydrating the second group first preserves both groups' generated IDs, native inputs and Field
+relationships. It also checks select-all event replay, native label activation and native form reset.
+
+```bash
+node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=reverse-checkbox-group
+```

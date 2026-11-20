@@ -1,7 +1,9 @@
 import {
     booleanAttribute,
     computed,
+    DestroyRef,
     Directive,
+    ElementRef,
     inject,
     input,
     model,
@@ -15,17 +17,17 @@ import { ControlValueAccessor } from '@angular/forms';
 import {
     BooleanInput,
     createContext,
-    provideFormUiState,
     provideValueAccessor,
     RdxCancelableChangeEventDetails,
     RdxFormUiControlBase,
-    RdxFormUiStateHost,
     RdxFormUiTouchTarget,
     RdxFormValueControl,
     serializeNativeFormValue,
     useNativeFormControl,
     watch
 } from '@radix-ng/primitives/core';
+import { fieldDescribedBy, injectFieldRootContext, type RdxFieldRootContext } from '@radix-ng/primitives/field';
+import { type CheckboxFieldInput, useCheckboxFieldValidity } from './checkbox-field';
 import type { CheckedState } from './checkbox-root';
 
 export type RdxCheckboxGroupValueChangeReason = 'none';
@@ -38,6 +40,8 @@ export interface RdxCheckboxGroupValueChangeEvent {
 }
 
 export interface RdxCheckboxGroupContext {
+    /** The Field scope owned by the group. */
+    field: RdxFieldRootContext | null;
     /** The values of the currently checked checkboxes. */
     value: Signal<string[]>;
     /** All checkbox values, used by a `parent` checkbox to check/uncheck every child. */
@@ -58,6 +62,8 @@ export interface RdxCheckboxGroupContext {
     toggleAll: (details: RdxCheckboxGroupValueChangeEventDetails) => boolean;
     /** Register a child's value and disabled state so the parent can preserve disabled items. */
     registerChild: (value: string, disabled: Signal<boolean>) => () => void;
+    /** Register an authored input for the group's native Field constraints. */
+    registerFieldInput: (input: CheckboxFieldInput) => (() => void) | undefined;
     /** Register a child's control element id so the parent can reference it via `aria-controls`. */
     registerControl: (value: string, id: string) => () => void;
 }
@@ -70,9 +76,10 @@ export const [injectCheckboxGroupContext, provideCheckboxGroupContext] = createC
 const groupContext = (): RdxCheckboxGroupContext => {
     const group = inject(RdxCheckboxGroupDirective);
     return {
+        field: group.field,
         value: group.currentValue,
         allValues: group.allValues,
-        name: group.name,
+        name: group.centralName,
         form: group.form,
         disabled: group.disabledState,
         parentState: group.parentState,
@@ -80,6 +87,7 @@ const groupContext = (): RdxCheckboxGroupContext => {
         setItemChecked: (value, checked, details) => group.setItemChecked(value, checked, details),
         toggleAll: (details) => group.toggleAll(details),
         registerChild: (value, disabled) => group.registerChild(value, disabled),
+        registerFieldInput: (input) => group.registerFieldInput(input),
         registerControl: (value, id) => group.registerControl(value, id)
     };
 };
@@ -93,21 +101,41 @@ const groupContext = (): RdxCheckboxGroupContext => {
 @Directive({
     selector: '[rdxCheckboxGroup]',
     exportAs: 'rdxCheckboxGroup',
-    hostDirectives: [RdxFormUiStateHost],
-    providers: [
-        provideValueAccessor(RdxCheckboxGroupDirective),
-        provideCheckboxGroupContext(groupContext),
-        provideFormUiState(() => inject(RdxCheckboxGroupDirective).formUi)
-    ],
+    providers: [provideValueAccessor(RdxCheckboxGroupDirective), provideCheckboxGroupContext(groupContext)],
     host: {
         role: 'group',
-        '[attr.data-disabled]': 'disabledState() ? "" : undefined'
+        '[attr.aria-labelledby]': 'labelledBy()',
+        '[attr.aria-describedby]': 'describedBy()',
+        '[attr.aria-invalid]': 'displayValid() === false ? "true" : undefined',
+        '[attr.data-disabled]': 'disabledState() ? "" : undefined',
+        '[attr.data-invalid]': 'displayValid() === false ? "" : undefined',
+        '[attr.data-valid]': 'displayValid() === true ? "" : undefined',
+        '[attr.data-dirty]': 'dirtyState() ? "" : undefined',
+        '[attr.data-touched]': 'touchedState() ? "" : undefined',
+        '[attr.data-filled]': 'field?.filledState() ? "" : undefined',
+        '[attr.data-focused]': 'field?.focusedState() ? "" : undefined',
+        '(focusout)': 'formUi.markAsTouched()'
     }
 })
 export class RdxCheckboxGroupDirective
     extends RdxFormUiControlBase
     implements ControlValueAccessor, RdxFormValueControl<string[]>, OnChanges
 {
+    /** @ignore The enclosing Field is labelled by the group and scoped away from individual items. */
+    readonly field = injectFieldRootContext(true);
+    private readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+    private readonly fieldInputs = new Set<CheckboxFieldInput>();
+
+    /** Override the group's accessible label supplied by Field. */
+    readonly ariaLabelledBy = input<string>(undefined, { alias: 'aria-labelledby' });
+    /** Additional description IDs, followed by the Field descriptions and errors. */
+    readonly ariaDescribedBy = input<string>(undefined, { alias: 'aria-describedby' });
+
+    protected readonly labelledBy = computed(() => this.ariaLabelledBy() ?? this.field?.labelId());
+    protected readonly describedBy = computed(() => fieldDescribedBy(this.ariaDescribedBy(), this.field));
+    protected readonly dirtyState = computed(() => this.field?.dirtyState() ?? this.formUi.dirtyState());
+    protected readonly touchedState = computed(() => this.field?.touchedState() ?? this.formUi.touchedState());
+
     /** The values of the currently checked checkboxes. Use with `onValueChange` or `[(value)]`. */
     readonly value = model<string[]>([]);
 
@@ -124,6 +152,8 @@ export class RdxCheckboxGroupDirective
 
     /** Native form field name. Selected values are submitted as repeated entries under this name. */
     readonly name = input<string>();
+    /** @ignore A named Field uses the native controls of its live children. */
+    readonly centralName = computed(() => (this.field?.name() === undefined ? this.name() : undefined));
 
     /** Associates the group with an external form by id. */
     readonly form = input<string>();
@@ -135,7 +165,9 @@ export class RdxCheckboxGroupDirective
     readonly onValueChange = output<RdxCheckboxGroupValueChangeEvent>();
 
     private readonly disabledByCva = signal(false);
-    readonly disabledState = computed(() => this.disabledByCva() || this.disabled());
+    readonly disabledState = computed(
+        () => this.disabledByCva() || this.disabled() || Boolean(this.field?.disabledState())
+    );
 
     /** Derived state for a `parent` checkbox: `true` (all), `false` (none) or `'indeterminate'`. */
     readonly parentState = computed<CheckedState>(() => {
@@ -181,7 +213,7 @@ export class RdxCheckboxGroupDirective
     };
 
     private readonly browserForm = useNativeFormControl({
-        name: this.name,
+        name: this.centralName,
         form: this.form,
         disabled: this.disabledState,
         value: this.currentValue,
@@ -200,10 +232,43 @@ export class RdxCheckboxGroupDirective
     constructor() {
         super();
 
+        let fieldInitialValue: string[];
         watch([], () => {
             if (this.controlledValue() === undefined) this.value.set(this.initialValue());
-            this.uncontrolledState = [...this.currentValue()];
+            fieldInitialValue = [...this.currentValue()];
+            this.uncontrolledState = [...fieldInitialValue];
         });
+
+        const field = this.field;
+        if (field) {
+            // The group uses aria-labelledby. A native label must not activate an arbitrary child.
+            const oldId = field.controlId();
+            field.setControlId('');
+            const unregister = field.registerControlState({
+                filled: () => this.currentValue().length > 0,
+                blurred: field.touchedState,
+                changed: field.dirtyState,
+                ...useCheckboxFieldValidity(
+                    () => this.fieldInputs,
+                    () => this.firstEnabledItem()
+                )
+            });
+            inject(DestroyRef).onDestroy(() => {
+                unregister();
+                if (!field.controlId()) field.setControlId(oldId);
+            });
+            watch(
+                [this.currentValue],
+                ([value]) => {
+                    const changed =
+                        value.length !== fieldInitialValue.length ||
+                        value.some((entry, index) => entry !== fieldInitialValue[index]);
+                    field.setDirty(changed);
+                    field.notifyEdited();
+                },
+                { defer: true }
+            );
+        }
     }
 
     /** @ignore */
@@ -220,9 +285,26 @@ export class RdxCheckboxGroupDirective
         return value === undefined ? this.value() : [...value];
     }
 
+    private firstEnabledItem(): HTMLButtonElement | null {
+        return (
+            Array.from(
+                this.element.querySelectorAll<HTMLButtonElement>(
+                    'button[rdxCheckboxButton]:not(:disabled):not([data-parent])'
+                )
+            ).find((button) => button.closest('[rdxCheckboxGroup]') === this.element) ?? null
+        );
+    }
+
     /** @ignore Bridge the CVA `onTouched` so `markAsTouched()` also notifies Reactive/template forms. */
     protected override formUiTouchTarget(): RdxFormUiTouchTarget {
         return { markAsTouched: () => this.onTouched() };
+    }
+
+    /** @ignore Register an authored checkbox input for Field. */
+    registerFieldInput(input: CheckboxFieldInput): (() => void) | undefined {
+        if (!this.field) return undefined;
+        this.fieldInputs.add(input);
+        return () => this.fieldInputs.delete(input);
     }
 
     /** @ignore Register a child's disabled signal keyed by its value. */
@@ -324,6 +406,12 @@ export class RdxCheckboxGroupDirective
         this.onChange(next);
         this.browserForm.sync();
         return true;
+    }
+
+    /** @ignore Clear group-owned interaction state on form reset. */
+    override reset(): void {
+        super.reset();
+        this.field?.setTouched(false);
     }
 
     /** @ignore */

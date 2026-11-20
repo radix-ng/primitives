@@ -23,6 +23,8 @@ import {
     values
 } from './contract';
 
+import { AngularCheckboxField } from './field.angular';
+
 const probe = installProbe();
 
 @Component({
@@ -32,7 +34,8 @@ const probe = installProbe();
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
         RdxCheckboxInputDirective,
-        RdxCheckboxGroupDirective
+        RdxCheckboxGroupDirective,
+        AngularCheckboxField
     ],
     styles: [
         `
@@ -53,72 +56,77 @@ const probe = installProbe();
         `
     ],
     template: `
-        <form id="form" (keydown.enter)="maybeCancelEnter($event)">
-            @if (isGroup) {
-                <div
-                    [controlledValue]="groupValue()"
-                    [defaultValue]="groupDefaultValue()"
-                    [allValues]="values"
-                    (onValueChange)="groupChange($event)"
-                    rdxCheckboxGroup
-                    aria-label="Features"
-                >
-                    <div (onCheckedChange)="request('parent', $event)" rdxCheckboxRoot parent>
-                        <button rdxCheckboxButton>All</button>
+        @if (isField) {
+            <parity-checkbox-field />
+        } @else {
+            <form id="form" (keydown.enter)="maybeCancelEnter($event)">
+                @if (isGroup) {
+                    <div
+                        [controlledValue]="groupValue()"
+                        [defaultValue]="groupDefaultValue()"
+                        [allValues]="values"
+                        (onValueChange)="groupChange($event)"
+                        rdxCheckboxGroup
+                        aria-label="Features"
+                    >
+                        <div (onCheckedChange)="request('parent', $event)" rdxCheckboxRoot parent>
+                            <button rdxCheckboxButton>All</button>
+                            <input rdxCheckboxInput />
+                        </div>
+                        @for (value of values; track value) {
+                            @if (value !== 'b' || showB()) {
+                                <div
+                                    [value]="value"
+                                    [name]="childName"
+                                    [disabled]="value === 'b' && disabledChild"
+                                    (onCheckedChange)="request(value, $event)"
+                                    rdxCheckboxRoot
+                                >
+                                    <button [id]="'option-' + value" rdxCheckboxButton>{{ value }}</button>
+                                    <input rdxCheckboxInput />
+                                </div>
+                            }
+                        }
+                    </div>
+                } @else {
+                    <label for="terms">Terms</label>
+                    <div
+                        [controlledChecked]="checked()"
+                        [defaultChecked]="defaultChecked()"
+                        [indeterminate]="mixed"
+                        [readOnly]="readOnly"
+                        [disabled]="disabled"
+                        [required]="required"
+                        [uncheckedValue]="uncheckedValue"
+                        (onCheckedChange)="request('terms', $event)"
+                        rdxCheckboxRoot
+                        name="terms"
+                        value="yes"
+                    >
+                        <button id="terms" rdxCheckboxButton>
+                            <span
+                                [keepMounted]="keepMounted"
+                                rdxCheckboxIndicator
+                                data-testid="indicator"
+                                aria-hidden="true"
+                            >
+                                ✓
+                            </span>
+                        </button>
                         <input rdxCheckboxInput />
                     </div>
-                    @for (value of values; track value) {
-                        @if (value !== 'b' || showB()) {
-                            <div
-                                [value]="value"
-                                [name]="childName"
-                                [disabled]="value === 'b' && disabledChild"
-                                (onCheckedChange)="request(value, $event)"
-                                rdxCheckboxRoot
-                            >
-                                <button [id]="'option-' + value" rdxCheckboxButton>{{ value }}</button>
-                                <input rdxCheckboxInput />
-                            </div>
-                        }
-                    }
-                </div>
-            } @else {
-                <label for="terms">Terms</label>
-                <div
-                    [controlledChecked]="checked()"
-                    [defaultChecked]="defaultChecked()"
-                    [indeterminate]="mixed"
-                    [readOnly]="readOnly"
-                    [disabled]="disabled"
-                    [required]="required"
-                    [uncheckedValue]="uncheckedValue"
-                    (onCheckedChange)="request('terms', $event)"
-                    rdxCheckboxRoot
-                    name="terms"
-                    value="yes"
-                >
-                    <button id="terms" rdxCheckboxButton>
-                        <span
-                            [keepMounted]="keepMounted"
-                            rdxCheckboxIndicator
-                            data-testid="indicator"
-                            aria-hidden="true"
-                        >
-                            ✓
-                        </span>
-                    </button>
-                    <input rdxCheckboxInput />
-                </div>
-                <button id="submit" type="submit">Submit</button>
-            }
-        </form>
-        <button (click)="changeDefault()">Change default</button>
-        <button (click)="apply()">Apply request</button>
-        <button (click)="showB.set(false)">Remove b</button>
+                    <button id="submit" type="submit">Submit</button>
+                }
+            </form>
+            <button (click)="changeDefault()">Change default</button>
+            <button (click)="apply()">Apply request</button>
+            <button (click)="showB.set(false)">Remove b</button>
+        }
     `
 })
 class CheckboxFixture {
     protected readonly isGroup = group;
+    protected readonly isField = scenario.startsWith('field-');
     protected readonly mixed = mixed;
     protected readonly keepMounted = keepMounted;
     protected readonly readOnly = scenario === 'readonly';

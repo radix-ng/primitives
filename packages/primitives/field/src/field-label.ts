@@ -35,7 +35,7 @@ export class RdxFieldLabel {
 
     protected readonly label = useLabel({
         id: this.id,
-        controlId: this.rootContext.controlId,
+        controlId: () => this.rootContext.controlId() || undefined,
         registries: [this.rootContext]
     });
 

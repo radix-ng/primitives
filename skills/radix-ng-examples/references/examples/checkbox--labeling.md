@@ -16,7 +16,9 @@ Always associate a checkbox with a label. Link a sibling `rdxLabel` to the butto
 <label rdxLabel htmlFor="terms">Accept terms and conditions</label>
 ```
 
-When using `rdxFieldLabel`, point its `htmlFor` at the same button ID.
+Inside `rdxFieldRoot`, use `rdxFieldLabel` and `rdxFieldDescription`. The label associates with the
+button's ID automatically. The checkbox inherits the Field's native name, disabled and required
+state. Supply `aria-labelledby` or `aria-label` on the button to override its accessible name.
 
 ## Setup and shared files
 

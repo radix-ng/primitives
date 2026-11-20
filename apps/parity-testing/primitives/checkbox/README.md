@@ -9,6 +9,10 @@ holding and later accepting requests, mixed presentation and checked submission,
 disabled inputs, label and Space activation, Enter submission and cancellation, required validity,
 and indicator exit. Group cases cover callback order and vetoes, the select-all cycle, preservation
 of disabled selections, rendered control IDs, and submission by individually named children.
+The Field cases exercise group and item label ownership, description inheritance, shared focus and
+filled state, and serialization under the Field name. The required scenarios verify the linked Field
+error, focus on blocked submit, and successful submission. Selecting an optional checkbox leaves a
+required sibling invalid.
 
 The fixtures record checked and mixed state, ARIA, native submission and change requests.
 Additional Angular and browser input contracts are recorded in the

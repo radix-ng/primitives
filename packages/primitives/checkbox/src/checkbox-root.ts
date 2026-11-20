@@ -2,6 +2,7 @@ import {
     afterRenderEffect,
     booleanAttribute,
     computed,
+    DestroyRef,
     Directive,
     effect,
     inject,
@@ -21,7 +22,6 @@ import {
     createContext,
     injectNgControlState,
     provideValueAccessor,
-    RDX_FIELD_VALIDITY,
     RdxCancelableChangeEventDetails,
     RdxFormCheckboxControl,
     RdxNativeInputRef,
@@ -29,6 +29,8 @@ import {
     useNativeFormControl,
     watch
 } from '@radix-ng/primitives/core';
+import { fieldDescribedBy, injectFieldRootContext, type RdxFieldRootContext } from '@radix-ng/primitives/field';
+import { useCheckboxFieldValidity } from './checkbox-field';
 import { injectCheckboxGroupContext } from './checkbox-group';
 
 /**
@@ -72,10 +74,16 @@ export interface CheckboxRootContext {
     displayValid: Signal<boolean | null>;
     touchedState: Signal<boolean>;
     dirtyState: Signal<boolean>;
+    filledState: Signal<boolean>;
+    focusedState: Signal<boolean>;
+    labelField: RdxFieldRootContext | null;
+    labelId: Signal<string | undefined>;
+    describedBy: (explicit?: string) => string | undefined;
     uncheckedValue: Signal<string | undefined>;
     registerNativeInput: (input: HTMLInputElement) => () => void;
     registerButton: (button: HTMLButtonElement) => () => void;
     focus: () => void;
+    onButtonFocus: () => void;
     blur: () => void;
     activate: (event: MouseEvent) => void;
     onEnter: (event: Event) => void;
@@ -89,7 +97,7 @@ const rootContext = (): CheckboxRootContext => {
         checked: checkbox.checkedState,
         indeterminate: checkbox.indeterminateState,
         disabled: checkbox.disabledState,
-        required: checkbox.required,
+        required: checkbox.requiredState,
         value: checkbox.nativeValue,
         name: checkbox.nativeName,
         itemValue: checkbox.itemValue,
@@ -101,10 +109,16 @@ const rootContext = (): CheckboxRootContext => {
         displayValid: checkbox.displayValid,
         touchedState: checkbox.touchedState,
         dirtyState: checkbox.dirtyState,
+        filledState: checkbox.filledState,
+        focusedState: checkbox.focusedState,
+        labelField: checkbox.labelField,
+        labelId: checkbox.labelId,
+        describedBy: (explicit) => checkbox.describedBy(explicit),
         uncheckedValue: checkbox.uncheckedValue,
         registerNativeInput: (input) => checkbox.registerNativeInput(input),
         registerButton: (button) => checkbox.registerButton(button),
         focus: () => checkbox.focus(),
+        onButtonFocus: () => checkbox.onButtonFocus(),
         blur: () => checkbox.blur(),
         activate: (event) => checkbox.activate(event),
         onEnter: (event) => checkbox.onEnter(event),
@@ -129,11 +143,13 @@ export const [injectCheckboxRootContext, provideCheckboxRootContext] = createCon
         '[attr.data-indeterminate]': 'indeterminateState() ? "" : undefined',
         '[attr.data-disabled]': 'disabledState() ? "" : undefined',
         '[attr.data-readonly]': 'readOnlyState() ? "" : undefined',
-        '[attr.data-required]': 'required() ? "" : undefined',
+        '[attr.data-required]': 'requiredState() ? "" : undefined',
         '[attr.data-invalid]': 'displayValid() === false ? "" : undefined',
         '[attr.data-valid]': 'displayValid() === true ? "" : undefined',
         '[attr.data-touched]': 'touchedState() ? "" : undefined',
-        '[attr.data-dirty]': 'dirtyState() ? "" : undefined'
+        '[attr.data-dirty]': 'dirtyState() ? "" : undefined',
+        '[attr.data-filled]': 'filledState() ? "" : undefined',
+        '[attr.data-focused]': 'focusedState() ? "" : undefined'
     }
 })
 export class RdxCheckboxRootDirective implements RdxFormCheckboxControl, ControlValueAccessor, OnChanges {
@@ -141,6 +157,10 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl, Control
 
     /** The group this checkbox belongs to, if it is rendered inside a `rdxCheckboxGroup`. */
     private readonly group = injectCheckboxGroupContext(true);
+    private readonly field = injectFieldRootContext(true);
+    /** @ignore A group owns the shared label scope. Field.Item opens a distinct scope. */
+    readonly labelField = this.field === this.group?.field ? null : this.field;
+    readonly labelId = computed(() => this.field?.labelId());
     private readonly nativeInputElement = signal<HTMLInputElement | null>(null);
     private button: HTMLButtonElement | null = null;
     private readonly disabledByCva = signal(false);
@@ -269,12 +289,13 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl, Control
      */
     readonly form = input<string>();
 
-    /** @ignore Item identity inside a checkbox group (`value`, falling back to the legacy child name). */
-    readonly itemValue = computed(() => this.submitValue() ?? this.name());
+    private readonly effectiveName = computed(() => this.field?.name() ?? this.name());
+    /** @ignore Item identity inside a checkbox group. */
+    readonly itemValue = computed(() => this.submitValue() ?? this.effectiveName());
     /** @ignore Native checkbox value; browsers default an omitted checkbox value to `on`. */
     readonly nativeValue = computed(() => this.submitValue() ?? 'on');
     /** @ignore Only a named group serializes its children centrally. */
-    readonly nativeName = computed(() => (this.group?.name() || this.parent() ? undefined : this.name()));
+    readonly nativeName = computed(() => (this.group?.name() || this.parent() ? undefined : this.effectiveName()));
     /** @ignore Child native inputs inherit an external form association from their checkbox group. */
     readonly nativeForm = computed(() => this.form() ?? this.group?.form());
 
@@ -324,8 +345,10 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl, Control
 
     /** @ignore The effective disabled state, including the group. */
     readonly disabledState = computed(
-        () => this.disabledByCva() || this.disabled() || (this.group?.disabled() ?? false)
+        () => this.disabledByCva() || this.disabled() || Boolean(this.group?.disabled() || this.field?.disabledState())
     );
+    /** @ignore A standalone checkbox inherits the enclosing Field's required metadata. */
+    readonly requiredState = computed(() => this.required() || (!this.group && Boolean(this.field?.requiredState())));
     readonly readOnlyState = computed(() => this.readonly());
 
     private readonly dirtyValue = signal(false);
@@ -347,18 +370,9 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl, Control
         () => this.pending() || Boolean(this.ngControlState.connected() && this.ngControlState.pending())
     );
 
-    /** Tri-state display validity exposed by an enclosing Field; absent when standalone. */
-    private readonly fieldValidity = inject(RDX_FIELD_VALIDITY, { optional: true });
-    /**
-     * @ignore Tri-state *displayed* validity. A **standalone** checkbox inside a `rdxFieldRoot` defers to
-     * the field's gated `validState` (so a field whose `validationMode` defers display (e.g. `onBlur`) stays neutral); inside a
-     * `rdxCheckboxGroup` the group owns the field relationship, so the item keeps its own binary validity
-     * (the field's invalid must not paint every checkbox red).
-     */
+    /** @ignore Display validity is scoped to the enclosing Field when present. */
     readonly displayValid = computed<boolean | null>(() => {
-        if (!this.group && this.fieldValidity) {
-            return this.fieldValidity();
-        }
+        if (this.field) return this.field.validState();
         if (this.pendingState()) {
             return null;
         }
@@ -371,13 +385,26 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl, Control
         return true;
     });
     /** @ignore */
-    readonly touchedState = computed(() =>
-        this.ngControlState.connected() ? this.ngControlState.touched() : this.touched()
+    readonly touchedState = computed(
+        () =>
+            this.field?.touchedState() ??
+            (this.ngControlState.connected() ? this.ngControlState.touched() : this.touched())
     );
     /** @ignore */
-    readonly dirtyState = computed(() =>
-        this.ngControlState.connected() ? this.ngControlState.dirty() : this.dirty() || this.dirtyValue()
+    readonly dirtyState = computed(
+        () =>
+            this.field?.dirtyState() ??
+            (this.ngControlState.connected() ? this.ngControlState.dirty() : this.dirty() || this.dirtyValue())
     );
+
+    /** @ignore Field presentation state is shared across the group and its items. */
+    readonly filledState = computed(() => this.field?.filledState() ?? false);
+    readonly focusedState = computed(() => this.field?.focusedState() ?? false);
+
+    /** @ignore Resolve description and error ids from the group and item label scopes. */
+    describedBy(explicit?: string): string | undefined {
+        return fieldDescribedBy(explicit, this.group?.field ?? null, this.labelField);
+    }
 
     readonly state = computed(() =>
         this.indeterminateState() ? 'indeterminate' : this.checkedState() ? 'checked' : 'unchecked'
@@ -437,9 +464,41 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl, Control
             }
         });
 
+        let fieldInitialChecked: boolean;
         watch([], () => {
             if (this.controlledChecked() === undefined) this.checked.set(this.initialChecked());
+            fieldInitialChecked = this.checkedState();
         });
+
+        const field = this.field;
+        if (field) {
+            watch([this.disabledState], ([disabled]) => {
+                if (disabled && this.button) field.setFocused(false, this.button);
+            });
+            if (!this.group) {
+                const unregister = field.registerControlState({
+                    filled: this.checkedState,
+                    blurred: field.touchedState,
+                    changed: field.dirtyState,
+                    ...useCheckboxFieldValidity(
+                        () => {
+                            const element = this.nativeInput();
+                            return element ? [{ element, button: () => this.button, participates: () => true }] : [];
+                        },
+                        () => (this.disabledState() ? null : this.button)
+                    )
+                });
+                inject(DestroyRef).onDestroy(unregister);
+                watch(
+                    [this.checkedState],
+                    ([checked]) => {
+                        field.setDirty(checked !== fieldInitialChecked);
+                        field.notifyEdited();
+                    },
+                    { defer: true }
+                );
+            }
+        }
 
         // Reactive/template-driven forms own their NgControl interaction state. Signal Forms instead
         // writes the public touched/dirty members, so standalone controls retain the existing fallback.
@@ -575,7 +634,10 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl, Control
     registerButton(button: HTMLButtonElement): () => void {
         this.button = button;
         return () => {
-            if (this.button === button) this.button = null;
+            if (this.button === button) {
+                this.field?.setFocused(false, button);
+                this.button = null;
+            }
         };
     }
 
@@ -585,8 +647,16 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl, Control
     }
 
     /** @ignore */
+    onButtonFocus(): void {
+        if (this.button && !this.disabledState()) this.field?.setFocused(true, this.button);
+    }
+
+    /** @ignore */
     blur(): void {
-        if (this.group || this.disabledState()) return;
+        if (this.button) this.field?.setFocused(false, this.button);
+        if (this.disabledState()) return;
+        this.field?.setTouched(true);
+        if (this.group) return;
         this.onTouched?.();
         this.touched.set(true);
         this.touch.emit();
@@ -596,12 +666,19 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl, Control
     reset(): void {
         this.touched.set(false);
         this.dirtyValue.set(false);
+        if (!this.group) this.field?.setTouched(false);
     }
 
     /** @ignore Register the optional native checkbox so it owns checked-value serialization. */
     registerNativeInput(input: HTMLInputElement): () => void {
         this.nativeInputElement.set(input);
+        const unregister = this.group?.registerFieldInput({
+            element: input,
+            button: () => this.button,
+            participates: () => !this.parent()
+        });
         return () => {
+            unregister?.();
             if (this.nativeInput() === input) {
                 this.nativeInputElement.set(null);
             }

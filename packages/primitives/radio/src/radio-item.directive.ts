@@ -12,8 +12,8 @@ import {
 import { RdxButtonBehavior } from '@radix-ng/primitives/button';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, createContext, injectId, type RdxNativeInputRef } from '@radix-ng/primitives/core';
-import { injectFieldRootContext, type RdxFieldRootContext } from '@radix-ng/primitives/field';
-import { radioDescribedBy, type RadioItemRegistration, type RadioNativeInput } from './radio-field';
+import { fieldDescribedBy, injectFieldRootContext, type RdxFieldRootContext } from '@radix-ng/primitives/field';
+import type { RadioItemRegistration, RadioNativeInput } from './radio-field';
 import { useRadioInputRef } from './radio-input-ref';
 import { injectRadioRootContext } from './radio-root.directive';
 
@@ -116,7 +116,7 @@ export class RdxRadioItemDirective<Value = string> {
     readonly ariaDescribedBy = input<string>(undefined, { alias: 'aria-describedby' });
 
     protected readonly describedBy = computed(() =>
-        radioDescribedBy(this.ariaDescribedBy(), this.rootContext.field, this.itemField)
+        fieldDescribedBy(this.ariaDescribedBy(), this.rootContext.field, this.itemField)
     );
 
     readonly required = input<boolean, BooleanInput>(false, { transform: booleanAttribute });

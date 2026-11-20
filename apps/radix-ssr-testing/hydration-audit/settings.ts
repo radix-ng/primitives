@@ -1,4 +1,5 @@
 export const cases = {
+    'reverse-checkbox-group': { kind: 'checkbox', placement: 'checkbox-reverse' },
     'eager-radio': { kind: 'radio', placement: 'eager' },
     'reverse-accordion-presence': { kind: 'accordion', placement: 'reverse' },
     'eager-accordion-retained': { kind: 'accordion', placement: 'eager', retain: true },
@@ -52,6 +53,7 @@ export type CaseName = keyof typeof cases;
 export interface Settings {
     name: CaseName;
     kind:
+        | 'checkbox'
         | 'accordion'
         | 'radio'
         | 'inline'
@@ -64,6 +66,7 @@ export interface Settings {
         | 'select'
         | 'dialog';
     placement:
+        | 'checkbox-reverse'
         | 'eager'
         | 'closed'
         | 'detached-trigger'

@@ -10,7 +10,14 @@ from `allValues`. Clicking the parent **remembers the partial selection** (parti
 back to the partial), and disabled selections are preserved. Bind the group's `string[]` value with
 `[(value)]`, `ngModel`, or Reactive Forms. Give the group a `name` to submit its enabled selections
 as repeated entries. With an unnamed group, each named child contributes its own native entry.
-A child's `name` also supplies its group identity when `value` is omitted.
+The effective native name supplies a child's group identity when `value` is omitted.
+
+To label a group, wrap it with `rdxFieldRoot` and use one `rdxFieldLabel` for the group. Give each
+checkbox a distinct `value` and wrap it in `rdxFieldItem` for its own label and description. Group
+descriptions also apply to its children. Give the select-all button an explicit accessible name,
+such as `aria-label="Select all features"`. If the Field has a `name`, each enabled checked child
+submits under that name. A child with `required` and an authored `rdxCheckboxInput` must be checked
+individually. Use `rdxFieldError` to display its native validation failure.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';

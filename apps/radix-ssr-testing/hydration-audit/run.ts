@@ -33,6 +33,42 @@ async function snapshot(page: Page) {
             errors: window.portalHydrationAudit?.errors ?? [],
             constructed: window.portalHydrationAudit?.constructed ?? [],
             duplicateIds: ids.filter((id, index) => ids.indexOf(id) !== index),
+            checkboxGroups: [...document.querySelectorAll<HTMLElement>('[data-checkbox-audit]')].map((view) => {
+                const group = view.querySelector('[role="group"]');
+                const parent = view.querySelector('[data-checkbox-node="parent"]');
+                const children = [...view.querySelectorAll<HTMLElement>('[role="checkbox"]:not([data-parent])')];
+                const nodes = [...view.querySelectorAll<HTMLElement>('[data-checkbox-node]')];
+                const form = view.querySelector('form');
+                return {
+                    name: view.dataset.checkboxAudit,
+                    hydrated: view.hasAttribute('data-client'),
+                    requests: Number(view.getAttribute('data-checkbox-requests')),
+                    fieldState: ['filled', 'dirty', 'touched'].filter((state) =>
+                        view.querySelector('[rdxFieldRoot]')?.hasAttribute('data-' + state)
+                    ),
+                    checked: parent?.getAttribute('aria-checked'),
+                    submitted: form ? new FormData(form).getAll('features') : [],
+                    ids: nodes.map((node) => node.id),
+                    reused: nodes.every(
+                        (node) =>
+                            window.auditServerNodes?.[
+                                view.dataset.checkboxAudit + ':checkbox:' + node.dataset.checkboxNode
+                            ] === node
+                    ),
+                    controls: parent?.getAttribute('aria-controls') === children.map((child) => child.id).join(' '),
+                    associations:
+                        group?.getAttribute('aria-labelledby') ===
+                            view.querySelector('[data-checkbox-node="group-label"]')?.id &&
+                        group?.getAttribute('aria-describedby') ===
+                            view.querySelector('[data-checkbox-node="description"]')?.id &&
+                        children.every((child) => {
+                            const label = view.querySelector<HTMLLabelElement>(
+                                `[data-checkbox-node="label-${child.dataset.checkboxNode}"]`
+                            );
+                            return label?.control === child && child.getAttribute('aria-labelledby') === label?.id;
+                        })
+                };
+            }),
             radio:
                 radioForm && radioView
                     ? {
@@ -164,6 +200,84 @@ interface Observation {
     scriptRequests: string[];
     document?: string;
     frameworkLimits?: string[];
+}
+
+async function checkCheckboxHydration(
+    page: Page,
+    observation: Observation,
+    record: (label: string) => Promise<Snapshot>,
+    release: () => void
+) {
+    const first = page.locator('[data-checkbox-audit="first"]');
+    const second = page.locator('[data-checkbox-audit="second"]');
+    await page.evaluate(() => {
+        for (const view of document.querySelectorAll<HTMLElement>('[data-checkbox-audit]')) {
+            for (const node of view.querySelectorAll<HTMLElement>('[data-checkbox-node]')) {
+                window.auditServerNodes![view.dataset.checkboxAudit + ':checkbox:' + node.dataset.checkboxNode] = node;
+            }
+        }
+    });
+    const { checkboxGroups: before } = await record('server-rendered groups and labels');
+    observation.checks.serverGroups =
+        before.length === 2 &&
+        before.every(
+            (group) =>
+                !group.hydrated &&
+                group.checked === 'mixed' &&
+                group.submitted.join() === 'a' &&
+                group.controls &&
+                group.associations
+        );
+
+    release();
+    await page.waitForFunction(() => window.portalHydrationAudit?.ready, undefined, { timeout: 5000 });
+    const { checkboxGroups: boot } = await record('groups still deferred after bootstrap');
+    observation.checks.deferredOnBootstrap = boot.length === 2 && boot.every((group) => !group.hydrated);
+
+    await second.locator('[data-checkbox-node="parent"]').click();
+    await second.and(page.locator('[data-checkbox-requests="1"]')).waitFor({ timeout: 5000 });
+    const { checkboxGroups: afterSecond } = await record('select-all replays in the second group');
+    observation.checks.secondHydratesFirst =
+        !afterSecond[0]?.hydrated &&
+        afterSecond[0]?.submitted.join() === 'a' &&
+        afterSecond[1]?.hydrated &&
+        afterSecond[1]?.submitted.join() === 'a,b';
+
+    await first.locator('[data-checkbox-node="parent"]').click();
+    await first.and(page.locator('[data-checkbox-requests="1"]')).waitFor({ timeout: 5000 });
+    const afterBoth = await record('both groups retain their server associations after replay');
+    observation.checks.replayedOncePerGroup = afterBoth.checkboxGroups.every(
+        (group) =>
+            group.hydrated && group.requests === 1 && group.checked === 'true' && group.submitted.join() === 'a,b'
+    );
+    observation.checks.idsAndNodesPreserved =
+        !afterBoth.duplicateIds.length &&
+        afterBoth.checkboxGroups.every(
+            (group, index) =>
+                group.reused && group.controls && group.associations && group.ids.join() === before[index].ids.join()
+        );
+
+    await second.locator('[data-checkbox-node="label-b"]').click();
+    const { checkboxGroups: afterLabel } = await record('native label activates its original control');
+    observation.checks.nativeLabelAfterHydration =
+        afterLabel[0]?.requests === 1 &&
+        afterLabel[0]?.submitted.join() === 'a,b' &&
+        afterLabel[1]?.requests === 2 &&
+        afterLabel[1]?.submitted.join() === 'a';
+
+    await first.locator('[data-checkbox-node="parent"]').focus();
+    await page.locator('[data-hydrate-first]').focus();
+    const { checkboxGroups: beforeReset } = await record('the edited group is dirty and touched');
+    await first.locator('form').evaluate((form) => (form as HTMLFormElement).reset());
+    await first.locator('[data-checkbox-node="parent"][aria-checked="mixed"]').waitFor({ timeout: 5000 });
+    const { checkboxGroups: afterReset } = await record('native reset restores the initial selection and Field state');
+    observation.checks.resetRestoresHydratedGroup =
+        beforeReset[0]?.fieldState.join() === 'filled,dirty,touched' &&
+        afterReset[0]?.submitted.join() === 'a' &&
+        afterReset[0]?.fieldState.join() === 'filled' &&
+        afterReset[0]?.requests === 1 &&
+        afterReset[0]?.reused &&
+        afterReset[1]?.requests === 2;
 }
 
 async function checkRadioHydration(
@@ -508,6 +622,10 @@ try {
             });
             if (settings.placement === 'detached-trigger') {
                 await checkDetachedDialogHydration(page, observation, record, release);
+                continue;
+            }
+            if (settings.kind === 'checkbox') {
+                await checkCheckboxHydration(page, observation, record, release);
                 continue;
             }
             if (settings.kind === 'radio') {

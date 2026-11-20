@@ -37,10 +37,10 @@ import {
     useNativeFormControl,
     watch
 } from '@radix-ng/primitives/core';
-import { injectFieldRootContext, type RdxFieldRootContext } from '@radix-ng/primitives/field';
+import { fieldDescribedBy, injectFieldRootContext, type RdxFieldRootContext } from '@radix-ng/primitives/field';
 import { injectFieldsetRootContext } from '@radix-ng/primitives/fieldset';
 import { injectFormRootContext } from '@radix-ng/primitives/form';
-import { radioDescribedBy, type RadioItemRegistration } from './radio-field';
+import type { RadioItemRegistration } from './radio-field';
 import { useRadioInputRef } from './radio-input-ref';
 import { RdxRadioValueChangeReason } from './radio-tokens';
 
@@ -181,7 +181,7 @@ export class RdxRadioGroupDirective<Value = string>
     /** Additional description IDs. Field descriptions and errors are appended automatically. */
     readonly ariaDescribedBy = input<string>(undefined, { alias: 'aria-describedby' });
 
-    protected readonly describedBy = computed(() => radioDescribedBy(this.ariaDescribedBy(), this.field));
+    protected readonly describedBy = computed(() => fieldDescribedBy(this.ariaDescribedBy(), this.field));
     protected readonly labelledBy = computed(
         () => this.ariaLabelledBy() ?? this.field?.labelId() ?? this.fieldset?.labelId()
     );

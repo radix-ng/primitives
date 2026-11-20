@@ -107,7 +107,7 @@ export interface RdxFieldRootContext extends RdxLabelRegistry {
     removeDescriptionId: (id: string) => void;
     addErrorId: (id: string) => void;
     removeErrorId: (id: string) => void;
-    setFocused: (value: boolean) => void;
+    setFocused: (value: boolean, owner?: object) => void;
     setFilled: (value: boolean) => void;
     /** @internal Register a composite control's presentation state. */
     registerControlState: (state: RdxFieldControlState) => () => void;
@@ -152,7 +152,7 @@ const fieldRootContext = (): RdxFieldRootContext => {
         removeDescriptionId: (id: string) => root.descriptionIds.update((ids) => removeId(ids, id)),
         addErrorId: (id: string) => root.errorIds.update((ids) => addId(ids, id)),
         removeErrorId: (id: string) => root.errorIds.update((ids) => removeId(ids, id)),
-        setFocused: (value: boolean) => root.focusedValue.set(value),
+        setFocused: (value, owner) => root.setFocused(value, owner),
         setFilled: (value: boolean) => root.filledValue.set(value),
         registerControlState: (state) => root.registerControlState(state),
         setDirty: (value: boolean) => root.dirtyValue.set(value),
@@ -460,6 +460,16 @@ export class RdxFieldRoot {
         this.formContext?.notifyEdited(this.effectiveName());
     }
 
+    private focusOwner?: object;
+
+    /** @ignore Releases focus only for the control that last acquired it. */
+    setFocused(value: boolean, owner?: object): void {
+        if (value || owner === undefined || this.focusOwner === owner) {
+            this.focusOwner = value ? owner : undefined;
+            this.focusedValue.set(value);
+        }
+    }
+
     /** @ignore The composite control owns these observations through reset and hydration. */
     registerControlState(state: RdxFieldControlState): () => void {
         this.controlState.set(state);
@@ -478,7 +488,7 @@ export class RdxFieldRoot {
     resetState(): void {
         this.touchedValue.set(false);
         this.dirtyValue.set(false);
-        this.focusedValue.set(false);
+        this.setFocused(false);
         const control = this.controlElement();
         const value = control && 'value' in control ? (control as HTMLInputElement).value : '';
         this.filledValue.set(value != null && value !== '');
@@ -509,7 +519,8 @@ export class RdxFieldRoot {
      * registers its id through `setControlId`, so this matches the same element the labels point at.
      */
     private controlElement(): HTMLElement | null {
-        return this.host.querySelector<HTMLElement>(`[id="${this.controlId()}"]`);
+        const id = this.controlId();
+        return id ? this.host.querySelector<HTMLElement>(`[id="${id}"]`) : null;
     }
 
     /**

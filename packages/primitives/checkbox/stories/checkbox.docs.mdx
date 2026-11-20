@@ -2,6 +2,7 @@ import defaultExampleSource from './checkbox-default-example?raw';
 import demoStylesSource from '../../../../apps/radix-storybook/.storybook/demo-styles.css?raw';
 import { Source, ArgTypes, Canvas, Meta, Primary } from '@storybook/addon-docs/blocks';
 import * as CheckboxStories from './checkbox.stories';
+import { RdxCheckboxButtonDirective } from '../src/checkbox-button';
 import { RdxCheckboxGroupDirective } from '../src/checkbox-group';
 import { RdxCheckboxIndicatorDirective } from '../src/checkbox-indicator';
 import { RdxCheckboxRootDirective } from '../src/checkbox-root';
@@ -71,7 +72,9 @@ Always associate a checkbox with a label. Link a sibling `rdxLabel` to the butto
 <label rdxLabel htmlFor="terms">Accept terms and conditions</label>
 ```
 
-When using `rdxFieldLabel`, point its `htmlFor` at the same button ID.
+Inside `rdxFieldRoot`, use `rdxFieldLabel` and `rdxFieldDescription`. The label associates with the
+button's ID automatically. The checkbox inherits the Field's native name, disabled and required
+state. Supply `aria-labelledby` or `aria-label` on the button to override its accessible name.
 
 ### Change events
 
@@ -161,7 +164,14 @@ from `allValues`. Clicking the parent **remembers the partial selection** (parti
 back to the partial), and disabled selections are preserved. Bind the group's `string[]` value with
 `[(value)]`, `ngModel`, or Reactive Forms. Give the group a `name` to submit its enabled selections
 as repeated entries. With an unnamed group, each named child contributes its own native entry.
-A child's `name` also supplies its group identity when `value` is omitted.
+The effective native name supplies a child's group identity when `value` is omitted.
+
+To label a group, wrap it with `rdxFieldRoot` and use one `rdxFieldLabel` for the group. Give each
+checkbox a distinct `value` and wrap it in `rdxFieldItem` for its own label and description. Group
+descriptions also apply to its children. Give the select-all button an explicit accessible name,
+such as `aria-label="Select all features"`. If the Field has a `name`, each enabled checked child
+submits under that name. A child with `required` and an authored `rdxCheckboxInput` must be checked
+individually. Use `rdxFieldError` to display its native validation failure.
 
 <Canvas of={CheckboxStories.Group} />
 
@@ -217,12 +227,20 @@ element such as a `<div>`. Use `nativeInput()` or `[inputRef]` to access an auth
 | `data-disabled`      | The checkbox is disabled.           |
 | `data-readonly`      | The checkbox is read-only.          |
 | `data-required`      | The checkbox is required.           |
+| `data-valid`         | The displayed validity is valid.     |
+| `data-invalid`       | The displayed validity is invalid.   |
+| `data-touched`       | The control or its Field was touched. |
+| `data-dirty`         | The control or its Field is dirty.    |
+| `data-filled`        | The enclosing Field has a checked value. |
+| `data-focused`       | A checkbox in the Field has focus.    |
 
 ### Button
 
 Apply `RdxCheckboxButtonDirective` to a native `<button>`. Give it an `id` to associate a label.
 Disabled buttons use native `disabled` and leave the tab order. Space toggles the checkbox.
 Enter activates the owning form's default submit button, when present.
+
+<ArgTypes of={RdxCheckboxButtonDirective} />
 
 **Data attributes**
 
@@ -234,6 +252,12 @@ Enter activates the owning form's default submit button, when present.
 | `data-disabled`      | The checkbox is disabled.           |
 | `data-readonly`      | The checkbox is read-only.          |
 | `data-required`      | The checkbox is required.           |
+| `data-valid`         | The displayed validity is valid.     |
+| `data-invalid`       | The displayed validity is invalid.   |
+| `data-touched`       | The control or its Field was touched. |
+| `data-dirty`         | The control or its Field is dirty.    |
+| `data-filled`        | The enclosing Field has a checked value. |
+| `data-focused`       | A checkbox in the Field has focus.    |
 
 ### Indicator
 
@@ -252,6 +276,12 @@ The directive retains the authored element and manages its layout visibility.
 | `data-disabled`       | The checkbox is disabled.                |
 | `data-readonly`       | The checkbox is read-only.               |
 | `data-required`       | The checkbox is required.                |
+| `data-valid`         | The displayed validity is valid.     |
+| `data-invalid`       | The displayed validity is invalid.   |
+| `data-touched`       | The control or its Field was touched. |
+| `data-dirty`         | The control or its Field is dirty.    |
+| `data-filled`        | The enclosing Field has a checked value. |
+| `data-focused`       | A checkbox in the Field has focus.    |
 | `data-starting-style` | The indicator begins animating in. |
 | `data-ending-style`   | The indicator is animating out.   |
 
@@ -274,6 +304,12 @@ checked child values. Mark a child checkbox `parent` to make it select/deselect 
 | Attribute       | Present when           |
 | --------------- | ---------------------- |
 | `data-disabled` | The group is disabled. |
+| `data-valid`         | The displayed validity is valid.     |
+| `data-invalid`       | The displayed validity is invalid.   |
+| `data-touched`       | The control or its Field was touched. |
+| `data-dirty`         | The control or its Field is dirty.    |
+| `data-filled`        | The enclosing Field has a checked value. |
+| `data-focused`       | A checkbox in the Field has focus.    |
 
 ## Accessibility
 
