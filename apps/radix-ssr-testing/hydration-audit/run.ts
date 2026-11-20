@@ -50,6 +50,7 @@ async function snapshot(page: Page) {
                     ),
                     checked: parent?.getAttribute('aria-checked'),
                     submitted: form ? new FormData(form).getAll('features') : [],
+                    nativeInputs: view.querySelectorAll('input[type="checkbox"]').length,
                     indicators: indicators.map((indicator) => indicator.dataset.checkboxIndicator),
                     initialIndicatorReused:
                         !!initialIndicator &&
@@ -269,6 +270,9 @@ async function checkCheckboxHydration(
     observation.checks.indicatorsHydrateAndMount =
         before.every((group) => group.indicators.join() === 'a') &&
         afterBoth.checkboxGroups.every((group) => group.indicators.join() === 'a,b' && group.initialIndicatorReused);
+    observation.checks.fallbackInputAfterHydration =
+        before.every((group) => group.nativeInputs === 2) &&
+        afterBoth.checkboxGroups.every((group) => group.nativeInputs === 3);
 
     await second.locator('[data-checkbox-node="label-b"]').click();
     const { checkboxGroups: afterLabel } = await record('native label activates its original control');

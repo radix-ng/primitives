@@ -337,18 +337,29 @@ describe('RdxCheckbox', () => {
         expect(new FormData(form).has('terms')).toBe(false);
     });
 
-    it('notifies inputRef when the authored input is attached and removed', () => {
+    it('switches between authored and generated inputs without duplicating the submitted value', () => {
         TestBed.resetTestingModule();
         TestBed.configureTestingModule({ imports: [CheckboxDefaultCheckedHost] });
         const fixture = TestBed.createComponent(CheckboxDefaultCheckedHost);
         fixture.detectChanges();
-        const ref = fixture.componentInstance.inputRef;
+        const host = fixture.componentInstance;
+        const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+        const activeInput = () => form.querySelector<HTMLInputElement>('input[type=checkbox]');
+        const first = activeInput();
+        expect(host.inputRef.mock.calls).toEqual([[first]]);
 
-        expect(ref.mock.calls).toEqual([[fixture.nativeElement.querySelector('input[type=checkbox]')]]);
-        fixture.componentInstance.showInput.set(false);
+        host.showInput.set(false);
         fixture.detectChanges();
+        const generated = activeInput();
+        expect(generated).not.toBe(first);
+        expect(host.inputRef.mock.calls).toEqual([[first], [null], [generated]]);
+        expect(new FormData(form).getAll('terms')).toEqual(['on']);
 
-        expect(ref.mock.calls).toEqual([[expect.any(HTMLInputElement)], [null]]);
+        host.showInput.set(true);
+        fixture.detectChanges();
+        expect(generated?.isConnected).toBe(false);
+        expect(host.inputRef.mock.calls.slice(-2)).toEqual([[null], [activeInput()]]);
+        expect(new FormData(form).getAll('terms')).toEqual(['on']);
     });
 
     it('keeps an explicitly false model and emits no request for a conflicting default', () => {
@@ -495,7 +506,15 @@ describe('RdxCheckboxRoot uncheckedValue', () => {
     imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective],
     template: `
         <form id="consent"></form>
-        <div [(checked)]="checked" [disabled]="disabled" rdxCheckboxRoot name="terms" form="consent" value="yes">
+        <div
+            [(checked)]="checked"
+            [disabled]="disabled"
+            rdxCheckboxRoot
+            name="terms"
+            form="consent"
+            value="yes"
+            required
+        >
             <button rdxCheckboxButton>Terms</button>
         </div>
     `
@@ -506,7 +525,7 @@ class CheckboxNativeFormHost {
 }
 
 describe('RdxCheckboxRoot native form contract', () => {
-    it('serializes without the optional input, supports an external form, and excludes disabled state', () => {
+    it('validates and serializes a generated input in its external form', () => {
         TestBed.configureTestingModule({ imports: [CheckboxNativeFormHost] });
         const fixture = TestBed.createComponent(CheckboxNativeFormHost);
         const host = fixture.componentInstance;
@@ -515,15 +534,18 @@ describe('RdxCheckboxRoot native form contract', () => {
         const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
         const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
 
+        expect(form.checkValidity()).toBe(false);
         expect(new FormData(form).has('terms')).toBe(false);
 
         button.click();
         fixture.detectChanges();
+        expect(form.checkValidity()).toBe(true);
         expect(new FormData(form).get('terms')).toBe('yes');
 
         host.disabled = true;
         fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
+        expect(form.checkValidity()).toBe(true);
         expect(new FormData(form).has('terms')).toBe(false);
     });
 });

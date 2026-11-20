@@ -9,10 +9,12 @@ import {
     initialDefault,
     initialGroup,
     installProbe,
+    isForm,
     keepMounted,
     mixed,
     record,
     scenario,
+    standalonePortal,
     values
 } from './contract';
 
@@ -93,8 +95,8 @@ function CheckboxFixture() {
                             indeterminate={mixed}
                             readOnly={scenario === 'readonly'}
                             disabled={scenario === 'disabled'}
-                            required={scenario === 'form'}
-                            uncheckedValue={scenario === 'form' ? 'no' : undefined}
+                            required={isForm}
+                            uncheckedValue={isForm ? 'no' : undefined}
                             onCheckedChange={(next, details) => {
                                 if (record('terms', next, details)) nextChecked.current = next;
                             }}
@@ -138,7 +140,7 @@ function CheckboxFixture() {
 const root = document.getElementById('root');
 if (root) {
     createRoot(root).render(
-        scenario.startsWith('group-portal') ? (
+        scenario.startsWith('group-portal') || standalonePortal ? (
             <ReactCheckboxPortal />
         ) : scenario.startsWith('field-') ? (
             <ReactCheckboxField />

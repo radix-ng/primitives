@@ -16,8 +16,8 @@ To label a group, wrap it with `rdxFieldRoot` and use one `rdxFieldLabel` for th
 checkbox a distinct `value` and wrap it in `rdxFieldItem` for its own label and description. Group
 descriptions also apply to its children. Give the select-all button an explicit accessible name,
 such as `aria-label="Select all features"`. If the Field has a `name`, each enabled checked child
-submits under that name. A child with `required` and an authored `rdxCheckboxInput` must be checked
-individually. Use `rdxFieldError` to display its native validation failure.
+submits under that name. A child with `required` must be checked individually. Use
+`rdxFieldError` to display its native validation failure.
 
 A group moved through `rdxPortal` can still submit via its declaring `rdxFormRoot` when it lives
 inside a Field. The form collects values from the group's connected, enabled native inputs.

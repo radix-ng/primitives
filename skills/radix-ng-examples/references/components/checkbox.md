@@ -28,19 +28,20 @@ import {
 
 ## Anatomy
 
-Assemble the root, button trigger, and indicator. The native input is optional.
+Assemble the root, button trigger, and indicator.
 
 ```html
 <div rdxCheckboxRoot>
   <button rdxCheckboxButton>
     <svg *rdxCheckboxIndicatorPresence rdxCheckboxIndicator lucideCheck />
   </button>
-  <input rdxCheckboxInput />
 </div>
 ```
 
-A named root participates in `FormData` even without `[rdxCheckboxInput]`. Include the input when you
-also need native constraint validation or bubbling browser `input` and `change` events.
+The root generates a native checkbox after browser rendering. It supports `required`, bubbling
+`input` and `change` events, and `FormData` when it has a name. Add an `<input rdxCheckboxInput />`
+to control the input's placement or include it in server-rendered HTML. The authored input takes
+over automatically.
 
 ## Examples
 

@@ -37,7 +37,6 @@ import { RdxFieldDescription, RdxFieldItem, RdxFieldLabel, RdxFieldRoot } from '
                 <div [allValues]="values" [defaultValue]="initial" (onValueChange)="countRequest()" rdxCheckboxGroup>
                     <div rdxCheckboxRoot parent>
                         <button rdxCheckboxButton aria-label="All" data-checkbox-node="parent">All</button>
-                        <input rdxCheckboxInput />
                     </div>
                     @for (value of values; track value) {
                         <div rdxFieldItem>

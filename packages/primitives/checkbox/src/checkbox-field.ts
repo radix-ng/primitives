@@ -9,7 +9,7 @@ export interface CheckboxFieldInput {
     participates(): boolean;
 }
 
-/** Read browser constraints from authored inputs and report the visible invalid control to Field. */
+/** Read browser constraints from native inputs and report the visible invalid control to Field. */
 export function useCheckboxFieldValidity(
     inputs: () => Iterable<CheckboxFieldInput>,
     fallbackFocusTarget: () => HTMLButtonElement | null

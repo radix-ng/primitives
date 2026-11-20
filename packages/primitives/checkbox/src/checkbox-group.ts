@@ -16,6 +16,7 @@ import {
 import { ControlValueAccessor } from '@angular/forms';
 import {
     BooleanInput,
+    compareNodeDocumentPosition,
     createContext,
     hasNoNativeFormOwner,
     provideValueAccessor,
@@ -325,6 +326,7 @@ export class RdxCheckboxGroupDirective
 
         return this.ownerlessInputs()
             .filter(({ element }) => element.checked && element.name && !element.matches(':disabled'))
+            .sort((a, b) => compareNodeDocumentPosition(a.element, b.element))
             .map(({ element }) => [element.name, element.value]);
     }
 

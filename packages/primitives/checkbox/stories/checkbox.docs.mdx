@@ -37,19 +37,20 @@ import {
 
 ## Anatomy
 
-Assemble the root, button trigger, and indicator. The native input is optional.
+Assemble the root, button trigger, and indicator.
 
 ```html
 <div rdxCheckboxRoot>
   <button rdxCheckboxButton>
     <svg *rdxCheckboxIndicatorPresence rdxCheckboxIndicator lucideCheck />
   </button>
-  <input rdxCheckboxInput />
 </div>
 ```
 
-A named root participates in `FormData` even without `[rdxCheckboxInput]`. Include the input when you
-also need native constraint validation or bubbling browser `input` and `change` events.
+The root generates a native checkbox after browser rendering. It supports `required`, bubbling
+`input` and `change` events, and `FormData` when it has a name. Add an `<input rdxCheckboxInput />`
+to control the input's placement or include it in server-rendered HTML. The authored input takes
+over automatically.
 
 ## Examples
 
@@ -68,7 +69,6 @@ Always associate a checkbox with a label. Link a sibling `rdxLabel` to the butto
   <button id="terms" rdxCheckboxButton>
     <svg *rdxCheckboxIndicatorPresence rdxCheckboxIndicator lucideCheck />
   </button>
-  <input rdxCheckboxInput />
 </div>
 <label rdxLabel htmlFor="terms">Accept terms and conditions</label>
 ```
@@ -76,6 +76,11 @@ Always associate a checkbox with a label. Link a sibling `rdxLabel` to the butto
 Inside `rdxFieldRoot`, use `rdxFieldLabel` and `rdxFieldDescription`. The label associates with the
 button's ID automatically. The checkbox inherits the Field's native name, disabled and required
 state. Supply `aria-labelledby` or `aria-label` on the button to override its accessible name.
+
+Inside `rdxFieldRoot`, a checkbox moved through `rdxPortal` contributes its checked value or
+`uncheckedValue` to the declaring `rdxFormRoot`. Resetting that form restores the initial editable
+state. An explicit `form` assigns native ownership, so the declaring form collects the value only
+when it is the assigned owner.
 
 ### Change events
 
@@ -173,8 +178,8 @@ To label a group, wrap it with `rdxFieldRoot` and use one `rdxFieldLabel` for th
 checkbox a distinct `value` and wrap it in `rdxFieldItem` for its own label and description. Group
 descriptions also apply to its children. Give the select-all button an explicit accessible name,
 such as `aria-label="Select all features"`. If the Field has a `name`, each enabled checked child
-submits under that name. A child with `required` and an authored `rdxCheckboxInput` must be checked
-individually. Use `rdxFieldError` to display its native validation failure.
+submits under that name. A child with `required` must be checked individually. Use
+`rdxFieldError` to display its native validation failure.
 
 A group moved through `rdxPortal` can still submit via its declaring `rdxFormRoot` when it lives
 inside a Field. The form collects values from the group's connected, enabled native inputs.
@@ -221,7 +226,8 @@ system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook 
 ### Root
 
 `RdxCheckboxRootDirective` coordinates checkbox state and form bindings. Apply it to a container
-element such as a `<div>`. Use `nativeInput()` or `[inputRef]` to access an authored native input.
+element such as a `<div>`. Use `nativeInput()` or `[inputRef]` to access the active native input.
+An authored input takes precedence when present.
 
 <ArgTypes of={RdxCheckboxRootDirective} />
 
@@ -296,9 +302,8 @@ transition state on the element, and can also decorate an indicator whose view y
 
 ### Input
 
-Apply `RdxCheckboxInputDirective` to an optional native input for browser constraint validation and
-`input` and `change` events. A named root also supports `FormData` serialization through the native
-form bridge.
+Apply `RdxCheckboxInputDirective` to a native input to set its location in the template. It takes
+over browser validation, activation and form serialization from the generated checkbox.
 
 ### Checkbox Group
 

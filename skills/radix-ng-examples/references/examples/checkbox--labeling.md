@@ -11,7 +11,6 @@ Always associate a checkbox with a label. Link a sibling `rdxLabel` to the butto
   <button id="terms" rdxCheckboxButton>
     <svg *rdxCheckboxIndicatorPresence rdxCheckboxIndicator lucideCheck />
   </button>
-  <input rdxCheckboxInput />
 </div>
 <label rdxLabel htmlFor="terms">Accept terms and conditions</label>
 ```
@@ -19,6 +18,11 @@ Always associate a checkbox with a label. Link a sibling `rdxLabel` to the butto
 Inside `rdxFieldRoot`, use `rdxFieldLabel` and `rdxFieldDescription`. The label associates with the
 button's ID automatically. The checkbox inherits the Field's native name, disabled and required
 state. Supply `aria-labelledby` or `aria-label` on the button to override its accessible name.
+
+Inside `rdxFieldRoot`, a checkbox moved through `rdxPortal` contributes its checked value or
+`uncheckedValue` to the declaring `rdxFormRoot`. Resetting that form restores the initial editable
+state. An explicit `form` assigns native ownership, so the declaring form collects the value only
+when it is the assigned owner.
 
 ## Setup and shared files
 

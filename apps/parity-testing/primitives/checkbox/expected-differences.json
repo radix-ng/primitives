@@ -6,5 +6,53 @@
         "angular": "a",
         "react": "a,b",
         "category": "portaled-native-reset-selection"
+    },
+    {
+        "scenario": "standalone-portal",
+        "checkpoint": "portaled unchecked value",
+        "field": "value",
+        "angular": "no",
+        "react": "false",
+        "category": "form-checkbox-serialization"
+    },
+    {
+        "scenario": "standalone-portal",
+        "checkpoint": "portaled checked value",
+        "field": "value",
+        "angular": "yes",
+        "react": "true",
+        "category": "form-checkbox-serialization"
+    },
+    {
+        "scenario": "standalone-portal",
+        "checkpoint": "explicit declaring form ownership",
+        "field": "value",
+        "angular": "yes",
+        "react": "true",
+        "category": "form-checkbox-serialization"
+    },
+    {
+        "scenario": "standalone-portal",
+        "checkpoint": "external form owns the native value",
+        "field": "value",
+        "angular": "",
+        "react": "true",
+        "category": "portaled-checkbox-explicit-form-ownership"
+    },
+    {
+        "scenario": "standalone-portal",
+        "checkpoint": "canceled reset preserves checked value",
+        "field": "value",
+        "angular": "yes",
+        "react": "true",
+        "category": "form-checkbox-serialization"
+    },
+    {
+        "scenario": "standalone-portal",
+        "checkpoint": "accepted reset from declaring form",
+        "field": "value",
+        "angular": "no",
+        "react": "true",
+        "category": "portaled-native-reset-selection"
     }
 ]

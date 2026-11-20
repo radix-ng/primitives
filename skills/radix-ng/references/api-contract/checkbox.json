@@ -216,7 +216,7 @@
         {
           "name": "inputRef",
           "type": "RdxNativeInputRef",
-          "description": "Receives the authored input in the browser and null when the association ends."
+          "description": "Receives the active input in the browser and null when the association ends."
         },
         {
           "name": "invalid",

@@ -258,10 +258,14 @@ const scenarios: { name: string; run(driver: CheckboxDriver): Promise<void> }[] 
             }
         }
     })),
-    {
-        name: 'form',
-        async run(driver) {
+    ...['form', 'form-generated'].map((name) => ({
+        name,
+        async run(driver: CheckboxDriver) {
             const { page, terms } = driver;
+            const input = page.locator('input[type=checkbox]');
+            await expect(input).toHaveCount(1);
+            await expect(input).toHaveAttribute('aria-hidden', 'true');
+            await expect(page.getByRole('checkbox', { name: 'Terms' })).toHaveCount(1);
             const nativeEvents = () => page.evaluate(() => window.checkboxParity.native);
             const submittedEvents = ['input', 'change', 'submit:submit'];
             const changes = [change('terms', true)];
@@ -284,7 +288,6 @@ const scenarios: { name: string; run(driver: CheckboxDriver): Promise<void> }[] 
             await terms.press('Space');
             const unchecked = [...changes, change('terms', false)];
             await driver.standalone('required checkbox unchecked again', 'false', unchecked, ['no']);
-            const input = page.locator('input[type=checkbox]');
             await input.evaluate((input) => {
                 input.addEventListener('invalid', () => input.setAttribute('data-invalid-event', ''), { once: true });
             });
@@ -294,7 +297,7 @@ const scenarios: { name: string; run(driver: CheckboxDriver): Promise<void> }[] 
             await driver.standalone('invalid Enter keeps the checkbox unchecked', 'false', unchecked, ['no']);
             expect(await nativeEvents()).toEqual([...submittedEvents, 'input', 'change']);
         }
-    },
+    })),
     {
         name: 'indicator',
         async run(driver) {
@@ -531,6 +534,66 @@ const scenarios: { name: string; run(driver: CheckboxDriver): Promise<void> }[] 
             });
         }
     })),
+    {
+        name: 'standalone-portal',
+        async run(driver) {
+            const { page } = driver;
+            const terms = page.getByTestId('destination').getByRole('checkbox', { name: 'Terms' });
+            const input = page.getByTestId('destination').locator('input[type=checkbox]');
+            const submit = page.getByRole('button', { name: 'Submit' });
+            const reset = page.getByRole('button', { name: 'Reset', exact: true });
+            const result = page.getByTestId('submitted');
+            const submissions = page.getByTestId('submissions');
+            const valuesFor = (id: string) =>
+                page.locator('#' + id).evaluate((form) => new FormData(form as HTMLFormElement).getAll('terms'));
+            const angular = driver.framework === 'angular';
+            const selected = angular ? 'yes' : 'true';
+            const unselected = angular ? 'no' : 'false';
+            let count = 0;
+            const submitValues = async (name: string, value: string) => {
+                await submit.click();
+                await expect(submissions).toHaveText(String(++count));
+                await expect(result).toHaveText(value);
+                driver.checkpoints.push({ name, state: { value: await result.textContent() } });
+            };
+            await expect(input).toHaveCount(1);
+            await expect(terms.locator('input')).toHaveCount(0);
+            expect(await valuesFor('owner')).toEqual([]);
+            await submitValues('portaled unchecked value', unselected);
+
+            await page.locator('#portal-terms-label').click();
+            await expect(terms).toBeChecked();
+            await submitValues('portaled checked value', selected);
+
+            const disable = page.getByRole('button', { name: 'Toggle disabled Terms' });
+            await disable.click();
+            await expect(terms).toBeDisabled();
+            await submitValues('disabled portaled value is omitted', '');
+            await disable.click();
+
+            await page.getByRole('button', { name: 'Use owner form' }).click();
+            await expect.poll(() => valuesFor('owner')).toEqual(['yes']);
+            await submitValues('explicit declaring form ownership', selected);
+
+            await page.getByRole('button', { name: 'Use external form' }).click();
+            await expect.poll(() => valuesFor('external')).toEqual(['yes']);
+            expect(await valuesFor('owner')).toEqual([]);
+            await submitValues('external form owns the native value', angular ? '' : selected);
+            await reset.click();
+            await expect(terms).toBeChecked();
+            expect(await valuesFor('external')).toEqual(['yes']);
+
+            await page.getByRole('button', { name: 'Clear form association' }).click();
+            await expect.poll(() => valuesFor('external')).toEqual([]);
+            await page.getByRole('button', { name: 'Cancel next reset' }).click();
+            await reset.click();
+            await submitValues('canceled reset preserves checked value', selected);
+
+            await reset.click();
+            await expect(terms).toHaveAttribute('aria-checked', angular ? 'false' : 'true');
+            await submitValues('accepted reset from declaring form', angular ? unselected : selected);
+        }
+    },
     {
         name: 'group-portal',
         async run(driver) {

@@ -4,7 +4,6 @@ import {
     RdxCheckboxButtonDirective,
     RdxCheckboxIndicatorDirective,
     RdxCheckboxIndicatorPresenceDirective,
-    RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
@@ -19,7 +18,6 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
         RdxCheckboxIndicatorPresenceDirective,
-        RdxCheckboxInputDirective,
         RdxCheckboxRootDirective
     ],
     template: `
@@ -38,7 +36,6 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                         lucideCheck
                     />
                 </button>
-                <input rdxCheckboxInput />
             </div>
             <label class="text-foreground flex items-center text-sm font-medium" rdxLabel htmlFor="checkbox-1">
                 Accept terms and conditions.

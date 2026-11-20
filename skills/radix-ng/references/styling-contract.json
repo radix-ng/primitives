@@ -414,7 +414,7 @@
       "description": "A control that allows the user to toggle between checked and not checked.",
       "doc": "radix-ng-examples/references/components/checkbox.md",
       "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-checkbox--docs",
-      "anatomy": "<div rdxCheckboxRoot>\n  <button rdxCheckboxButton>\n    <svg *rdxCheckboxIndicatorPresence rdxCheckboxIndicator lucideCheck />\n  </button>\n  <input rdxCheckboxInput />\n</div>",
+      "anatomy": "<div rdxCheckboxRoot>\n  <button rdxCheckboxButton>\n    <svg *rdxCheckboxIndicatorPresence rdxCheckboxIndicator lucideCheck />\n  </button>\n</div>",
       "dataAttributes": [
         {
           "attribute": "data-checked",

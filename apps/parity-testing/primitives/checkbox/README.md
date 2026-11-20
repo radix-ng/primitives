@@ -42,11 +42,19 @@ Screen-reader speech and screen-reader activation require a separate platform ru
 
 ## Portal and Indicator
 
+The `standalone-portal` case checks checked and unchecked submission, disabled exclusion, explicit
+form ownership, and reset cancellation. Angular submits the native string values. Base UI submits
+the registered checkbox boolean and still includes it when an external form owns the native input.
+An accepted reset from the declaring Form restores the Angular checkbox baseline.
+
 The `group-portal` case compares registration with the declaring Form, repeated values,
 native form association, disabled items and focus on an invalid portaled checkbox. The
 `group-portal-reset` case checks cancellation and the Angular reset baseline. The pinned Base UI
 group retains its selection after the accepted reset because the native inputs are outside the form.
 The comparison records that difference.
+
+The `form-generated` case runs the same label, Enter, constraint validation and native event checks
+as `form` using the generated input.
 
 The structural Indicator cases check initial absence, interrupted exit, removal after real
 CSS animation completes, and retention with `keepMounted`.

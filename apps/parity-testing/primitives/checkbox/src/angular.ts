@@ -17,10 +17,12 @@ import {
     initialDefault,
     initialGroup,
     installProbe,
+    isForm,
     keepMounted,
     mixed,
     record,
     scenario,
+    standalonePortal,
     values
 } from './contract';
 
@@ -123,7 +125,9 @@ const probe = installProbe();
                                 ✓
                             </span>
                         </button>
-                        <input rdxCheckboxInput />
+                        @if (authorInput) {
+                            <input rdxCheckboxInput />
+                        }
                     </div>
                     <button id="submit" type="submit">Submit</button>
                 }
@@ -136,14 +140,15 @@ const probe = installProbe();
 })
 class CheckboxFixture {
     protected readonly isGroup = group;
-    protected readonly isPortal = scenario.startsWith('group-portal');
+    protected readonly isPortal = scenario.startsWith('group-portal') || standalonePortal;
     protected readonly isField = scenario.startsWith('field-');
     protected readonly mixed = mixed;
     protected readonly pauseIndicator = scenario === 'indicator-lifetime';
     protected readonly keepMounted = keepMounted;
     protected readonly readOnly = scenario === 'readonly';
     protected readonly disabled = scenario === 'disabled';
-    protected readonly required = scenario === 'form';
+    protected readonly required = isForm;
+    protected readonly authorInput = scenario !== 'form-generated';
     protected readonly uncheckedValue = this.required ? 'no' : undefined;
     protected readonly childName = scenario === 'group-form' ? 'features' : undefined;
     protected readonly disabledChild = scenario === 'group-disabled-child';
