@@ -19,6 +19,7 @@ import {
     template: `
         <div
             [checked]="checked"
+            [defaultChecked]="defaultChecked"
             [indeterminate]="indeterminate"
             [disabled]="disabled"
             [readOnly]="readonly"
@@ -34,6 +35,7 @@ import {
 })
 class CheckboxHost {
     checked = false;
+    defaultChecked?: boolean;
     indeterminate = false;
     disabled = false;
     readonly = false;
@@ -82,14 +84,23 @@ class CheckboxUncheckedValueHost {
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective],
+    imports: [RdxCheckboxRootDirective, RdxCheckboxButtonDirective, RdxCheckboxInputDirective],
     template: `
-        <div defaultChecked rdxCheckboxRoot>
-            <button rdxCheckboxButton>Default checked</button>
-        </div>
+        <form>
+            <div [defaultChecked]="defaultChecked()" [inputRef]="inputRef" name="terms" rdxCheckboxRoot>
+                <button rdxCheckboxButton>Default checked</button>
+                @if (showInput()) {
+                    <input rdxCheckboxInput />
+                }
+            </div>
+        </form>
     `
 })
-class CheckboxDefaultCheckedHost {}
+class CheckboxDefaultCheckedHost {
+    readonly defaultChecked = signal<boolean | undefined>(true);
+    readonly showInput = signal(true);
+    readonly inputRef = vi.fn();
+}
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -107,14 +118,14 @@ class CheckboxReadOnlyAliasHost {}
     imports: [ReactiveFormsModule, RdxCheckboxRootDirective, RdxCheckboxButtonDirective],
     template: `
         <form>
-            <div [formControl]="control" rdxCheckboxRoot name="terms">
+            <div [formControl]="control" rdxCheckboxRoot defaultChecked name="terms">
                 <button rdxCheckboxButton>Terms</button>
             </div>
         </form>
     `
 })
 class CheckboxReactiveFormsHost {
-    readonly control = new FormControl(false, { nonNullable: true });
+    control = new FormControl(false, { nonNullable: true });
 }
 
 describe('RdxCheckbox', () => {
@@ -125,7 +136,9 @@ describe('RdxCheckbox', () => {
     const indicator = () => fixture.debugElement.query(By.css('[rdxCheckboxIndicator]')).nativeElement as HTMLElement;
 
     function setup(
-        initial: Partial<Pick<CheckboxHost, 'checked' | 'indeterminate' | 'disabled' | 'readonly' | 'required'>> = {}
+        initial: Partial<
+            Pick<CheckboxHost, 'checked' | 'defaultChecked' | 'indeterminate' | 'disabled' | 'readonly' | 'required'>
+        > = {}
     ) {
         fixture = TestBed.createComponent(CheckboxHost);
         host = fixture.componentInstance;
@@ -218,13 +231,12 @@ describe('RdxCheckbox', () => {
             expect(indicator().style.display).not.toBe('none');
         });
 
-        it('exposes aria-required / aria-readonly / aria-disabled', () => {
+        it('exposes required, read-only, and native disabled state', () => {
             setup({ readonly: true, disabled: true });
             expect(button().getAttribute('aria-readonly')).toBe('true');
-            expect(button().getAttribute('aria-disabled')).toBe('true');
+            expect(button().disabled).toBe(true);
             expect(button().getAttribute('data-readonly')).toBe('');
             expect(button().getAttribute('data-disabled')).toBe('');
-            expect(button().hasAttribute('disabled')).toBe(false);
         });
     });
 
@@ -291,6 +303,51 @@ describe('RdxCheckbox', () => {
 
         expect(defaultButton.getAttribute('aria-checked')).toBe('true');
         expect(defaultButton.hasAttribute('data-checked')).toBe(true);
+    });
+
+    it('ignores a first late default and restores the original native reset baseline', async () => {
+        TestBed.resetTestingModule();
+        TestBed.configureTestingModule({ imports: [CheckboxDefaultCheckedHost] });
+        const fixture = TestBed.createComponent(CheckboxDefaultCheckedHost);
+        const host = fixture.componentInstance;
+        host.defaultChecked.set(undefined);
+        fixture.detectChanges();
+        const form = fixture.nativeElement.querySelector('form') as HTMLFormElement;
+        const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
+
+        host.defaultChecked.set(true);
+        fixture.detectChanges();
+        expect(button.getAttribute('aria-checked')).toBe('false');
+
+        button.click();
+        fixture.detectChanges();
+        expect(new FormData(form).get('terms')).toBe('on');
+        form.reset();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+        fixture.detectChanges();
+
+        expect(button.getAttribute('aria-checked')).toBe('false');
+        expect(new FormData(form).has('terms')).toBe(false);
+    });
+
+    it('notifies inputRef when the authored input is attached and removed', () => {
+        TestBed.resetTestingModule();
+        TestBed.configureTestingModule({ imports: [CheckboxDefaultCheckedHost] });
+        const fixture = TestBed.createComponent(CheckboxDefaultCheckedHost);
+        fixture.detectChanges();
+        const ref = fixture.componentInstance.inputRef;
+
+        expect(ref.mock.calls).toEqual([[fixture.nativeElement.querySelector('input[type=checkbox]')]]);
+        fixture.componentInstance.showInput.set(false);
+        fixture.detectChanges();
+
+        expect(ref.mock.calls).toEqual([[expect.any(HTMLInputElement)], [null]]);
+    });
+
+    it('keeps an explicitly false model and emits no request for a conflicting default', () => {
+        setup({ checked: false, defaultChecked: true });
+        expect(button().getAttribute('aria-checked')).toBe('false');
+        expect(host.changes).toEqual([]);
     });
 
     it('supports the Base UI readOnly input spelling', () => {
@@ -365,6 +422,22 @@ describe('RdxCheckboxInput (hidden native input)', () => {
         expect(input().hasAttribute('checked')).toBe(false);
         expect(input().checked).toBe(false);
         expect(input().indeterminate).toBe(true);
+    });
+
+    it('synchronizes external changes without native input or change notifications', () => {
+        setup();
+        const listener = vi.fn();
+        input().addEventListener('input', listener);
+        input().addEventListener('change', listener);
+
+        host.checked = true;
+        host.indeterminate = true;
+        fixture.changeDetectorRef.markForCheck();
+        fixture.detectChanges();
+
+        expect(input().checked).toBe(true);
+        expect(input().indeterminate).toBe(true);
+        expect(listener).not.toHaveBeenCalled();
     });
 
     it('emits a bubbling change event on toggle but not on initial render', () => {
@@ -500,12 +573,15 @@ describe('RdxCheckboxRoot validation state (batch #4)', () => {
         expect(button.getAttribute('aria-invalid')).toBe('true');
     });
 
-    it('marks dirty and touched after a toggle', () => {
+    it('marks dirty after an edit and touched after blur', () => {
         expect(root.getAttribute('data-dirty')).toBeNull();
         expect(root.getAttribute('data-touched')).toBeNull();
         button.click();
         fixture.detectChanges();
         expect(root.getAttribute('data-dirty')).toBe('');
+        expect(root.hasAttribute('data-touched')).toBe(false);
+        button.dispatchEvent(new FocusEvent('blur'));
+        fixture.detectChanges();
         expect(root.getAttribute('data-touched')).toBe('');
         expect(button.getAttribute('data-touched')).toBe('');
     });
@@ -515,7 +591,7 @@ describe('RdxCheckboxRoot validation state (batch #4)', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [FormField, RdxCheckboxRootDirective, RdxCheckboxButtonDirective, RdxCheckboxIndicatorDirective],
     template: `
-        <div [formField]="terms" rdxCheckboxRoot>
+        <div [formField]="terms" rdxCheckboxRoot defaultChecked>
             <button rdxCheckboxButton>
                 <span rdxCheckboxIndicator></span>
             </button>
@@ -532,6 +608,27 @@ class CheckboxSignalFormHost {
 }
 
 describe('RdxCheckboxRoot with Reactive Forms', () => {
+    it('preserves a false CVA value over the default and commits updateOn blur', () => {
+        TestBed.configureTestingModule({ imports: [CheckboxReactiveFormsHost] });
+        const fixture = TestBed.createComponent(CheckboxReactiveFormsHost);
+        const control = new FormControl(false, { nonNullable: true, updateOn: 'blur' });
+        fixture.componentInstance.control = control;
+        fixture.detectChanges();
+        const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
+
+        expect(button.getAttribute('aria-checked')).toBe('false');
+        button.click();
+        fixture.detectChanges();
+        expect(button.getAttribute('aria-checked')).toBe('true');
+        expect(control.value).toBe(false);
+        expect(control.touched).toBe(false);
+
+        button.dispatchEvent(new FocusEvent('blur'));
+        fixture.detectChanges();
+        expect(control.value).toBe(true);
+        expect(control.touched).toBe(true);
+    });
+
     it('mirrors dirty, touched, pristine, untouched, and reset state', async () => {
         TestBed.configureTestingModule({ imports: [CheckboxReactiveFormsHost] });
         const fixture = TestBed.createComponent(CheckboxReactiveFormsHost);
@@ -646,6 +743,12 @@ describe('RdxCheckboxRoot with Signal Forms', () => {
         host = fixture.componentInstance;
         fixture.detectChanges();
         button = fixture.debugElement.query(By.css('[rdxCheckboxButton]')).nativeElement;
+    });
+
+    it('preserves the initial false field value over defaultChecked without marking the field dirty', () => {
+        expect(host.model().terms).toBe(false);
+        expect(host.terms().dirty()).toBe(false);
+        expect(button.getAttribute('aria-checked')).toBe('false');
     });
 
     it('updates the bound field on toggle (FormCheckboxControl)', () => {

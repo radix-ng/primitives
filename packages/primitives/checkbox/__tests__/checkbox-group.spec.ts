@@ -12,6 +12,7 @@ import { RdxCheckboxModule } from '../index';
         <form>
             <div
                 [(value)]="value"
+                [defaultValue]="defaultValue"
                 [allValues]="all"
                 [disabled]="disabled"
                 (onValueChange)="onValueChange($event)"
@@ -33,6 +34,7 @@ import { RdxCheckboxModule } from '../index';
 })
 class GroupHost {
     value: string[] = [];
+    defaultValue?: string[];
     all = ['fizz', 'buzz'];
     disabled = false;
     changes: string[][] = [];
@@ -90,13 +92,19 @@ describe('RdxCheckboxGroup', () => {
         return null;
     };
 
-    function setup(initial: Partial<Pick<GroupHost, 'value' | 'all' | 'disabled'>> = {}) {
+    function setup(initial: Partial<Pick<GroupHost, 'value' | 'defaultValue' | 'all' | 'disabled'>> = {}) {
         TestBed.configureTestingModule({ imports: [GroupHost] });
         fixture = TestBed.createComponent(GroupHost);
         host = fixture.componentInstance;
         Object.assign(host, initial);
         fixture.detectChanges();
     }
+
+    it('preserves an explicitly empty editable selection over defaultValue', () => {
+        setup({ defaultValue: ['fizz'] });
+        expect([state(0), state(1), state(2)]).toEqual(['unchecked', 'unchecked', 'unchecked']);
+        expect(host.changes).toEqual([]);
+    });
 
     it('has role="group"', () => {
         setup();
@@ -182,8 +190,7 @@ describe('RdxCheckboxGroup', () => {
         fixture.detectChanges();
 
         expect(host.value).toEqual([]);
-        expect(buttons()[1].hasAttribute('disabled')).toBe(false);
-        expect(buttons()[1].getAttribute('aria-disabled')).toBe('true');
+        expect(buttons()[1].disabled).toBe(true);
         expect(state(1)).toBe('unchecked');
         expect(new FormData(fixture.nativeElement.querySelector('form')).has('features')).toBe(false);
     });
@@ -262,7 +269,7 @@ describe('RdxCheckboxGroup', () => {
     imports: [ReactiveFormsModule, RdxCheckboxModule],
     template: `
         <form id="preferences"></form>
-        <div [formControl]="control" rdxCheckboxGroup name="features" form="preferences">
+        <div [formControl]="control" [defaultValue]="['a']" rdxCheckboxGroup name="features" form="preferences">
             <div rdxCheckboxRoot value="a"><button rdxCheckboxButton>A</button></div>
             <div rdxCheckboxRoot value="b"><button rdxCheckboxButton>B</button></div>
         </div>
@@ -377,7 +384,7 @@ describe('RdxCheckboxGroup validation state', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxCheckboxModule, FormField],
     template: `
-        <div [formField]="picks" [allValues]="all" rdxCheckboxGroup>
+        <div [formField]="picks" [allValues]="all" [defaultValue]="['a']" rdxCheckboxGroup>
             <div name="a" rdxCheckboxRoot>
                 <button rdxCheckboxButton><span rdxCheckboxIndicator></span></button>
             </div>

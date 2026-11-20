@@ -7,10 +7,10 @@
 The same UI, but `rdxCheckboxGroup` owns it. It manages a single array value — the `value`s of the
 checked checkboxes — and a child marked `parent` becomes the "select all", with its state derived
 from `allValues`. Clicking the parent **remembers the partial selection** (partial → all → none →
-back to the partial), disabled-but-checked children are preserved, and the group is itself a form
-control, so `[(value)]`, `ngModel`, and reactive forms bind to the `string[]` value. For native forms,
-put `name` on the group; selected children become repeated entries under that name. A child `name`
-still works as a compatibility fallback when its `value` is omitted.
+back to the partial), and disabled selections are preserved. Bind the group's `string[]` value with
+`[(value)]`, `ngModel`, or Reactive Forms. Give the group a `name` to submit its enabled selections
+as repeated entries. With an unnamed group, each named child contributes its own native entry.
+A child's `name` also supplies its group identity when `value` is omitted.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';

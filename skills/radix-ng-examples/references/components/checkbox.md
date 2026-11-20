@@ -39,7 +39,7 @@ Assemble the root, button trigger, and indicator. The native input is optional.
 ```
 
 A named root participates in `FormData` even without `[rdxCheckboxInput]`. Include the input when you
-also need native constraint validation or mirrored native input/change events.
+also need native constraint validation or bubbling browser `input` and `change` events.
 
 ## Examples
 

@@ -13,6 +13,12 @@ import {
     RdxAccordionTriggerDirective
 } from '@radix-ng/primitives/accordion';
 import { RdxAutocompleteInput, RdxAutocompleteRoot } from '@radix-ng/primitives/autocomplete';
+import {
+    RdxCheckboxButtonDirective,
+    RdxCheckboxGroupDirective,
+    RdxCheckboxInputDirective,
+    RdxCheckboxRootDirective
+} from '@radix-ng/primitives/checkbox';
 import { RdxFieldDescription, RdxFieldItem, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import {
     RdxMenuGroup,
@@ -138,6 +144,38 @@ class AutocompleteDefaultsPage {}
 })
 class NumberFieldDefaultsPage {
     readonly amount = new FormControl(0, { nonNullable: true });
+}
+
+@Component({
+    selector: 'app-checkbox-defaults',
+    imports: [
+        ReactiveFormsModule,
+        RdxCheckboxButtonDirective,
+        RdxCheckboxGroupDirective,
+        RdxCheckboxInputDirective,
+        RdxCheckboxRootDirective
+    ],
+    template: `
+        <div [formControl]="terms" defaultChecked rdxCheckboxRoot>
+            <button rdxCheckboxButton>Form</button>
+            <input rdxCheckboxInput />
+        </div>
+        <div [checked]="false" defaultChecked rdxCheckboxRoot>
+            <button rdxCheckboxButton>Explicit</button>
+            <input rdxCheckboxInput />
+        </div>
+        <div defaultChecked rdxCheckboxRoot>
+            <button rdxCheckboxButton>Default</button>
+            <input rdxCheckboxInput />
+        </div>
+        <div [defaultValue]="['a']" [allValues]="['a']" rdxCheckboxGroup>
+            <div rdxCheckboxRoot parent><button rdxCheckboxButton>All</button></div>
+            <div rdxCheckboxRoot value="a"><button rdxCheckboxButton>A</button></div>
+        </div>
+    `
+})
+class CheckboxDefaultsPage {
+    readonly terms = new FormControl(false, { nonNullable: true });
 }
 
 @Component({
@@ -605,6 +643,23 @@ describe('SSR rendering', () => {
         const inputs = [...parsed.querySelectorAll<HTMLInputElement>('input[rdxnumberfieldinput]')];
         expect(inputs.map((input) => input.value)).toEqual(['0', '', '11']);
         expect(parsed.querySelector<HTMLInputElement>('input[rdxnumberfieldhiddeninput]')?.value).toBe('0');
+        expect(html).toMatch(/ngh=/);
+    });
+    it('resolves Checkbox form values and the group relationship before server serialization', async () => {
+        const html = await renderToString('app-checkbox-defaults', CheckboxDefaultsPage);
+        const parsed = new DOMParser().parseFromString(html, 'text/html');
+        const controls = [...parsed.querySelectorAll('[role="checkbox"]')];
+        const inputs = [...parsed.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')];
+        expect(controls.map((control) => control.getAttribute('aria-checked'))).toEqual([
+            'false',
+            'false',
+            'true',
+            'true',
+            'true'
+        ]);
+        expect(inputs.map((input) => input.checked)).toEqual([false, false, true]);
+        expect(controls[3].getAttribute('aria-controls')).toBe(controls[4].id);
+        expect(controls[4].id).toMatch(/^rdx-checkbox-/);
         expect(html).toMatch(/ngh=/);
     });
     it('resolves Radio form and model values before server serialization', async () => {

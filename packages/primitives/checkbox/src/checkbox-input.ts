@@ -8,10 +8,10 @@ import { injectCheckboxRootContext } from './checkbox-root';
         tabindex: '-1',
         'aria-hidden': 'true',
         '[attr.name]': 'rootContext.parent() ? undefined : rootContext.name() || undefined',
-        // Only a truly checked box is submitted; `indeterminate` is a property
-        // (set below), never a submitted "checked" value.
-        '[attr.checked]': 'rootContext.state() === "checked" ? "" : undefined',
+        '[attr.checked]': 'rootContext.checked() ? "" : undefined',
         '[checked]': 'rootContext.checked()',
+        '(click)': 'onClick($event)',
+        '(focus)': 'rootContext.focus()',
         '[attr.form]': 'rootContext.form() || undefined',
         '[attr.value]': 'rootContext.value()',
         '[required]': 'rootContext.required()',
@@ -35,32 +35,21 @@ export class RdxCheckboxInputDirective {
         const unregister = this.rootContext.registerNativeInput(this.input);
         inject(DestroyRef).onDestroy(unregister);
 
-        let isInitial = true;
-
-        /**
-         * Keeps the hidden native input in sync so form submission, native
-         * validation and form events reflect the checkbox state.
-         *
-         * - `indeterminate` is a native property (not a submittable value), so we
-         *   mirror it here rather than via an attribute.
-         * - On every change (but not the initial render) we emit bubbling
-         *   `input`/`change` events so native form listeners react. We do NOT
-         *   dispatch a `click`: a click on a checkbox runs the toggle activation
-         *   behavior and would desync the input from the bound state.
-         */
         effect(() => {
-            // Track both so the native input mirrors the checkbox and emits change
-            // events when either the checked or indeterminate state moves.
+            // Native activation clears this property even when the bound mixed state is unchanged.
             this.rootContext.checked();
             this.input.indeterminate = this.rootContext.indeterminate();
+        });
+    }
 
-            if (isInitial) {
-                isInitial = false;
-                return;
-            }
+    protected onClick(event: MouseEvent): void {
+        event.stopPropagation();
+        if (!this.rootContext.toggle(event, this.input.checked)) event.preventDefault();
 
-            this.input.dispatchEvent(new Event('input', { bubbles: true }));
-            this.input.dispatchEvent(new Event('change', { bubbles: true }));
+        // The browser may have rolled back activation. Controlled requests may also be ignored.
+        queueMicrotask(() => {
+            this.input.checked = this.rootContext.checked();
+            this.input.indeterminate = this.rootContext.indeterminate();
         });
     }
 }

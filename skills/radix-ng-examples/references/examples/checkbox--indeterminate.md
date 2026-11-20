@@ -4,7 +4,9 @@
 
 > Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
-The third "mixed" state. Clicking a checkbox in the indeterminate state resolves it to checked.
+`indeterminate` is a presentation input. A click or Space requests the opposite of the checked value.
+To clear the mixed state after an accepted edit, update the value bound to `[indeterminate]` in your
+`onCheckedChange` handler. Replace any `[(indeterminate)]` binding with that pattern.
 
 ```typescript
 import { JsonPipe } from '@angular/common';
@@ -33,7 +35,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
     template: `
         <div class="flex items-center gap-3">
             <div
-                [checked]="checked()"
+                [controlledChecked]="checked()"
                 [indeterminate]="indeterminate()"
                 (onCheckedChange)="checked.set($event.checked); indeterminate.set(false)"
                 rdxCheckboxRoot

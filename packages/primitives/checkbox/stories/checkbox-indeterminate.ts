@@ -24,7 +24,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
     template: `
         <div class="flex items-center gap-3">
             <div
-                [checked]="checked()"
+                [controlledChecked]="checked()"
                 [indeterminate]="indeterminate()"
                 (onCheckedChange)="checked.set($event.checked); indeterminate.set(false)"
                 rdxCheckboxRoot

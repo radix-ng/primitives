@@ -2,18 +2,18 @@ import {
     booleanAttribute,
     computed,
     Directive,
-    effect,
     inject,
     input,
     model,
+    OnChanges,
     output,
     signal,
-    Signal
+    Signal,
+    SimpleChanges
 } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 import {
     BooleanInput,
-    createCancelableChangeEventDetails,
     createContext,
     provideFormUiState,
     provideValueAccessor,
@@ -23,7 +23,8 @@ import {
     RdxFormUiTouchTarget,
     RdxFormValueControl,
     serializeNativeFormValue,
-    useNativeFormControl
+    useNativeFormControl,
+    watch
 } from '@radix-ng/primitives/core';
 import type { CheckedState } from './checkbox-root';
 
@@ -40,7 +41,9 @@ export interface RdxCheckboxGroupContext {
     /** The values of the currently checked checkboxes. */
     value: Signal<string[]>;
     /** All checkbox values, used by a `parent` checkbox to check/uncheck every child. */
-    allValues: Signal<string[]>;
+    allValues: Signal<string[] | undefined>;
+    /** Native field name when the group serializes its selection. */
+    name: Signal<string | undefined>;
     /** External owning form id inherited by optional child native inputs. */
     form: Signal<string | undefined>;
     /** Whether the whole group is disabled. */
@@ -49,12 +52,10 @@ export interface RdxCheckboxGroupContext {
     parentState: Signal<CheckedState>;
     /** The space-separated control ids the `parent` checkbox controls (for `aria-controls`). */
     controlledIds: Signal<string | undefined>;
-    /** A stable id for a child's control element, derived from the group id and item value. */
-    controlId: (value: string) => string;
-    /** Toggle a single child by value. */
-    toggleValue: (value: string, event?: Event) => void;
+    /** Apply a child's checked request. */
+    setItemChecked: (value: string, checked: boolean, details: RdxCheckboxGroupValueChangeEventDetails) => boolean;
     /** Toggle every child on or off (used by a `parent` checkbox). */
-    toggleAll: (event?: Event) => void;
+    toggleAll: (details: RdxCheckboxGroupValueChangeEventDetails) => boolean;
     /** Register a child's value and disabled state so the parent can preserve disabled items. */
     registerChild: (value: string, disabled: Signal<boolean>) => () => void;
     /** Register a child's control element id so the parent can reference it via `aria-controls`. */
@@ -69,21 +70,19 @@ export const [injectCheckboxGroupContext, provideCheckboxGroupContext] = createC
 const groupContext = (): RdxCheckboxGroupContext => {
     const group = inject(RdxCheckboxGroupDirective);
     return {
-        value: group.value,
+        value: group.currentValue,
         allValues: group.allValues,
+        name: group.name,
         form: group.form,
         disabled: group.disabledState,
         parentState: group.parentState,
         controlledIds: group.controlledIds,
-        controlId: (value) => group.controlId(value),
-        toggleValue: (value, event) => group.toggleValue(value, event),
-        toggleAll: (event) => group.toggleAll(event),
+        setItemChecked: (value, checked, details) => group.setItemChecked(value, checked, details),
+        toggleAll: (details) => group.toggleAll(details),
         registerChild: (value, disabled) => group.registerChild(value, disabled),
         registerControl: (value, id) => group.registerControl(value, id)
     };
 };
-
-let nextCheckboxGroupId = 0;
 
 /**
  * Groups a set of checkboxes that share a single array value (the values of the checked boxes).
@@ -107,16 +106,21 @@ let nextCheckboxGroupId = 0;
 })
 export class RdxCheckboxGroupDirective
     extends RdxFormUiControlBase
-    implements ControlValueAccessor, RdxFormValueControl<string[]>
+    implements ControlValueAccessor, RdxFormValueControl<string[]>, OnChanges
 {
     /** The values of the currently checked checkboxes. Use with `onValueChange` or `[(value)]`. */
     readonly value = model<string[]>([]);
+
+    /** Parent-owned selection. A defined array takes precedence over the editable model. */
+    readonly controlledValue = input<string[]>();
+    /** The effective selection shared by the group and its children. */
+    readonly currentValue = computed(() => this.controlledValue() ?? this.value());
 
     /** The values checked initially when the group is uncontrolled. */
     readonly defaultValue = input<string[]>();
 
     /** All checkbox values in the group. Required for a `parent` (select-all) checkbox. */
-    readonly allValues = input<string[]>([]);
+    readonly allValues = input<string[]>();
 
     /** Native form field name. Selected values are submitted as repeated entries under this name. */
     readonly name = input<string>();
@@ -135,9 +139,10 @@ export class RdxCheckboxGroupDirective
 
     /** Derived state for a `parent` checkbox: `true` (all), `false` (none) or `'indeterminate'`. */
     readonly parentState = computed<CheckedState>(() => {
-        const total = this.allValues().length;
-        const count = this.value().length;
-        if (total > 0 && count === total) {
+        const values = this.allValues();
+        if (!values) return false;
+        const count = this.currentValue().length;
+        if (count === values.length) {
             return true;
         }
         return count > 0 ? 'indeterminate' : false;
@@ -148,27 +153,26 @@ export class RdxCheckboxGroupDirective
      * selection that a `parent` checkbox cycles back to, mirroring Base UI's `uncontrolledStateRef`.
      */
     private uncontrolledState: string[] = [];
-    private seeded = false;
     /** Where the parent is in its mixed → on → off cycle. Reset to `mixed` on any direct child change. */
     private parentStatus: 'on' | 'off' | 'mixed' = 'mixed';
     /** Per-value disabled signals, so the parent can preserve disabled-but-checked children. */
-    private readonly disabledByValue = new Map<string, Signal<boolean>>();
+    private readonly disabledByValue = signal(new Map<string, readonly Signal<boolean>[]>());
 
-    /** Stable group id used to derive child control ids when the consumer sets none. */
-    private readonly elementId = `rdx-checkbox-group-${nextCheckboxGroupId++}`;
-    /** Registered control element ids, keyed by child value. */
-    private readonly controlIds = signal<Record<string, string>>({});
+    /** Rendered control ids in registration order, including repeated child values. */
+    private readonly controlIds = signal(new Map<string, readonly string[]>());
 
     /** The space-separated control ids in `allValues` order, for the parent's `aria-controls`. */
-    readonly controlledIds = computed<string | undefined>(() => {
+    readonly controlledIds = computed(() => {
         const ids = this.controlIds();
-        const list = this.allValues()
-            .map((value) => ids[value])
-            .filter((id): id is string => id !== undefined);
-        return list.length > 0 ? list.join(' ') : undefined;
+        return (
+            this.allValues()
+                ?.flatMap((value) => ids.get(value) ?? [])
+                .join(' ') || undefined
+        );
     });
 
-    private hasAppliedDefault = false;
+    private hasValueInput = false;
+    private hasCvaValue = false;
     private onChange: (value: string[]) => void = () => {
         /* Empty */
     };
@@ -176,36 +180,44 @@ export class RdxCheckboxGroupDirective
         /* Empty */
     };
 
+    private readonly browserForm = useNativeFormControl({
+        name: this.name,
+        form: this.form,
+        disabled: this.disabledState,
+        value: this.currentValue,
+        serialize: (values) => serializeNativeFormValue(values.filter((value) => !this.isValueDisabled(value))),
+        defaultValue: () => [...this.initialValue()],
+        onReset: (value) => {
+            if (this.controlledValue() !== undefined) return;
+
+            if (!this.resetNgControl(undefined)) this.value.set([...value]);
+            this.uncontrolledState = [...this.currentValue()];
+            this.parentStatus = 'mixed';
+            this.reset();
+        }
+    });
+
     constructor() {
         super();
 
-        useNativeFormControl({
-            name: this.name,
-            form: this.form,
-            disabled: this.disabledState,
-            value: this.value,
-            serialize: serializeNativeFormValue,
-            defaultValue: () => [...(this.defaultValue() ?? this.value())],
-            onReset: (value) => {
-                const next = [...value];
-                this.value.set(next);
-                if (!this.resetNgControl(next)) {
-                    this.onChange(next);
-                }
-                this.seeded = false;
-                this.uncontrolledState = next;
-                this.parentStatus = 'mixed';
-                this.formUi.resetInteractionState?.();
-            }
+        watch([], () => {
+            if (this.controlledValue() === undefined) this.value.set(this.initialValue());
+            this.uncontrolledState = [...this.currentValue()];
         });
+    }
 
-        effect(() => {
-            const defaultValue = this.defaultValue();
-            if (!this.hasAppliedDefault && defaultValue !== undefined) {
-                this.hasAppliedDefault = true;
-                this.value.set(defaultValue);
-            }
-        });
+    /** @ignore */
+    // eslint-disable-next-line no-restricted-syntax -- Observe initial model input presence, including an empty selection (ADR 0071).
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['value']?.currentValue !== undefined) this.hasValueInput = true;
+    }
+
+    private initialValue(): string[] {
+        const controlled = this.controlledValue();
+        if (controlled !== undefined) return controlled;
+        if (this.hasValueInput || this.hasCvaValue || this.value().length > 0) return this.value();
+        const value = this.defaultValue();
+        return value === undefined ? this.value() : [...value];
     }
 
     /** @ignore Bridge the CVA `onTouched` so `markAsTouched()` also notifies Reactive/template forms. */
@@ -215,50 +227,45 @@ export class RdxCheckboxGroupDirective
 
     /** @ignore Register a child's disabled signal keyed by its value. */
     registerChild(value: string, disabled: Signal<boolean>): () => void {
-        this.disabledByValue.set(value, disabled);
+        this.disabledByValue.update((items) => new Map(items).set(value, [...(items.get(value) ?? []), disabled]));
         return () => {
-            if (this.disabledByValue.get(value) === disabled) {
-                this.disabledByValue.delete(value);
-            }
-        };
-    }
-
-    /** A stable control id for a child, derived from the group id and item value. */
-    controlId(value: string): string {
-        return `${this.elementId}-${value}`;
-    }
-
-    /** @ignore Register a child's control element id so the parent can list it in `aria-controls`. */
-    registerControl(value: string, id: string): () => void {
-        this.controlIds.update((ids) => ({ ...ids, [value]: id }));
-        return () => {
-            this.controlIds.update((ids) => {
-                if (ids[value] !== id) {
-                    return ids;
-                }
-                const next = { ...ids };
-                delete next[value];
+            this.disabledByValue.update((items) => {
+                const next = new Map(items);
+                const remaining = (items.get(value) ?? []).filter((source) => source !== disabled);
+                if (remaining.length) next.set(value, remaining);
+                else next.delete(value);
                 return next;
             });
         };
     }
 
-    /** Add/remove a single child value from the group value (a direct child change). */
-    toggleValue(value: string, event?: Event): void {
-        if (this.disabledState()) {
-            return;
-        }
+    /** @ignore Register a child's control element id so the parent can list it in `aria-controls`. */
+    registerControl(value: string, id: string): () => void {
+        this.controlIds.update((ids) => new Map(ids).set(value, [...(ids.get(value) ?? []), id]));
+        return () => {
+            this.controlIds.update((ids) => {
+                const next = new Map(ids);
+                const remaining = (ids.get(value) ?? []).filter((entry) => entry !== id);
+                if (remaining.length) next.set(value, remaining);
+                else next.delete(value);
+                return next;
+            });
+        };
+    }
 
-        const current = this.value();
-        const next = current.includes(value) ? current.filter((item) => item !== value) : [...current, value];
-        if (!this.emit(next, event)) {
-            return;
-        }
+    /** @ignore Apply an item request after the child has had a chance to cancel it. */
+    setItemChecked(value: string, checked: boolean, details: RdxCheckboxGroupValueChangeEventDetails): boolean {
+        if (this.disabledState()) return false;
 
-        // A direct child change becomes the new "remembered" selection and resets the parent cycle.
-        this.seeded = true;
+        const next = [...this.currentValue()];
+        const index = next.indexOf(value);
+        if (checked && index === -1) next.push(value);
+        else if (!checked && index !== -1) next.splice(index, 1);
+        if (!this.emit(next, details)) return false;
+
         this.uncontrolledState = next;
         this.parentStatus = 'mixed';
+        return true;
     }
 
     /**
@@ -270,14 +277,9 @@ export class RdxCheckboxGroupDirective
      *
      * Disabled-but-checked children are always preserved (they cannot be toggled programmatically).
      */
-    toggleAll(event?: Event): void {
-        if (this.disabledState()) {
-            return;
-        }
-
-        this.ensureSeeded();
-
+    toggleAll(details: RdxCheckboxGroupValueChangeEventDetails): boolean {
         const allValues = this.allValues();
+        if (!allValues || this.disabledState()) return false;
         const remembered = this.uncontrolledState;
 
         // Disabled children that were checked stay checked through every transition.
@@ -286,8 +288,7 @@ export class RdxCheckboxGroupDirective
 
         const rememberedIsAllOrNone = remembered.length === all.length || remembered.length === 0;
         if (rememberedIsAllOrNone) {
-            this.emit(this.value().length === all.length ? none : all, event);
-            return;
+            return this.emit(this.currentValue().length === all.length ? none : all, details);
         }
 
         let nextStatus: 'on' | 'off' | 'mixed' = 'mixed';
@@ -300,45 +301,34 @@ export class RdxCheckboxGroupDirective
             nextValue = none;
         }
 
-        if (!this.emit(nextValue, event)) {
-            return;
-        }
+        if (!this.emit(nextValue, details)) return false;
         this.parentStatus = nextStatus;
+        return true;
     }
 
     private isValueDisabled(value: string): boolean {
-        return this.disabledByValue.get(value)?.() ?? false;
-    }
-
-    /** Seed the remembered selection from the current value the first time the parent is used. */
-    private ensureSeeded(): void {
-        if (!this.seeded) {
-            this.seeded = true;
-            this.uncontrolledState = this.value();
-        }
-    }
-
-    private emit(next: string[], event?: Event): boolean {
-        const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
-        const { eventDetails } = createCancelableChangeEventDetails(
-            'none',
-            event ?? new Event('checkbox-group.value-change'),
-            trigger
+        return (
+            this.disabledByValue()
+                .get(value)
+                ?.every((disabled) => disabled()) ?? false
         );
+    }
+
+    private emit(next: string[], eventDetails: RdxCheckboxGroupValueChangeEventDetails): boolean {
         this.onValueChange.emit({ value: next, eventDetails });
-        if (eventDetails.isCanceled()) {
-            return false;
-        }
+        if (eventDetails.isCanceled() || eventDetails.event.defaultPrevented) return false;
+        if (this.controlledValue() !== undefined) return true;
 
         this.value.set(next);
         this.formUi.markDirty();
         this.onChange(next);
-        this.onTouched();
+        this.browserForm.sync();
         return true;
     }
 
     /** @ignore */
     writeValue(value: string[] | null): void {
+        this.hasCvaValue = true;
         this.value.set(value ?? []);
     }
 

@@ -509,12 +509,12 @@
         {
           "attribute": "data-starting-style",
           "parts": "Indicator",
-          "values": "The indicator is visible (enter motion)."
+          "values": "The indicator begins animating in."
         },
         {
           "attribute": "data-ending-style",
           "parts": "Indicator",
-          "values": "The indicator is hidden (exit motion)."
+          "values": "The indicator is animating out."
         },
         {
           "attribute": "data-disabled",

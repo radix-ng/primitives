@@ -1,89 +1,49 @@
 # Checkbox — parity matrix
 
-Initial inventory: 2026-11-17. Reference pin: **Base UI 1.9.0**,
-`cf696d6f6e08c699c5bda24d5a033430909f2285` ([reference manifest](../../../apps/parity-testing/reference.json)).
+Reference: Base UI 1.9.0 at `cf696d6f6e08c699c5bda24d5a033430909f2285`.
+[Manifest](../../../apps/parity-testing/reference.json),
+[Checkbox source](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/checkbox),
+[CheckboxGroup source](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/checkbox-group).
 
-Primary counterpart: [checkbox](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/checkbox).
-Pinned exported parts/functions: `Root`, `Indicator`.
-The Angular entry also covers [checkbox-group](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/checkbox-group); audit both part sets.
+## Parts and state
 
-**Scope: initial source inventory and comparison backlog.** Exported local declarations and evidence
-locations were inventoried; complete per-handler, per-attribute and browser equivalence has not been
-established. A source observation below is not a newly passing runtime or differential result.
+| Base UI                | Angular                                                           | Contract                                                                                                                                                                                        |
+| ---------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Checkbox.Root          | [Root](src/checkbox-root.ts) and [Button](src/checkbox-button.ts) | Root owns form and state wiring. Button renders the `checkbox` role, mixed state, native disabled state, and select-all relationships.                                                          |
+| Root's native checkbox | [Input](src/checkbox-input.ts)                                    | The optional authored input owns browser validity and activation, with `nativeInput()` and `inputRef` on Root. A named Root can serialize through the browser bridge when the input is omitted. |
+| Checkbox.Indicator     | [Indicator](src/checkbox-indicator.ts)                            | Shared enter and exit lifecycle. The directive hides its authored host after exit unless `keepMounted` is enabled.                                                                              |
+| CheckboxGroup          | [Group](src/checkbox-group.ts)                                    | One array value, optional select-all cycle, and Angular Forms integration. The entry point contains both widget families.                                                                       |
 
-**Breaking changes are permitted; backward compatibility does not constrain the target.** Apply the
-[state ownership/defaults contract](../../../docs/engineering/state-ownership.md) per field. Inputs,
-models, outputs, defaults and part boundaries may change; do not retain compatibility mirrors or
-aliases solely for the old API. Review earlier ADR decisions explicitly when replacing them.
+Root and Button expose `data-checked`, `data-unchecked`, `data-indeterminate`, `data-disabled`,
+`data-readonly` and `data-required`. Button also exposes `data-parent` for select-all.
+Indicator shares the checkbox states and adds transient `data-starting-style` and `data-ending-style`.
+The Angular form adapters additionally expose validity, dirty and touched state. Neither family
+defines public CSS variables.
 
-## Public surface inventory
+## Ownership and evidence
 
-Source of truth: [entry barrel](index.ts). These are directly exported decorated classes, not a
-claim that inherited/host-directive APIs or every upstream prop have already been compared. Exported
-composition bases, guards and internal helpers are not thereby promoted to stable public widget parts.
+| Area                             | Implemented behavior                                                                                                                                                                                                                                                              | Evidence                                                                                                                                                                                                                         |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P1 · Initial values              | A supplied model, controlled input or Angular Forms write takes precedence over defaults, including `false` and `[]`. Defaults resolve once. Requests stay silent during initialization. Angular model outputs follow the native model API.                                       | Paired cases `default`, `controlled`, `group-cycle` and `group-controlled`. CVA and Signal Forms precedence in units.                                                                                                            |
+| P1 · Checked and group ownership | `checked` and `value` are editable Angular form models. A defined `controlledChecked` or `controlledValue` takes ownership of the effective value. Removing the controlled binding exposes the editable model.                                                                    | Paired repeat and delayed-acceptance scenarios.                                                                                                                                                                                  |
+| P1 · Mixed and select-all        | `indeterminate` is a readonly input. The checked value still drives toggling and submission. Select-all derives state from the group and can restore the remembered partial selection. Disabled selections are preserved.                                                         | Paired `mixed`, `group-cycle` and `group-disabled-child`.                                                                                                                                                                        |
+| P2 · Transactions                | Child or select-all emits the checked request first. Group receives the same details with reason `none`. Either handler can cancel the edit before a model write.                                                                                                                 | Paired child, parent and group vetoes, including retrying the parent cycle.                                                                                                                                                      |
+| P2 · Native forms and keyboard   | Space activates the checkbox. Enter activates the owning form's default submitter and honors ancestor cancellation. Authored inputs support native validity and forward focus to the visible button. Model writes synchronize the native state without a new interaction request. | Paired `default`, `form`, `readonly`, `disabled` and `group-form`. Units cover external form ownership, Angular reset and `updateOn: 'blur'`.                                                                                    |
+| P2 · Labels and lifetime         | Author-supplied IDs associate native labels and group relationships. Generated child IDs use Angular's hydration-aware allocator. Removing a child releases its ID. Indicator transition attributes clear when motion completes.                                                  | Paired `form`, `group-cycle` and `indicator`. SSR asserts precedence, native checked state and the serialized `aria-controls` relationship. The standalone SSR route reused the server button and its ID in Chromium and WebKit. |
 
-| Angular declaration                                          | Selector / role             | Direct input/model/output declarations                                                                                                                                                                                                                          |
-| ------------------------------------------------------------ | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`RdxCheckboxButtonDirective`](src/checkbox-button.ts)       | `button[rdxCheckboxButton]` | No direct signal input/model/output declaration.                                                                                                                                                                                                                |
-| [`RdxCheckboxGroupDirective`](src/checkbox-group.ts)         | `[rdxCheckboxGroup]`        | `value` (model), `defaultValue`, `allValues`, `name`, `form`, `disabled`, `onValueChange` (output)                                                                                                                                                              |
-| [`RdxCheckboxIndicatorDirective`](src/checkbox-indicator.ts) | `[rdxCheckboxIndicator]`    | `keepMounted`                                                                                                                                                                                                                                                   |
-| [`RdxCheckboxInputDirective`](src/checkbox-input.ts)         | `input[rdxCheckboxInput]`   | No direct signal input/model/output declaration.                                                                                                                                                                                                                |
-| [`RdxCheckboxRootDirective`](src/checkbox-root.ts)           | `[rdxCheckboxRoot]`         | `checked` (model), `defaultChecked`, `indeterminate` (model), `value`, `uncheckedValue`, `disabled`, `readOnly`, `required`, `invalid`, `pending`, `touched` (model), `dirty`, `errors`, `name`, `parent`, `form`, `onCheckedChange` (output), `touch` (output) |
+## Angular contracts and remaining cases
 
-Inherited classes and composed directives may add state/API. Follow those sources when completing
-the comparison; similar part names or selector counts do not prove the same contract.
+- Angular adapters preserve CVA, template-driven and Signal Forms. Native reset restores the
+  initial editable baseline or delegates to the owning Angular control. Angular form metadata,
+  including blur-driven touched state, follows the selected form adapter.
+- A named Angular group serializes its enabled selections under its own name. An unnamed group
+  supports native names on individual children. Grouped children omit the standalone unchecked
+  fallback entry.
+- The Angular indicator remains authored in the DOM. The comparison asserts exit timing and
+  settled attributes. Base UI removes its rendered indicator after exit with `keepMounted=false`.
+- Further comparisons include Field/Field.Item label and description inheritance, Field focus and
+  filled attributes, autofill, deferred group hydration and assistive-technology output.
 
-## State ownership and defaults
-
-Ownership class for this entry: **Editable form value and auxiliary state**. The [shared contract](../../../docs/engineering/state-ownership.md)
-distinguishes controlled UI requests, editable form models, readonly configuration, native DOM state
-and derived/render state. Local writes to required form models are legitimate Angular behavior.
-For strict controlled UI state, a request must not mutate the effective value before parent acceptance.
-
-| State field / source                                                            | Current declaration                     | Ownership review                                                                                               |
-| ------------------------------------------------------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| [`RdxCheckboxGroupDirective.value`](src/checkbox-group.ts)                      | `model<string[]>([])`                   | Editable form model where the actual Angular control contract requires it; coordinate CVA/native/Signal Forms. |
-| [`RdxCheckboxRootDirective.checked`](src/checkbox-root.ts)                      | `model<boolean>(false)`                 | Editable form model where the actual Angular control contract requires it; coordinate CVA/native/Signal Forms. |
-| [`RdxCheckboxRootDirective.indeterminate`](src/checkbox-root.ts)                | `model<boolean>(false)`                 | Define navigation/draft/presentation ownership separately from the form or business value.                     |
-| [`RdxCheckboxRootDirective.submitValue`](src/checkbox-root.ts) (public `value`) | `input<string \| undefined>(undefined)` | Readonly supplied data/identity/configuration; no local model write.                                           |
-| [`RdxCheckboxRootDirective.touched`](src/checkbox-root.ts)                      | `model<boolean>(false)`                 | Form interaction metadata; verify the installed touch/input/output adapter contract.                           |
-
-| Declared default / source                                         | Declaration                                                         | Required comparison                                                                                                                                         |
-| ----------------------------------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`RdxCheckboxGroupDirective.defaultValue`](src/checkbox-group.ts) | `input<string[]>(undefined)`                                        | Initial supplied/falsy/empty/form priority, initial-only snapshot, late changes and reset baseline. Distinguish state defaults from reactive configuration. |
-| [`RdxCheckboxRootDirective.defaultChecked`](src/checkbox-root.ts) | `input<boolean \| undefined, BooleanInput \| undefined>(undefined)` | Initial supplied/falsy/empty/form priority, initial-only snapshot, late changes and reset baseline. Distinguish state defaults from reactive configuration. |
-
-Always include allowed `false`, `0`, `''`, `[]` and `null` cases; initial parent/CVA/Signal Forms
-writes; default changes after initialization; ignored/delayed/replaced controlled requests; cancellation
-and native/form reset. Not every case applies to readonly or infrastructure entries: mark those
-boundaries explicitly instead of converting all models to readonly inputs.
-
-## Family-specific comparison matrix
-
-“Source” identifies a local implementation fact. “Compare/verify/audit” is pending work. Priorities
-describe the target work, not a certificate or a reproduced defect count.
-
-| Area                        | Current observation / required target comparison                                                                                                                                                                             | Priority |
-| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| Checked and group ownership | Source: Root owns checked/indeterminate models and Group owns an array value model. Keep the required checkbox form model; define group-derived state and select-all ownership separately.                                   | P1       |
-| Defaults/form priority      | Source: first-defined default latches write checked/group values. A latch alone does not establish bound false/empty-array/CVA precedence or prevent first late defaults.                                                    | P1       |
-| Two upstream entries        | The Angular entry combines Checkbox and CheckboxGroup plus native submission adapters. Compare mixed/select-all state, disabled/readonly, keyboard/native form events, reset and label behavior against both pinned entries. | P2       |
-
-Also compare the actual emitted per-part attributes/CSS variables with both the pinned declaration
-files and runtime state mapping. Check native hosts, event reasons/details/default prevention,
-accessibility relationships, keyboard/RTL and cleanup where applicable. Angular framework adapters
-are permitted; changed observable behavior needs evidence or an explicitly reviewed deviation.
-
-## Evidence inventory and next checks
-
-- [Local unit files](__tests__): **2 files discovered**; not a passing-test count.
-- No same-family named browser behavior file was found. Cross-family consumer or shared-mechanism checks may exist; locate them before claiming absence or coverage.
-- No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
-- [SSR consumer page](../../../apps/radix-ssr-testing/src/app/components/checkbox/page.ts) exists. Its presence does not prove initial-state, lifecycle or hydration equivalence; inspect actual assertions.
-
-No runtime suite was executed for this initial matrix sweep. Complete focused state/DI units,
-native/layout browser cases and SSR/hydration checks before promoting rows; add a paired pinned
-fixture before certifying equivalent observable behavior. See the
-[verification skill](../../../.agents/skills/radix-testing/SKILL.md),
-[matrix index](../../../docs/engineering/parity-matrices.md) and
-[upstream preparation guide](../../../docs/engineering/upstream-reference.md).
+Run `pnpm test-parity checkbox` for the [paired browser suite](../../../apps/parity-testing/primitives/checkbox/README.md).
+The [units](__tests__) and [SSR assertions](../../../apps/radix-ssr-testing/src/ssr-rendering.spec.ts)
+exercise Angular adapters and serialization.

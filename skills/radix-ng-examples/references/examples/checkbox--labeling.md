@@ -16,8 +16,7 @@ Always associate a checkbox with a label. Link a sibling `rdxLabel` to the butto
 <label rdxLabel htmlFor="terms">Accept terms and conditions</label>
 ```
 
-Inside a `rdxFieldRoot`, use `rdxFieldLabel` instead — it wires the association and the shared
-invalid / disabled / required state automatically (see the form examples below).
+When using `rdxFieldLabel`, point its `htmlFor` at the same button ID.
 
 ## Setup and shared files
 

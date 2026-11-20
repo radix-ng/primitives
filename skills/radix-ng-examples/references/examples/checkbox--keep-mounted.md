@@ -4,8 +4,8 @@
 
 > Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
-The indicator is removed from layout when unchecked. Add `keepMounted` to keep it in the DOM for
-CSS transitions or measurement, matching Base UI's `Checkbox.Indicator keepMounted` prop.
+The indicator stays in layout through its exit animation, then hides with `display: none`.
+Add `keepMounted` to keep it in layout after the animation.
 
 ```typescript
 import { JsonPipe } from '@angular/common';
@@ -33,14 +33,14 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
     ],
     template: `
         <div class="flex items-center gap-3">
-            <div [checked]="checked()" (onCheckedChange)="checked.set($event.checked)" rdxCheckboxRoot>
+            <div [controlledChecked]="checked()" (onCheckedChange)="checked.set($event.checked)" rdxCheckboxRoot>
                 <button
                     class="demo-checkbox-button demo-focus flex size-6 items-center justify-center disabled:opacity-50 aria-disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
                     id="r1"
                     rdxCheckboxButton
                 >
                     <svg
-                        class="text-primary flex items-center"
+                        class="text-primary flex items-center transition-opacity data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[unchecked]:opacity-0"
                         [lucideIcon]="Check"
                         keepMounted
                         rdxCheckboxIndicator

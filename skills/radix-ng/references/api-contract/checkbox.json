@@ -6,8 +6,14 @@
     {
       "directive": "RdxCheckboxButtonDirective",
       "selector": "button[rdxCheckboxButton]",
-      "description": "Directive: rdxCheckboxButton\nPurpose: Turns a native <button> into an accessible checkbox control bound to the Radix Checkbox context.\nIt mirrors the checkbox state via ARIA/data attributes, toggles on click, and prevents Enter activation per WAI-ARIA.\nIn forms, it stops the button's click from bubbling so only the hidden input emits the native event used for form/validator integration.",
-      "inputs": [],
+      "description": "The visible, focusable checkbox control.",
+      "inputs": [
+        {
+          "name": "id",
+          "type": "string",
+          "description": "ID used by labels and the parent checkbox's `aria-controls`."
+        }
+      ],
       "outputs": []
     },
     {
@@ -22,8 +28,12 @@
         {
           "name": "allValues",
           "type": "string[]",
-          "default": "[]",
           "description": "All checkbox values in the group. Required for a `parent` (select-all) checkbox."
+        },
+        {
+          "name": "controlledValue",
+          "type": "string[]",
+          "description": "Parent-owned selection. A defined array takes precedence over the editable model."
         },
         {
           "name": "defaultValue",
@@ -108,7 +118,7 @@
           "name": "keepMounted",
           "type": "boolean",
           "default": "false",
-          "description": "Keep the indicator in the DOM when unchecked so CSS exit animations can play."
+          "description": "Keep the indicator in layout after it has finished animating out."
         }
       ],
       "outputs": []
@@ -122,15 +132,17 @@
     {
       "directive": "RdxCheckboxRootDirective",
       "selector": "[rdxCheckboxRoot]",
-      "hostDirectives": [
-        "RdxControlValueAccessor"
-      ],
       "inputs": [
         {
           "name": "checked",
           "type": "boolean",
           "default": "false",
-          "description": "The controlled checked state of the checkbox. Must be used in conjunction with onCheckedChange.\n\nMixed state is no longer expressed through `checked` — use the separate\n`indeterminate` input (Base UI shape). This `boolean` model is what\n`RdxFormCheckboxControl` / Angular Signal Forms bind to."
+          "description": "Editable checked state for two-way bindings and Angular forms."
+        },
+        {
+          "name": "controlledChecked",
+          "type": "boolean",
+          "description": "Parent-owned checked state. A defined value takes precedence over the editable model."
         },
         {
           "name": "defaultChecked",
@@ -165,7 +177,12 @@
           "name": "indeterminate",
           "type": "boolean",
           "default": "false",
-          "description": "Whether the checkbox is in a mixed state: neither ticked nor unticked.\nOrthogonal to `checked` and not part of the submitted form value. A user\nclick resolves the checkbox to `checked` and clears `indeterminate`."
+          "description": "Whether the checkbox is in a mixed state: neither ticked nor unticked.\nThe parent owns this presentation state. It can clear it in `onCheckedChange`."
+        },
+        {
+          "name": "inputRef",
+          "type": "RdxNativeInputRef",
+          "description": "Receives the authored input in the browser and null when the association ends."
         },
         {
           "name": "invalid",
@@ -212,7 +229,7 @@
           "name": "touched",
           "type": "boolean",
           "default": "false",
-          "description": "Whether the checkbox has been touched. A `model()` so Signal Forms can write it; the checkbox\nalso sets it on toggle (and emits {@link touch})."
+          "description": "Whether the checkbox has been touched. A `model()` so Signal Forms can write it; the checkbox\nalso sets it on blur (and emits {@link touch})."
         },
         {
           "name": "uncheckedValue",
@@ -234,7 +251,6 @@
       ],
       "twoWay": [
         "checked",
-        "indeterminate",
         "touched"
       ]
     }

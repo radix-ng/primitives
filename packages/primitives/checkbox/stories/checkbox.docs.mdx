@@ -47,7 +47,7 @@ Assemble the root, button trigger, and indicator. The native input is optional.
 ```
 
 A named root participates in `FormData` even without `[rdxCheckboxInput]`. Include the input when you
-also need native constraint validation or mirrored native input/change events.
+also need native constraint validation or bubbling browser `input` and `change` events.
 
 ## Examples
 
@@ -71,16 +71,19 @@ Always associate a checkbox with a label. Link a sibling `rdxLabel` to the butto
 <label rdxLabel htmlFor="terms">Accept terms and conditions</label>
 ```
 
-Inside a `rdxFieldRoot`, use `rdxFieldLabel` instead — it wires the association and the shared
-invalid / disabled / required state automatically (see the form examples below).
+When using `rdxFieldLabel`, point its `htmlFor` at the same button ID.
 
 ### Change events
 
 `onCheckedChange` emits `{ checked, eventDetails }`; `rdxCheckboxGroup` emits `{ value, eventDetails }`.
-Call `eventDetails.cancel()` before updating controlled state to reject a change.
+A child or select-all checkbox emits first. The group receives the same event details if the child
+accepts the request. Call `eventDetails.cancel()` in either handler to veto the edit.
+Use `[controlledChecked]` or `[controlledValue]` when the parent decides which requests to apply.
+Use `[(checked)]` or `[(value)]` for an editable Angular model. Angular form values and explicit
+bindings take precedence over `defaultChecked` and `defaultValue`, which apply only at initialization.
 
 ```html
-<div [checked]="checked()" (onCheckedChange)="setChecked($event)" rdxCheckboxRoot>
+<div [controlledChecked]="checked()" (onCheckedChange)="setChecked($event)" rdxCheckboxRoot>
   ...
 </div>
 ```
@@ -98,14 +101,16 @@ setChecked(change: RdxCheckboxCheckedChangeEvent) {
 
 ### Indeterminate
 
-The third "mixed" state. Clicking a checkbox in the indeterminate state resolves it to checked.
+`indeterminate` is a presentation input. A click or Space requests the opposite of the checked value.
+To clear the mixed state after an accepted edit, update the value bound to `[indeterminate]` in your
+`onCheckedChange` handler. Replace any `[(indeterminate)]` binding with that pattern.
 
 <Canvas of={CheckboxStories.Indeterminate} />
 
 ### Keep mounted
 
-The indicator is removed from layout when unchecked. Add `keepMounted` to keep it in the DOM for
-CSS transitions or measurement, matching Base UI's `Checkbox.Indicator keepMounted` prop.
+The indicator stays in layout through its exit animation, then hides with `display: none`.
+Add `keepMounted` to keep it in layout after the animation.
 
 <Canvas of={CheckboxStories.KeepMounted} />
 
@@ -153,10 +158,10 @@ parent/child logic (and the flat all ↔ none toggle) is wired **by hand** in th
 The same UI, but `rdxCheckboxGroup` owns it. It manages a single array value — the `value`s of the
 checked checkboxes — and a child marked `parent` becomes the "select all", with its state derived
 from `allValues`. Clicking the parent **remembers the partial selection** (partial → all → none →
-back to the partial), disabled-but-checked children are preserved, and the group is itself a form
-control, so `[(value)]`, `ngModel`, and reactive forms bind to the `string[]` value. For native forms,
-put `name` on the group; selected children become repeated entries under that name. A child `name`
-still works as a compatibility fallback when its `value` is omitted.
+back to the partial), and disabled selections are preserved. Bind the group's `string[]` value with
+`[(value)]`, `ngModel`, or Reactive Forms. Give the group a `name` to submit its enabled selections
+as repeated entries. With an unnamed group, each named child contributes its own native entry.
+A child's `name` also supplies its group identity when `value` is omitted.
 
 <Canvas of={CheckboxStories.Group} />
 
@@ -197,7 +202,8 @@ system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook 
 
 ### Root
 
-`RdxCheckboxRootDirective` — groups the parts and owns the checked / indeterminate state and form wiring. Apply to a container element (typically a `<div>`).
+`RdxCheckboxRootDirective` coordinates checkbox state and form bindings. Apply it to a container
+element such as a `<div>`. Use `nativeInput()` or `[inputRef]` to access an authored native input.
 
 <ArgTypes of={RdxCheckboxRootDirective} />
 
@@ -214,7 +220,9 @@ system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook 
 
 ### Button
 
-`RdxCheckboxButtonDirective` — the toggle control; reads everything from the root context, so it takes no inputs. Apply to a native `<button>` element (the selector requires `button`).
+Apply `RdxCheckboxButtonDirective` to a native `<button>`. Give it an `id` to associate a label.
+Disabled buttons use native `disabled` and leave the tab order. Space toggles the checkbox.
+Enter activates the owning form's default submit button, when present.
 
 **Data attributes**
 
@@ -229,7 +237,8 @@ system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook 
 
 ### Indicator
 
-`RdxCheckboxIndicatorDirective` — renders the check / indeterminate mark; removed from the DOM when unchecked unless `keepMounted`. Apply to the indicator element (the Anatomy uses an `<svg>` icon).
+Apply `RdxCheckboxIndicatorDirective` to the mark element, such as an `<svg>`.
+The directive retains the authored element and manages its layout visibility.
 
 <ArgTypes of={RdxCheckboxIndicatorDirective} />
 
@@ -243,14 +252,14 @@ system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook 
 | `data-disabled`       | The checkbox is disabled.                |
 | `data-readonly`       | The checkbox is read-only.               |
 | `data-required`       | The checkbox is required.                |
-| `data-starting-style` | The indicator is visible (enter motion). |
-| `data-ending-style`   | The indicator is hidden (exit motion).   |
+| `data-starting-style` | The indicator begins animating in. |
+| `data-ending-style`   | The indicator is animating out.   |
 
 ### Input
 
-`RdxCheckboxInputDirective` — an optional hidden native input for constraint validation and mirrored
-native input/change events. FormData serialization works from a named root without it. The directive
-reads everything from the root context and takes no inputs.
+Apply `RdxCheckboxInputDirective` to an optional native input for browser constraint validation and
+`input` and `change` events. A named root also supports `FormData` serialization through the native
+form bridge.
 
 ### Checkbox Group
 
@@ -268,10 +277,11 @@ checked child values. Mark a child checkbox `parent` to make it select/deselect 
 
 ## Accessibility
 
-Adheres to the [tri-state Checkbox WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/checkbox).
+Mixed state is exposed as `aria-checked="mixed"`. See the [tri-state Checkbox WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/patterns/checkbox).
 
 ### Keyboard Interactions
 
 | Key     | Description                   |
 | ------- | ----------------------------- |
-| `Space` | Checks/unchecks the checkbox. |
+| `Space` | Checks or unchecks the focused checkbox. |
+| `Enter` | Activates the owning form’s default submit button, when present. |

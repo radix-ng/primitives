@@ -5,10 +5,14 @@
 > Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
 `onCheckedChange` emits `{ checked, eventDetails }`; `rdxCheckboxGroup` emits `{ value, eventDetails }`.
-Call `eventDetails.cancel()` before updating controlled state to reject a change.
+A child or select-all checkbox emits first. The group receives the same event details if the child
+accepts the request. Call `eventDetails.cancel()` in either handler to veto the edit.
+Use `[controlledChecked]` or `[controlledValue]` when the parent decides which requests to apply.
+Use `[(checked)]` or `[(value)]` for an editable Angular model. Angular form values and explicit
+bindings take precedence over `defaultChecked` and `defaultValue`, which apply only at initialization.
 
 ```html
-<div [checked]="checked()" (onCheckedChange)="setChecked($event)" rdxCheckboxRoot>
+<div [controlledChecked]="checked()" (onCheckedChange)="setChecked($event)" rdxCheckboxRoot>
   ...
 </div>
 ```

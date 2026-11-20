@@ -23,14 +23,14 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
     ],
     template: `
         <div class="flex items-center gap-3">
-            <div [checked]="checked()" (onCheckedChange)="checked.set($event.checked)" rdxCheckboxRoot>
+            <div [controlledChecked]="checked()" (onCheckedChange)="checked.set($event.checked)" rdxCheckboxRoot>
                 <button
                     class="demo-checkbox-button demo-focus flex size-6 items-center justify-center disabled:opacity-50 aria-disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
                     id="r1"
                     rdxCheckboxButton
                 >
                     <svg
-                        class="text-primary flex items-center"
+                        class="text-primary flex items-center transition-opacity data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 data-[unchecked]:opacity-0"
                         [lucideIcon]="Check"
                         keepMounted
                         rdxCheckboxIndicator
