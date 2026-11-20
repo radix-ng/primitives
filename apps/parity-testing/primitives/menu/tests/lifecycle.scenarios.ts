@@ -1,11 +1,27 @@
-import { expect } from '@playwright/test';
+import { expect, type Locator } from '@playwright/test';
 import { lifecycleCases, lifecycleConfig } from '../../../shared/lifecycle';
 import type { MenuDriver } from './driver';
+
+async function expectPausedExit(popup: Locator) {
+    await expect(popup).toHaveAttribute('data-ending-style', '');
+    await expect
+        .poll(() => popup.evaluate((el) => el.getAnimations().some((animation) => animation.playState === 'paused')))
+        .toBe(true);
+}
+
+async function finishExit(popup: Locator) {
+    await popup.evaluate(async (el) => {
+        const animations = el.getAnimations();
+        animations.forEach((animation) => animation.finish());
+        await Promise.all(animations.map((animation) => animation.finished));
+    });
+}
 
 const rootScenarios = lifecycleCases.map((name) => ({
     name,
     async run(d: MenuDriver) {
         const config = lifecycleConfig(name)!;
+        const interruptsCss = name === 'lifecycle-reopen-css';
         await d.open();
         await d.navigateTo('check');
         await d.page.keyboard.press('Space');
@@ -20,7 +36,8 @@ const rootScenarios = lifecycleCases.map((name) => ({
             });
             await d.page.keyboard.press('F8');
         } else if (config.animated || config.deferred) {
-            if (config.animated)
+            if (interruptsCss) await expectPausedExit(d.popup);
+            else if (config.animated)
                 await expect.poll(() => d.popup.evaluate((el) => el.getAnimations().length)).toBeGreaterThan(0);
             await d.checkpoint('exit pending', {
                 open: false,
@@ -35,11 +52,7 @@ const rootScenarios = lifecycleCases.map((name) => ({
 
         if (config.late) {
             await d.page.keyboard.press('F10');
-            await d.popup.evaluate(async (el) => {
-                const animations = el.getAnimations();
-                animations.forEach((animation) => animation.finish());
-                await Promise.all(animations.map((animation) => animation.finished));
-            });
+            await finishExit(d.popup);
             await d.checkpoint('late hold', {
                 open: false,
                 mounted: true,
@@ -48,7 +61,8 @@ const rootScenarios = lifecycleCases.map((name) => ({
             });
         }
 
-        if (name === 'lifecycle-fast-reopen' || name === 'lifecycle-reopen-css') {
+        if (name === 'lifecycle-fast-reopen' || interruptsCss) {
+            const exitingPopup = interruptsCss ? await d.popup.elementHandle() : null;
             await d.trigger.press('Enter');
             await expect.poll(() => d.page.evaluate(() => window.menuParity.completions.main)).toEqual([true, true]);
             await d.page.keyboard.press('F9');
@@ -59,8 +73,16 @@ const rootScenarios = lifecycleCases.map((name) => ({
                 checked: 'true',
                 completions: { main: [true, true], sub: [] }
             });
+            if (exitingPopup) {
+                expect(await d.popup.evaluate((popup, previous) => popup === previous, exitingPopup)).toBe(true);
+                await exitingPopup.dispose();
+            }
             await expect(d.item('alpha')).toBeFocused();
             await d.page.keyboard.press('F8');
+            if (interruptsCss) {
+                await expectPausedExit(d.popup);
+                await finishExit(d.popup);
+            }
             await d.closed();
             await d.checkpoint('new close completed', {
                 open: false,
@@ -70,13 +92,7 @@ const rootScenarios = lifecycleCases.map((name) => ({
             return;
         }
 
-        if (name === 'lifecycle-css-exit') {
-            await d.popup.evaluate(async (el) => {
-                const animations = el.getAnimations();
-                animations.forEach((animation) => animation.finish());
-                await Promise.all(animations.map((animation) => animation.finished));
-            });
-        }
+        if (name === 'lifecycle-css-exit') await finishExit(d.popup);
         if (config.deferred || config.late) await d.page.keyboard.press('F9');
         await d.closed();
         await expect(d.trigger).toBeFocused();
@@ -138,14 +154,7 @@ export const lifecycleScenarios = [
             await d.page.keyboard.press('Enter');
             // Observe real, paused CSS exits: CI protocol/recording latency must not complete a
             // 400ms animation between detecting the ending style and recording the pending phase.
-            for (const popup of [d.popup, d.subPopup]) {
-                await expect(popup).toHaveAttribute('data-ending-style', '');
-                await expect
-                    .poll(() =>
-                        popup.evaluate((el) => el.getAnimations().some((animation) => animation.playState === 'paused'))
-                    )
-                    .toBe(true);
-            }
+            for (const popup of [d.popup, d.subPopup]) await expectPausedExit(popup);
             await d.checkpoint('nested exit pending', {
                 open: false,
                 mounted: true,

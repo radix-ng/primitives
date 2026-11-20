@@ -3,11 +3,10 @@ import { Menu } from '@base-ui/react/menu';
 import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../../../../radix-storybook/.storybook/main.css';
-import { exitClass, heldExitClass } from '../../../shared/lifecycle';
 import { changeCollection, menuEntries, submenuEntries } from '../../../shared/menu-collection';
 import { rootRemovalFinalFocus } from '../../../shared/root-removal';
 import { ReactBoundary } from './boundary.react';
-import { config, installProbe, classes as s, type Layer } from './contract';
+import { config, installProbe, menuExitClass, classes as s, type Layer } from './contract';
 import { ReactDialogMenu } from './dialog.react';
 import { ReactFocusBoundary } from './focus-boundary.react';
 import { ReactHandleOverlap } from './handle-overlap.react';
@@ -19,7 +18,7 @@ import { ReactLabels } from './labels.react';
 import { ReactModels } from './models.react';
 import { ReactPlacement } from './placement.react';
 import { ReactPopoverMenu } from './popover.react';
-import { pendingPortalExitClass, preparePortalSurface } from './portals';
+import { preparePortalSurface } from './portals';
 import { ReactPortals } from './portals.react';
 import { ReactProjection } from './projection.react';
 import { touchScrollEntries } from './touch';
@@ -31,12 +30,7 @@ if (settings.highlight) trace.probe.highlights = createHighlightRecorder();
 function ReactMenu() {
     const [rootPresent, setRootPresent] = useState(true);
     const [beforePresent, setBeforePresent] = useState(true);
-    const exit =
-        settings.removal?.animated || settings.lifecycle?.late || settings.name === 'lifecycle-submenu-css'
-            ? heldExitClass
-            : settings.name === 'lifecycle-css-exit'
-              ? pendingPortalExitClass
-              : exitClass;
+    const exit = menuExitClass(settings);
     const [items, setItems] = useState(
         settings.touch?.popupScroll ? touchScrollEntries : settings.empty && !settings.empty.nested ? [] : menuEntries
     );

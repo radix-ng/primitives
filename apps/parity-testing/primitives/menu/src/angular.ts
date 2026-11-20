@@ -10,11 +10,10 @@ import {
     type RdxMenuRadioGroupValueChangeEvent
 } from '@radix-ng/primitives/menu';
 import '../../../../radix-storybook/.storybook/main.css';
-import { exitClass, heldExitClass } from '../../../shared/lifecycle';
 import { changeCollection, menuEntries, submenuEntries } from '../../../shared/menu-collection';
 import { rootRemovalFinalFocus } from '../../../shared/root-removal';
 import { AngularBoundary } from './boundary.angular';
-import { classes, config, installProbe, type Layer } from './contract';
+import { classes, config, installProbe, menuExitClass, type Layer } from './contract';
 import { AngularDialogMenu } from './dialog.angular';
 import { AngularFocusBoundary } from './focus-boundary.angular';
 import { AngularHandleOverlap } from './handle-overlap.angular';
@@ -27,7 +26,7 @@ import { AngularModels } from './models.angular';
 import { AngularPlacement } from './placement.angular';
 import { AngularPopoverMenu } from './popover.angular';
 import { AngularPortalConsumers } from './portal-consumers.angular';
-import { pendingPortalExitClass, preparePortalSurface } from './portals';
+import { preparePortalSurface } from './portals';
 import { AngularPortals } from './portals.angular';
 import { AngularProjection } from './projection.angular';
 import { touchScrollEntries } from './touch';
@@ -258,12 +257,7 @@ const settings = config();
 })
 class AngularMenu {
     readonly root = viewChild.required(RdxMenuRoot);
-    readonly exitClass =
-        settings.removal?.animated || settings.lifecycle?.late || settings.name === 'lifecycle-submenu-css'
-            ? heldExitClass
-            : settings.name === 'lifecycle-css-exit'
-              ? pendingPortalExitClass
-              : exitClass;
+    readonly exitClass = menuExitClass(settings);
     readonly rootPresent = signal(true);
     readonly beforePresent = signal(true);
     readonly finalFocus = settings.removal?.finalFocus ? rootRemovalFinalFocus : undefined;

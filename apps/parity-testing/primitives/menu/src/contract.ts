@@ -1,4 +1,4 @@
-import { lifecycleCases, lifecycleConfig } from '../../../shared/lifecycle';
+import { exitClass, heldExitClass, lifecycleCases, lifecycleConfig } from '../../../shared/lifecycle';
 import { menuCollectionCases } from '../../../shared/menu-collection';
 import { createMenuProbe, type MenuProbe } from '../../../shared/menu-probe';
 import { rootRemovalCases, rootRemovalConfig } from '../../../shared/root-removal';
@@ -20,7 +20,7 @@ import type { OverlayProbe } from './overlay-probe';
 import { placementCases, placementConfig } from './placement';
 import { pointerCases, pointerConfig } from './pointer';
 import { popoverMenuCases, popoverMenuConfig } from './popover';
-import { portalCases, portalConfig } from './portals';
+import { pendingPortalExitClass, portalCases, portalConfig } from './portals';
 import { positioningCases } from './positioning';
 import { projectionCases, projectionConfig } from './projection';
 import { touchCases, touchConfig } from './touch';
@@ -234,6 +234,13 @@ export function config() {
         pointer: pointerConfig(name)
     };
 }
+export function menuExitClass({ name, lifecycle, removal }: ReturnType<typeof config>) {
+    if (name === 'lifecycle-reopen-css' || name === 'lifecycle-submenu-css' || lifecycle?.late || removal?.animated) {
+        return heldExitClass;
+    }
+    return name === 'lifecycle-css-exit' ? pendingPortalExitClass : exitClass;
+}
+
 export function installProbe(framework: string, eventDocument: Document = document) {
     const trace = createMenuProbe(framework, __PARITY_REFERENCE__, config(), ['main', 'sub'] as const, eventDocument);
     eventDocument.documentElement.dir = trace.probe.config.dir;
