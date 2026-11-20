@@ -1,4 +1,4 @@
-import { DestroyRef, Directive, effect, ElementRef, inject } from '@angular/core';
+import { afterNextRender, DestroyRef, Directive, effect, ElementRef, inject } from '@angular/core';
 import { injectCheckboxRootContext } from './checkbox-root';
 
 @Directive({
@@ -35,8 +35,28 @@ export class RdxCheckboxInputDirective {
     private readonly input = inject<ElementRef<HTMLInputElement>>(ElementRef).nativeElement;
 
     constructor() {
-        const unregister = this.rootContext.registerNativeInput(this.input);
-        inject(DestroyRef).onDestroy(unregister);
+        const destroyRef = inject(DestroyRef);
+        destroyRef.onDestroy(this.rootContext.registerNativeInput(this.input));
+
+        afterNextRender(() => {
+            const owner = this.input.ownerDocument.defaultView;
+            if (!owner) return;
+
+            let timer: number | undefined;
+            const syncAfterRestore = () => {
+                owner.clearTimeout(timer);
+                // History traversal can restore checkedness after pageshow, without a change event.
+                timer = owner.setTimeout(() => {
+                    timer = undefined;
+                    this.syncCheckedState();
+                }, 0);
+            };
+            owner.addEventListener('pageshow', syncAfterRestore);
+            destroyRef.onDestroy(() => {
+                owner.removeEventListener('pageshow', syncAfterRestore);
+                owner.clearTimeout(timer);
+            });
+        });
 
         effect(() => {
             // Native activation clears this property even when the bound mixed state is unchanged.
@@ -50,9 +70,11 @@ export class RdxCheckboxInputDirective {
         if (!this.rootContext.toggle(event, this.input.checked)) event.preventDefault();
 
         // The browser may have rolled back activation. Controlled requests may also be ignored.
-        queueMicrotask(() => {
-            this.input.checked = this.rootContext.checked();
-            this.input.indeterminate = this.rootContext.indeterminate();
-        });
+        queueMicrotask(() => this.syncCheckedState());
+    }
+
+    private syncCheckedState(): void {
+        this.input.checked = this.rootContext.checked();
+        this.input.indeterminate = this.rootContext.indeterminate();
     }
 }

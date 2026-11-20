@@ -12,6 +12,41 @@ const change = (part: string, value: Change['value']): Change => ({
     eventType: 'click'
 });
 
+interface AccessibleControl {
+    role: string;
+    name: string;
+    description: string;
+    checked: string | null;
+    disabled: boolean;
+    focused: boolean;
+    invalid: boolean;
+    controls: string[];
+}
+
+async function readAccessibleControls(page: Page): Promise<AccessibleControl[]> {
+    const session = await page.context().newCDPSession(page);
+    try {
+        const { nodes } = await session.send('Accessibility.getFullAXTree');
+        return nodes
+            .filter((node) => !node.ignored && ['checkbox', 'group'].includes(node.role?.value))
+            .map((node) => {
+                const property = (name: string) => node.properties?.find((entry) => entry.name === name)?.value;
+                return {
+                    role: node.role?.value,
+                    name: node.name?.value ?? '',
+                    description: node.description?.value ?? '',
+                    checked: property('checked')?.value ?? null,
+                    disabled: property('disabled')?.value === true,
+                    focused: property('focused')?.value === true,
+                    invalid: property('invalid')?.value === 'true',
+                    controls: property('controls')?.relatedNodes?.flatMap((target) => target.idref ?? []) ?? []
+                };
+            });
+    } finally {
+        await session.detach();
+    }
+}
+
 class CheckboxDriver {
     readonly checkpoints: Checkpoint[] = [];
     readonly measurements: unknown[] = [];
@@ -104,6 +139,14 @@ class CheckboxDriver {
         this.checkpoints.push({ name, state: await read() });
     }
 
+    async accessibilityCheckpoint(name: string, expected: Partial<AccessibleControl>[]) {
+        if (this.page.context().browser()?.browserType().name() !== 'chromium') return;
+
+        const read = () => readAccessibleControls(this.page);
+        await expect.poll(read, name).toMatchObject(expected);
+        this.checkpoints.push({ name, state: await read() });
+    }
+
     async cancel(part: string) {
         await this.page.evaluate((part) => {
             window.checkboxParity.cancelPart = part;
@@ -136,10 +179,50 @@ const scenarios: { name: string; run(driver: CheckboxDriver): Promise<void> }[] 
             await driver.standalone('parent accepts later', 'true', [requested, requested]);
         }
     },
+    ...[false, true].map((controlled) => ({
+        name: controlled ? 'history-controlled' : 'history',
+        async run(driver: CheckboxDriver) {
+            const { page } = driver;
+            const initial = controlled ? 'false' : 'true';
+            const edited = controlled ? 'true' : 'false';
+            const request = [change('terms', controlled)];
+
+            // Leave for a real document on the same origin so the browser can save form state.
+            await page.route('**/history-away', (route) =>
+                route.fulfill({ contentType: 'text/html', body: '<!doctype html><title>Another page</title>' })
+            );
+            await driver.standalone('initial selection', initial, []);
+            await driver.terms.click();
+            if (controlled) await page.getByRole('button', { name: 'Apply request' }).click();
+            await driver.standalone('edited selection', edited, request);
+
+            const initialDocument = await page.evaluate(() => performance.timeOrigin);
+            await page.goto('/history-away');
+            await page.goBack();
+            const retained = (await page.evaluate(() => performance.timeOrigin)) === initialDocument;
+            driver.measurements.push({ navigation: 'back', retainedDocument: retained });
+            await driver.standalone(
+                'history traversal keeps the form and checkbox in sync',
+                retained ? edited : initial,
+                retained ? request : []
+            );
+            expect(await page.evaluate(() => window.checkboxParity.native)).toEqual(
+                retained ? ['input', 'change'] : []
+            );
+
+            await page.reload();
+            await driver.standalone('reload starts from the application value', initial, []);
+            expect(await page.evaluate(() => window.checkboxParity.native)).toEqual([]);
+        }
+    })),
     {
         name: 'mixed',
         async run(driver) {
             await driver.standalone('indeterminate', 'mixed', []);
+            await expect(driver.terms).toMatchAriaSnapshot('- checkbox "Terms" [checked=mixed]');
+            await driver.accessibilityCheckpoint('mixed state exposes one accessible checkbox', [
+                { role: 'checkbox', name: 'Terms', checked: 'mixed' }
+            ]);
             await driver.terms.click();
             const first = change('terms', true);
             const read = () =>
@@ -164,8 +247,15 @@ const scenarios: { name: string; run(driver: CheckboxDriver): Promise<void> }[] 
             await driver.terms.click({ force: true });
             await driver.terms.press('Space');
             await driver.standalone('ignores pointer and Space', 'false', []);
-            if (name === 'disabled') await expect(driver.terms).toBeDisabled();
-            else await expect(driver.terms).toHaveAttribute('aria-readonly', 'true');
+            if (name === 'disabled') {
+                await expect(driver.terms).toBeDisabled();
+                await expect(driver.terms).toMatchAriaSnapshot('- checkbox "Terms" [disabled]');
+                await driver.accessibilityCheckpoint('disabled native button is one accessible checkbox', [
+                    { role: 'checkbox', name: 'Terms', disabled: true, checked: 'false' }
+                ]);
+            } else {
+                await expect(driver.terms).toHaveAttribute('aria-readonly', 'true');
+            }
         }
     })),
     {
@@ -299,6 +389,20 @@ const scenarios: { name: string; run(driver: CheckboxDriver): Promise<void> }[] 
             await first.focus();
             await first.press('Space');
             await driver.fieldCheckpoint('item fills group', ['data-dirty', 'data-filled', 'data-focused'], ['a']);
+            await expect(group).toMatchAriaSnapshot(`
+                - group "Features":
+                  - checkbox "All" [checked=mixed]
+                  - checkbox "Option a" [checked]
+                  - checkbox "Option b"
+            `);
+            await expect(group).toHaveAccessibleDescription('Choose your features.');
+            await expect(first).toHaveAccessibleDescription('Choose your features. About a');
+            await driver.accessibilityCheckpoint('named group exposes mixed state, controls, and focused item', [
+                { role: 'group', name: 'Features', description: 'Choose your features.' },
+                { role: 'checkbox', name: 'All', checked: 'mixed', controls: ['item-a', 'item-b'] },
+                { role: 'checkbox', name: 'Option a', checked: 'true', focused: true },
+                { role: 'checkbox', name: 'Option b', checked: 'false' }
+            ]);
             await second.focus();
             await driver.fieldCheckpoint(
                 'sibling retains shared focus',
@@ -346,6 +450,7 @@ const scenarios: { name: string; run(driver: CheckboxDriver): Promise<void> }[] 
             await next.focus();
             if (grouped) await next.press('Space');
             await expect(error).toBeVisible();
+            await expect(required).toHaveAccessibleDescription(grouped ? /Select option a/ : /Accept the terms/);
             const missing = {
                 checked: 'false',
                 invalid: 'true',

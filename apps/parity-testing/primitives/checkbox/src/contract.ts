@@ -22,8 +22,9 @@ declare global {
 
 export const scenario = new URLSearchParams(location.search).get('case') ?? '';
 export const group = scenario.startsWith('group-');
-export const initialChecked = scenario === 'controlled' ? false : undefined;
-export const initialDefault = scenario === 'default' || scenario === 'controlled' ? true : undefined;
+const controlled = scenario === 'controlled' || scenario === 'history-controlled';
+export const initialChecked = controlled ? false : undefined;
+export const initialDefault = scenario === 'default' || scenario === 'history' || controlled ? true : undefined;
 export const mixed = scenario === 'mixed';
 export const keepMounted = scenario === 'indicator';
 export const initialGroup: string[] | undefined = scenario === 'group-controlled' ? [] : undefined;

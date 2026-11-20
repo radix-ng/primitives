@@ -34,6 +34,8 @@ public CSS variables.
 | P2 · Field and Field.Item        | The standalone button takes its label and descriptions from Field. A group exposes its own Field label. Field.Item scopes each child label and appends its descriptions to the group's descriptions. The effective Field name drives native submission, and disabling or unmounting a focused item releases shared focus. | Paired `field-standalone` and `field-group` check accessible names, descriptions, disabled inheritance, native submission, touched, dirty, filled and focused state.                                                             |
 | P2 · Field native constraints    | Checkbox reports `valueMissing` from its authored input. CheckboxGroup checks each eligible child and can focus the first missing checkbox. An optional child cannot satisfy a required sibling.                                                                                                                          | Paired `field-required` and `field-group-required` observe validation after an edit and blur, error association and removal, blocked-submit focus, and accepted submission.                                                      |
 | P2 · Deferred group hydration    | Two server-rendered groups can hydrate in reverse order. Group labels, item labels, control IDs and authored form input nodes retain their identity. Each select-all activation replays once.                                                                                                                             | Angular AOT `reverse-checkbox-group` case in the [hydration audit](../../../apps/radix-ssr-testing/hydration-audit/README.md).                                                                                                   |
+| P2 · Browser history and reload  | After `pageshow`, the authored input resyncs from the effective checked and mixed state. A rebuilt document uses its initial application state. A retained document keeps its live model. Reconciliation emits no change requests.                                                                                        | Paired `history` and `history-controlled` assert ARIA, checkedness, native notifications and `FormData` after browser Back and reload. A local Chromium run also verified a retained document with BFCache enabled.              |
+| P2 · Browser accessibility       | The technical inputs are hidden from accessibility. The exposed group and checkboxes carry accessible names, descriptions, checked/mixed state, disabled state, focus and validation information.                                                                                                                         | Accessible-name/description and ARIA snapshot checks across three engines. Chromium native AX checkpoints additionally cover the exposed controls, `aria-controls` targets, focus and the error description.                     |
 
 ## Angular contracts and remaining cases
 
@@ -48,7 +50,12 @@ public CSS variables.
 - Angular Field applies its validation reveal policy to browser constraints. In `onBlur` mode it can
   show a native required failure on the first blur. The pin can suppress an untouched value-missing
   message until the field has changed. The paired constraint cases exercise an edit followed by blur.
-- Browser-profile autofill and assistive-technology output remain separate verification cases.
+- The [HTML Checkbox state](<https://html.spec.whatwg.org/multipage/input.html#checkbox-state-(type=checkbox)>)
+  excludes `autocomplete`. Browser navigation can still restore
+  [persisted form state](https://html.spec.whatwg.org/multipage/browsing-the-web.html#persisted-history-entry-state).
+  The navigation checks exercise that restoration.
+- Actual screen-reader announcements and assistive-technology activation remain separate
+  verification cases.
 
 Run `pnpm test-parity checkbox` for the [paired browser suite](../../../apps/parity-testing/primitives/checkbox/README.md).
 The [units](__tests__) and [SSR assertions](../../../apps/radix-ssr-testing/src/ssr-rendering.spec.ts)
