@@ -262,26 +262,37 @@ const scenarios: { name: string; run(driver: CheckboxDriver): Promise<void> }[] 
         name: 'form',
         async run(driver) {
             const { page, terms } = driver;
+            const nativeEvents = () => page.evaluate(() => window.checkboxParity.native);
+            const submittedEvents = ['input', 'change', 'submit:submit'];
+            const changes = [change('terms', true)];
             await driver.standalone('unchecked fallback', 'false', [], ['no']);
-            await terms.press('Enter');
-            expect(await page.evaluate(() => document.querySelector('form')?.checkValidity())).toBe(false);
-            await expect(terms).toBeFocused();
             await page.locator('label[for=terms]').click();
-            await driver.standalone('label activation', 'true', [change('terms', true)]);
+            await driver.standalone('label activation', 'true', changes);
             await terms.press('Enter');
-            await expect
-                .poll(() => page.evaluate(() => window.checkboxParity.native))
-                .toEqual(['input', 'change', 'submit:submit']);
+            await expect.poll(nativeEvents).toEqual(submittedEvents);
             await page.evaluate(() => {
                 window.checkboxParity.cancelEnter = true;
             });
             await terms.press('Enter');
-            await driver.standalone('Enter does not toggle', 'true', [change('terms', true)]);
-            expect(await page.evaluate(() => window.checkboxParity.native)).toEqual([
-                'input',
-                'change',
-                'submit:submit'
-            ]);
+            await driver.standalone('Enter does not toggle', 'true', changes);
+            expect(await nativeEvents()).toEqual(submittedEvents);
+
+            // Check invalid submission last so the browser's validation UI cannot consume the label click.
+            await page.evaluate(() => {
+                window.checkboxParity.cancelEnter = false;
+            });
+            await terms.press('Space');
+            const unchecked = [...changes, change('terms', false)];
+            await driver.standalone('required checkbox unchecked again', 'false', unchecked, ['no']);
+            const input = page.locator('input[type=checkbox]');
+            await input.evaluate((input) => {
+                input.addEventListener('invalid', () => input.setAttribute('data-invalid-event', ''), { once: true });
+            });
+            await terms.press('Enter');
+            await expect(input).toHaveAttribute('data-invalid-event', '');
+            await expect(terms).toBeFocused();
+            await driver.standalone('invalid Enter keeps the checkbox unchecked', 'false', unchecked, ['no']);
+            expect(await nativeEvents()).toEqual([...submittedEvents, 'input', 'change']);
         }
     },
     {
