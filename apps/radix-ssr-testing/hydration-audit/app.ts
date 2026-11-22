@@ -60,6 +60,7 @@ import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTa
 import LabelPage from '../src/app/components/label/page';
 import { CheckboxAuditView } from './checkbox-view';
 import { LazyPortalView } from './lazy-view';
+import { ProgressAuditView } from './progress-view';
 import { RadioAuditView } from './radio-view';
 import { AuditProbe, Settings } from './settings';
 
@@ -161,6 +162,7 @@ export class HydrationProbe {
         HydrationProbe,
         RadioAuditView,
         LabelPage,
+        ProgressAuditView,
         RdxPopoverRoot,
         RdxPopoverTrigger,
         RdxPopoverPortal,
@@ -174,6 +176,9 @@ export class HydrationProbe {
             }
             @case ('label') {
                 <app-label />
+            }
+            @case ('progress') {
+                <audit-progress-view />
             }
             @case ('accordion') {
                 <section [attr.data-widget]="name()">

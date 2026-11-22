@@ -1,25 +1,33 @@
-import { computed, Directive, inject, input, numberAttribute, signal, Signal } from '@angular/core';
-import { createContext, injectId } from '@radix-ng/primitives/core';
+import { afterNextRender, computed, Directive, inject, input, numberAttribute, signal, Signal } from '@angular/core';
+import { clamp, createContext, createLabelRegistry, injectId } from '@radix-ng/primitives/core';
 
 const attr = (value: boolean) => (value ? '' : undefined);
 
 export type ProgressState = 'indeterminate' | 'complete' | 'progressing';
 
 export type ProgressValueFormatter = (value: number, min: number, max: number) => string;
+export type ProgressAriaValueFormatter = (formattedValue: string, value: number | null) => string;
 
 export interface ProgressProps {
     value?: number | null;
     min?: number;
     max?: number;
     valueLabel?: ProgressValueFormatter;
+    locale?: Intl.LocalesArgument;
+    format?: Intl.NumberFormatOptions;
+    getAriaValueText?: ProgressAriaValueFormatter;
+    'aria-valuetext'?: string | null;
+    'aria-labelledby'?: string | null;
 }
 
 const DEFAULT_MIN = 0;
 const DEFAULT_MAX = 100;
 
-const isValidNumber = (value: unknown): value is number => typeof value === 'number' && !Number.isNaN(value);
-
-const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
+function rangeFraction(value: number, min: number, max: number): number {
+    const span = max - min;
+    // Subtraction can overflow when the range spans opposite finite extremes.
+    return Number.isFinite(span) ? (value - min) / span : (value / 2 - min / 2) / (max / 2 - min / 2);
+}
 
 export interface RdxProgressRootContext {
     labelId: Signal<string>;
@@ -33,8 +41,7 @@ export interface RdxProgressRootContext {
     completeState: Signal<boolean>;
     progressingState: Signal<boolean>;
     indeterminateState: Signal<boolean>;
-    /** A Label part registers its presence; returns its unregister callback. */
-    registerLabel: () => () => void;
+    registerLabel: (id: string) => () => void;
 }
 
 const progressRootContext = (): RdxProgressRootContext => {
@@ -52,7 +59,7 @@ const progressRootContext = (): RdxProgressRootContext => {
         completeState: root.completeState,
         progressingState: root.progressingState,
         indeterminateState: root.indeterminateState,
-        registerLabel: () => root.registerLabel()
+        registerLabel: (id) => root.registerLabel(id)
     };
 };
 
@@ -72,9 +79,7 @@ export const [injectProgressRootContext, provideProgressRootContext] = createCon
     providers: [provideProgressRootContext(progressRootContext)],
     host: {
         role: 'progressbar',
-        // Only reference the label id once a `rdxProgressLabel` is actually mounted, otherwise
-        // `aria-labelledby` would point at a non-existent element.
-        '[attr.aria-labelledby]': 'hasLabel() ? labelId() : undefined',
+        '[attr.aria-labelledby]': 'labelledBy()',
         // min/max are always present (Base UI + APG), only `aria-valuenow` is dropped when indeterminate.
         '[attr.aria-valuemin]': 'minState()',
         '[attr.aria-valuemax]': 'maxState()',
@@ -89,8 +94,11 @@ export const [injectProgressRootContext, provideProgressRootContext] = createCon
     }
 })
 export class RdxProgressRootDirective {
+    private readonly defaultValueLabel: ProgressValueFormatter = (value, min, max) =>
+        this.numberFormatter().format(this.format() ? value : rangeFraction(value, min, max));
+
     /**
-     * Current progress value. Set to `null` for indeterminate progress.
+     * Current progress value. Null and non-finite values indicate indeterminate progress.
      *
      * @group Props
      * @defaultValue null
@@ -114,27 +122,52 @@ export class RdxProgressRootDirective {
     readonly max = input(DEFAULT_MAX, { transform: numberAttribute });
 
     /**
-     * Formats the current value for assistive technologies and `rdxProgressValue`.
+     * Formats the clamped value for `rdxProgressValue` and the default accessible value text.
      *
      * @group Props
      */
-    readonly valueLabel = input<ProgressValueFormatter>((value, min, max) => this.defaultValueLabel(value, min, max));
+    readonly valueLabel = input<ProgressValueFormatter, ProgressValueFormatter | undefined>(this.defaultValueLabel, {
+        transform: (formatter) => formatter ?? this.defaultValueLabel
+    });
+
+    /** Locale used by the number formatter. */
+    readonly locale = input<Intl.LocalesArgument>();
+
+    /** Number format for the clamped value. The default formats the percentage of the range. */
+    readonly format = input<Intl.NumberFormatOptions>();
+
+    /** Formats accessible value text using the visible text and the original supplied value. */
+    readonly getAriaValueText = input<ProgressAriaValueFormatter>();
+
+    /** Explicit accessible value text. */
+    readonly ariaValueTextInput = input<string | null>(undefined, { alias: 'aria-valuetext' });
+
+    /** Explicit IDs of the elements that provide the accessible name. */
+    readonly ariaLabelledBy = input<string | null>(undefined, { alias: 'aria-labelledby' });
 
     readonly labelId = input(injectId('rdx-progress-label-'));
     readonly valueId = input(injectId('rdx-progress-value-'));
 
-    readonly minState = computed(() => (isValidNumber(this.min()) ? this.min() : DEFAULT_MIN));
-    readonly maxState = computed(() => {
-        const min = this.minState();
+    private readonly labels = createLabelRegistry();
+    private readonly runtimeLocale = signal<Intl.LocalesArgument | undefined>('en-US');
+    private readonly range = computed(() => {
+        const min = Number.isFinite(this.min()) ? this.min() : DEFAULT_MIN;
         const max = this.max();
-
-        return isValidNumber(max) && max > min ? max : min + DEFAULT_MAX;
+        if (Number.isFinite(max) && max > min) return { min, max };
+        const fallback = min + DEFAULT_MAX;
+        if (Number.isFinite(fallback) && fallback > min) return { min, max: fallback };
+        return { min: DEFAULT_MIN, max: DEFAULT_MAX };
     });
+    readonly minState = computed(() => this.range().min);
+    readonly maxState = computed(() => this.range().max);
+    private readonly numberFormatter = computed(
+        () => new Intl.NumberFormat(this.locale() ?? this.runtimeLocale(), this.format() ?? { style: 'percent' })
+    );
 
     readonly valueState = computed(() => {
         const value = this.value();
 
-        if (value === null || !isValidNumber(value)) {
+        if (value === null || !Number.isFinite(value)) {
             return null;
         }
 
@@ -148,22 +181,29 @@ export class RdxProgressRootDirective {
             return null;
         }
 
-        const min = this.minState();
-        const max = this.maxState();
-
-        return ((value - min) / (max - min)) * 100;
+        const { min, max } = this.range();
+        return rangeFraction(value, min, max) * 100;
     });
 
     readonly valueLabelState = computed(() => {
         const value = this.valueState();
 
-        return value === null ? undefined : this.valueLabel()(value, this.minState(), this.maxState());
+        if (value === null) return undefined;
+        const { min, max } = this.range();
+        return this.valueLabel()(value, min, max);
     });
 
     /** `aria-valuetext`: the formatted label, or an explicit "indeterminate progress" (Base UI parity). */
-    readonly ariaValueText = computed(
-        () => this.valueLabelState() ?? (this.indeterminateState() ? 'indeterminate progress' : undefined)
-    );
+    readonly ariaValueText = computed(() => {
+        const authored = this.ariaValueTextInput();
+        if (authored !== undefined) return authored ?? undefined;
+        const formatted = this.valueLabelState();
+        return this.getAriaValueText()?.(formatted ?? '', this.value()) ?? formatted ?? 'indeterminate progress';
+    });
+    protected readonly labelledBy = computed(() => {
+        const authored = this.ariaLabelledBy();
+        return authored === undefined ? this.labels.labelId() : authored;
+    });
 
     readonly progressState = computed<ProgressState>(() => {
         const value = this.valueState();
@@ -185,22 +225,20 @@ export class RdxProgressRootDirective {
 
     protected readonly dataAttr = attr;
 
-    private readonly labelCount = signal(0);
-    /** Whether at least one `rdxProgressLabel` is currently mounted. */
-    readonly hasLabel = computed(() => this.labelCount() > 0);
+    /** Whether a `rdxProgressLabel` is currently registered. */
+    readonly hasLabel = computed(() => this.labels.labelId() !== undefined);
 
-    /** @ignore Called by `rdxProgressLabel` on mount; returns its unregister callback. */
-    registerLabel(): () => void {
-        this.labelCount.update((count) => count + 1);
-        return () => this.labelCount.update((count) => count - 1);
+    constructor() {
+        afterNextRender(() => this.runtimeLocale.set(undefined));
+    }
+
+    /** @ignore */
+    registerLabel(id: string): () => void {
+        return this.labels.registerLabel(id);
     }
 
     private valueTransform(value: number | null): number | null {
         return value === null ? null : numberAttribute(value);
-    }
-
-    private defaultValueLabel(value: number, min: number, max: number) {
-        return `${Math.round(((value - min) / (max - min)) * 100)}%`;
     }
 }
 

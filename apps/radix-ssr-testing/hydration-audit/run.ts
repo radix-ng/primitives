@@ -28,12 +28,32 @@ async function snapshot(page: Page) {
         const radioView = radioForm?.parentElement;
         const radioGroup = radioView?.querySelector('[role="radiogroup"]');
         const labelPage = document.querySelector('app-label');
+        const progressRoot = document.querySelector('[data-progress-node="root"]');
         return {
             ready: window.portalHydrationAudit?.ready ?? false,
             stable: window.portalHydrationAudit?.stable,
             errors: window.portalHydrationAudit?.errors ?? [],
             constructed: window.portalHydrationAudit?.constructed ?? [],
             duplicateIds: ids.filter((id, index) => ids.indexOf(id) !== index),
+            progress: progressRoot
+                ? {
+                      nodes: Object.fromEntries(
+                          [progressRoot, ...progressRoot.querySelectorAll('[data-progress-node]')].map((node) => {
+                              const name = node.getAttribute('data-progress-node')!;
+                              return [
+                                  name,
+                                  { id: node.id, reused: window.auditServerNodes?.['progress:' + name] === node }
+                              ];
+                          })
+                      ),
+                      name: progressRoot.getAttribute('aria-labelledby'),
+                      now: progressRoot.getAttribute('aria-valuenow'),
+                      announcement: progressRoot.getAttribute('aria-valuetext'),
+                      value: progressRoot.querySelector('[data-progress-node="value"]')?.textContent,
+                      width: progressRoot.querySelector<HTMLElement>('[data-progress-node="indicator"]')?.style.width,
+                      locale: new Intl.NumberFormat().resolvedOptions().locale
+                  }
+                : null,
             label: labelPage
                 ? {
                       nodes: Object.fromEntries(
@@ -233,6 +253,76 @@ interface Observation {
     scriptRequests: string[];
     document?: string;
     frameworkLimits?: string[];
+}
+
+async function checkProgressHydration(
+    page: Page,
+    observation: Observation,
+    record: (label: string) => Promise<Snapshot>,
+    release: () => void
+) {
+    const checks = observation.checks;
+    const fixture = page.locator('audit-progress-view');
+    await fixture.evaluate((host) => {
+        for (const node of host.querySelectorAll('[data-progress-node]')) {
+            window.auditServerNodes!['progress:' + node.getAttribute('data-progress-node')] = node;
+        }
+    });
+    const before = (await record('server Progress, label, and value')).progress;
+    checks.serverProgress =
+        before?.now === '25' && before.announcement === '25%' && before.value === '25%' && before.width === '25%';
+    checks.serverLabelAssociation = Boolean(
+        before?.nodes.label.id.startsWith('rdx-progress-label-') && before.name === before.nodes.label.id
+    );
+
+    release();
+    await page.waitForFunction(() => window.portalHydrationAudit?.ready, undefined, { timeout: 5000 });
+    const hydrated = await record('hydrated Progress adopts the browser locale');
+    const boot = hydrated.progress;
+    checks.claimedProgressNodes = Boolean(
+        before &&
+        boot &&
+        Object.keys(before.nodes).length === 5 &&
+        Object.entries(before.nodes).every(
+            ([name, node]) => boot.nodes[name]?.reused && boot.nodes[name].id === node.id
+        )
+    );
+    checks.hydratedProgress =
+        boot?.locale === 'de-DE' &&
+        boot.now === '25' &&
+        boot.announcement === '25\u00a0%' &&
+        boot.value === '25\u00a0%' &&
+        boot.width === '25%';
+    checks.hydratedLabelAssociation =
+        !!boot &&
+        boot.name === before?.name &&
+        hydrated.duplicateIds.length === 0 &&
+        (await fixture.getByRole('progressbar', { name: 'Transfer progress' }).count()) === 1;
+
+    await fixture.getByRole('button', { name: 'Advance progress' }).click();
+    const advanced = (await record('external data update on the claimed Progress')).progress;
+    checks.updatesWithoutReplacingProgress =
+        advanced?.now === '80' &&
+        advanced.value === '80\u00a0%' &&
+        advanced.width === '80%' &&
+        advanced.nodes.root.reused &&
+        advanced.nodes.indicator.reused &&
+        advanced.nodes.label.reused;
+
+    const toggle = fixture.getByRole('button', { name: 'Toggle progress label' });
+    await toggle.click();
+    const withoutLabel = (await record('the authored association takes over when Label unmounts')).progress;
+    checks.externalLabelFallback =
+        withoutLabel?.name === 'progress-external-label' &&
+        (await fixture.getByRole('progressbar', { name: 'External transfer progress' }).count()) === 1;
+    await toggle.click();
+    const restored = (await record('a new Label registers the original ID')).progress;
+    checks.restoredLabel =
+        !!restored &&
+        restored.name === before?.name &&
+        restored.nodes.label?.id === restored.name &&
+        !restored.nodes.label.reused &&
+        restored.nodes.root.reused;
 }
 
 async function checkLabelHydration(
@@ -695,7 +785,7 @@ const observations: Observation[] = [];
 try {
     for (const [name, settings] of Object.entries(cases)) {
         if (selected && name !== selected) continue;
-        const page = await browser.newPage();
+        const page = await browser.newPage(settings.kind === 'progress' ? { locale: 'de-DE' } : undefined);
         const observation: Observation = {
             name,
             browser: project,
@@ -780,6 +870,10 @@ try {
             }
             if (settings.kind === 'label') {
                 await checkLabelHydration(page, observation, record, release);
+                continue;
+            }
+            if (settings.kind === 'progress') {
+                await checkProgressHydration(page, observation, record, release);
                 continue;
             }
             const editedBefore = await page.locator('[data-probe="first"] input').isVisible();

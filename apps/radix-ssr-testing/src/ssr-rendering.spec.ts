@@ -45,6 +45,7 @@ import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTa
 import { RdxToggle } from '@radix-ng/primitives/toggle';
 import { RdxToggleGroup } from '@radix-ng/primitives/toggle-group';
 import { describe, expect, it, vi } from 'vitest';
+import { ProgressAuditView } from '../hydration-audit/progress-view';
 import AccordionPage from './app/components/accordion/page';
 import AvatarPage from './app/components/avatar/page';
 import CheckboxPage from './app/components/checkbox/page';
@@ -868,6 +869,22 @@ describe('SSR rendering', () => {
         expect(aligned).toContain('aria-hidden="true"');
         expect(html).toMatch(/ngh=/);
     });
+    it('serializes Progress state, label association and default locale before hydration', async () => {
+        const html = await renderToString('audit-progress-view', ProgressAuditView);
+        const document = new DOMParser().parseFromString(html, 'text/html');
+        const root = document.querySelector('[role="progressbar"]')!;
+        const label = document.querySelector('[data-progress-node="label"]')!;
+        const value = document.querySelector('[data-progress-node="value"]')!;
+
+        expect(label.id).toMatch(/^rdx-progress-label-/);
+        expect(root.getAttribute('aria-labelledby')).toBe(label.id);
+        expect(root.getAttribute('aria-valuenow')).toBe('25');
+        expect(root.getAttribute('aria-valuetext')).toBe('25%');
+        expect(value.textContent).toBe('25%');
+        expect(value.getAttribute('aria-hidden')).toBe('true');
+        expect(html).toMatch(/ngh=/);
+    });
+
     it('renders native and htmlFor associations for standalone Label before hydration', async () => {
         const html = await renderToString('app-label', LabelPage);
         const page = new DOMParser().parseFromString(html, 'text/html');

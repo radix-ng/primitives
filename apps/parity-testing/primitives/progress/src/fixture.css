@@ -1,0 +1,15 @@
+.progress-track {
+    width: 200px;
+    height: 12px;
+    position: relative;
+}
+
+.progress-fill {
+    position: absolute;
+}
+
+.progress-fill[data-indeterminate] {
+    width: 20px;
+    height: inherit;
+    inset-inline-start: 0;
+}

@@ -30194,7 +30194,7 @@ The floating preview surface. It exposes dismiss events and transition attribute
 #### Displays task completion with accessible label, value, track, and indicator parts.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import {
     RdxProgressIndicatorDirective,
     RdxProgressLabelDirective,
@@ -30223,7 +30223,10 @@ const progressSteps = [12, 28, 44, 60, 76, 92, 100] as const;
             </div>
 
             <div class="bg-muted h-3 overflow-hidden rounded-full" rdxProgressTrack>
-                <div [class]="indicatorClass()" rdxProgressIndicator></div>
+                <div
+                    class="bg-primary data-[complete]:bg-primary/80 h-full rounded-full transition-all duration-700 ease-out"
+                    rdxProgressIndicator
+                ></div>
             </div>
         </div>
     `
@@ -30232,35 +30235,6 @@ export class ProgressLinearComponent {
     private readonly destroyRef = inject(DestroyRef);
 
     protected readonly progress = signal<(typeof progressSteps)[number]>(progressSteps[0]);
-
-    protected readonly indicatorClass = computed(() =>
-        [
-            'h-full rounded-full bg-primary transition-all duration-700 ease-out',
-            this.widthClass(),
-            this.progress() === 100 && 'bg-primary/80'
-        ]
-            .filter(Boolean)
-            .join(' ')
-    );
-
-    private readonly widthClass = computed(() => {
-        switch (this.progress()) {
-            case 12:
-                return 'w-[12%]';
-            case 28:
-                return 'w-[28%]';
-            case 44:
-                return 'w-[44%]';
-            case 60:
-                return 'w-[60%]';
-            case 76:
-                return 'w-[76%]';
-            case 92:
-                return 'w-[92%]';
-            case 100:
-                return 'w-full';
-        }
-    });
 
     constructor() {
         let stepIndex = 0;
@@ -30312,7 +30286,7 @@ import {
 An animated labelled progress bar with formatted value text.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import {
     RdxProgressIndicatorDirective,
     RdxProgressLabelDirective,
@@ -30341,7 +30315,10 @@ const progressSteps = [12, 28, 44, 60, 76, 92, 100] as const;
             </div>
 
             <div class="bg-muted h-3 overflow-hidden rounded-full" rdxProgressTrack>
-                <div [class]="indicatorClass()" rdxProgressIndicator></div>
+                <div
+                    class="bg-primary data-[complete]:bg-primary/80 h-full rounded-full transition-all duration-700 ease-out"
+                    rdxProgressIndicator
+                ></div>
             </div>
         </div>
     `
@@ -30350,35 +30327,6 @@ export class ProgressLinearComponent {
     private readonly destroyRef = inject(DestroyRef);
 
     protected readonly progress = signal<(typeof progressSteps)[number]>(progressSteps[0]);
-
-    protected readonly indicatorClass = computed(() =>
-        [
-            'h-full rounded-full bg-primary transition-all duration-700 ease-out',
-            this.widthClass(),
-            this.progress() === 100 && 'bg-primary/80'
-        ]
-            .filter(Boolean)
-            .join(' ')
-    );
-
-    private readonly widthClass = computed(() => {
-        switch (this.progress()) {
-            case 12:
-                return 'w-[12%]';
-            case 28:
-                return 'w-[28%]';
-            case 44:
-                return 'w-[44%]';
-            case 60:
-                return 'w-[60%]';
-            case 76:
-                return 'w-[76%]';
-            case 92:
-                return 'w-[92%]';
-            case 100:
-                return 'w-full';
-        }
-    });
 
     constructor() {
         let stepIndex = 0;
@@ -30394,7 +30342,7 @@ export class ProgressLinearComponent {
 
 ### Indeterminate
 
-Use `null` when progress is active but the current value is unknown.
+Use `null` when the current value is unknown. Non-finite values also produce indeterminate progress.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
@@ -30438,7 +30386,8 @@ export class ProgressIndeterminateStory {}
 
 ### Custom range
 
-Use `min`, `max`, and `valueLabel` when progress is not a simple 0-100 percentage.
+Use `min` and `max` to set the range. Use `locale` and `format` for localized number formatting, or
+`valueLabel` for a custom display function.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
@@ -30477,7 +30426,7 @@ import {
 
             <div class="bg-muted h-3 overflow-hidden rounded-full" rdxProgressTrack>
                 <div
-                    class="bg-primary h-full w-1/2 rounded-full transition-transform duration-500 ease-out data-[indeterminate]:animate-pulse data-[indeterminate]:rounded-none"
+                    class="bg-primary h-full rounded-full transition-[width] duration-500 ease-out"
                     rdxProgressIndicator
                 ></div>
             </div>
@@ -30557,13 +30506,18 @@ attributes each one exposes.
 | Attribute            | Parts                                | Present when                          |
 | -------------------- | ------------------------------------ | ------------------------------------- |
 | `data-complete`      | Root, Label, Value, Track, Indicator | The value has reached `max`.          |
-| `data-progressing`   | Root, Label, Value, Track, Indicator | The value is between `min` and `max`. |
-| `data-indeterminate` | Root, Label, Value, Track, Indicator | The value is `null` (unknown).        |
+| `data-progressing`   | Root, Label, Value, Track, Indicator | The determinate value is below `max`.   |
+| `data-indeterminate` | Root, Label, Value, Track, Indicator | The value is unknown or non-finite.    |
 
 ### Root
 
 `RdxProgressRootDirective` — applies `role="progressbar"` and the ARIA value attributes. Apply to a
 container element (typically a `<div>`).
+
+The default value text is the localized percentage. `format` formats the clamped value with
+`Intl.NumberFormat`, and `valueLabel` can supply custom visible text. Use `getAriaValueText` to
+derive a separate accessible value from that text and the original supplied value. The formatted
+argument is empty when the value is indeterminate. An explicit `aria-valuetext` takes precedence.
 
 **Data attributes**
 
@@ -30576,7 +30530,8 @@ container element (typically a `<div>`).
 ### Label
 
 `RdxProgressLabelDirective` — gives the progressbar its accessible name through `aria-labelledby`.
-Reads everything from context. Exposes only the three shared status attributes.
+Apply it to the text element that names the progressbar. Its `id` defaults to the Root's `labelId`.
+It exposes the three shared status attributes.
 
 ### Value
 
@@ -30606,6 +30561,9 @@ is already announced via the root's `aria-valuenow` / `aria-valuetext`.
 ### Indicator
 
 `RdxProgressIndicatorDirective` — displays the visual progress fill.
+An HTML Indicator inherits the Track height and sets its width from the normalized percentage,
+anchored at the inline start. Use CSS to size and animate the indeterminate fill. For SVG, use
+the percentage to drive the stroke geometry.
 
 **Data attributes**
 
@@ -30618,8 +30576,9 @@ is already announced via the root's `aria-valuenow` / `aria-valuetext`.
 
 ## Accessibility
 
-The root uses `role="progressbar"` and is labelled by `rdxProgressLabel` (via `aria-labelledby`, set
-only while a label is mounted). The value is conveyed through `aria-valuenow` / `aria-valuetext`, so
+The root uses `role="progressbar"`. An explicit `aria-labelledby` takes precedence over the
+mounted `rdxProgressLabel`. Use `aria-label` to name a bar with no associated label.
+The value is conveyed through `aria-valuenow` and `aria-valuetext`, so
 `rdxProgressValue` is `aria-hidden`. In the indeterminate state `aria-valuenow` is omitted while
 `aria-valuemin` / `aria-valuemax` remain and `aria-valuetext` announces `"indeterminate progress"`.
 

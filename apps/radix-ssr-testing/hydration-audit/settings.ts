@@ -2,6 +2,7 @@ export const cases = {
     'reverse-checkbox-group': { kind: 'checkbox', placement: 'checkbox-reverse' },
     'eager-radio': { kind: 'radio', placement: 'eager' },
     'eager-label': { kind: 'label', placement: 'eager' },
+    'eager-progress': { kind: 'progress', placement: 'eager' },
     'reverse-accordion-presence': { kind: 'accordion', placement: 'reverse' },
     'eager-accordion-retained': { kind: 'accordion', placement: 'eager', retain: true },
     'eager-inline': { kind: 'inline', placement: 'eager' },
@@ -58,6 +59,7 @@ export interface Settings {
         | 'accordion'
         | 'radio'
         | 'label'
+        | 'progress'
         | 'inline'
         | 'attribute'
         | 'structural'

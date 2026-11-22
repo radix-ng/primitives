@@ -4,7 +4,7 @@
 
 > Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
-Use `null` when progress is active but the current value is unknown.
+Use `null` when the current value is unknown. Non-finite values also produce indeterminate progress.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';

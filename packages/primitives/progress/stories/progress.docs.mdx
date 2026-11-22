@@ -1,5 +1,6 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as ProgressStories from './progress.stories';
+import { RdxProgressLabelDirective } from '../src/progress-label.directive';
 import { RdxProgressRootDirective } from '../src/progress-root.directive';
 
 <Meta title="Primitives/Progress" of={ProgressStories} />
@@ -51,13 +52,14 @@ An animated labelled progress bar with formatted value text.
 
 ### Indeterminate
 
-Use `null` when progress is active but the current value is unknown.
+Use `null` when the current value is unknown. Non-finite values also produce indeterminate progress.
 
 <Canvas of={ProgressStories.Indeterminate} />
 
 ### Custom range
 
-Use `min`, `max`, and `valueLabel` when progress is not a simple 0-100 percentage.
+Use `min` and `max` to set the range. Use `locale` and `format` for localized number formatting, or
+`valueLabel` for a custom display function.
 
 <Canvas of={ProgressStories.CustomRange} />
 
@@ -75,8 +77,8 @@ attributes each one exposes.
 | Attribute            | Parts                                | Present when                          |
 | -------------------- | ------------------------------------ | ------------------------------------- |
 | `data-complete`      | Root, Label, Value, Track, Indicator | The value has reached `max`.          |
-| `data-progressing`   | Root, Label, Value, Track, Indicator | The value is between `min` and `max`. |
-| `data-indeterminate` | Root, Label, Value, Track, Indicator | The value is `null` (unknown).        |
+| `data-progressing`   | Root, Label, Value, Track, Indicator | The determinate value is below `max`.   |
+| `data-indeterminate` | Root, Label, Value, Track, Indicator | The value is unknown or non-finite.    |
 
 ### Root
 
@@ -84,6 +86,11 @@ attributes each one exposes.
 container element (typically a `<div>`).
 
 <ArgTypes of={RdxProgressRootDirective} />
+
+The default value text is the localized percentage. `format` formats the clamped value with
+`Intl.NumberFormat`, and `valueLabel` can supply custom visible text. Use `getAriaValueText` to
+derive a separate accessible value from that text and the original supplied value. The formatted
+argument is empty when the value is indeterminate. An explicit `aria-valuetext` takes precedence.
 
 **Data attributes**
 
@@ -96,7 +103,10 @@ container element (typically a `<div>`).
 ### Label
 
 `RdxProgressLabelDirective` — gives the progressbar its accessible name through `aria-labelledby`.
-Reads everything from context. Exposes only the three shared status attributes.
+Apply it to the text element that names the progressbar. Its `id` defaults to the Root's `labelId`.
+It exposes the three shared status attributes.
+
+<ArgTypes of={RdxProgressLabelDirective} />
 
 ### Value
 
@@ -126,6 +136,9 @@ is already announced via the root's `aria-valuenow` / `aria-valuetext`.
 ### Indicator
 
 `RdxProgressIndicatorDirective` — displays the visual progress fill.
+An HTML Indicator inherits the Track height and sets its width from the normalized percentage,
+anchored at the inline start. Use CSS to size and animate the indeterminate fill. For SVG, use
+the percentage to drive the stroke geometry.
 
 **Data attributes**
 
@@ -138,7 +151,8 @@ is already announced via the root's `aria-valuenow` / `aria-valuetext`.
 
 ## Accessibility
 
-The root uses `role="progressbar"` and is labelled by `rdxProgressLabel` (via `aria-labelledby`, set
-only while a label is mounted). The value is conveyed through `aria-valuenow` / `aria-valuetext`, so
+The root uses `role="progressbar"`. An explicit `aria-labelledby` takes precedence over the
+mounted `rdxProgressLabel`. Use `aria-label` to name a bar with no associated label.
+The value is conveyed through `aria-valuenow` and `aria-valuetext`, so
 `rdxProgressValue` is `aria-hidden`. In the indeterminate state `aria-valuenow` is omitted while
 `aria-valuemin` / `aria-valuemax` remain and `aria-valuetext` announces `"indeterminate progress"`.

@@ -34,7 +34,7 @@ import {
 
             <div class="bg-muted h-3 overflow-hidden rounded-full" rdxProgressTrack>
                 <div
-                    class="bg-primary h-full w-1/2 rounded-full transition-transform duration-500 ease-out data-[indeterminate]:animate-pulse data-[indeterminate]:rounded-none"
+                    class="bg-primary h-full rounded-full transition-[width] duration-500 ease-out"
                     rdxProgressIndicator
                 ></div>
             </div>

@@ -16,7 +16,13 @@
       "selector": "[rdxProgressLabel]",
       "exportAs": "rdxProgressLabel",
       "description": "Labels the progress task.",
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "id",
+          "type": "string",
+          "description": "ID of this label. Defaults to the Root's label ID."
+        }
+      ],
       "outputs": []
     },
     {
@@ -26,8 +32,35 @@
       "description": "Provides progress state and accessibility attributes.",
       "inputs": [
         {
+          "name": "aria-labelledby",
+          "type": "string | null",
+          "default": "undefined",
+          "description": "Explicit IDs of the elements that provide the accessible name."
+        },
+        {
+          "name": "aria-valuetext",
+          "type": "string | null",
+          "default": "undefined",
+          "description": "Explicit accessible value text."
+        },
+        {
+          "name": "format",
+          "type": "Intl.NumberFormatOptions",
+          "description": "Number format for the clamped value. The default formats the percentage of the range."
+        },
+        {
+          "name": "getAriaValueText",
+          "type": "ProgressAriaValueFormatter",
+          "description": "Formats accessible value text using the visible text and the original supplied value."
+        },
+        {
           "name": "labelId",
           "default": "injectId('rdx-progress-label-')"
+        },
+        {
+          "name": "locale",
+          "type": "Intl.LocalesArgument",
+          "description": "Locale used by the number formatter."
         },
         {
           "name": "max",
@@ -43,7 +76,7 @@
           "name": "value",
           "type": "number | null",
           "default": "null",
-          "description": "Current progress value. Set to `null` for indeterminate progress."
+          "description": "Current progress value. Null and non-finite values indicate indeterminate progress."
         },
         {
           "name": "valueId",
@@ -52,8 +85,8 @@
         {
           "name": "valueLabel",
           "type": "ProgressValueFormatter",
-          "default": "(value, min, max) => this.defaultValueLabel(value, min, max)",
-          "description": "Formats the current value for assistive technologies and `rdxProgressValue`."
+          "default": "this.defaultValueLabel",
+          "description": "Formats the clamped value for `rdxProgressValue` and the default accessible value text."
         }
       ],
       "outputs": []

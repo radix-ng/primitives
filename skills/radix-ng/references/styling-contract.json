@@ -1966,12 +1966,12 @@
         {
           "attribute": "data-progressing",
           "parts": "Root, Label, Value, Track, Indicator",
-          "values": "The value is between min and max."
+          "values": "The determinate value is below max."
         },
         {
           "attribute": "data-indeterminate",
           "parts": "Root, Label, Value, Track, Indicator",
-          "values": "The value is null (unknown)."
+          "values": "The value is unknown or non-finite."
         },
         {
           "attribute": "data-value",

@@ -70,3 +70,11 @@ label and control, and retargeting through `htmlFor`.
 ```bash
 node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=eager-label
 ```
+
+The `eager-progress` case verifies reuse of the Progress Root and its four parts, stable generated
+IDs and label association. Server text starts in `en-US`. The hydrated view adopts
+the browser's locale, accepts value updates and reestablishes its Label after replacement.
+
+```bash
+node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=eager-progress
+```

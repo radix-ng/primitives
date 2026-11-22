@@ -1,4 +1,5 @@
-import { DestroyRef, Directive, inject } from '@angular/core';
+import { computed, Directive, input } from '@angular/core';
+import { watch } from '@radix-ng/primitives/core';
 import { injectProgressRootContext } from './progress-root.directive';
 
 const attr = (value: boolean) => (value ? '' : undefined);
@@ -12,7 +13,8 @@ const attr = (value: boolean) => (value ? '' : undefined);
     selector: '[rdxProgressLabel]',
     exportAs: 'rdxProgressLabel',
     host: {
-        '[attr.id]': 'progress.labelId()',
+        '[attr.id]': 'labelId()',
+        role: 'presentation',
         '[attr.data-complete]': 'dataAttr(progress.completeState())',
         '[attr.data-progressing]': 'dataAttr(progress.progressingState())',
         '[attr.data-indeterminate]': 'dataAttr(progress.indeterminateState())'
@@ -22,8 +24,14 @@ export class RdxProgressLabelDirective {
     protected readonly progress = injectProgressRootContext();
     protected readonly dataAttr = attr;
 
+    /** ID of this label. Defaults to the Root's label ID. */
+    readonly id = input<string>();
+
+    protected readonly labelId = computed(() => this.id() ?? this.progress.labelId());
+
     constructor() {
-        // Register presence so the root's `aria-labelledby` only resolves while a label exists.
-        inject(DestroyRef).onDestroy(this.progress.registerLabel());
+        watch([this.labelId], ([id], onCleanup) => {
+            onCleanup(this.progress.registerLabel(id));
+        });
     }
 }

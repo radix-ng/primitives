@@ -7,7 +7,7 @@
 An animated labelled progress bar with formatted value text.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import {
     RdxProgressIndicatorDirective,
     RdxProgressLabelDirective,
@@ -36,7 +36,10 @@ const progressSteps = [12, 28, 44, 60, 76, 92, 100] as const;
             </div>
 
             <div class="bg-muted h-3 overflow-hidden rounded-full" rdxProgressTrack>
-                <div [class]="indicatorClass()" rdxProgressIndicator></div>
+                <div
+                    class="bg-primary data-[complete]:bg-primary/80 h-full rounded-full transition-all duration-700 ease-out"
+                    rdxProgressIndicator
+                ></div>
             </div>
         </div>
     `
@@ -45,35 +48,6 @@ export class ProgressLinearComponent {
     private readonly destroyRef = inject(DestroyRef);
 
     protected readonly progress = signal<(typeof progressSteps)[number]>(progressSteps[0]);
-
-    protected readonly indicatorClass = computed(() =>
-        [
-            'h-full rounded-full bg-primary transition-all duration-700 ease-out',
-            this.widthClass(),
-            this.progress() === 100 && 'bg-primary/80'
-        ]
-            .filter(Boolean)
-            .join(' ')
-    );
-
-    private readonly widthClass = computed(() => {
-        switch (this.progress()) {
-            case 12:
-                return 'w-[12%]';
-            case 28:
-                return 'w-[28%]';
-            case 44:
-                return 'w-[44%]';
-            case 60:
-                return 'w-[60%]';
-            case 76:
-                return 'w-[76%]';
-            case 92:
-                return 'w-[92%]';
-            case 100:
-                return 'w-full';
-        }
-    });
 
     constructor() {
         let stepIndex = 0;

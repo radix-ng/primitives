@@ -4,7 +4,8 @@
 
 > Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
-Use `min`, `max`, and `valueLabel` when progress is not a simple 0-100 percentage.
+Use `min` and `max` to set the range. Use `locale` and `format` for localized number formatting, or
+`valueLabel` for a custom display function.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
@@ -43,7 +44,7 @@ import {
 
             <div class="bg-muted h-3 overflow-hidden rounded-full" rdxProgressTrack>
                 <div
-                    class="bg-primary h-full w-1/2 rounded-full transition-transform duration-500 ease-out data-[indeterminate]:animate-pulse data-[indeterminate]:rounded-none"
+                    class="bg-primary h-full rounded-full transition-[width] duration-500 ease-out"
                     rdxProgressIndicator
                 ></div>
             </div>
