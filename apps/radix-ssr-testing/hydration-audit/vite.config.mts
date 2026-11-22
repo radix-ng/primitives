@@ -21,6 +21,7 @@ export default defineConfig({
                 const runtime = [
                     'packages/primitives/core/src/id-generator.ts',
                     'packages/primitives/core/src/item-helpers.ts',
+                    'packages/primitives/label/src/label.directive.ts',
                     'packages/primitives/accordion/src/accordion-root.directive.ts',
                     'packages/primitives/accordion/src/accordion-item.directive.ts',
                     'packages/primitives/accordion/src/accordion-panel.directive.ts',
@@ -37,9 +38,9 @@ export default defineConfig({
                     'packages/primitives/checkbox/src/checkbox-group.ts',
                     'packages/primitives/checkbox/src/checkbox-button.ts',
                     'packages/primitives/checkbox/src/checkbox-input.ts',
+                    'packages/primitives/checkbox/src/checkbox-native-input.ts',
                     'packages/primitives/checkbox/src/checkbox-indicator.ts',
                     'packages/primitives/checkbox/src/checkbox-indicator-presence.ts',
-                    'packages/primitives/checkbox/src/checkbox-field.ts',
                     'packages/primitives/field/src/field-root.ts',
                     'packages/primitives/field/src/field-description-ids.ts',
                     'packages/primitives/field/src/field-item.ts',
@@ -71,6 +72,7 @@ export default defineConfig({
                     'server.ts',
                     'index.html'
                 ].map((file) => `apps/radix-ssr-testing/hydration-audit/${file}`);
+                fixture.push('apps/radix-ssr-testing/src/app/components/label/page.ts');
                 const hashes = (files: string[]) =>
                     Object.fromEntries(
                         files.map((file) => [file, createHash('sha256').update(readFileSync(file)).digest('hex')])

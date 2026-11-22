@@ -90,7 +90,7 @@ const cases: readonly SsrCase[] = [
     { selector: 'app-collapsible', component: CollapsiblePage, expects: ['Trigger', 'Content'] },
     // Form + Field render server-side with the external error already mapped onto the named field.
     { selector: 'app-form', component: FormPage, expects: ['novalidate', 'Email is already taken'] },
-    { selector: 'app-label', component: LabelPage, expects: ['Label'] },
+    { selector: 'app-label', component: LabelPage, expects: ['Email', 'Remember me'] },
     {
         selector: 'app-otp-field',
         component: OtpFieldPage,
@@ -845,6 +845,24 @@ describe('SSR rendering', () => {
         expect(aligned).toContain('aria-hidden="true"');
         expect(html).toMatch(/ngh=/);
     });
+    it('renders native and htmlFor associations for standalone Label before hydration', async () => {
+        const html = await renderToString('app-label', LabelPage);
+        const page = new DOMParser().parseFromString(html, 'text/html');
+        const email = page.querySelector<HTMLLabelElement>('[data-label-node="email-label"]');
+        const wrapped = page.querySelector<HTMLLabelElement>('[data-label-node="wrapped-label"]');
+        const alerts = page.querySelector<HTMLLabelElement>('#alerts-label');
+
+        expect(email?.id).toMatch(/^rdx-label-/);
+        expect(email?.getAttribute('for')).toBe('label-email');
+        expect(email?.control).toBe(page.querySelector('#label-email'));
+        expect(wrapped?.id).toMatch(/^rdx-label-/);
+        expect(wrapped?.getAttribute('for')).toBeNull();
+        expect(wrapped?.control).toBe(page.querySelector('#label-remember'));
+        expect(alerts?.getAttribute('for')).toBe('label-alerts');
+        expect(alerts?.control).toBe(page.querySelector('#label-alerts'));
+        expect(html).toMatch(/ngh=/);
+    });
+
     it('renders label associations and forwarded control ids before hydration', async () => {
         const html = await renderToString('app-labelled-select', LabelledSelectPage);
         expect(html.match(/id="server-country"/g)).toHaveLength(1);

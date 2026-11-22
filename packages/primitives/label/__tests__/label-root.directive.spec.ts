@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DebugElement } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DebugElement, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
@@ -32,10 +32,21 @@ class TestComponent {}
     template: `
         <label rdxLabel>Plain</label>
         <label id="custom-id" rdxLabel htmlFor="ctrl">Wired</label>
+        <label rdxLabel for="ctrl">Native</label>
+        <label [htmlFor]="target()" rdxLabel for="ctrl">Overridden</label>
+        <label [htmlFor]="target()" rdxLabel>Dynamic</label>
+        <label rdxLabel for="">
+            Explicit empty
+            <input />
+        </label>
+        <input id="ctrl" />
+        <input id="replacement" />
     `,
     imports: [RdxLabelDirective]
 })
-class AttributeHostComponent {}
+class AttributeHostComponent {
+    readonly target = signal<string | undefined>('replacement');
+}
 
 describe('RdxLabelDirective', () => {
     let fixture: ComponentFixture<TestComponent>;
@@ -148,5 +159,30 @@ describe('RdxLabelDirective attributes', () => {
 
         expect(wired.getAttribute('id')).toBe('custom-id');
         expect(wired.getAttribute('for')).toBe('ctrl');
+    });
+
+    it('preserves an authored native for and its association', () => {
+        const native = labels[2].nativeElement as HTMLLabelElement;
+        expect(native.getAttribute('for')).toBe('ctrl');
+        expect(native.control?.id).toBe('ctrl');
+    });
+
+    it('uses the current htmlFor, restoring the native for after clearing the input', () => {
+        const overridden = labels[3].nativeElement as HTMLLabelElement;
+        const dynamic = labels[4].nativeElement as HTMLLabelElement;
+        expect(overridden.control?.id).toBe('replacement');
+        expect(dynamic.control?.id).toBe('replacement');
+
+        fixture.componentInstance.target.set(undefined);
+        fixture.detectChanges();
+        expect(overridden.control?.id).toBe('ctrl');
+        expect(dynamic.hasAttribute('for')).toBe(false);
+        expect(dynamic.control).toBeNull();
+    });
+
+    it('preserves an explicitly empty native for', () => {
+        const empty = labels[5].nativeElement as HTMLLabelElement;
+        expect(empty.getAttribute('for')).toBe('');
+        expect(empty.control).toBeNull();
     });
 });

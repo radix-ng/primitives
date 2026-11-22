@@ -27,12 +27,37 @@ async function snapshot(page: Page) {
         const radioForm = document.querySelector<HTMLFormElement>('[data-radio-audit]');
         const radioView = radioForm?.parentElement;
         const radioGroup = radioView?.querySelector('[role="radiogroup"]');
+        const labelPage = document.querySelector('app-label');
         return {
             ready: window.portalHydrationAudit?.ready ?? false,
             stable: window.portalHydrationAudit?.stable,
             errors: window.portalHydrationAudit?.errors ?? [],
             constructed: window.portalHydrationAudit?.constructed ?? [],
             duplicateIds: ids.filter((id, index) => ids.indexOf(id) !== index),
+            label: labelPage
+                ? {
+                      nodes: Object.fromEntries(
+                          [...labelPage.querySelectorAll<HTMLElement>('[data-label-node]')].map((node) => [
+                              node.dataset.labelNode!,
+                              {
+                                  id: node.id,
+                                  reused: window.auditServerNodes?.['label:' + node.dataset.labelNode] === node
+                              }
+                          ])
+                      ),
+                      associations: Object.fromEntries(
+                          [...labelPage.querySelectorAll<HTMLLabelElement>('label[data-label-node]')].map((label) => [
+                              label.dataset.labelNode!,
+                              { htmlFor: label.getAttribute('for'), control: label.control?.id ?? null }
+                          ])
+                      ),
+                      focus: active?.id,
+                      checked: [...labelPage.querySelectorAll('input:checked')].map((input) => input.id),
+                      controlClicks: Number(labelPage.getAttribute('data-control-clicks')),
+                      detailsClicks: Number(labelPage.getAttribute('data-details-clicks')),
+                      hash: location.hash
+                  }
+                : null,
             checkboxGroups: [...document.querySelectorAll<HTMLElement>('[data-checkbox-audit]')].map((view) => {
                 const group = view.querySelector('[role="group"]');
                 const parent = view.querySelector('[data-checkbox-node="parent"]');
@@ -208,6 +233,107 @@ interface Observation {
     scriptRequests: string[];
     document?: string;
     frameworkLimits?: string[];
+}
+
+async function checkLabelHydration(
+    page: Page,
+    observation: Observation,
+    record: (label: string) => Promise<Snapshot>,
+    release: () => void
+) {
+    const checks = observation.checks;
+    page.setDefaultTimeout(5000);
+    const fixture = page.locator('app-label');
+    const email = fixture.getByText('Email', { exact: true });
+    const alerts = fixture.getByText('Delivery alerts', { exact: true });
+    await fixture.evaluate((root) => {
+        for (const node of root.querySelectorAll<HTMLElement>('[data-label-node]')) {
+            window.auditServerNodes!['label:' + node.dataset.labelNode] = node;
+        }
+    });
+    await email.click();
+    const before = (await record('server label relationships and native click')).label;
+    checks.serverAssociations = Boolean(
+        before?.associations['email-label']?.htmlFor === 'label-email' &&
+        before.associations['email-label'].control === 'label-email' &&
+        before.associations['wrapped-label']?.htmlFor === null &&
+        before.associations['wrapped-label'].control === 'label-remember' &&
+        before.associations['disabled-label']?.control === 'label-disabled' &&
+        before.associations['alerts-label']?.htmlFor === 'label-alerts' &&
+        before.associations['alerts-label'].control === 'label-alerts'
+    );
+    checks.serverLabelIds = Boolean(
+        before?.nodes['email-label']?.id.startsWith('rdx-label-') &&
+        before.nodes['wrapped-label']?.id.startsWith('rdx-label-') &&
+        before.nodes['alerts-label']?.id === 'alerts-label'
+    );
+    checks.serverClickFocusesControl = before?.focus === 'label-email' && before.controlClicks === 0;
+
+    release();
+    await page.waitForFunction(() => window.portalHydrationAudit?.ready, undefined, { timeout: 5000 });
+    const hydrated = await record('claimed label and control nodes after hydration');
+    const boot = hydrated.label;
+    checks.claimedLabelAndControlNodes = Boolean(
+        before &&
+        boot &&
+        Object.entries(before.nodes).every(
+            ([name, node]) => boot.nodes[name]?.reused && boot.nodes[name].id === node.id
+        )
+    );
+    checks.hydratedLabelRelationships =
+        !!boot &&
+        JSON.stringify(boot.associations) === JSON.stringify(before?.associations) &&
+        hydrated.duplicateIds.length === 0;
+    checks.hydrationPreservesFocus = boot?.focus === 'label-email';
+    checks.hydrationReplaysControlClickOnce = boot?.controlClicks === 1;
+    checks.accessibleNames =
+        (await fixture.getByRole('textbox', { name: 'Email', exact: true }).count()) === 1 &&
+        (await fixture.getByRole('checkbox', { name: 'Remember me', exact: true }).count()) === 1 &&
+        (await fixture.getByRole('checkbox', { name: 'Disabled alerts', exact: true }).count()) === 1 &&
+        (await fixture.getByRole('checkbox', { name: /Delivery alerts/ }).count()) === 1;
+
+    await fixture.getByText('Remember me', { exact: true }).click();
+    const wrapped = (await record('wrapped checkbox activates once')).label;
+    checks.wrappedLabelActivatesOnce = wrapped?.controlClicks === 2 && wrapped.checked.join() === 'label-remember';
+
+    await fixture.getByText('Disabled alerts', { exact: true }).click({ force: true });
+    const disabled = (await record('disabled checkbox blocks native activation')).label;
+    checks.disabledLabelIgnoresClick =
+        disabled?.controlClicks === 2 &&
+        disabled.checked.join() === 'label-remember' &&
+        disabled.focus !== 'label-disabled';
+
+    await fixture.getByRole('button', { name: 'Details', exact: true }).locator('span').click();
+    await fixture.getByRole('link', { name: 'Help', exact: true }).locator('span').click();
+    const nested = (await record('nested button and link perform their own actions')).label;
+    checks.nestedActionsStayIndependent =
+        nested?.detailsClicks === 1 &&
+        nested.hash === '#label-help' &&
+        nested.controlClicks === 2 &&
+        nested.checked.join() === 'label-remember';
+
+    await fixture.getByRole('button', { name: 'Replace label and control' }).click();
+    const replaced = (await record('replacement label and checkbox with the same IDs')).label;
+    checks.replacementPreservesAssociation =
+        replaced?.nodes['alerts-label']?.id === 'alerts-label' &&
+        replaced.nodes['alerts-label'].reused === false &&
+        replaced.nodes['alerts']?.id === 'label-alerts' &&
+        replaced.nodes['alerts'].reused === false &&
+        replaced.associations['alerts-label']?.control === 'label-alerts';
+    await alerts.click();
+    const activated = (await record('replacement checkbox activates once')).label;
+    checks.replacementActivatesOnce =
+        activated?.controlClicks === 3 && activated.checked.join() === 'label-remember,label-alerts';
+
+    await fixture.getByRole('button', { name: 'Retarget label' }).click();
+    await alerts.click();
+    const retargeted = (await record('htmlFor moves the association and activation')).label;
+    checks.retargetMovesAssociation =
+        retargeted?.associations['alerts-label']?.htmlFor === 'label-sms' &&
+        retargeted.associations['alerts-label'].control === 'label-sms' &&
+        retargeted.controlClicks === 4 &&
+        retargeted.checked.join() === 'label-remember,label-alerts,label-sms' &&
+        (await fixture.getByRole('checkbox', { name: /Delivery alerts/ }).getAttribute('id')) === 'label-sms';
 }
 
 async function checkCheckboxHydration(
@@ -650,6 +776,10 @@ try {
             }
             if (settings.kind === 'radio') {
                 await checkRadioHydration(page, observation, record, release);
+                continue;
+            }
+            if (settings.kind === 'label') {
+                await checkLabelHydration(page, observation, record, release);
                 continue;
             }
             const editedBefore = await page.locator('[data-probe="first"] input').isVisible();

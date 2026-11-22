@@ -11,7 +11,7 @@
         {
           "name": "htmlFor",
           "type": "string",
-          "description": "The id of the element the label is associated with."
+          "description": "The id of the associated control. A defined value overrides the native `for` attribute."
         },
         {
           "name": "id",

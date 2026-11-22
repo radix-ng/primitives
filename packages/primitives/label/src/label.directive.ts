@@ -1,4 +1,4 @@
-import { Directive, ElementRef, inject, input } from '@angular/core';
+import { computed, Directive, ElementRef, HostAttributeToken, inject, input } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
 
 /**
@@ -9,12 +9,13 @@ import { injectId } from '@radix-ng/primitives/core';
     exportAs: 'rdxLabel',
     host: {
         '[attr.id]': 'id()',
-        '[attr.for]': 'htmlFor() ? htmlFor() : undefined',
+        '[attr.for]': 'controlId()',
         '(mousedown)': 'onMouseDown($event)'
     }
 })
 export class RdxLabelDirective {
     private readonly elementRef = inject(ElementRef<HTMLElement>);
+    private readonly authoredFor = inject(new HostAttributeToken('for'), { optional: true });
 
     /**
      * The label id. Defaults to a stable generated id.
@@ -23,11 +24,16 @@ export class RdxLabelDirective {
     readonly id = input<string>(injectId('rdx-label-'));
 
     /**
-     * The id of the element the label is associated with.
+     * The id of the associated control. A defined value overrides the native `for` attribute.
      * @group Props
      * @default undefined
      */
     readonly htmlFor = input<string>();
+
+    protected readonly controlId = computed(() => {
+        const htmlFor = this.htmlFor();
+        return htmlFor === undefined ? this.authoredFor : htmlFor || null;
+    });
 
     // prevent text selection when double-clicking label
     // The main problem with double-clicks in a web app is that

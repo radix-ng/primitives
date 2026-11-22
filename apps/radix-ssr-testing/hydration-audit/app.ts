@@ -57,6 +57,7 @@ import {
     RdxSelectTrigger
 } from '@radix-ng/primitives/select';
 import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
+import LabelPage from '../src/app/components/label/page';
 import { CheckboxAuditView } from './checkbox-view';
 import { LazyPortalView } from './lazy-view';
 import { RadioAuditView } from './radio-view';
@@ -159,6 +160,7 @@ export class HydrationProbe {
         AuditPortal,
         HydrationProbe,
         RadioAuditView,
+        LabelPage,
         RdxPopoverRoot,
         RdxPopoverTrigger,
         RdxPopoverPortal,
@@ -169,6 +171,9 @@ export class HydrationProbe {
         @switch (state.settings.kind) {
             @case ('radio') {
                 <audit-radio-view />
+            }
+            @case ('label') {
+                <app-label />
             }
             @case ('accordion') {
                 <section [attr.data-widget]="name()">

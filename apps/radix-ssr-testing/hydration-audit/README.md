@@ -61,3 +61,12 @@ relationships. It also checks select-all event replay, native label activation a
 ```bash
 node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=reverse-checkbox-group
 ```
+
+The `eager-label` case checks standalone Label with an authored `for`, a wrapping label and a
+bound `htmlFor`. It checks server node reuse, stable IDs, accessible names and native activation.
+After hydration it exercises disabled controls, nested buttons and links, replacement of the
+label and control, and retargeting through `htmlFor`.
+
+```bash
+node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=eager-label
+```
