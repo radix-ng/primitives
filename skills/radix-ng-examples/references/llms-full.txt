@@ -40806,8 +40806,9 @@ The composed Toggle inherits disabled state from Toolbar or its Group. The toolb
 
 ## Change events
 
-Standalone `onPressedChange` emits `{ pressed, eventDetails }`. Call `eventDetails.cancel()` to
-reject a press before state updates.
+`onPressedChange` emits `{ pressed, eventDetails }`. Call `eventDetails.cancel()` to reject the
+request. A supplied `pressed` value stays active until the parent updates it. Use `[(pressed)]`
+to apply each accepted standalone request immediately.
 
 ```html
 <button [pressed]="pressed()" (onPressedChange)="setPressed($event)" rdxToggle>
@@ -40830,7 +40831,8 @@ setPressed(change: RdxTogglePressedChangeEvent) {
 
 ### Pressed by default
 
-Use `defaultPressed` for an uncontrolled toggle that starts pressed.
+Use `defaultPressed` for an uncontrolled toggle that starts pressed. The default is read on
+initialization. A supplied `pressed` value, including `false`, takes precedence.
 
 ```html
 <button class="${toggleClass}" rdxToggle defaultPressed aria-label="Toggle italic">

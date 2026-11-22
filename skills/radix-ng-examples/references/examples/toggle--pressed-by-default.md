@@ -4,7 +4,8 @@
 
 > Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
 
-Use `defaultPressed` for an uncontrolled toggle that starts pressed.
+Use `defaultPressed` for an uncontrolled toggle that starts pressed. The default is read on
+initialization. A supplied `pressed` value, including `false`, takes precedence.
 
 ```html
 <button class="${toggleClass}" rdxToggle defaultPressed aria-label="Toggle italic">

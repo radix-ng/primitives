@@ -54,10 +54,10 @@ describe('RdxToggle (standalone)', () => {
         expect(button.getAttribute('data-pressed')).toBe('');
     });
 
-    it('honors defaultPressed when uncontrolled', () => {
+    it('ignores the first late defaultPressed', () => {
         component.defaultPressed.set(true);
         fixture.detectChanges();
-        expect(button.getAttribute('data-pressed')).toBe('');
+        expect(button.getAttribute('data-pressed')).toBeNull();
     });
 
     it('toggles pressed on click and emits onPressedChange', () => {

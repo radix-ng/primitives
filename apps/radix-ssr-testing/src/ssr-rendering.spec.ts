@@ -41,6 +41,7 @@ import {
 import { _importsSelect, RdxSelectLabel, RdxSelectRoot, RdxSelectTrigger } from '@radix-ng/primitives/select';
 import { RdxSwitchInput, RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
+import { RdxToggle } from '@radix-ng/primitives/toggle';
 import { describe, expect, it, vi } from 'vitest';
 import AccordionPage from './app/components/accordion/page';
 import AvatarPage from './app/components/avatar/page';
@@ -148,6 +149,16 @@ class AutocompleteDefaultsPage {}
 class NumberFieldDefaultsPage {
     readonly amount = new FormControl(0, { nonNullable: true });
 }
+
+@Component({
+    selector: 'app-toggle-defaults',
+    imports: [RdxToggle],
+    template: `
+        <button rdxToggle defaultPressed>Default</button>
+        <button [pressed]="false" rdxToggle defaultPressed>Controlled</button>
+    `
+})
+class ToggleDefaultsPage {}
 
 @Component({
     selector: 'app-switch-defaults',
@@ -694,6 +705,12 @@ describe('SSR rendering', () => {
         expect(inputs.map((input) => input.value)).toEqual(['0', '', '11']);
         expect(parsed.querySelector<HTMLInputElement>('input[rdxnumberfieldhiddeninput]')?.value).toBe('0');
         expect(html).toMatch(/ngh=/);
+    });
+    it('serializes both the Toggle default and the explicit false value', async () => {
+        const html = await renderToString('app-toggle-defaults', ToggleDefaultsPage);
+        const buttons = [...new DOMParser().parseFromString(html, 'text/html').querySelectorAll('button[rdxtoggle]')];
+        expect(buttons.map((button) => button.getAttribute('aria-pressed'))).toEqual(['true', 'false']);
+        expect(buttons.map((button) => button.hasAttribute('data-pressed'))).toEqual([true, false]);
     });
     it('resolves Switch defaults, Field associations and the authored input before server serialization', async () => {
         const html = await renderToString('app-switch-defaults', SwitchDefaultsPage);

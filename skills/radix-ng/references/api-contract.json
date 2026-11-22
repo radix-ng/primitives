@@ -9000,9 +9000,9 @@
             },
             {
               "name": "pressed",
-              "type": "boolean | undefined",
+              "type": "boolean",
               "default": "undefined",
-              "description": "The controlled pressed state (standalone). Use with `(onPressedChange)` or two-way `[(pressed)]`."
+              "description": "The parent-owned pressed state (standalone). Use `[(pressed)]` to accept changes immediately."
             },
             {
               "name": "value",
@@ -9014,7 +9014,12 @@
             {
               "name": "onPressedChange",
               "type": "RdxTogglePressedChangeEvent",
-              "description": "Event emitted when the pressed state changes (standalone)."
+              "description": "Cancelable request emitted before the standalone or group state changes."
+            },
+            {
+              "name": "pressedChange",
+              "type": "boolean",
+              "description": "Emits the requested standalone value after the cancelable change handler accepts it."
             }
           ],
           "twoWay": [

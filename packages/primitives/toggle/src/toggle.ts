@@ -1,21 +1,12 @@
-import {
-    booleanAttribute,
-    computed,
-    Directive,
-    effect,
-    inject,
-    input,
-    linkedSignal,
-    model,
-    output
-} from '@angular/core';
+import { booleanAttribute, computed, Directive, effect, inject, input, output, signal } from '@angular/core';
 import { RDX_BUTTON_CONFIG, RdxButtonBehavior } from '@radix-ng/primitives/button';
 import { RdxCompositeItem } from '@radix-ng/primitives/composite';
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
     RdxCancelableChangeEventDetails,
-    rdxDevWarning
+    rdxDevWarning,
+    watch
 } from '@radix-ng/primitives/core';
 import { injectToggleGroupContext } from '@radix-ng/primitives/toggle-group';
 
@@ -73,9 +64,12 @@ export class RdxToggle {
     readonly defaultPressed = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
-     * The controlled pressed state (standalone). Use with `(onPressedChange)` or two-way `[(pressed)]`.
+     * The parent-owned pressed state (standalone). Use `[(pressed)]` to accept changes immediately.
      */
-    readonly pressed = model<boolean | undefined>(undefined);
+    readonly pressedInput = input<boolean>(undefined, { alias: 'pressed' });
+
+    /** Emits the requested standalone value after the cancelable change handler accepts it. */
+    readonly pressedChange = output<boolean>();
 
     /**
      * Whether the toggle is disabled.
@@ -92,19 +86,21 @@ export class RdxToggle {
      */
     readonly nativeButton = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
 
-    /** Event emitted when the pressed state changes (standalone). */
+    /** Cancelable request emitted before the standalone or group state changes. */
     readonly onPressedChange = output<RdxTogglePressedChangeEvent>();
 
-    private readonly internalPressed = linkedSignal(() => this.pressed() ?? this.defaultPressed());
+    private readonly uncontrolledPressed = signal(false);
 
-    /** @ignore Whether the toggle is currently pressed (from the group when grouped). */
-    readonly pressedState = computed(() => {
+    /** The effective pressed state. A group owns the state of its items. */
+    readonly pressed = computed(() => {
         if (this.group) {
             const value = this.value();
             return value !== undefined && this.group.value().includes(value);
         }
-        return this.internalPressed();
+        return this.pressedInput() ?? this.uncontrolledPressed();
     });
+    /** @ignore */
+    readonly pressedState = this.pressed;
 
     /** @ignore */
     readonly isDisabled = computed(
@@ -123,6 +119,7 @@ export class RdxToggle {
 
     constructor() {
         if (this.buttonConfig) this.buttonBehavior?.registerRenderedButton(this.ariaDisabled);
+        if (!this.group) watch([], () => this.uncontrolledPressed.set(this.defaultPressed()));
         effect(() => {
             if (this.group && this.value() === undefined && this.group.isValueInitialized()) {
                 rdxDevWarning(
@@ -170,7 +167,7 @@ export class RdxToggle {
             return;
         }
 
-        const next = !this.internalPressed();
+        const next = !this.pressed();
         const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
         const { eventDetails } = createCancelableChangeEventDetails(
             'none',
@@ -182,8 +179,8 @@ export class RdxToggle {
             return;
         }
 
-        this.internalPressed.set(next);
-        this.pressed.set(next);
+        if (this.pressedInput() === undefined) this.uncontrolledPressed.set(next);
+        this.pressedChange.emit(next);
     }
 
     /**
