@@ -2,7 +2,7 @@
 
 > One example from the [Select](../components/select.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
 
 Place `rdxSelectLabel` inside Root to name the trigger automatically. It supports both a native
 `<label>` and ordinary markup such as `<div>`. Clicking label text focuses the trigger without

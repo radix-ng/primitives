@@ -2,7 +2,7 @@
 
 > One example from the [Select](../components/select.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
 
 The popup owns DOM focus and uses `aria-activedescendant` for virtual navigation. Arrow keys and
 typeahead update the highlight; Enter or Space commits a selection. The existing default keeps

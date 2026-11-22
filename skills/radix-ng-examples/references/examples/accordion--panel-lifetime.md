@@ -2,7 +2,7 @@
 
 > One example from the [Accordion](../components/accordion.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
 
 Apply `*rdxAccordionPanelPresence` to each Panel host. Closed Panels create no Angular children
 by default. Closing destroys the complete view after exit motion; reopening creates fresh children

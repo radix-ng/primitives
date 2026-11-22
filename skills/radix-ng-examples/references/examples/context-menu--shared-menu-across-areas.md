@@ -2,7 +2,7 @@
 
 > One example from the [Context Menu](../components/context-menu.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
 
 Place several `rdxContextMenuTrigger` areas inside one Root to reuse the same popup at each native
 gesture's coordinates. Context areas remain separate from Menu trigger registration and ARIA identity.

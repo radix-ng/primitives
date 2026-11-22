@@ -2,7 +2,7 @@
 
 > One example from the [Dialog](../components/dialog.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
 
 Make the `rdxDialogViewport` fill the screen and compose a custom [Scroll Area](../components/scroll-area.md)
 inside it, so the whole dialog scrolls — with a styled overlay scrollbar — when it is taller than the

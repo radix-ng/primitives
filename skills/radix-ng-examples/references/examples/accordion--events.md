@@ -2,7 +2,7 @@
 
 > One example from the [Accordion](../components/accordion.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
 
 An interaction first emits Item `onOpenChange` with `{ open, eventDetails }`, then Root
 `onValueChange` with `{ value, eventDetails }`, using the same event details. Either handler can

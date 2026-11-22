@@ -2,7 +2,7 @@
 
 > One example from the [Menubar](../components/menubar.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
 
 Use `<rdx-menubar-default [keepMounted]="true" />` to retain both root and child Portal views.
 Closed positioners hide those views and

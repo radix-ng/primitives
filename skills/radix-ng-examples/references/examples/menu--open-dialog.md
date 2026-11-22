@@ -2,7 +2,7 @@
 
 > One example from the [Menu](../components/menu.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
 
 Compose `rdxMenuItem` and `rdxDialogTrigger` on the same native button. A Dialog handle connects
 the item to a Root outside the menu portal, so closing Menu does not destroy Dialog. Menu's normal

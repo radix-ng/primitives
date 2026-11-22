@@ -2,7 +2,7 @@
 
 > One example from the [Switch](../components/switch.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
 
 Import `RdxFieldRoot`, `RdxFieldLabel`, `RdxFieldDescription`, and `RdxFieldError` from
 `@radix-ng/primitives/field` and `RdxFormRoot` from `@radix-ng/primitives/form`. Switch registers

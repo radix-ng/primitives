@@ -1,3 +1,219 @@
+## 1.4.0 (2026-11-22)
+
+### 🚀 Features
+
+- **progress:** align value semantics and indicator rendering ([fe2ab3ad](https://github.com/radix-ng/primitives/commit/fe2ab3ad))
+- **input:** align value ownership and native form behavior ([008de9cf](https://github.com/radix-ng/primitives/commit/008de9cf))
+- **toggle-group:** preserve selection ownership and reset defaults ([325b1e11](https://github.com/radix-ng/primitives/commit/325b1e11))
+- **toggle:** separate controlled requests from presses ([c16a74f8](https://github.com/radix-ng/primitives/commit/c16a74f8))
+- **switch:** integrate Field state and accessible relationships ([d1621488](https://github.com/radix-ng/primitives/commit/d1621488))
+- **switch:** align checked ownership and native form behavior ([b272277a](https://github.com/radix-ng/primitives/commit/b272277a))
+- **checkbox:** generate native inputs and support portaled fields ([dc82afbe](https://github.com/radix-ng/primitives/commit/dc82afbe))
+- ⚠️  **checkbox:** support portaled groups and structural indicator presence ([d4cc15ec](https://github.com/radix-ng/primitives/commit/d4cc15ec))
+- ⚠️  **checkbox:** integrate Field and verify deferred group hydration ([69bc1dcb](https://github.com/radix-ng/primitives/commit/69bc1dcb))
+- ⚠️  **checkbox:** align Checkbox and CheckboxGroup with Base UI ([2e89fe7a](https://github.com/radix-ng/primitives/commit/2e89fe7a))
+- **radio:** expose native input refs ([40c372ee](https://github.com/radix-ng/primitives/commit/40c372ee))
+- **radio:** support typed values and verify hydration ([1f239f9d](https://github.com/radix-ng/primitives/commit/1f239f9d))
+- **radio:** add interruptible indicator presence ([2821bab8](https://github.com/radix-ng/primitives/commit/2821bab8))
+- **dialog:** expose initial and final focus policies ([a6f0823f](https://github.com/radix-ng/primitives/commit/a6f0823f))
+- **dialog:** support retained portals and manual close ([f824408c](https://github.com/radix-ng/primitives/commit/f824408c))
+- **tabs:** add prehydration indicator and stabilize SSR IDs ([ee1ceba7](https://github.com/radix-ng/primitives/commit/ee1ceba7))
+- ⚠️  **tabs:** support arbitrary value identities ([85ffb2a7](https://github.com/radix-ng/primitives/commit/85ffb2a7))
+- **agents:** add public guides and fix consumer skill contracts ([1bc8fb54](https://github.com/radix-ng/primitives/commit/1bc8fb54))
+- **menu:** add typed item highlight notifications ([cec4ea2a](https://github.com/radix-ng/primitives/commit/cec4ea2a))
+- **menu:** add trigger handles, payloads and animated switching ([5df134d8](https://github.com/radix-ng/primitives/commit/5df134d8))
+- **menu:** support mixed orientations and optimize parity CI ([15fe9f4b](https://github.com/radix-ng/primitives/commit/15fe9f4b))
+- ⚠️  **menu:** share popup close lifecycle and expand parity coverage ([dcc60d05](https://github.com/radix-ng/primitives/commit/dcc60d05))
+- ⚠️  **menu:** align Base UI interactions and add parity coverage ([3729dc59](https://github.com/radix-ng/primitives/commit/3729dc59))
+- ⚠️  **popover:** adopt shared close lifecycle and support retained portals ([3edc81f7](https://github.com/radix-ng/primitives/commit/3edc81f7))
+- ⚠️  **select:** align live layout and anchor tracking with Base UI ([509262f9](https://github.com/radix-ng/primitives/commit/509262f9))
+- ⚠️  **select:** improve Base UI parity and typed Angular integration ([#466](https://github.com/radix-ng/primitives/pull/466))
+
+### 🩹 Fixes
+
+- **input:** preserve caret and IME during controlled edits ([a0e80c20](https://github.com/radix-ng/primitives/commit/a0e80c20))
+- **label:** preserve native control association ([71a0f448](https://github.com/radix-ng/primitives/commit/71a0f448))
+- **toggle:** align keyboard activation and group navigation ([0ff3427f](https://github.com/radix-ng/primitives/commit/0ff3427f))
+- **checkbox:** reconcile native input after history restore ([21e455f6](https://github.com/radix-ng/primitives/commit/21e455f6))
+- **radio:** preserve keyboard navigation across portals ([f9b91298](https://github.com/radix-ng/primitives/commit/f9b91298))
+- **radio:** reset portaled groups from their declaring form ([ec6df6eb](https://github.com/radix-ng/primitives/commit/ec6df6eb))
+- **radio:** include portaled inputs in form submission ([fdf2e572](https://github.com/radix-ng/primitives/commit/fdf2e572))
+- **form:** focus invalid controls in DOM order ([0b0692a2](https://github.com/radix-ng/primitives/commit/0b0692a2))
+- **radio:** validate required native inputs on submit ([b8e154f2](https://github.com/radix-ng/primitives/commit/b8e154f2))
+- **radio:** align field validation timing ([15e34933](https://github.com/radix-ng/primitives/commit/15e34933))
+- **radio:** preserve labels and field state on reset ([b610b6ea](https://github.com/radix-ng/primitives/commit/b610b6ea))
+- **radio:** align native submission and field composition ([f1ec5723](https://github.com/radix-ng/primitives/commit/f1ec5723))
+- **radio:** align keyboard activation and roving focus ([45a05fbf](https://github.com/radix-ng/primitives/commit/45a05fbf))
+- **radio:** honor parent-owned selection and native vetoes ([6fbd59ff](https://github.com/radix-ng/primitives/commit/6fbd59ff))
+- **number-field:** preserve precision and commit accepted blur edits ([32e1f746](https://github.com/radix-ng/primitives/commit/32e1f746))
+- **radio:** preserve initial form value precedence ([3406a065](https://github.com/radix-ng/primitives/commit/3406a065))
+- **number-field:** preserve form value precedence over defaults ([0ca9e522](https://github.com/radix-ng/primitives/commit/0ca9e522))
+- **dialog:** preserve focus and isolation on portal relocation ([35cd8476](https://github.com/radix-ng/primitives/commit/35cd8476))
+- restore browser CI and navigation menu activation ([156b442c](https://github.com/radix-ng/primitives/commit/156b442c))
+- **drawer:** align mixed dialog nesting with Base UI ([b0eb60b7](https://github.com/radix-ng/primitives/commit/b0eb60b7))
+- **dialog:** isolate overlapping modal roots ([355a037f](https://github.com/radix-ng/primitives/commit/355a037f))
+- **drawer:** preserve swipe-open and stabilize accordion Firefox parity ([aa6fb454](https://github.com/radix-ng/primitives/commit/aa6fb454))
+- **dialog:** match touch outside dismissal with Base UI ([275e5c5f](https://github.com/radix-ng/primitives/commit/275e5c5f))
+- **dialog:** align detached handles and imperative payloads ([5562f37b](https://github.com/radix-ng/primitives/commit/5562f37b))
+- **dialog:** count open descendants and restore parent focus ([02e192e9](https://github.com/radix-ng/primitives/commit/02e192e9))
+- **dialog:** align non-modal and trap-focus behavior with Base UI ([5b685830](https://github.com/radix-ng/primitives/commit/5b685830))
+- **dialog:** match modal keyboard focus and add parity coverage ([e2bd0cd9](https://github.com/radix-ng/primitives/commit/e2bd0cd9))
+- ⚠️  **dialog:** honor controlled trigger identity ([5d08f732](https://github.com/radix-ng/primitives/commit/5d08f732))
+- ⚠️  **dialog:** honor controlled open state ([788cbaa6](https://github.com/radix-ng/primitives/commit/788cbaa6))
+- **separator:** honor orientation defaults and overrides ([63958db0](https://github.com/radix-ng/primitives/commit/63958db0))
+- **accordion:** stabilize horizontal story animation ([844e6875](https://github.com/radix-ng/primitives/commit/844e6875))
+- **accordion:** reveal search matches before browser measurement ([7742a452](https://github.com/radix-ng/primitives/commit/7742a452))
+- **accordion:** align panel motion and hydration behavior ([ad5e46cc](https://github.com/radix-ng/primitives/commit/ad5e46cc))
+- ⚠️  **autocomplete:** align committed query and inline preview ([f288ff9d](https://github.com/radix-ng/primitives/commit/f288ff9d))
+- ⚠️  **accordion:** own complete panel views with structural presence ([dca3deb0](https://github.com/radix-ng/primitives/commit/dca3deb0))
+- ⚠️  **accordion:** align selection and trigger behavior with Base UI ([402d8444](https://github.com/radix-ng/primitives/commit/402d8444))
+- **autocomplete:** align read-only behavior with Base UI ([e6e4fb2a](https://github.com/radix-ng/primitives/commit/e6e4fb2a))
+- **autocomplete:** align keyboard navigation with Base UI ([65a2a59b](https://github.com/radix-ng/primitives/commit/65a2a59b))
+- **autocomplete:** preserve initial models over defaults ([bc7f913b](https://github.com/radix-ng/primitives/commit/bc7f913b))
+- **core:** preserve pending exits during popup teardown ([702e5085](https://github.com/radix-ng/primitives/commit/702e5085))
+- **tabs:** preserve native form actions and cover gestures ([5f914038](https://github.com/radix-ng/primitives/commit/5f914038))
+- ⚠️  **hydration:** own IDs and portal view ranges ([98bbe2a5](https://github.com/radix-ng/primitives/commit/98bbe2a5))
+- **menubar:** complete exits before focus reopens menus ([69ba1ad9](https://github.com/radix-ng/primitives/commit/69ba1ad9))
+- ⚠️  **toggle:** share toolbar disabled and focusable state ([3cce75e2](https://github.com/radix-ng/primitives/commit/3cce75e2))
+- **presence:** follow changing animation participants ([62e16cf2](https://github.com/radix-ng/primitives/commit/62e16cf2))
+- ⚠️  **toggle:** prevent duplicate toolbar keyboard activation ([91e274ee](https://github.com/radix-ng/primitives/commit/91e274ee))
+- ⚠️  **button:** align disabled handlers and toolbar activation ([65d757ca](https://github.com/radix-ng/primitives/commit/65d757ca))
+- ⚠️  **button:** preserve authored role and tabIndex overrides ([73e57a8e](https://github.com/radix-ng/primitives/commit/73e57a8e))
+- ⚠️  **button:** align composite ownership and keyboard cancellation ([cdc56b2c](https://github.com/radix-ng/primitives/commit/cdc56b2c))
+- **tabs:** synchronize native Tab navigation and preserve panel exit frames ([38c04252](https://github.com/radix-ng/primitives/commit/38c04252))
+- ⚠️  **button:** align Base UI behavior and add parity coverage ([488b988d](https://github.com/radix-ng/primitives/commit/488b988d))
+- align popup close completion and extend tabs parity coverage ([ebc4929b](https://github.com/radix-ng/primitives/commit/ebc4929b))
+- ⚠️  **tabs:** preserve parent ownership of controlled selection ([bed08d9e](https://github.com/radix-ng/primitives/commit/bed08d9e))
+- **tabs:** preserve selection and focus across collection changes ([82a81ace](https://github.com/radix-ng/primitives/commit/82a81ace))
+- **tabs:** align indicator geometry ([2ad40e6f](https://github.com/radix-ng/primitives/commit/2ad40e6f))
+- ⚠️  **tabs:** align panel presence and indicator lifecycle ([bfd55795](https://github.com/radix-ng/primitives/commit/bfd55795))
+- **tabs:** use native click semantics for keyboard activation ([9b1da5da](https://github.com/radix-ng/primitives/commit/9b1da5da))
+- **popper:** align pixel rounding and stabilize browser checks ([94c13016](https://github.com/radix-ng/primitives/commit/94c13016))
+- **tabs:** use registered native IDs for ARIA relationships ([1db5110a](https://github.com/radix-ng/primitives/commit/1db5110a))
+- **tabs:** update activation direction on external value changes ([e53f04df](https://github.com/radix-ng/primitives/commit/e53f04df))
+- ⚠️  **menu:** defer portal mounting and preserve group label ids ([301850ac](https://github.com/radix-ng/primitives/commit/301850ac))
+- **tabs:** make inactive panels inert through exit animations ([6f82b8ce](https://github.com/radix-ng/primitives/commit/6f82b8ce))
+- ⚠️  **portal:** support shadow roots and cross-realm containers ([7d1a52bc](https://github.com/radix-ng/primitives/commit/7d1a52bc))
+- **menu:** honor model precedence and apply defaults only once ([105a5b9b](https://github.com/radix-ng/primitives/commit/105a5b9b))
+- **popper:** align layout viewport shifting ([aa3507d7](https://github.com/radix-ng/primitives/commit/aa3507d7))
+- ⚠️  **popper:** align positionMethod, sticky and arrow offsets ([7743fc39](https://github.com/radix-ng/primitives/commit/7743fc39))
+- **popper:** align collision boundary support ([1fb1ee33](https://github.com/radix-ng/primitives/commit/1fb1ee33))
+- **menu:** align contextual positioning defaults ([1df4ea42](https://github.com/radix-ng/primitives/commit/1df4ea42))
+- **menu:** align checkbox and radio indicator lifecycle ([66b9f01a](https://github.com/radix-ng/primitives/commit/66b9f01a))
+- correct menu dismissal and focus regressions ([4ab46798](https://github.com/radix-ng/primitives/commit/4ab46798))
+- **menu:** align popover composition and focus behavior ([b6686b9e](https://github.com/radix-ng/primitives/commit/b6686b9e))
+- **menu:** align popover dismissal and close completion ([beb9011a](https://github.com/radix-ng/primitives/commit/beb9011a))
+- **menu:** preserve focus when opening dialogs from items ([a16776a9](https://github.com/radix-ng/primitives/commit/a16776a9))
+- **menu:** preserve dialog during layered dismissal ([4b56a274](https://github.com/radix-ng/primitives/commit/4b56a274))
+- **menu:** restore handle ownership across overlapping roots ([f92a4c70](https://github.com/radix-ng/primitives/commit/f92a4c70))
+- **menu:** preserve focus and viewport state across interrupted exits ([d897c64d](https://github.com/radix-ng/primitives/commit/d897c64d))
+- **menu:** use stable group keys in multi-trigger examples ([07e9ee62](https://github.com/radix-ng/primitives/commit/07e9ee62))
+- **menu:** align nullable finalFocus policies ([ac9b4904](https://github.com/radix-ng/primitives/commit/ac9b4904))
+- **menu:** support projected wrappers and nested popup ownership ([282560f3](https://github.com/radix-ng/primitives/commit/282560f3))
+- **navigation-menu:** preserve native tab order across triggers and links ([448940a1](https://github.com/radix-ng/primitives/commit/448940a1))
+- **navigation-menu:** preserve trigger focus when opening panels ([fe5f43df](https://github.com/radix-ng/primitives/commit/fe5f43df))
+- **navigation-menu:** align nested keyboard navigation and demo styles ([01787318](https://github.com/radix-ng/primitives/commit/01787318))
+- **menu:** align focus-out cancellation and final focus ([bc116f57](https://github.com/radix-ng/primitives/commit/bc116f57))
+- **menu:** align nested portal tab navigation ([a7e56ead](https://github.com/radix-ng/primitives/commit/a7e56ead))
+- **menu:** align initial focus and retained tab stops ([6511fbf2](https://github.com/radix-ng/primitives/commit/6511fbf2))
+- **menu:** preserve native activation and keyboard modifiers ([8abad437](https://github.com/radix-ng/primitives/commit/8abad437))
+- **menu:** align mixed input and submenu behavior ([67e124a4](https://github.com/radix-ng/primitives/commit/67e124a4))
+- **menu:** align touch interactions ([6d86b1c2](https://github.com/radix-ng/primitives/commit/6d86b1c2))
+- **menu:** handle empty collections and submenu keyboard promotion ([5117638d](https://github.com/radix-ng/primitives/commit/5117638d))
+- **context-menu:** isolate nested roots and preserve floating ownership ([31900cf2](https://github.com/radix-ng/primitives/commit/31900cf2))
+- **presence:** preserve views during late holds and verify menu teardown ([c4848f5f](https://github.com/radix-ng/primitives/commit/c4848f5f))
+- **context-menu:** align composition and native dismissal with Base UI ([1264fe6c](https://github.com/radix-ng/primitives/commit/1264fe6c))
+- **menubar:** align retained portals and pointer behavior with Base UI ([537f1074](https://github.com/radix-ng/primitives/commit/537f1074))
+- **menubar:** align navigation and external state with Base UI ([6147ea35](https://github.com/radix-ng/primitives/commit/6147ea35))
+- **menubar:** align navigation return with Base UI ([7cec43ed](https://github.com/radix-ng/primitives/commit/7cec43ed))
+- **menu:** unify navigation return and nested close cancellation ([72e1996d](https://github.com/radix-ng/primitives/commit/72e1996d))
+- **menubar:** align cancellation, orientation and nested navigation ([579c50ed](https://github.com/radix-ng/primitives/commit/579c50ed))
+- **menu:** preserve focus across dynamic collections and menubar navigation ([b4680fba](https://github.com/radix-ng/primitives/commit/b4680fba))
+- **primitives:** improve menu input and focus parity, stabilize overlay animations ([cfb37439](https://github.com/radix-ng/primitives/commit/cfb37439))
+- **floating:** align focus lifecycle and expand Base UI parity coverage ([f0c92864](https://github.com/radix-ng/primitives/commit/f0c92864))
+
+### Refactors
+
+- **storybook:** migrate shared demo styles to Tailwind layers ([be253765](https://github.com/radix-ng/primitives/commit/be253765))
+- **core:** share ordered element registration ([3409efd6](https://github.com/radix-ng/primitives/commit/3409efd6))
+- ⚠️  **presence:** share signal render lifecycle ([33b7d83e](https://github.com/radix-ng/primitives/commit/33b7d83e))
+
+### ⚠️  Breaking Changes
+
+- **checkbox:** support portaled groups and structural indicator presence  ([d4cc15ec](https://github.com/radix-ng/primitives/commit/d4cc15ec))
+  Use *rdxCheckboxIndicatorPresence to mount the indicator view.
+  Pass keepMounted as an option to that structural directive.
+- **checkbox:** integrate Field and verify deferred group hydration  ([69bc1dcb](https://github.com/radix-ng/primitives/commit/69bc1dcb))
+  A surrounding Field name takes precedence over an
+  explicit Checkbox or CheckboxGroup name for native submission.
+- **checkbox:** align Checkbox and CheckboxGroup with Base UI  ([2e89fe7a](https://github.com/radix-ng/primitives/commit/2e89fe7a))
+  indeterminate is a one-way input. Disabled checkbox buttons
+  use native disabled, and touched state updates on blur.
+- **dialog:** honor controlled trigger identity  ([5d08f732](https://github.com/radix-ng/primitives/commit/5d08f732))
+  triggerId, trigger and payload are readonly signals.
+  A null triggerId input falls back to the internal active trigger.
+- **dialog:** honor controlled open state  ([788cbaa6](https://github.com/radix-ng/primitives/commit/788cbaa6))
+  the root open signal is readonly. Use an open binding
+  or the show and close actions.
+- **autocomplete:** align committed query and inline preview  ([f288ff9d](https://github.com/radix-ng/primitives/commit/f288ff9d))
+  inline modes no longer imply auto-highlight or select a completed
+  suffix. Initial and external values filter immediately, Value includes temporary
+  preview, and closePopup accepts reason/event without the obsolete revert argument.
+- **accordion:** own complete panel views with structural presence  ([dca3deb0](https://github.com/radix-ng/primitives/commit/dca3deb0))
+  Accordion Panels require *rdxAccordionPanelPresence on their
+  native host. Per-panel keepMounted and hiddenUntilFound move to its options
+  object; native Panel retains its id input.
+- **accordion:** align selection and trigger behavior with Base UI  ([402d8444](https://github.com/radix-ng/primitives/commit/402d8444))
+  Accordion value and defaultValue are arrays in both modes.
+  Defined value inputs remain controlled until updated by the parent. Item
+  onOpenChange emits cancelable requests before Root rather than notifications
+  for derived state changes. Disabled native triggers use native disabled.
+- **hydration:** own IDs and portal view ranges  ([98bbe2a5](https://github.com/radix-ng/primitives/commit/98bbe2a5))
+  Presence and structural ID owners add inert managed
+  template siblings and opaque SSR metadata. Preserve those markers and use
+  part selectors instead of positional sibling selectors. getId allocates
+  fresh IDs; injectId recovers a native owner's server identity.
+  Validation: 1150 focused units, 26 SSR tests, 129 hydration cases, 657 browser
+  checks (9 existing skips), 84 pinned Popover comparisons, library/SSR and
+  Storybook builds, lint, formatting, affected planner and contributor checks.
+  The report records the Angular pending-hydration cancellation limitation
+  and the pre-existing WebKit Tabs native-scroll comparison instability.
+- **toggle:** share toolbar disabled and focusable state  ([3cce75e2](https://github.com/radix-ng/primitives/commit/3cce75e2))
+  Composed Toggle inherits Toolbar disabled state and follows
+  Toolbar.Button focusableWhenDisabled instead of applying native disabled unconditionally.
+- **toggle:** prevent duplicate toolbar keyboard activation  ([91e274ee](https://github.com/radix-ng/primitives/commit/91e274ee))
+  Custom Toggle hosts composed with Toolbar.Button no longer
+  toggle again on Space keyup. Keyboard pressed-change details carry click events.
+- **presence:** share signal render lifecycle  ([33b7d83e](https://github.com/radix-ng/primitives/commit/33b7d83e))
+  Replace PresenceMachine and PresenceMachineHost with
+  useRenderLifecycle. Replace useTransitionStatus and RdxTransitionStatusRef
+  with useRenderLifecycle and RdxRenderLifecycle. Register additional animated
+  descendants with rdxPresenceTarget; automatic subtree discovery is removed.
+- **button:** align disabled handlers and toolbar activation  ([65d757ca](https://github.com/radix-ng/primitives/commit/65d757ca))
+  Disabled button hosts suppress consumer pointerdown,
+  mousedown, keydown and keyup handlers as well as click activation.
+- **button:** preserve authored role and tabIndex overrides  ([73e57a8e](https://github.com/radix-ng/primitives/commit/73e57a8e))
+- **button:** align composite ownership and keyboard cancellation  ([cdc56b2c](https://github.com/radix-ng/primitives/commit/cdc56b2c))
+- **button:** align Base UI behavior and add parity coverage  ([488b988d](https://github.com/radix-ng/primitives/commit/488b988d))
+  non-native Space activation now occurs on keyup.
+  Enter on valid links uses native browser activation.
+  Native buttons explicitly set tabindex=0 for WebKit focus behavior.
+- **tabs:** preserve parent ownership of controlled selection  ([bed08d9e](https://github.com/radix-ng/primitives/commit/bed08d9e))
+- **tabs:** support arbitrary value identities  ([85ffb2a7](https://github.com/radix-ng/primitives/commit/85ffb2a7))
+- **tabs:** align panel presence and indicator lifecycle  ([bfd55795](https://github.com/radix-ng/primitives/commit/bfd55795))
+- **menu:** defer portal mounting and preserve group label ids  ([301850ac](https://github.com/radix-ng/primitives/commit/301850ac))
+- **portal:** support shadow roots and cross-realm containers  ([7d1a52bc](https://github.com/radix-ng/primitives/commit/7d1a52bc))
+- **popper:** align positionMethod, sticky and arrow offsets  ([7743fc39](https://github.com/radix-ng/primitives/commit/7743fc39))
+- **menu:** share popup close lifecycle and expand parity coverage  ([dcc60d05](https://github.com/radix-ng/primitives/commit/dcc60d05))
+- **menu:** align Base UI interactions and add parity coverage  ([3729dc59](https://github.com/radix-ng/primitives/commit/3729dc59))
+- **popover:** adopt shared close lifecycle and support retained portals  ([3edc81f7](https://github.com/radix-ng/primitives/commit/3edc81f7))
+- **select:** align live layout and anchor tracking with Base UI  ([509262f9](https://github.com/radix-ng/primitives/commit/509262f9))
+- **select:** improve Base UI parity and typed Angular integration  ([#466](https://github.com/radix-ng/primitives/pull/466))
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 1.3.0 (2026-11-08)
 
 ### 🚀 Features

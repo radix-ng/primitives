@@ -2,7 +2,7 @@
 
 > One example from the [Form](../components/form.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
 
 A valid submit serializes the form's `FormData` into a plain values object. Compatible controls
 such as [Radio in a portal](../components/radio.md#radio-in-a-portal) can add values

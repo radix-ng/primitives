@@ -2,7 +2,7 @@
 
 > One example from the [Dialog](../components/dialog.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
 
 Call `eventDetails.preventUnmountOnClose()` in `onOpenChange` to hold the closing view while an
 external animation runs. Call `root.unmount()` from the exported Root when that animation ends.

@@ -2,7 +2,7 @@
 
 > One example from the [Tabs](../components/tabs.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.3.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
 
 With `*rdxTabsPanelPresence`, the shared render lifetime observes the Panel and explicit
 `rdxPresenceTarget` descendants before destroying the whole view. Import `RdxPresenceTarget` for an
