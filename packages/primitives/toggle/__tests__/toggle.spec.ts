@@ -104,11 +104,12 @@ describe('RdxToggle (standalone)', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxToggle],
     template: `
-        <div [(pressed)]="pressed" [nativeButton]="false" rdxToggle>Toggle</div>
+        <div [(pressed)]="pressed" [nativeButton]="false" [tabIndex]="tabIndex()" rdxToggle>Toggle</div>
     `
 })
 class NonNativeToggleComponent {
     readonly pressed = signal<boolean | undefined>(undefined);
+    readonly tabIndex = signal<number | undefined>(undefined);
 }
 
 describe('RdxToggle (non-native host)', () => {
@@ -127,6 +128,18 @@ describe('RdxToggle (non-native host)', () => {
     it('renders role="button" and no type', () => {
         expect(el.getAttribute('role')).toBe('button');
         expect(el.hasAttribute('type')).toBe(false);
+    });
+
+    it('honors an authored tab index and restores the default when cleared', () => {
+        expect(el.tabIndex).toBe(0);
+
+        component.tabIndex.set(-1);
+        fixture.detectChanges();
+        expect(el.tabIndex).toBe(-1);
+
+        component.tabIndex.set(undefined);
+        fixture.detectChanges();
+        expect(el.tabIndex).toBe(0);
     });
 
     it('activates Space on keyup (not keydown), matching native-button semantics', () => {

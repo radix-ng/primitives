@@ -1,4 +1,4 @@
-import { booleanAttribute, computed, Directive, effect, ElementRef, inject, input } from '@angular/core';
+import { booleanAttribute, computed, Directive, effect, inject, input } from '@angular/core';
 import { RdxCompositeMetadata, RdxCompositeRoot } from '@radix-ng/primitives/composite';
 import {
     BooleanInput,
@@ -28,8 +28,6 @@ import { provideToggleGroupContext } from './toggle-group-context';
     ]
 })
 export class RdxToggleGroup extends RdxToggleGroupBase {
-    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
-
     /** Text direction for arrow-key navigation. */
     readonly dirInput = input<Direction | undefined>(undefined, { alias: 'dir' });
     readonly dir = injectDirection(this.dirInput);
@@ -50,15 +48,6 @@ export class RdxToggleGroup extends RdxToggleGroupBase {
             .filter((metadata) => metadata.disabled)
             .map((metadata) => metadata.index)
     );
-    private readonly activeIndex = computed(() => {
-        const pressedValues = this.pressedValues();
-        if (pressedValues.length === 0) {
-            return -1;
-        }
-
-        return this.itemMetadata().find((metadata) => pressedValues.includes(metadata.value))?.index ?? -1;
-    });
-
     constructor() {
         super();
 
@@ -71,21 +60,6 @@ export class RdxToggleGroup extends RdxToggleGroupBase {
 
         effect(() => {
             this.compositeRoot.setDisabledIndices(this.disabledIndices());
-        });
-
-        effect(() => {
-            const activeIndex = this.activeIndex();
-
-            if (activeIndex === -1 || this.disabledIndices().includes(activeIndex)) {
-                return;
-            }
-
-            const activeElement = this.elementRef.nativeElement.ownerDocument.activeElement;
-            if (activeElement && this.elementRef.nativeElement.contains(activeElement)) {
-                return;
-            }
-
-            this.compositeRoot.setHighlightedIndex(activeIndex);
         });
     }
 }

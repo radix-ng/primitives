@@ -18,6 +18,8 @@ export interface RdxButtonBehaviorConfig {
     compositeActivation?: boolean;
 }
 
+type ButtonOwner = 'button' | 'toolbar' | 'radio' | 'toggle';
+
 /**
  * @internal A single set of DOM handlers per button host. Exported for coordination between
  * secondary entry points; this helper has no semver stability guarantee.
@@ -29,7 +31,7 @@ export class RdxButtonBehavior {
     private readonly compositeRoot = injectRdxCompositeRootContext(true);
     private readonly isComposite = !!this.compositeItem || !!this.compositeRoot;
     private config?: RdxButtonBehaviorConfig;
-    private owner?: 'button' | 'toolbar' | 'radio';
+    private owner?: ButtonOwner;
     private renderedAriaDisabled?: Signal<'true' | undefined>;
     private readonly isDisabled = () => this.config?.disabled() ?? false;
     private readonly isFocusableWhenDisabled = () => this.config?.focusableWhenDisabled() ?? false;
@@ -48,7 +50,7 @@ export class RdxButtonBehavior {
         return this.renderedAriaDisabled ? this.renderedAriaDisabled() : fallback;
     }
 
-    configure(config: RdxButtonBehaviorConfig, owner: 'button' | 'toolbar' | 'radio'): void {
+    configure(config: RdxButtonBehaviorConfig, owner: ButtonOwner): void {
         if (owner === 'button' || this.owner !== 'button') {
             this.config = config;
             this.owner = owner;

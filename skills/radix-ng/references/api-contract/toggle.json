@@ -40,6 +40,12 @@
           "name": "value",
           "type": "string",
           "description": "A value identifying this toggle inside a `[rdxToggleGroup]`. Required when used in a group."
+        },
+        {
+          "name": "tabIndex",
+          "type": "number | null | undefined",
+          "default": "injectTabIndexAttribute()",
+          "description": "Authored tabindex, overriding the default roving value.\n`null` removes the attribute; `undefined` restores the default."
         }
       ],
       "outputs": [

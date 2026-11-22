@@ -18,8 +18,13 @@ local uncontrolled value. The pinned reference fixes ownership mode at mount.
 
 ## Activation and composition
 
-The [Button parity suite](../../../apps/parity-testing/primitives/button/README.md) covers
-Toggle in Toolbar, including composed native and custom hosts and disabled states.
-Compare standalone native/custom activation and grouped keyboard navigation in dedicated scenarios.
+| Boundary                    | Contract                                                                                                            | Evidence                                                  |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| P2 · Standalone activation  | Enter acts on keydown and Space on keyup. Forward the original DOM click, with modifiers preserved on custom hosts. | Paired `native-activation` and `custom-activation`.       |
+| P2 · Disabled and tab order | A disabled custom host is skipped by Tab and ignores activation. Authored tab indices override the default.         | Paired `custom-disabled` and authored tab index unit.     |
+| P2 · Composite activation   | Grouped Space produces one click on keydown. Toolbar composition shares keyboard handling with the owning button.   | ToggleGroup `multiple` and Button's Toolbar Toggle cases. |
+
+See the [ToggleGroup](../toggle-group/PARITY.md) and [Button](../button/PARITY.md) matrices for
+group and Toolbar coverage.
 
 Run `pnpm test-parity toggle` for the [paired suite](../../../apps/parity-testing/primitives/toggle/README.md).

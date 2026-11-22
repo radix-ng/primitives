@@ -90,17 +90,17 @@ describe('RdxToggleGroup', () => {
         expect(items[0].getAttribute('data-pressed')).toBeNull();
     });
 
-    it('keeps the tab stop on the pressed item', () => {
-        expect(items[0].getAttribute('tabindex')).toBe('-1');
-        expect(items[1].getAttribute('tabindex')).toBe('0');
+    it('preserves the tab stop when the selection changes', () => {
+        expect(items[0].getAttribute('tabindex')).toBe('0');
+        expect(items[1].getAttribute('tabindex')).toBe('-1');
         expect(items[2].getAttribute('tabindex')).toBe('-1');
 
         component.value.set(['right']);
         fixture.detectChanges();
 
-        expect(items[0].getAttribute('tabindex')).toBe('-1');
+        expect(items[0].getAttribute('tabindex')).toBe('0');
         expect(items[1].getAttribute('tabindex')).toBe('-1');
-        expect(items[2].getAttribute('tabindex')).toBe('0');
+        expect(items[2].getAttribute('tabindex')).toBe('-1');
     });
 
     it('changes the value on item click (single)', () => {

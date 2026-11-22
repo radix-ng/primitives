@@ -1,6 +1,6 @@
 import { booleanAttribute, computed, Directive, effect, inject, input, output, signal } from '@angular/core';
 import { RDX_BUTTON_CONFIG, RdxButtonBehavior } from '@radix-ng/primitives/button';
-import { RdxCompositeItem } from '@radix-ng/primitives/composite';
+import { injectRdxCompositeRootContext, RdxCompositeItem } from '@radix-ng/primitives/composite';
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
@@ -29,26 +29,25 @@ export interface RdxTogglePressedChangeEvent {
 @Directive({
     selector: '[rdxToggle]',
     exportAs: 'rdxToggle',
-    hostDirectives: [RdxCompositeItem],
+    hostDirectives: [{ directive: RdxCompositeItem, inputs: ['tabIndex'] }],
+    providers: [RdxButtonBehavior],
     host: {
         '[attr.type]': 'nativeButton() ? "button" : undefined',
         '[attr.role]': 'nativeButton() ? undefined : "button"',
+        '[attr.tabindex]': 'hostTabIndex()',
         '[attr.aria-pressed]': 'pressedState()',
-        '[attr.data-composite-item-active]': 'pressedState() ? "" : undefined',
         '[attr.data-pressed]': 'pressedState() ? "" : undefined',
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
         '[attr.disabled]': 'nativeButton() && isDisabled() && !isFocusableWhenDisabled() ? "" : undefined',
         '[attr.aria-disabled]': 'ariaDisabled()',
-        '(click)': 'onClick($event)',
-        '(keydown)': 'onKeyDown($event)',
-        '(keyup)': 'onKeyUp($event)'
+        '(click)': 'onClick($event)'
     }
 })
 export class RdxToggle {
     private readonly group = injectToggleGroupContext(true);
     private readonly compositeItem = inject(RdxCompositeItem, { self: true });
-    // A Button/Toolbar.Button on this host already owns keyboard activation and click synthesis.
-    private readonly buttonBehavior = inject(RdxButtonBehavior, { self: true, optional: true });
+    private readonly isComposite = !!injectRdxCompositeRootContext(true);
+    private readonly buttonBehavior = inject(RdxButtonBehavior, { self: true });
     private readonly buttonConfig = inject(RDX_BUTTON_CONFIG, { self: true, optional: true });
 
     /**
@@ -114,11 +113,31 @@ export class RdxToggle {
 
     /** @ignore The rendered Toggle retains composite aria-disabled even with native disabled. */
     protected readonly ariaDisabled = computed<'true' | undefined>(() =>
-        this.isDisabled() && (!this.nativeButton() || !!this.buttonConfig) ? 'true' : undefined
+        this.isDisabled() && (!this.nativeButton() || this.isComposite || !!this.buttonConfig) ? 'true' : undefined
     );
 
+    /** @ignore */
+    protected readonly hostTabIndex = computed(() => {
+        if (this.isComposite || this.compositeItem.tabIndexInput() !== undefined) {
+            return this.compositeItem.tabIndex();
+        }
+        return !this.nativeButton() && this.isDisabled() ? -1 : 0;
+    });
+
     constructor() {
-        if (this.buttonConfig) this.buttonBehavior?.registerRenderedButton(this.ariaDisabled);
+        if (this.buttonConfig) {
+            this.buttonBehavior.registerRenderedButton(this.ariaDisabled);
+        } else {
+            this.buttonBehavior.configure(
+                {
+                    disabled: this.isDisabled,
+                    focusableWhenDisabled: this.isFocusableWhenDisabled,
+                    native: this.nativeButton,
+                    compositeActivation: this.isComposite
+                },
+                'toggle'
+            );
+        }
         if (!this.group) watch([], () => this.uncontrolledPressed.set(this.defaultPressed()));
         effect(() => {
             if (this.group && this.value() === undefined && this.group.isValueInitialized()) {
@@ -181,33 +200,5 @@ export class RdxToggle {
 
         if (this.pressedInput() === undefined) this.uncontrolledPressed.set(next);
         this.pressedChange.emit(next);
-    }
-
-    /**
-     * @ignore
-     * Fallback when no same-host Button behavior is present: Enter activates on keydown,
-     * Space is `preventDefault`-ed on keydown (to suppress page scroll) and activates on keyup.
-     */
-    protected onKeyDown(event: KeyboardEvent): void {
-        if (this.nativeButton() || this.buttonBehavior) {
-            return;
-        }
-        if (event.key === 'Enter' && !event.repeat) {
-            event.preventDefault();
-            this.onClick(event);
-        } else if (event.key === ' ') {
-            event.preventDefault();
-        }
-    }
-
-    /** @ignore Space activates on keyup for non-native hosts (native-button semantics). */
-    protected onKeyUp(event: KeyboardEvent): void {
-        if (this.nativeButton() || this.buttonBehavior) {
-            return;
-        }
-        if (event.key === ' ') {
-            event.preventDefault();
-            this.onClick(event);
-        }
     }
 }

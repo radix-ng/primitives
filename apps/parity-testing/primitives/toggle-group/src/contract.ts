@@ -1,6 +1,24 @@
 export const scenario = new URLSearchParams(location.search).get('case');
-export const initialDefault = scenario === 'default' || scenario === 'controlled' ? ['bold'] : undefined;
+export const initialDefault =
+    scenario === 'horizontal'
+        ? ['underline']
+        : scenario === 'default' || scenario === 'controlled'
+          ? ['bold']
+          : undefined;
 export const initialValue = scenario === 'controlled' ? [] : undefined;
+export const multiple = scenario === 'multiple';
+export const orientation = scenario === 'vertical' ? 'vertical' : 'horizontal';
+export const direction = scenario === 'rtl' ? 'rtl' : 'ltr';
+export const loopFocus = scenario !== 'vertical';
+export const toolbar = scenario === 'toolbar';
+export const disabledItem = scenario === 'horizontal' || toolbar;
+export const customItem = multiple || scenario === 'horizontal';
+
+export const items = [
+    { value: 'bold', label: 'Bold' },
+    { value: 'italic', label: 'Italic' },
+    { value: 'underline', label: 'Underline' }
+];
 
 export type Request =
     | { part: 'item'; item: string; pressed: boolean; reason: string; eventType: string }
@@ -15,6 +33,7 @@ interface Details {
 interface Probe {
     reference: { commit: string; packageVersion: string; digest: string };
     requests: Request[];
+    cancel?: 'item' | 'group';
 }
 
 declare global {
@@ -39,6 +58,7 @@ export function recordItem(item: string, pressed: boolean, details: Details): vo
         reason: details.reason,
         eventType: details.event.type
     });
+    if (window.toggleGroupParity.cancel === 'item') details.cancel();
 }
 
 export function recordGroup(value: readonly string[], details: Details): void {
@@ -49,4 +69,5 @@ export function recordGroup(value: readonly string[], details: Details): void {
         eventType: details.event.type,
         sharedDetails: details === lastDetails
     });
+    if (window.toggleGroupParity.cancel === 'group') details.cancel();
 }

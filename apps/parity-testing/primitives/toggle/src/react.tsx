@@ -1,7 +1,7 @@
 import { Toggle } from '@base-ui/react/toggle';
 import { useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { initialDefault, initialPressed, installProbe, record } from './contract';
+import { custom, disabled, initialDefault, initialPressed, installProbe, record } from './contract';
 
 installProbe();
 
@@ -12,9 +12,13 @@ function ToggleFixture() {
 
     return (
         <>
+            <input aria-label="Before" />
             <Toggle
                 pressed={pressed}
                 defaultPressed={defaultPressed}
+                disabled={disabled}
+                nativeButton={!custom}
+                render={custom ? <span /> : undefined}
                 onPressedChange={(next, details) => {
                     record(next, details);
                     pending.current = next;
@@ -22,6 +26,7 @@ function ToggleFixture() {
             >
                 Bold
             </Toggle>
+            <input aria-label="After" />
             <button onClick={() => setDefaultPressed(!defaultPressed)} type="button">
                 Change default
             </button>

@@ -33,8 +33,9 @@ When placed inside a `[rdxToggleGroup]`, give each toggle a stable `value` — i
 derived from the group's value and it joins the group's composite focus. In dev mode, a grouped toggle
 without `value` emits a warning because it cannot participate in group value changes.
 
-With `rdxToolbarButton` on the same element, Enter and Space activate on keydown; keyup does not
-toggle again. On a custom host such as `<span>`, set `[nativeButton]="false"`.
+On a custom host such as `<span>`, set `[nativeButton]="false"` to add button semantics and
+keyboard activation. Set `tabIndex` to override the default tab order.
+ToggleGroup items and toggles composed with `rdxToolbarButton` activate Space on keydown.
 The composed Toggle inherits disabled state from Toolbar or its Group. The toolbar button's
 `focusableWhenDisabled` controls whether arrows can reach it; activation remains blocked.
 

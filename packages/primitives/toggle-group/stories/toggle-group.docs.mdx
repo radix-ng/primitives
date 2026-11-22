@@ -131,18 +131,15 @@ Use `rdxToggleGroupWithoutFocus` inside a composite parent that already owns foc
 
 ## Accessibility
 
-Uses composite focus with a single item tab stop to manage focus among items.
+The group starts with a single tab stop on its first enabled item. As focus moves within the group,
+the tab stop follows the focused item. Changing the selection leaves the tab stop in place.
 
 ### Keyboard Interactions
 
-| Key          | Description                                        |
-| ------------ | -------------------------------------------------- |
-| `Tab`        | Moves focus to the pressed item or the first item. |
-| `Space`      | Activates/deactivates the focused item.            |
-| `Enter`      | Activates/deactivates the focused item.            |
-| `ArrowDown`  | Moves focus to the next item.                      |
-| `ArrowRight` | Moves focus to the next item.                      |
-| `ArrowUp`    | Moves focus to the previous item.                  |
-| `ArrowLeft`  | Moves focus to the previous item.                  |
-| `Home`       | Moves focus to the first item.                     |
-| `End`        | Moves focus to the last item.                      |
+| Key                       | Description                                                       |
+| ------------------------- | ----------------------------------------------------------------- |
+| `Tab`                     | Enters at the current tab stop or leaves the group.                |
+| `Space`, `Enter`          | Toggles the focused item on keydown.                              |
+| `ArrowDown`, `ArrowUp`    | Moves forward or backward in a vertical group.                      |
+| `ArrowRight`, `ArrowLeft` | Moves forward or backward in a horizontal group. Reverses in RTL. |
+| `Home`, `End`             | Moves to the first or last enabled item.                           |
