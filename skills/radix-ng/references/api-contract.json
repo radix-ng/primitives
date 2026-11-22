@@ -4124,6 +4124,11 @@
           "description": "A headless text input that can integrate with Field for accessible labeling,\ndescriptions, validation state, and data attributes.",
           "inputs": [
             {
+              "name": "controlledValue",
+              "type": "RdxInputValue",
+              "description": "Parent-owned text. Angular Forms take precedence when present."
+            },
+            {
               "name": "defaultValue",
               "type": "RdxInputValue | undefined",
               "default": "undefined",
@@ -4209,7 +4214,7 @@
               "name": "value",
               "type": "RdxInputValue | undefined",
               "default": "undefined",
-              "description": "The controlled input value."
+              "description": "The editable input value for two-way binding and Angular Forms."
             }
           ],
           "outputs": [

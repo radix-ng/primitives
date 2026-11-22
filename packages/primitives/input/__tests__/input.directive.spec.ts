@@ -75,7 +75,7 @@ class FieldHostComponent {}
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [FormField, RdxInputDirective],
     template: `
-        <input [formField]="name" rdxInput />
+        <input [formField]="name" defaultValue="Seed" rdxInput />
     `
 })
 class InputSignalFormHost {
@@ -91,11 +91,24 @@ class InputSignalFormHost {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [ReactiveFormsModule, RdxInputDirective],
     template: `
-        <input [formControl]="control" rdxInput />
+        <input [formControl]="control" defaultValue="Seed" rdxInput />
     `
 })
 class InputReactiveFormsHost {
     readonly control = new FormControl('Ada', { nonNullable: true });
+}
+
+@Component({
+    imports: [ReactiveFormsModule, FormField, RdxInputDirective],
+    template: `
+        <input id="reactive" [formControl]="reactive" controlledValue="Parent" defaultValue="Seed" rdxInput />
+        <input id="signal" [formField]="tree.text" controlledValue="Parent" defaultValue="Seed" rdxInput />
+    `
+})
+class EmptyFormsHost {
+    readonly reactive = new FormControl('', { nonNullable: true });
+    readonly model = signal({ text: '' });
+    readonly tree = form(this.model);
 }
 
 @Component({
@@ -138,16 +151,27 @@ describe('Input', () => {
             input = fixture.nativeElement.querySelector('input');
         });
 
-        it('applies controlled and default values', () => {
+        it('ignores a first late default and continues to accept external editable values', () => {
             fixture.componentInstance.defaultValue = 'Initial';
             fixture.changeDetectorRef.markForCheck();
             fixture.detectChanges();
-            expect(input.value).toBe('Initial');
+            expect(input.value).toBe('');
 
             fixture.componentInstance.value = 'Controlled';
             fixture.changeDetectorRef.markForCheck();
             fixture.detectChanges();
             expect(input.value).toBe('Controlled');
+        });
+
+        it('applies the initial default silently', () => {
+            const withDefault = TestBed.createComponent(StandaloneHostComponent);
+            withDefault.componentInstance.defaultValue = 'Seed';
+            withDefault.detectChanges();
+            const element = withDefault.nativeElement.querySelector('input') as HTMLInputElement;
+            expect(element.value).toBe('Seed');
+            expect(element.defaultValue).toBe('Seed');
+            expect(element.hasAttribute('data-dirty')).toBe(false);
+            expect(withDefault.componentInstance.changes).toEqual([]);
         });
 
         it('emits value changes from user input', () => {
@@ -273,6 +297,20 @@ describe('Input', () => {
             expect(input.getAttribute('data-touched')).toBe('');
             expect(input.getAttribute('data-dirty')).toBe('');
         });
+    });
+
+    it('lets initial empty Angular form values take precedence over the default', async () => {
+        const fixture = TestBed.createComponent(EmptyFormsHost);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        const inputs = fixture.nativeElement.querySelectorAll('input') as NodeListOf<HTMLInputElement>;
+        expect([...inputs].map((input) => input.value)).toEqual(['', '']);
+        expect(fixture.componentInstance.reactive.value).toBe('');
+        expect(fixture.componentInstance.model().text).toBe('');
+        const directives = fixture.debugElement.queryAll(By.directive(RdxInputDirective));
+        expect(directives.map((input) => input.injector.get(RdxInputDirective).value())).toEqual(['', '']);
     });
 
     describe('with Field', () => {

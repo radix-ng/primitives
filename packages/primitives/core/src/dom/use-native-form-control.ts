@@ -98,6 +98,29 @@ export function hasNoNativeFormOwner(input: HTMLInputElement): boolean {
     return input.form === null && !input.hasAttribute('form');
 }
 
+/** @internal Reconcile state after the owning form has finished an accepted native reset. */
+export function useNativeFormReset(ownerForm: () => HTMLFormElement | null, reset: () => void): void {
+    const document = inject<ElementRef<Node>>(ElementRef).nativeElement.ownerDocument;
+    if (!document || !isPlatformBrowser(inject(PLATFORM_ID))) return;
+
+    const pending = new Set<ReturnType<typeof setTimeout>>();
+    const onReset = (event: Event) => {
+        if (event.target !== ownerForm()) return;
+
+        // WebKit can flush microtasks before the reset default action and later listeners.
+        const timer = setTimeout(() => {
+            pending.delete(timer);
+            if (!event.defaultPrevented) untracked(reset);
+        }, 0);
+        pending.add(timer);
+    };
+    document.addEventListener('reset', onReset, true);
+    inject(DestroyRef).onDestroy(() => {
+        document.removeEventListener('reset', onReset, true);
+        pending.forEach(clearTimeout);
+    });
+}
+
 const NOOP_NATIVE_FORM_CONTROL: RdxNativeFormControl = {
     inputElement: signal<HTMLInputElement | null>(null).asReadonly(),
     ownerForm: () => null,
@@ -137,7 +160,6 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
     let defaultValue: T | undefined;
     let defaultValues: readonly string[] = [];
     let hasDefaultValue = false;
-    const pendingResets = new Set<ReturnType<typeof setTimeout>>();
     let alive = true;
     let viewClaimed = false;
 
@@ -423,36 +445,22 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
         });
     }
 
-    const onReset = (event: Event) => {
-        if (!options.onReset || !hasDefaultValue || event.target !== (ownerForm() ?? options.resetFormFallback?.())) {
-            return;
-        }
-
-        // WebKit can flush microtasks between native event listeners and before reset's default
-        // action (including <output> restoration). Run after the whole dispatch/default action,
-        // so bubble cancellation is final and Angular's render cannot be overwritten by the browser.
-        const timer = setTimeout(() => {
-            pendingResets.delete(timer);
-            if (alive && !event.defaultPrevented) {
-                untracked(() => {
-                    clearValidationAnchor();
-                    options.onReset!(defaultValue as T);
-                    sync();
-                });
+    if (options.onReset) {
+        const onReset = options.onReset;
+        useNativeFormReset(
+            () => (hasDefaultValue ? (ownerForm() ?? options.resetFormFallback?.() ?? null) : null),
+            () => {
+                clearValidationAnchor();
+                onReset(defaultValue as T);
+                sync();
             }
-        }, 0);
-        pendingResets.add(timer);
-    };
-
-    ownerDocument.addEventListener('reset', onReset, true);
+        );
+    }
 
     destroyRef.onDestroy(() => {
         alive = false;
-        pendingResets.forEach(clearTimeout);
-        pendingResets.clear();
         clearValidationAnchor();
         removeInputListeners();
-        ownerDocument.removeEventListener('reset', onReset, true);
         for (const input of inputs) {
             input.remove();
         }

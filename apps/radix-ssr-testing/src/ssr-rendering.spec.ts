@@ -22,6 +22,7 @@ import {
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
 import { RdxFieldDescription, RdxFieldItem, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
+import { RdxInputDirective } from '@radix-ng/primitives/input';
 import {
     RdxMenuGroup,
     RdxMenuGroupLabel,
@@ -150,6 +151,20 @@ class AutocompleteDefaultsPage {}
 class NumberFieldDefaultsPage {
     readonly amount = new FormControl(0, { nonNullable: true });
 }
+
+@Component({
+    selector: 'app-input-defaults',
+    imports: [RdxInputDirective, RdxFieldRoot, RdxFieldLabel],
+    template: `
+        <div rdxFieldRoot>
+            <label rdxFieldLabel>Name</label>
+            <input id="server-input" defaultValue="seed" rdxInput />
+        </div>
+        <input [controlledValue]="''" defaultValue="seed" rdxInput />
+        <input [value]="''" defaultValue="seed" rdxInput />
+    `
+})
+class InputDefaultsPage {}
 
 @Component({
     selector: 'app-toggle-defaults',
@@ -720,6 +735,14 @@ describe('SSR rendering', () => {
         expect(parsed.querySelector<HTMLInputElement>('input[rdxnumberfieldhiddeninput]')?.value).toBe('0');
         expect(html).toMatch(/ngh=/);
     });
+    it('serializes the Input default and initial empty values with a native Field label', async () => {
+        const html = await renderToString('app-input-defaults', InputDefaultsPage);
+        const page = new DOMParser().parseFromString(html, 'text/html');
+        const inputs = [...page.querySelectorAll('input')];
+        expect(inputs.map((input) => input.value)).toEqual(['seed', '', '']);
+        expect(page.querySelector('label')?.control).toBe(inputs[0]);
+    });
+
     it('serializes both the Toggle default and the explicit false value', async () => {
         const html = await renderToString('app-toggle-defaults', ToggleDefaultsPage);
         const buttons = [...new DOMParser().parseFromString(html, 'text/html').querySelectorAll('button[rdxtoggle]')];

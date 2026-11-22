@@ -15,17 +15,36 @@ export function useFieldValueMissing(
     inputs: () => Iterable<RdxFieldNativeInput>,
     fallbackFocusTarget: () => HTMLElement | null
 ): Pick<RdxFieldControlState, 'nativeErrors' | 'refreshNativeValidity' | 'invalidFocusTarget'> {
+    return useFieldNativeValidity(inputs, fallbackFocusTarget, ['valueMissing']);
+}
+
+type NativeErrorKind = Exclude<keyof ValidityState, 'valid'>;
+
+/** @internal Read the native validity flags relevant to a field control. */
+export function useFieldNativeValidity(
+    inputs: () => Iterable<RdxFieldNativeInput>,
+    fallbackFocusTarget: () => HTMLElement | null,
+    kinds: readonly NativeErrorKind[]
+): Pick<RdxFieldControlState, 'nativeErrors' | 'refreshNativeValidity' | 'invalidFocusTarget'> {
     const form = injectFormRootContext(true)?.element;
-    const failure = signal<{ element: HTMLInputElement; target: HTMLElement | null; message: string } | null>(null);
+    const failure = signal<{
+        element: HTMLInputElement;
+        target: HTMLElement | null;
+        message: string;
+        kinds: readonly NativeErrorKind[];
+    } | null>(null);
     const refreshNativeValidity = () => {
         let invalid: RdxFieldNativeInput | undefined;
+        let failedKinds: readonly NativeErrorKind[] = [];
         for (const input of inputs()) {
             const element = input.element;
             if (!input.participates() || !element.isConnected || !element.willValidate) continue;
             if (form && element.form !== form && !hasNoNativeFormOwner(element)) continue;
-            if (!element.validity.valueMissing) continue;
+            const flags = kinds.filter((kind) => element.validity[kind]);
+            if (flags.length === 0) continue;
             if (!invalid || element.compareDocumentPosition(invalid.element) & Node.DOCUMENT_POSITION_FOLLOWING) {
                 invalid = input;
+                failedKinds = flags;
             }
         }
         if (!invalid) {
@@ -36,8 +55,14 @@ export function useFieldValueMissing(
         const target = invalid.focusTarget();
         const message = element.validationMessage;
         const previous = failure();
-        if (previous?.element !== element || previous.target !== target || previous.message !== message) {
-            failure.set({ element, target, message });
+        if (
+            previous?.element !== element ||
+            previous.target !== target ||
+            previous.message !== message ||
+            previous.kinds.length !== failedKinds.length ||
+            failedKinds.some((kind, index) => kind !== previous.kinds[index])
+        ) {
+            failure.set({ element, target, message, kinds: failedKinds });
         }
     };
 
@@ -46,7 +71,9 @@ export function useFieldValueMissing(
         refreshNativeValidity,
         nativeErrors: computed<readonly RdxValidationError[]>(() => {
             const invalid = failure();
-            return invalid ? [{ kind: 'valueMissing', message: invalid.message }] : [];
+            return (
+                invalid?.kinds.map((kind, index) => (index === 0 ? { kind, message: invalid.message } : { kind })) ?? []
+            );
         }),
         invalidFocusTarget: () => failure()?.target ?? fallbackFocusTarget()
     };

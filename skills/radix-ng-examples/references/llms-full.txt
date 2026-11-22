@@ -18133,6 +18133,11 @@ Use `rdxInput` directly on a native input. Wrap it in Field when you need label,
 
 ## Examples
 
+Use `[(value)]` for an editable model, or bind `[controlledValue]` to keep the value with the
+parent. `onValueChange` requests a change. The parent can apply it by updating `controlledValue`.
+Angular Forms own the value when attached. A standalone `defaultValue` is read once and sets
+the native form reset value.
+
 ### Default
 
 The preview above uses this standalone component. Copy the setup and shared files below as well.

@@ -73,6 +73,8 @@ export interface RdxFieldControlState {
     changed: () => boolean;
     /** Browser constraint errors published by the control. */
     nativeErrors?: () => readonly RdxValidationError[];
+    /** A control with its own edit transaction reports accepted edits directly. */
+    ownsNativeEdit?: (target: EventTarget | null) => boolean;
     /** Read the latest DOM validity before the form decides whether to submit. */
     refreshNativeValidity?: () => void;
     /** Visible control for the active browser constraint error, if any. */
@@ -480,6 +482,7 @@ export class RdxFieldRoot {
 
     /** Technical input events may be rejected; their composite control reports committed edits. */
     protected onNativeEdit(event: Event): void {
+        if (this.controlState()?.ownsNativeEdit?.(event.target)) return;
         if ((event.target as Element | null)?.hasAttribute?.('data-rdx-native-input')) return;
         this.notifyEdited();
     }

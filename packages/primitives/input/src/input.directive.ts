@@ -2,6 +2,7 @@ import {
     afterNextRender,
     booleanAttribute,
     computed,
+    DestroyRef,
     Directive,
     effect,
     ElementRef,
@@ -11,14 +12,19 @@ import {
     output,
     signal
 } from '@angular/core';
+import { NgControl } from '@angular/forms';
 import {
     BooleanInput,
+    createCancelableChangeEventDetails,
     injectNgControlState,
     NumberInput,
+    RdxCancelableChangeEventDetails,
     RdxFormValueControl,
-    RdxValidationError
+    RdxValidationError,
+    useNativeFormReset,
+    watch
 } from '@radix-ng/primitives/core';
-import { injectFieldRootContext } from '@radix-ng/primitives/field';
+import { injectFieldRootContext, useFieldNativeValidity } from '@radix-ng/primitives/field';
 
 let inputId = 0;
 
@@ -32,11 +38,10 @@ const numberOrUndefined = (value: unknown): number | undefined =>
  */
 export type RdxInputValue = string;
 
-export interface RdxInputValueChangeEventDetails {
-    event: Event;
-    cancel: () => void;
-    isCanceled: () => boolean;
-}
+export type RdxInputValueChangeEventDetails = Pick<
+    RdxCancelableChangeEventDetails<'none'>,
+    'reason' | 'event' | 'cancel' | 'isCanceled'
+>;
 
 export interface RdxInputValueChangeEvent {
     value: string;
@@ -54,7 +59,7 @@ export interface RdxInputValueChangeEvent {
     exportAs: 'rdxInput',
     host: {
         '[attr.id]': 'id()',
-        '[attr.name]': 'name() || undefined',
+        '[attr.name]': 'effectiveName() || undefined',
         '[attr.aria-describedby]': 'describedBy()',
         // Validity follows the field's tri-state `displayValid` when inside a `rdxFieldRoot` (neutral →
         // no aria-invalid, neither data-valid nor data-invalid), else the input's own binary invalidity.
@@ -78,16 +83,21 @@ export interface RdxInputValueChangeEvent {
         '[attr.data-dirty]': 'dataAttr(dirtyState())',
         '(focus)': 'onFocus()',
         '(blur)': 'onBlur()',
+        '(keydown)': 'onKeyDown($event)',
         '(input)': 'onInput($event)',
-        '(change)': 'syncFieldState()'
+        '(change)': 'onChange($event)'
     }
 })
 export class RdxInputDirective implements RdxFormValueControl<RdxInputValue | undefined> {
     private readonly element = inject<ElementRef<HTMLInputElement>>(ElementRef).nativeElement;
     private readonly fieldRootContext = injectFieldRootContext(true);
+    private readonly ngControl = inject(NgControl, { self: true, optional: true });
+    private readonly legacyForm = this.ngControl instanceof NgControl;
     private readonly ngControlState = injectNgControlState();
+    private readonly destroyRef = inject(DestroyRef);
     private initialValue = '';
-    private defaultValueApplied = false;
+    private committedValue = '';
+    private readonly initialStandaloneValue = signal<string | undefined>(undefined);
     private readonly filledValue = signal(false);
     private readonly focusedValue = signal(false);
     private readonly dirtyValue = signal(false);
@@ -108,11 +118,14 @@ export class RdxInputDirective implements RdxFormValueControl<RdxInputValue | un
     readonly name = input<string>();
 
     /**
-     * The controlled input value.
+     * The editable input value for two-way binding and Angular Forms.
      *
      * @group Props
      */
     readonly value = model<RdxInputValue | undefined>(undefined);
+
+    /** Parent-owned text. Angular Forms take precedence when present. */
+    readonly controlledValue = input<RdxInputValue>();
 
     /**
      * The initial value when the input is uncontrolled.
@@ -120,6 +133,13 @@ export class RdxInputDirective implements RdxFormValueControl<RdxInputValue | un
      * @group Props
      */
     readonly defaultValue = input<RdxInputValue | undefined>(undefined);
+
+    private readonly parentValue = computed(() => (this.ngControl ? undefined : this.controlledValue()));
+    private readonly effectiveValue = computed(
+        () => this.parentValue() ?? this.value() ?? this.initialStandaloneValue()
+    );
+
+    protected readonly effectiveName = computed(() => this.fieldRootContext?.name() ?? this.name());
 
     /**
      * Whether the input is disabled.
@@ -295,26 +315,51 @@ export class RdxInputDirective implements RdxFormValueControl<RdxInputValue | un
     });
 
     constructor() {
-        effect(() => {
-            const value = this.value();
+        watch([], () => {
+            if (!this.ngControl) {
+                const initial = this.value() ?? this.defaultValue() ?? this.element.value;
+                const parent = this.parentValue();
+                this.writeValue(parent ?? initial);
+                this.initialStandaloneValue.set(parent === undefined ? this.element.value : initial);
+                this.element.defaultValue = this.element.value;
+            }
+            this.initialValue = this.element.value;
+            this.syncFieldState();
+        });
 
-            if (!this.ngControlState.connected() && value !== undefined) {
+        if (!this.legacyForm) {
+            watch([this.effectiveValue, this.parentValue], ([value, parent]) => {
+                if (value === undefined) return;
+                const previous = this.committedValue;
                 this.writeValue(value);
-            }
-        });
-
-        effect(() => {
-            const defaultValue = this.defaultValue();
-
-            if (this.value() === undefined && defaultValue !== undefined && !this.defaultValueApplied) {
-                this.defaultValueApplied = true;
-                this.writeValue(defaultValue);
-            }
-        });
+                const baseline = parent === undefined ? this.initialStandaloneValue() : this.element.value;
+                if (baseline !== undefined && this.element.defaultValue !== baseline) {
+                    this.element.defaultValue = baseline;
+                }
+                if (parent !== undefined && this.committedValue !== previous) this.fieldRootContext?.notifyEdited();
+            });
+        }
 
         effect(() => {
             this.fieldRootContext?.setControlId(this.id());
         });
+
+        const field = this.fieldRootContext;
+        if (field) {
+            const focusTarget = () => (this.disabledState() ? null : this.element);
+            const unregister = field.registerControlState({
+                filled: this.filledValue,
+                blurred: this.touched,
+                changed: this.dirtyValue,
+                ownsNativeEdit: (target) => target === this.element,
+                ...useFieldNativeValidity(
+                    () => [{ element: this.element, focusTarget, participates: () => true }],
+                    focusTarget,
+                    ['valueMissing', 'typeMismatch', 'patternMismatch', 'tooShort', 'tooLong', 'customError']
+                )
+            });
+            this.destroyRef.onDestroy(unregister);
+        }
 
         // Reactive/template-driven forms own their NgControl interaction state. Keep the enclosing
         // Field in sync too, including programmatic markAsPristine/markAsUntouched transitions.
@@ -330,6 +375,7 @@ export class RdxInputDirective implements RdxFormValueControl<RdxInputValue | un
                     this.value.set(this.element.value);
                     this.touched.set(touched);
                     this.dirtyValue.set(dirty);
+                    this.syncFieldState();
                     this.fieldRootContext?.setTouched(touched);
                     this.fieldRootContext?.setDirty(dirty);
                     return;
@@ -344,10 +390,16 @@ export class RdxInputDirective implements RdxFormValueControl<RdxInputValue | un
             { debugName: 'RdxInput.syncInteractionState' }
         );
 
-        afterNextRender(() => {
-            this.initialValue = this.element.value;
-            this.syncFieldState();
-        });
+        if (this.ngControl) {
+            afterNextRender(() => {
+                this.initialValue = this.element.value;
+                this.syncFieldState();
+            });
+        }
+        useNativeFormReset(
+            () => this.element.form,
+            () => this.restoreAfterNativeReset()
+        );
     }
 
     onFocus(): void {
@@ -357,57 +409,107 @@ export class RdxInputDirective implements RdxFormValueControl<RdxInputValue | un
 
     onBlur(): void {
         this.focusedValue.set(false);
+        this.fieldRootContext?.setFocused(false);
+        this.markTouched();
+    }
+
+    protected onKeyDown(event: KeyboardEvent): void {
+        if (
+            event.key === 'Enter' &&
+            !event.isComposing &&
+            this.fieldRootContext &&
+            !this.legacyForm &&
+            !this.disabledState()
+        ) {
+            this.markTouched();
+        }
+    }
+
+    private markTouched(): void {
         this.touched.set(true);
         this.touch.emit();
-        this.fieldRootContext?.setFocused(false);
         this.fieldRootContext?.setTouched(true);
     }
 
     onInput(event: Event): void {
         const nextValue = this.element.value;
-        let canceled = false;
-
-        const eventDetails: RdxInputValueChangeEventDetails = {
-            event,
-            cancel: () => {
-                canceled = true;
-            },
-            isCanceled: () => canceled
-        };
-
+        if (nextValue === this.committedValue) return;
+        const { eventDetails } = createCancelableChangeEventDetails('none', event);
+        if (event.defaultPrevented || this.disabledState() || this.readonly()) {
+            this.writeValue(this.committedValue);
+            return;
+        }
         this.onValueChange.emit({ value: nextValue, eventDetails });
 
-        if (canceled) {
-            this.writeValue(this.value() ?? this.defaultValue() ?? '');
+        const parent = this.parentValue();
+        if (eventDetails.isCanceled() || parent !== undefined) {
+            this.writeValue(parent ?? this.committedValue);
             return;
         }
 
         this.value.set(nextValue);
         this.syncFieldState();
+        this.fieldRootContext?.notifyEdited();
+    }
+
+    protected onChange(event: Event): void {
+        if (this.legacyForm) {
+            this.syncFieldState();
+            return;
+        }
+        this.onInput(event);
     }
 
     /** Reset the interaction baseline; Angular Signal Forms calls this from `FieldState.reset()`. */
     reset(): void {
+        this.clearInteraction();
+
+        // The form supplies the reset value through its value binding.
+        queueMicrotask(() => {
+            if (this.destroyRef.destroyed) return;
+            this.initialValue = this.effectiveValue() ?? this.element.value;
+            this.writeValue(this.initialValue);
+        });
+    }
+
+    private restoreAfterNativeReset(): void {
+        if (this.ngControl) {
+            // The Angular owner keeps its own reset semantics and metadata.
+            const value = this.ngControl.control?.value;
+            this.writeValue(value == null ? '' : String(value));
+            if (this.legacyForm) this.value.set(this.element.value);
+            return;
+        }
+
+        const parent = this.parentValue();
+        const restored = parent ?? this.element.defaultValue;
+        // A later accepted edit can already be present when the reset task runs.
+        if (this.element.value !== restored && this.committedValue === this.element.value) {
+            this.initialValue = restored;
+            this.syncFieldState();
+            return;
+        }
+        if (this.element.value !== restored) this.element.value = restored;
+        this.initialValue = this.element.value;
+        this.clearInteraction();
+        this.syncFieldState();
+        if (parent === undefined) this.value.set(this.element.value);
+    }
+
+    private clearInteraction(): void {
         this.touched.set(false);
         this.dirtyValue.set(false);
-        this.focusedValue.set(false);
+        const focused = this.element.getRootNode() as Document | ShadowRoot;
+        const hasFocus = focused.activeElement === this.element;
+        this.focusedValue.set(hasFocus);
         this.fieldRootContext?.setTouched(false);
         this.fieldRootContext?.setDirty(false);
-        this.fieldRootContext?.setFocused(false);
-
-        // The form writes the reset value through `value` after invoking this hook. Capture that final
-        // rendered value as the next dirty baseline, rather than the value that happened to be present
-        // when reset started.
-        queueMicrotask(() => {
-            this.initialValue = this.element.value;
-            this.dirtyValue.set(false);
-            this.fieldRootContext?.setDirty(false);
-            this.syncFieldState();
-        });
+        this.fieldRootContext?.setFocused(hasFocus);
     }
 
     syncFieldState(): void {
         const value = this.element.value;
+        this.committedValue = value;
         const dirty = this.ngControlState.connected() ? this.ngControlState.dirty() : value !== this.initialValue;
 
         this.filledValue.set(value !== '');
@@ -417,7 +519,7 @@ export class RdxInputDirective implements RdxFormValueControl<RdxInputValue | un
     }
 
     private writeValue(value: RdxInputValue): void {
-        this.element.value = value;
+        if (this.element.value !== value) this.element.value = value;
         this.syncFieldState();
     }
 

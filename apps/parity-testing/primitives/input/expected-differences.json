@@ -1,0 +1,50 @@
+[
+    {
+        "scenario": "late-default",
+        "checkpoint": "first late default",
+        "field": "value",
+        "angular": "",
+        "react": "late seed",
+        "category": "initial-default-snapshot"
+    },
+    {
+        "scenario": "late-default",
+        "checkpoint": "first late default",
+        "field": "submitted",
+        "angular": "",
+        "react": "late seed",
+        "category": "initial-default-snapshot"
+    },
+    {
+        "scenario": "reset",
+        "checkpoint": "accepted native reset",
+        "field": "value",
+        "angular": "seed",
+        "react": "late seed",
+        "category": "native-reset-baseline"
+    },
+    {
+        "scenario": "reset",
+        "checkpoint": "accepted native reset",
+        "field": "submitted",
+        "angular": "seed",
+        "react": "late seed",
+        "category": "native-reset-baseline"
+    },
+    {
+        "scenario": "canceled",
+        "checkpoint": "uncontrolled change veto",
+        "field": "value",
+        "angular": "seed",
+        "react": "rejected",
+        "category": "uncontrolled-edit-rollback"
+    },
+    {
+        "scenario": "canceled",
+        "checkpoint": "uncontrolled change veto",
+        "field": "submitted",
+        "angular": "seed",
+        "react": "rejected",
+        "category": "uncontrolled-edit-rollback"
+    }
+]
