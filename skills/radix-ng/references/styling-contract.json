@@ -2563,7 +2563,7 @@
       "description": "A control that allows the user to toggle between checked and not checked.",
       "doc": "radix-ng-examples/references/components/switch.md",
       "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-switch--docs",
-      "anatomy": "<button rdxSwitchRoot [(checked)]=\"checked\">\n    <input rdxSwitchInput />\n    <span rdxSwitchThumb></span>\n</button>",
+      "anatomy": "<button id=\"alerts\" rdxSwitchRoot name=\"alerts\" [(checked)]=\"checked\">\n    <span rdxSwitchThumb></span>\n</button>\n<label for=\"alerts\">Alerts</label>",
       "dataAttributes": [
         {
           "attribute": "data-checked",

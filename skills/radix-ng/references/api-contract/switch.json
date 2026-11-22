@@ -7,7 +7,7 @@
       "directive": "RdxSwitchInput",
       "selector": "input[rdxSwitchInput]",
       "exportAs": "rdxSwitchInput",
-      "description": "The hidden native checkbox that mirrors the switch state for form submission and screen readers.\n\nSee https://base-ui.com/react/components/switch",
+      "description": "An optional authored checkbox for explicit DOM placement and server rendering.\n\nSee https://base-ui.com/react/components/switch",
       "inputs": [],
       "outputs": []
     },
@@ -16,9 +16,6 @@
       "selector": "button[rdxSwitchRoot]",
       "exportAs": "rdxSwitchRoot",
       "description": "A control that toggles between on and off.\n\nSee https://base-ui.com/react/components/switch",
-      "hostDirectives": [
-        "RdxControlValueAccessor"
-      ],
       "inputs": [
         {
           "name": "aria-label",
@@ -34,7 +31,12 @@
           "name": "checked",
           "type": "boolean",
           "default": "false",
-          "description": "The controlled checked state. Use with `(onCheckedChange)` or two-way `[(checked)]`."
+          "description": "Editable checked state for Angular Forms and two-way bindings."
+        },
+        {
+          "name": "controlledChecked",
+          "type": "boolean",
+          "description": "Parent-owned checked state. A defined value takes precedence over the editable model."
         },
         {
           "name": "defaultChecked",
@@ -57,6 +59,11 @@
           "name": "id",
           "type": "string",
           "default": "injectId('rdx-switch-')"
+        },
+        {
+          "name": "inputRef",
+          "type": "RdxNativeInputRef",
+          "description": "Receives the active native checkbox in the browser, and null when the association ends."
         },
         {
           "name": "name",

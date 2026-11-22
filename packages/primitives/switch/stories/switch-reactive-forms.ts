@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { RdxSwitchInput, RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
+import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'switch-reactive-forms',
-    imports: [ReactiveFormsModule, RdxLabelDirective, RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
+    imports: [ReactiveFormsModule, RdxLabelDirective, RdxSwitchRoot, RdxSwitchThumb],
     template: `
         <form class="space-y-3" [formGroup]="formGroup" (ngSubmit)="onSubmit()">
             <label
@@ -21,7 +21,6 @@ import { RdxSwitchInput, RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primiti
                     formControlName="policy"
                     rdxSwitchRoot
                 >
-                    <input rdxSwitchInput />
                     <span
                         class="bg-background pointer-events-none block size-5 translate-x-0.5 rounded-full shadow-sm transition-transform data-[checked]:translate-x-[22px]"
                         rdxSwitchThumb

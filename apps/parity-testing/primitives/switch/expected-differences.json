@@ -1,0 +1,26 @@
+[
+    {
+        "scenario": "canceled",
+        "checkpoint": "native notifications after veto",
+        "field": "events",
+        "angular": [],
+        "react": ["input", "change"],
+        "category": "canceled-native-notifications"
+    },
+    {
+        "scenario": "reset",
+        "checkpoint": "accepted reset",
+        "field": "checked",
+        "angular": "true",
+        "react": "false",
+        "category": "native-reset-baseline"
+    },
+    {
+        "scenario": "reset",
+        "checkpoint": "accepted reset",
+        "field": "values",
+        "angular": ["yes"],
+        "react": ["no", "yes"],
+        "category": "native-reset-baseline"
+    }
+]

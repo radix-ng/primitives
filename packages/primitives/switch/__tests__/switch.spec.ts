@@ -42,9 +42,21 @@ class TestComponent {
             <input rdxSwitchInput />
             <span rdxSwitchThumb></span>
         </button>
+        <button id="explicit-false" [checked]="false" defaultChecked rdxSwitchRoot>Editable switch</button>
+        <button
+            id="controlled-false"
+            [controlledChecked]="false"
+            (checkedChange)="onEditableChange($event)"
+            defaultChecked
+            rdxSwitchRoot
+        >
+            Controlled switch
+        </button>
     `
 })
-class DefaultCheckedSwitch {}
+class DefaultCheckedSwitch {
+    readonly onEditableChange = vi.fn<(value: boolean) => void>();
+}
 
 describe('RdxSwitch', () => {
     let fixture: ComponentFixture<TestComponent>;
@@ -72,7 +84,7 @@ describe('RdxSwitch', () => {
         expect(thumb.getAttribute('data-unchecked')).toBe('');
     });
 
-    it('reflects a controlled checked binding', () => {
+    it('reflects an editable checked binding', () => {
         component.checked.set(true);
         fixture.detectChanges();
         expect(root.getAttribute('data-checked')).toBe('');
@@ -88,6 +100,23 @@ describe('RdxSwitch', () => {
         expect(r.getAttribute('aria-checked')).toBe('true');
         expect(r.getAttribute('data-checked')).toBe('');
         expect(inp.checked).toBe(true);
+    });
+
+    it('keeps an explicitly false editable value over the default', () => {
+        const fixture = TestBed.createComponent(DefaultCheckedSwitch);
+        fixture.detectChanges();
+        const button = fixture.nativeElement.querySelector('#explicit-false') as HTMLButtonElement;
+        expect(button.getAttribute('aria-checked')).toBe('false');
+    });
+
+    it('keeps the editable model silent while the parent owns the value', () => {
+        const fixture = TestBed.createComponent(DefaultCheckedSwitch);
+        fixture.detectChanges();
+        const button = fixture.nativeElement.querySelector('#controlled-false') as HTMLButtonElement;
+        button.click();
+        fixture.detectChanges();
+        expect(button.getAttribute('aria-checked')).toBe('false');
+        expect(fixture.componentInstance.onEditableChange).not.toHaveBeenCalled();
     });
 
     it('toggles on click and emits onCheckedChange', () => {
@@ -157,7 +186,7 @@ describe('RdxSwitch', () => {
     imports: [ReactiveFormsModule, RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
     template: `
         <form [formGroup]="form">
-            <button id="airplane" formControlName="airplaneMode" rdxSwitchRoot>
+            <button id="airplane" formControlName="airplaneMode" defaultChecked rdxSwitchRoot>
                 <input rdxSwitchInput />
                 <span rdxSwitchThumb></span>
             </button>
@@ -184,10 +213,13 @@ describe('RdxSwitch with ReactiveForms', () => {
         input = fixture.debugElement.query(By.css('[rdxSwitchInput]')).nativeElement;
     });
 
-    it('initializes from the form control', () => {
+    it('initializes from the form control and preserves its interaction state despite the default', () => {
         expect(component.form.value.airplaneMode).toBe(false);
         expect(root.getAttribute('data-unchecked')).toBe('');
         expect(input.checked).toBe(false);
+        const field = component.form.get('airplaneMode');
+        expect(field?.pristine).toBe(true);
+        expect(field?.untouched).toBe(true);
     });
 
     it('updates the form control on click', () => {
@@ -399,7 +431,7 @@ describe('RdxSwitch validation state (batch #4)', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [FormField, RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
     template: `
-        <button [formField]="enabled" rdxSwitchRoot>
+        <button [formField]="enabled" defaultChecked rdxSwitchRoot>
             <input rdxSwitchInput />
             <span rdxSwitchThumb></span>
         </button>
@@ -428,6 +460,8 @@ describe('RdxSwitch with Signal Forms', () => {
     });
 
     it('updates the bound field on click (FormCheckboxControl)', () => {
+        expect(host.model().enabled).toBe(false);
+        expect(root.getAttribute('aria-checked')).toBe('false');
         root.click();
         fixture.detectChanges();
         expect(host.model().enabled).toBe(true);

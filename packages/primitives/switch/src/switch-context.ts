@@ -28,6 +28,8 @@ export interface RdxSwitchContext {
 
     registerNativeInput(input: HTMLInputElement): () => void;
     markAsTouched(): void;
+    focus(): void;
+    onNativeInputClick(input: HTMLInputElement, event: MouseEvent): void;
 }
 
 export const [injectSwitchContext, provideSwitchContext] = createContext<RdxSwitchContext>(

@@ -11,29 +11,29 @@ A control that allows the user to toggle between checked and not checked.
 - ✅ Can be controlled or uncontrolled.
 - ✅ Full keyboard navigation.
 - ✅ Supports disabled, read-only and required states.
-- ✅ Native form submission with an optional native input for constraint validation.
+- ✅ Native form submission, constraint validation, and reset.
 
 ## Import
 
 ```typescript
-import { RdxSwitchRoot, RdxSwitchThumb, RdxSwitchInput } from '@radix-ng/primitives/switch';
+import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 ```
 
-The API follows [Base UI Switch](https://base-ui.com/react/components/switch): a `Root` with a
-`Thumb`, plus an optional hidden `Input` for native browser behavior.
+The API follows [Base UI Switch](https://base-ui.com/react/components/switch) with a `Root` and
+`Thumb` on consumer-provided elements.
 
 ## Anatomy
 
 ```html
-<button rdxSwitchRoot [(checked)]="checked">
-    <input rdxSwitchInput />
+<button id="alerts" rdxSwitchRoot name="alerts" [(checked)]="checked">
     <span rdxSwitchThumb></span>
 </button>
+<label for="alerts">Alerts</label>
 ```
 
-A named root submits without `[rdxSwitchInput]`. Include the optional input when you also need native
-constraint validation. Use `uncheckedValue` when the off state should submit a value; otherwise it is
-omitted like a native unchecked checkbox.
+The root creates a native checkbox beside the button after browser rendering. The input supplies
+native `required` validation and bubbling `input` and `change` events. Set `name` for form submission,
+`form` for an explicit form owner, and `uncheckedValue` to submit a value in the off state.
 
 ## Examples
 

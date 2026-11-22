@@ -2,7 +2,7 @@ import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 import { injectSwitchContext } from './switch-context';
 
 /**
- * The hidden native checkbox that mirrors the switch state for form submission and screen readers.
+ * An optional authored checkbox for explicit DOM placement and server rendering.
  *
  * @see https://base-ui.com/react/components/switch
  */
@@ -16,6 +16,7 @@ import { injectSwitchContext } from './switch-context';
         '[attr.name]': 'rootContext.name()',
         '[attr.form]': 'rootContext.form()',
         '[attr.value]': 'rootContext.value()',
+        '[attr.checked]': 'rootContext.checked() ? "" : undefined',
         '[checked]': 'rootContext.checked()',
         '[disabled]': 'rootContext.disabled()',
         '[attr.required]': 'rootContext.required() ? "" : undefined',
@@ -24,12 +25,13 @@ import { injectSwitchContext } from './switch-context';
         // The hidden form input carries no `data-*` (Base UI parity) — state attributes live on the
         // root button and thumb.
         style: 'transform: translateX(-100%); position: absolute; overflow: hidden; pointer-events: none; opacity: 0; margin: 0;',
-        '(blur)': 'rootContext.markAsTouched()'
+        '(click)': 'rootContext.onNativeInputClick(input, $event)',
+        '(focus)': 'rootContext.focus()'
     }
 })
 export class RdxSwitchInput {
     protected readonly rootContext = injectSwitchContext();
-    private readonly input = inject<ElementRef<HTMLInputElement>>(ElementRef).nativeElement;
+    protected readonly input = inject<ElementRef<HTMLInputElement>>(ElementRef).nativeElement;
 
     constructor() {
         const unregister = this.rootContext.registerNativeInput(this.input);

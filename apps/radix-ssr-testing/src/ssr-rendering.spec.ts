@@ -39,6 +39,7 @@ import {
     RdxRadioItemInputDirective
 } from '@radix-ng/primitives/radio';
 import { _importsSelect, RdxSelectLabel, RdxSelectRoot, RdxSelectTrigger } from '@radix-ng/primitives/select';
+import { RdxSwitchInput, RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 import { describe, expect, it, vi } from 'vitest';
 import AccordionPage from './app/components/accordion/page';
@@ -146,6 +147,26 @@ class AutocompleteDefaultsPage {}
 })
 class NumberFieldDefaultsPage {
     readonly amount = new FormControl(0, { nonNullable: true });
+}
+
+@Component({
+    selector: 'app-switch-defaults',
+    imports: [ReactiveFormsModule, RdxSwitchInput, RdxSwitchRoot, RdxSwitchThumb],
+    template: `
+        <button id="explicit" [checked]="false" defaultChecked rdxSwitchRoot>
+            <span rdxSwitchThumb></span>
+        </button>
+        <button id="from-form" [formControl]="control" defaultChecked rdxSwitchRoot>
+            <span rdxSwitchThumb></span>
+        </button>
+        <button id="from-default" defaultChecked rdxSwitchRoot>
+            <span rdxSwitchThumb></span>
+            <input rdxSwitchInput />
+        </button>
+    `
+})
+class SwitchDefaultsPage {
+    readonly control = new FormControl(false, { nonNullable: true });
 }
 
 @Component({
@@ -660,6 +681,16 @@ describe('SSR rendering', () => {
         const inputs = [...parsed.querySelectorAll<HTMLInputElement>('input[rdxnumberfieldinput]')];
         expect(inputs.map((input) => input.value)).toEqual(['0', '', '11']);
         expect(parsed.querySelector<HTMLInputElement>('input[rdxnumberfieldhiddeninput]')?.value).toBe('0');
+        expect(html).toMatch(/ngh=/);
+    });
+    it('resolves Switch defaults before server serialization and includes the authored input', async () => {
+        const html = await renderToString('app-switch-defaults', SwitchDefaultsPage);
+        const parsed = new DOMParser().parseFromString(html, 'text/html');
+        const switches = [...parsed.querySelectorAll('[role="switch"]')];
+        expect(switches.map((control) => control.getAttribute('aria-checked'))).toEqual(['false', 'false', 'true']);
+        expect(switches[2].querySelector('[rdxswitchthumb]')?.hasAttribute('data-checked')).toBe(true);
+        const inputs = [...parsed.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')];
+        expect(inputs.map((input) => input.checked)).toEqual([true]);
         expect(html).toMatch(/ngh=/);
     });
     it('resolves Checkbox form values and the group relationship before server serialization', async () => {

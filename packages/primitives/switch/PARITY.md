@@ -1,82 +1,51 @@
-# Switch — parity matrix
+# Switch parity matrix
 
-Initial inventory: 2026-11-17. Reference pin: **Base UI 1.9.0**,
-`cf696d6f6e08c699c5bda24d5a033430909f2285` ([reference manifest](../../../apps/parity-testing/reference.json)).
+Reference: Base UI 1.9.0 at `cf696d6f6e08c699c5bda24d5a033430909f2285`.
+[Manifest](../../../apps/parity-testing/reference.json),
+[pinned Switch source](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/switch).
 
-Primary counterpart: [switch](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/switch).
-Pinned exported parts/functions: `Root`, `Thumb`.
+## Anatomy
 
-**Scope: initial source inventory and comparison backlog.** Exported local declarations and evidence
-locations were inventoried; complete per-handler, per-attribute and browser equivalence has not been
-established. A source observation below is not a newly passing runtime or differential result.
+| Base UI                | Angular                      | Contract                                                                           |
+| ---------------------- | ---------------------------- | ---------------------------------------------------------------------------------- |
+| Switch.Root            | [Root](src/switch-root.ts)   | Native button with the switch role. Owns the value, requests and form behavior.    |
+| Switch.Thumb           | [Thumb](src/switch-thumb.ts) | Reflects checked, disabled, read-only and required state from Root.                |
+| Root's native checkbox | [Input](src/switch-input.ts) | Generated beside Root after browser rendering. An authored input takes precedence. |
 
-**Breaking changes are permitted; backward compatibility does not constrain the target.** Apply the
-[state ownership/defaults contract](../../../docs/engineering/state-ownership.md) per field. Inputs,
-models, outputs, defaults and part boundaries may change; do not retain compatibility mirrors or
-aliases solely for the old API. Review earlier ADR decisions explicitly when replacing them.
+Root and Thumb expose `data-checked`, `data-unchecked`, `data-disabled`, `data-readonly` and
+`data-required`. Root also exposes displayed validity, dirty and touched state from the Angular
+form adapter. The parts define no public CSS variables.
 
-## Public surface inventory
+## State and browser forms
 
-Source of truth: [entry barrel](index.ts). These are directly exported decorated classes, not a
-claim that inherited/host-directive APIs or every upstream prop have already been compared. Exported
-composition bases, guards and internal helpers are not thereby promoted to stable public widget parts.
+| Area                        | Implemented contract                                                                                                                                                    | Evidence                                                      |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| P1 · Initial ownership      | Editable `checked` and initial Angular form writes take precedence over `defaultChecked`, including explicit false.                                                     | Paired `default` and `late-default`; unit and SSR assertions. |
+| P1 · Parent-owned requests  | A defined `controlledChecked` owns the effective state. The parent may ignore or defer a request.                                                                       | Paired `controlled`.                                          |
+| P1 · Default and reset      | Default resolves once. Native reset restores the editable baseline or delegates to the Angular control, and honors reset cancellation.                                  | Paired `reset` and Angular forms units.                       |
+| P1 · Change veto            | The callback receives a cancelable request with the click event. A veto leaves the old value in the switch and native input.                                            | Paired `canceled`.                                            |
+| P2 · Native activation      | Label, Space, Enter and native input activation share a single state request. Accepted edits produce native input and change events.                                    | Paired `activation` and `authored`.                           |
+| P2 · Disabled and read-only | Disabled uses the native button state and excludes the value from submission. Read-only stays focusable and keeps its value.                                            | Paired `disabled` and `readonly`.                             |
+| P2 · Native form ownership  | Generated input enforces `required`, supports explicit form ownership, and forwards invalid focus to the visible button. The form receives `value` or `uncheckedValue`. | Paired `external-form`.                                       |
 
-| Angular declaration                     | Selector / role         | Direct input/model/output declarations                                                                                                                                                |
-| --------------------------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`RdxSwitchInput`](src/switch-input.ts) | `input[rdxSwitchInput]` | No direct signal input/model/output declaration.                                                                                                                                      |
-| [`RdxSwitchRoot`](src/switch-root.ts)   | `button[rdxSwitchRoot]` | `id`, `defaultChecked`, `checked` (model), `disabled`, `readonly`, `required`, `name`, `form`, `value`, `uncheckedValue`, `aria-labelledby`, `aria-label`, `onCheckedChange` (output) |
-| [`RdxSwitchThumb`](src/switch-thumb.ts) | `span[rdxSwitchThumb]`  | No direct signal input/model/output declaration.                                                                                                                                      |
+The Angular controlled channel is `controlledChecked`; `checked` remains a writable form model.
+The native submission token is a separate configuration input exposed as `value`.
+See the [state ownership contract](../../../docs/engineering/state-ownership.md).
 
-Inherited classes and composed directives may add state/API. Follow those sources when completing
-the comparison; similar part names or selector counts do not prove the same contract.
+The browser-generated input appears after Angular renders the view. An authored input can appear
+in the server HTML, and both variants are exposed by `nativeInput()` and `inputRef`.
 
-## State ownership and defaults
+## Reviewed differences and remaining evidence
 
-Ownership class for this entry: **Editable form value and auxiliary state**. The [shared contract](../../../docs/engineering/state-ownership.md)
-distinguishes controlled UI requests, editable form models, readonly configuration, native DOM state
-and derived/render state. Local writes to required form models are legitimate Angular behavior.
-For strict controlled UI state, a request must not mutate the effective value before parent acceptance.
+- Angular suppresses native `input` and `change` notifications when the callback vetoes an edit.
+  The pinned Switch restores its state and still emits those notifications.
+- Angular restores the committed baseline and emits one form entry after an accepted native reset.
+  In the paired fixture Base UI resets the native input while its visible state stays off and its
+  unchecked fallback stays in the form.
+- Field name, disabled inheritance, label and description registration, and Field state on the Thumb
+  still need comparison and integration.
 
-| State field / source                                               | Current declaration     | Ownership review                                                                                               |
-| ------------------------------------------------------------------ | ----------------------- | -------------------------------------------------------------------------------------------------------------- |
-| [`RdxSwitchRoot.checked`](src/switch-root.ts)                      | `model<boolean>(false)` | Editable form model where the actual Angular control contract requires it; coordinate CVA/native/Signal Forms. |
-| [`RdxSwitchRoot.submitValue`](src/switch-root.ts) (public `value`) | `input<string>('on')`   | Readonly supplied data/identity/configuration; no local model write.                                           |
-
-| Declared default / source                            | Declaration                                                         | Required comparison                                                                                                                                         |
-| ---------------------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`RdxSwitchRoot.defaultChecked`](src/switch-root.ts) | `input<boolean \| undefined, BooleanInput \| undefined>(undefined)` | Initial supplied/falsy/empty/form priority, initial-only snapshot, late changes and reset baseline. Distinguish state defaults from reactive configuration. |
-
-Always include allowed `false`, `0`, `''`, `[]` and `null` cases; initial parent/CVA/Signal Forms
-writes; default changes after initialization; ignored/delayed/replaced controlled requests; cancellation
-and native/form reset. Not every case applies to readonly or infrastructure entries: mark those
-boundaries explicitly instead of converting all models to readonly inputs.
-
-## Family-specific comparison matrix
-
-“Source” identifies a local implementation fact. “Compare/verify/audit” is pending work. Priorities
-describe the target work, not a certificate or a reproduced defect count.
-
-| Area                            | Current observation / required target comparison                                                                                                            | Priority |
-| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| Checked versus submission token | Source: checked is a required form model; public value aliases a differently named TS submission field. Preserve the checkbox Signal Forms member contract. | P1       |
-| Default/form priority           | Source: first-defined defaultChecked writes checked/CVA. Compare bound false, initial form writes, late defaults, uncheckedValue and reset baselines.       | P1       |
-| Native activation               | Compare switch role, native input events, Space/Enter, label, readonly/disabled, hidden-input serialization and external/native forms.                      | P2       |
-
-Also compare the actual emitted per-part attributes/CSS variables with both the pinned declaration
-files and runtime state mapping. Check native hosts, event reasons/details/default prevention,
-accessibility relationships, keyboard/RTL and cleanup where applicable. Angular framework adapters
-are permitted; changed observable behavior needs evidence or an explicitly reviewed deviation.
-
-## Evidence inventory and next checks
-
-- [Local unit files](__tests__): **1 file discovered**; not a passing-test count.
-- No same-family named browser behavior file was found. Cross-family consumer or shared-mechanism checks may exist; locate them before claiming absence or coverage.
-- No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
-- [SSR consumer page](../../../apps/radix-ssr-testing/src/app/components/switch/page.ts) exists. Its presence does not prove initial-state, lifecycle or hydration equivalence; inspect actual assertions.
-
-No runtime suite was executed for this initial matrix sweep. Complete focused state/DI units,
-native/layout browser cases and SSR/hydration checks before promoting rows; add a paired pinned
-fixture before certifying equivalent observable behavior. See the
-[verification skill](../../../.agents/skills/radix-testing/SKILL.md),
-[matrix index](../../../docs/engineering/parity-matrices.md) and
-[upstream preparation guide](../../../docs/engineering/upstream-reference.md).
+Run [the paired suite](../../../apps/parity-testing/primitives/switch/README.md) with
+`pnpm test-parity switch`. The [unit suite](__tests__) covers the Angular adapters and the
+[SSR suite](../../../apps/radix-ssr-testing/src/ssr-rendering.spec.ts) covers server defaults and
+authored input.

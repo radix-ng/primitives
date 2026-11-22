@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
-import { RdxSwitchInput, RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
+import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'switch-readonly-example',
-    imports: [RdxLabelDirective, RdxSwitchRoot, RdxSwitchInput, RdxSwitchThumb],
+    imports: [RdxLabelDirective, RdxSwitchRoot, RdxSwitchThumb],
     template: `
         <label
             class="text-foreground flex items-center gap-3 text-sm font-medium"
@@ -20,7 +20,6 @@ import { RdxSwitchInput, RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primiti
                 readonly
                 defaultChecked
             >
-                <input rdxSwitchInput />
                 <span
                     class="bg-background pointer-events-none block size-5 translate-x-0.5 rounded-full shadow-sm transition-transform data-[checked]:translate-x-[22px]"
                     rdxSwitchThumb

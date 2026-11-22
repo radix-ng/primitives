@@ -21,15 +21,19 @@ export type RdxNativeInputRef = (input: HTMLInputElement | null) => void;
 export interface RdxNativeFormInputOptions {
     /** Visible control whose bounds anchor the browser's native validation message. */
     anchor?: () => HTMLElement | null;
-    type: () => 'text' | 'hidden';
+    type: () => 'text' | 'hidden' | 'checkbox';
+    /** A consumer-authored input can take over the primary input without suppressing fallback entries. */
+    enabled?: () => boolean;
     name: () => string | undefined;
     value: () => string;
+    checked?: () => boolean;
     id?: () => string | undefined;
     autoComplete?: () => string | undefined;
     required?: () => boolean;
     readOnly?: () => boolean;
     ref?: () => RdxNativeInputRef | undefined;
     onChange?: (value: string, event: Event) => void | Promise<void>;
+    onClick?: (input: HTMLInputElement, event: MouseEvent) => void;
     onFocus?: (event: FocusEvent) => void;
     onInvalid?: (event: Event) => void;
 }
@@ -194,6 +198,7 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
         input.setAttribute('aria-hidden', 'true');
         input.setAttribute('data-rdx-native-input', '');
         const onFocus = (event: FocusEvent) => options.input?.onFocus?.(event);
+        const onClick = (event: MouseEvent) => options.input?.onClick?.(input, event);
         const onInvalid = (event: Event) => {
             // Chromium needs a nonzero box to anchor its constraint-validation message.
             invalidInputGrown = true;
@@ -220,13 +225,17 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
                 }
             });
         };
-        input.addEventListener('input', onChange);
-        input.addEventListener('change', onChange);
+        if (!options.input?.checked || options.input.onChange) {
+            input.addEventListener('input', onChange);
+            input.addEventListener('change', onChange);
+        }
+        if (options.input?.onClick) input.addEventListener('click', onClick);
         input.addEventListener('focus', onFocus);
         input.addEventListener('invalid', onInvalid);
         removeInputListeners = () => {
             input.removeEventListener('input', onChange);
             input.removeEventListener('change', onChange);
+            input.removeEventListener('click', onClick);
             input.removeEventListener('focus', onFocus);
             input.removeEventListener('invalid', onInvalid);
         };
@@ -258,6 +267,8 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
         const primaryName = options.input?.name();
         const primaryValue = options.input?.value();
         const primaryType = options.input?.type();
+        const primaryChecked = options.input?.checked?.() ?? false;
+        const usePrimaryInput = options.input && (options.input.enabled?.() ?? true) && !nativeControlOwnsValue;
         const primaryId = options.input?.id?.();
         const autoComplete = options.input?.autoComplete?.();
         const required = options.input?.required?.() ?? false;
@@ -268,7 +279,7 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
         // Track every option before deferring DOM work until Angular has claimed its view.
         if (!viewClaimed) return;
 
-        if (nativeControlOwnsValue && inputElement()) {
+        if (!usePrimaryInput && inputElement()) {
             clearValidationAnchor();
             removeInputListeners();
             untracked(() => inputRef?.(null));
@@ -279,7 +290,7 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
             invalidInputGrown = false;
         }
 
-        if (options.input && !nativeControlOwnsValue) {
+        if (usePrimaryInput) {
             const input = inputElement() ?? createInput();
             input.type = primaryType ?? 'hidden';
             input.disabled = disabled;
@@ -315,9 +326,11 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
             });
             if (!input.hasAttribute('data-rdx-native-form-control')) {
                 input.defaultValue = primaryName ? (defaultValues[0] ?? '') : '';
+                if (primaryType === 'checkbox') input.defaultChecked = primaryChecked;
                 input.setAttribute('data-rdx-native-form-control', '');
             }
             input.value = primaryValue ?? '';
+            if (primaryType === 'checkbox') input.checked = primaryChecked;
             if (validationAnchor) {
                 if (!input.willValidate || input.validity.valid) clearValidationAnchor();
                 else anchorValidationInput();
@@ -331,7 +344,8 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
             }
         }
 
-        const primarySubmits = Boolean(options.input && primaryName && primaryName === name && !nativeControlOwnsValue);
+        const primarySubmits =
+            usePrimaryInput && primaryName && primaryName === name && (primaryType !== 'checkbox' || primaryChecked);
         const shouldRender = Boolean(name && options.serialize && !nativeControlOwnsValue && !primarySubmits);
         const count = shouldRender ? values.length : 0;
 
@@ -384,6 +398,23 @@ export function useNativeFormControl<T>(options: RdxNativeFormControlOptions<T>)
         viewClaimed = true;
         untracked(sync);
     });
+
+    if (options.input?.checked) {
+        // A directly portaled host can change parents after its own render effects have run.
+        afterEveryRender({
+            mixedReadWrite: () => {
+                const primary = inputElement();
+                const siblings = primary ? [primary, ...inputs] : inputs;
+                let previous = host;
+                const parent = host.parentNode;
+                for (const input of siblings) {
+                    if (!parent) input.remove();
+                    else if (previous.nextSibling !== input) parent.insertBefore(input, previous.nextSibling);
+                    previous = input;
+                }
+            }
+        });
+    }
 
     // Field errors can change layout after `invalid`; keep the browser's anchor aligned before paint.
     if (options.input?.anchor) {

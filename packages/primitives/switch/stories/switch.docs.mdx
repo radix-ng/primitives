@@ -15,35 +15,37 @@ import * as SwitchStories from './switch.stories';
 - ✅ Can be controlled or uncontrolled.
 - ✅ Full keyboard navigation.
 - ✅ Supports disabled, read-only and required states.
-- ✅ Native form submission with an optional native input for constraint validation.
+- ✅ Native form submission, constraint validation, and reset.
 
 ## Import
 
 ```typescript
-import { RdxSwitchRoot, RdxSwitchThumb, RdxSwitchInput } from '@radix-ng/primitives/switch';
+import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 ```
 
-The API follows [Base UI Switch](https://base-ui.com/react/components/switch): a `Root` with a
-`Thumb`, plus an optional hidden `Input` for native browser behavior.
+The API follows [Base UI Switch](https://base-ui.com/react/components/switch) with a `Root` and
+`Thumb` on consumer-provided elements.
 
 ## Anatomy
 
 ```html
-<button rdxSwitchRoot [(checked)]="checked">
-    <input rdxSwitchInput />
+<button id="alerts" rdxSwitchRoot name="alerts" [(checked)]="checked">
     <span rdxSwitchThumb></span>
 </button>
+<label for="alerts">Alerts</label>
 ```
 
-A named root submits without `[rdxSwitchInput]`. Include the optional input when you also need native
-constraint validation. Use `uncheckedValue` when the off state should submit a value; otherwise it is
-omitted like a native unchecked checkbox.
+The root creates a native checkbox beside the button after browser rendering. The input supplies
+native `required` validation and bubbling `input` and `change` events. Set `name` for form submission,
+`form` for an explicit form owner, and `uncheckedValue` to submit a value in the off state.
 
 ## Examples
 
 ### Preselection
 
-Set `defaultChecked` (uncontrolled) or `[checked]` (controlled) to start in the on state.
+Set `defaultChecked` to start in the on state. The initial `checked` binding or Angular Forms value
+takes precedence over this default. Later changes to `defaultChecked` leave the current state and
+native reset baseline intact.
 
 <Canvas of={SwitchStories.Preselection} />
 
@@ -68,10 +70,11 @@ Bind the switch to a form control via `formControlName`.
 ## Change events
 
 `onCheckedChange` emits `{ checked, eventDetails }`. Use `eventDetails.cancel()` to reject a
-state change before the switch updates.
+state change before the switch updates. Use `[(checked)]` for an editable model and
+`[controlledChecked]` when the parent accepts or ignores each request.
 
 ```html
-<button [checked]="checked()" (onCheckedChange)="setChecked($event)" rdxSwitchRoot>
+<button [controlledChecked]="checked()" (onCheckedChange)="setChecked($event)" rdxSwitchRoot>
     <span rdxSwitchThumb></span>
 </button>
 ```
@@ -92,7 +95,8 @@ setChecked(change: RdxSwitchCheckedChangeEvent) {
 ### Root
 
 `RdxSwitchRoot` — the switch itself. Apply to a native `<button>` element. Exposes `role="switch"`,
-`aria-checked`, and mirrors `aria-required` / `aria-readonly`.
+`aria-checked`, and mirrors `aria-required` / `aria-readonly`. Use `nativeInput()` or `[inputRef]` to
+access the active native input.
 
 <ArgTypes of={RdxSwitchRoot} />
 
@@ -123,9 +127,8 @@ has no inputs.
 
 ### Input
 
-`RdxSwitchInput` — the optional hidden native checkbox for constraint validation. Apply it inside the
-root. It reads everything from context (including `name`, `form`, and `value`) and has no inputs or
-`data-*`.
+`RdxSwitchInput` is an authored native checkbox for templates that supply their own input. An
+authored input in the Root's context takes precedence and is included in server-rendered HTML.
 
 ## Accessibility
 
