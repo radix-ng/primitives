@@ -225,7 +225,7 @@ describe('RdxToggleGroup', () => {
     imports: [ReactiveFormsModule, RdxToggleGroup, RdxToggle],
     template: `
         <form id="editor"></form>
-        <div [formControl]="control" rdxToggleGroup multiple name="style" form="editor">
+        <div [formControl]="control" [defaultValue]="['italic']" rdxToggleGroup multiple name="style" form="editor">
             <button rdxToggle value="bold">Bold</button>
             <button rdxToggle value="italic">Italic</button>
         </div>
@@ -266,6 +266,46 @@ describe('RdxToggleGroup native form contract', () => {
         fixture.detectChanges();
         expect(new FormData(form).has('style')).toBe(false);
     });
+});
+
+@Component({
+    imports: [RdxToggleGroup, RdxToggle],
+    template: `
+        <form>
+            <div [value]="initial" [defaultValue]="['bold']" rdxToggleGroup name="style">
+                <button rdxToggle value="bold">Bold</button>
+            </div>
+        </form>
+    `
+})
+class EmptyToggleGroupHost {
+    readonly initial: string[] = [];
+}
+
+it('restores an explicit empty array instead of the default on native reset', async () => {
+    const fixture = TestBed.createComponent(EmptyToggleGroupHost);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const host = fixture.nativeElement as HTMLElement;
+    const form = host.querySelector('form')!;
+    const button = host.querySelector('button')!;
+    const values = () => new FormData(form).getAll('style');
+    expect(values()).toEqual([]);
+    button.click();
+    fixture.detectChanges();
+    expect(values()).toEqual(['bold']);
+
+    form.addEventListener('reset', (event) => event.preventDefault(), { once: true });
+    form.reset();
+    await new Promise<void>((resolve) => setTimeout(resolve, 0));
+    fixture.detectChanges();
+    expect(values()).toEqual(['bold']);
+
+    form.reset();
+    await new Promise<void>((resolve) => setTimeout(resolve, 0));
+    fixture.detectChanges();
+    expect(values()).toEqual([]);
+    expect(button.getAttribute('aria-pressed')).toBe('false');
 });
 
 @Component({
@@ -495,7 +535,7 @@ describe('RdxToggleGroup validation state', () => {
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [FormField, RdxToggleGroup, RdxToggle],
     template: `
-        <div [formField]="alignment" rdxToggleGroup aria-label="Alignment">
+        <div [formField]="alignment" [defaultValue]="['left']" rdxToggleGroup aria-label="Alignment">
             <button rdxToggle value="left" aria-label="Left">Left</button>
             <button rdxToggle value="right" aria-label="Right">Right</button>
         </div>

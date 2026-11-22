@@ -9042,6 +9042,11 @@
           ],
           "inputs": [
             {
+              "name": "controlledValue",
+              "type": "string[]",
+              "description": "Parent-owned pressed values. A defined array takes precedence over the editable model."
+            },
+            {
               "name": "defaultValue",
               "type": "string[]",
               "description": "The values pressed when the group is initially rendered (uncontrolled)."
@@ -9077,7 +9082,7 @@
             {
               "name": "value",
               "type": "string[]",
-              "description": "The pressed values. Always an array — a single value is `[value]`. Use with `(onValueChange)`\nfor controlled state."
+              "description": "Editable pressed values for Angular Forms and two-way bindings. A single value is `[value]`."
             },
             {
               "name": "dirty",
@@ -9150,6 +9155,11 @@
               "description": "Whether keyboard navigation should loop from the last item back to the first."
             },
             {
+              "name": "controlledValue",
+              "type": "string[]",
+              "description": "Parent-owned pressed values. A defined array takes precedence over the editable model."
+            },
+            {
               "name": "defaultValue",
               "type": "string[]",
               "description": "The values pressed when the group is initially rendered (uncontrolled)."
@@ -9185,7 +9195,7 @@
             {
               "name": "value",
               "type": "string[]",
-              "description": "The pressed values. Always an array — a single value is `[value]`. Use with `(onValueChange)`\nfor controlled state."
+              "description": "Editable pressed values for Angular Forms and two-way bindings. A single value is `[value]`."
             },
             {
               "name": "dirty",

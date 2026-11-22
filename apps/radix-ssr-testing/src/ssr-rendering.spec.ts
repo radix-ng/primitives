@@ -42,6 +42,7 @@ import { _importsSelect, RdxSelectLabel, RdxSelectRoot, RdxSelectTrigger } from 
 import { RdxSwitchInput, RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 import { RdxToggle } from '@radix-ng/primitives/toggle';
+import { RdxToggleGroup } from '@radix-ng/primitives/toggle-group';
 import { describe, expect, it, vi } from 'vitest';
 import AccordionPage from './app/components/accordion/page';
 import AvatarPage from './app/components/avatar/page';
@@ -159,6 +160,19 @@ class NumberFieldDefaultsPage {
     `
 })
 class ToggleDefaultsPage {}
+
+@Component({
+    selector: 'app-toggle-group-defaults',
+    imports: [RdxToggle, RdxToggleGroup],
+    template: `
+        <div [defaultValue]="['a']" rdxToggleGroup><button rdxToggle value="a">Default</button></div>
+        <div [defaultValue]="['a']" [value]="[]" rdxToggleGroup><button rdxToggle value="a">Editable</button></div>
+        <div [defaultValue]="['a']" [controlledValue]="[]" rdxToggleGroup>
+            <button rdxToggle value="a">Controlled</button>
+        </div>
+    `
+})
+class ToggleGroupDefaultsPage {}
 
 @Component({
     selector: 'app-switch-defaults',
@@ -711,6 +725,12 @@ describe('SSR rendering', () => {
         const buttons = [...new DOMParser().parseFromString(html, 'text/html').querySelectorAll('button[rdxtoggle]')];
         expect(buttons.map((button) => button.getAttribute('aria-pressed'))).toEqual(['true', 'false']);
         expect(buttons.map((button) => button.hasAttribute('data-pressed'))).toEqual([true, false]);
+    });
+    it('serializes ToggleGroup defaults and explicit empty selections', async () => {
+        const html = await renderToString('app-toggle-group-defaults', ToggleGroupDefaultsPage);
+        const buttons = [...new DOMParser().parseFromString(html, 'text/html').querySelectorAll('button[rdxtoggle]')];
+        expect(buttons.map((button) => button.getAttribute('aria-pressed'))).toEqual(['true', 'false', 'false']);
+        expect(buttons.map((button) => button.hasAttribute('data-pressed'))).toEqual([true, false, false]);
     });
     it('resolves Switch defaults, Field associations and the authored input before server serialization', async () => {
         const html = await renderToString('app-switch-defaults', SwitchDefaultsPage);

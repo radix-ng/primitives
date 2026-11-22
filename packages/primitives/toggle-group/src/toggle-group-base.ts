@@ -1,4 +1,4 @@
-import { booleanAttribute, computed, Directive, effect, input, model, output, signal, untracked } from '@angular/core';
+import { booleanAttribute, computed, Directive, input, model, output, signal } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 import {
     BooleanInput,
@@ -9,7 +9,8 @@ import {
     RdxFormUiTouchTarget,
     RdxFormValueControl,
     serializeNativeFormValue,
-    useNativeFormControl
+    useNativeFormControl,
+    watch
 } from '@radix-ng/primitives/core';
 import { RdxToggleGroupContext } from './toggle-group-context';
 
@@ -50,10 +51,12 @@ export abstract class RdxToggleGroupBase
     implements ControlValueAccessor, RdxFormValueControl<string[] | undefined>
 {
     /**
-     * The pressed values. Always an array — a single value is `[value]`. Use with `(onValueChange)`
-     * for controlled state.
+     * Editable pressed values for Angular Forms and two-way bindings. A single value is `[value]`.
      */
     readonly value = model<string[]>();
+
+    /** Parent-owned pressed values. A defined array takes precedence over the editable model. */
+    readonly controlledValue = input<string[]>();
 
     /** The values pressed when the group is initially rendered (uncontrolled). */
     readonly defaultValue = input<string[]>();
@@ -89,9 +92,9 @@ export abstract class RdxToggleGroupBase
     readonly onValueChange = output<RdxToggleGroupValueChangeEvent>();
 
     /** @ignore */
-    readonly pressedValues = computed(() => this.value() ?? []);
+    readonly pressedValues = computed(() => this.controlledValue() ?? this.value() ?? []);
     /** @ignore */
-    readonly isValueInitialized = computed(() => this.value() !== undefined || this.defaultValue() !== undefined);
+    readonly isValueInitialized = computed(() => this.controlledValue() !== undefined || this.value() !== undefined);
 
     protected readonly accessorDisabled = signal(false);
     /** @ignore */
@@ -109,21 +112,21 @@ export abstract class RdxToggleGroupBase
             disabled: this.isDisabled,
             value: this.pressedValues,
             serialize: serializeNativeFormValue,
-            defaultValue: () => [...(this.defaultValue() ?? this.pressedValues())],
+            defaultValue: () => [
+                ...(this.value() ?? (this.controlledValue() === undefined ? this.defaultValue() : undefined) ?? [])
+            ],
             onReset: (value) => {
-                const next = [...value];
-                this.value.set(next);
-                if (!this.resetNgControl(next)) {
-                    this.onChange?.(next);
+                if (this.controlledValue() === undefined && !this.resetNgControl(undefined)) {
+                    this.value.set([...value]);
                 }
-                this.formUi.resetInteractionState?.();
+                this.reset();
             }
         });
 
-        effect(() => {
+        watch([], () => {
             const initial = this.defaultValue();
-            if (initial !== undefined && untracked(this.value) === undefined) {
-                this.value.set(initial);
+            if (initial !== undefined && this.value() === undefined && this.controlledValue() === undefined) {
+                this.value.set([...initial]);
             }
         });
     }
@@ -173,7 +176,7 @@ export abstract class RdxToggleGroupBase
             ).eventDetails;
 
         this.onValueChange.emit({ value: next, eventDetails: resolvedEventDetails });
-        if (resolvedEventDetails.isCanceled()) {
+        if (resolvedEventDetails.isCanceled() || this.controlledValue() !== undefined) {
             return;
         }
 

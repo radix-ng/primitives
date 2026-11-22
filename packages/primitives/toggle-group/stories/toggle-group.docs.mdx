@@ -42,10 +42,11 @@ The API follows [Base UI Toggle Group](https://base-ui.com/react/components/togg
 ## Change events
 
 `onValueChange` emits `{ value, eventDetails }`, where `value` is the next array of pressed item
-values. Call `eventDetails.cancel()` to reject the change.
+values. Call `eventDetails.cancel()` to reject the change. Use `[controlledValue]` when the parent
+owns selection and decides when to apply each request.
 
 ```html
-<div [value]="value()" (onValueChange)="setValue($event)" rdxToggleGroup>
+<div [controlledValue]="value()" (onValueChange)="setValue($event)" rdxToggleGroup>
     ...
 </div>
 ```
@@ -92,6 +93,8 @@ Disable a single `[rdxToggle]` with `disabled`, or the whole group with `disable
 ### Two-way binding
 
 Bind `[(value)]` to read and write the pressed values.
+An initial `value` or Angular Forms write takes precedence over `defaultValue`, including an empty
+array. Later defaults leave the selection and reset baseline intact.
 
 <Canvas of={ToggleGroupStories.TwoWayBinding} />
 
