@@ -1,4 +1,4 @@
-import { expect } from '@playwright/test';
+import { expect, type Locator } from '@playwright/test';
 import { cases } from '../src/contract';
 import type { AccordionDriver } from './driver';
 export const motionScenarios = Object.entries(cases)
@@ -8,6 +8,30 @@ export const motionScenarios = Object.entries(cases)
         async run(d: AccordionDriver) {
             const { page } = d;
             const panel = page.getByTestId('a-panel');
+            // A short-lived panel can disappear between observing its CSS motion and pausing it.
+            // Arm the listeners before interacting so the browser holds both phases as they start.
+            await page.evaluate(() => {
+                const pauseMotion = (event: Event) => {
+                    const target = event.target;
+                    if (target instanceof HTMLElement && target.matches('.motion-panel')) {
+                        for (const animation of target.getAnimations()) {
+                            if (animation.playState === 'running') animation.pause();
+                        }
+                    }
+                };
+                document.addEventListener('animationstart', pauseMotion);
+                document.addEventListener('transitionrun', pauseMotion);
+            });
+            const expectPaused = (panel: Locator) =>
+                expect
+                    .poll(() =>
+                        panel.evaluateAll((nodes) =>
+                            nodes.some((node) =>
+                                node.getAnimations().some((animation) => animation.playState === 'paused')
+                            )
+                        )
+                    )
+                    .toBe(true);
             const read = () =>
                 panel.evaluate((node: HTMLElement) => {
                     const css = getComputedStyle(node);
@@ -42,10 +66,6 @@ export const motionScenarios = Object.entries(cases)
                     }))
                 });
                 expect(d.errors).toEqual([]);
-            };
-            const pause = async () => {
-                await expect.poll(() => panel.evaluate((node) => node.getAnimations().length)).toBeGreaterThan(0);
-                await panel.evaluate((node) => node.getAnimations().forEach((animation) => animation.pause()));
             };
             const finish = async () => {
                 await panel.evaluate((node) => node.getAnimations().forEach((animation) => animation.finish()));
@@ -94,7 +114,7 @@ export const motionScenarios = Object.entries(cases)
                 });
                 await page.getByTestId('a-trigger').click();
                 await expect(panel).toHaveAttribute('data-ending-style', '');
-                await pause();
+                await expectPaused(panel);
                 expect(
                     await panel.evaluate((node: HTMLElement) => node.style.getPropertyPriority('transition-duration'))
                 ).toBe('important');
@@ -111,7 +131,7 @@ export const motionScenarios = Object.entries(cases)
             const width = s.motion === 'decorated' ? '324px' : s.motion === 'horizontal' ? '240px' : '300px';
             if (s.motion !== 'initial') {
                 await page.getByTestId('a-trigger').click();
-                await pause();
+                await expectPaused(panel);
                 await expect(panel).not.toHaveAttribute('data-starting-style');
                 await checkpoint('measured opening', { height, width, ending: false, open: true, running: true });
                 await finish();
@@ -124,10 +144,9 @@ export const motionScenarios = Object.entries(cases)
             if (s.motion === 'switch') {
                 await page.getByTestId('b-trigger').click();
                 await expect(panel).toHaveAttribute('data-ending-style', '');
-                await pause();
                 const sibling = page.getByTestId('b-panel');
-                await expect.poll(() => sibling.evaluate((node) => node.getAnimations().length)).toBeGreaterThan(0);
-                await sibling.evaluate((node) => node.getAnimations().forEach((animation) => animation.pause()));
+                await expectPaused(panel);
+                await expectPaused(sibling);
                 await checkpoint('switch holds outgoing panel', {
                     height: '80px',
                     width: '300px',
@@ -153,7 +172,7 @@ export const motionScenarios = Object.entries(cases)
             }
             await page.getByTestId('a-trigger').click();
             await expect(panel).toHaveAttribute('data-ending-style', '');
-            await pause();
+            await expectPaused(panel);
             await checkpoint('measured exit', {
                 height: s.motion === 'dynamic' ? '160px' : height,
                 width,
@@ -165,7 +184,7 @@ export const motionScenarios = Object.entries(cases)
                 await page.getByTestId('a-trigger').click();
                 await expect(panel).toHaveAttribute('data-open', '');
                 await expect(panel).not.toHaveAttribute('data-ending-style');
-                await pause();
+                await expectPaused(panel);
                 await checkpoint('reopen retains motion ownership', { open: true, ending: false, running: true });
                 await finish();
             } else {
@@ -179,7 +198,7 @@ export const motionScenarios = Object.entries(cases)
                 }
                 if (s.motion === 'initial') {
                     await page.getByTestId('a-trigger').click();
-                    await pause();
+                    await expectPaused(panel);
                     await expect(panel).not.toHaveAttribute('data-starting-style');
                     await checkpoint('later user open animates', {
                         height: '80px',
