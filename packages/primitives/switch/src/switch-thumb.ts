@@ -14,7 +14,13 @@ import { injectSwitchContext } from './switch-context';
         '[attr.data-unchecked]': 'rootContext.checked() ? undefined : ""',
         '[attr.data-disabled]': 'rootContext.disabled() ? "" : undefined',
         '[attr.data-readonly]': 'rootContext.readonly() ? "" : undefined',
-        '[attr.data-required]': 'rootContext.required() ? "" : undefined'
+        '[attr.data-required]': 'rootContext.required() ? "" : undefined',
+        '[attr.data-invalid]': 'rootContext.displayValid() === false ? "" : undefined',
+        '[attr.data-valid]': 'rootContext.displayValid() === true ? "" : undefined',
+        '[attr.data-touched]': 'rootContext.touched() ? "" : undefined',
+        '[attr.data-dirty]': 'rootContext.dirty() ? "" : undefined',
+        '[attr.data-filled]': 'rootContext.filled() ? "" : undefined',
+        '[attr.data-focused]': 'rootContext.focused() ? "" : undefined'
     }
 })
 export class RdxSwitchThumb {

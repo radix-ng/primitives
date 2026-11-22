@@ -3,6 +3,8 @@ import { useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { formId, initialDefault, installProbe, isControlled, record, required, scenario } from './contract';
 
+import { ReactSwitchField } from './field.react';
+
 installProbe();
 
 function SwitchFixture() {
@@ -57,4 +59,6 @@ function SwitchFixture() {
     );
 }
 
-createRoot(document.getElementById('root')!).render(<SwitchFixture />);
+createRoot(document.getElementById('root')!).render(
+    scenario?.startsWith('field') ? <ReactSwitchField /> : <SwitchFixture />
+);

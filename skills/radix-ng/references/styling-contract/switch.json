@@ -34,6 +34,36 @@
       "values": "the switch is required."
     },
     {
+      "attribute": "data-valid",
+      "parts": "Root",
+      "values": "the displayed validity is valid."
+    },
+    {
+      "attribute": "data-invalid",
+      "parts": "Root",
+      "values": "the displayed validity is invalid."
+    },
+    {
+      "attribute": "data-touched",
+      "parts": "Root",
+      "values": "the switch or Field has been touched."
+    },
+    {
+      "attribute": "data-dirty",
+      "parts": "Root",
+      "values": "the switch or Field has a changed value."
+    },
+    {
+      "attribute": "data-filled",
+      "parts": "Root",
+      "values": "the enclosing Field has a checked value."
+    },
+    {
+      "attribute": "data-focused",
+      "parts": "Root",
+      "values": "the switch in the enclosing Field has focus."
+    },
+    {
       "attribute": "data-checked",
       "parts": "Thumb",
       "values": "the switch is on."
@@ -57,6 +87,36 @@
       "attribute": "data-required",
       "parts": "Thumb",
       "values": "the switch is required."
+    },
+    {
+      "attribute": "data-valid",
+      "parts": "Thumb",
+      "values": "the displayed validity is valid."
+    },
+    {
+      "attribute": "data-invalid",
+      "parts": "Thumb",
+      "values": "the displayed validity is invalid."
+    },
+    {
+      "attribute": "data-touched",
+      "parts": "Thumb",
+      "values": "the switch or Field has been touched."
+    },
+    {
+      "attribute": "data-dirty",
+      "parts": "Thumb",
+      "values": "the switch or Field has a changed value."
+    },
+    {
+      "attribute": "data-filled",
+      "parts": "Thumb",
+      "values": "the enclosing Field has a checked value."
+    },
+    {
+      "attribute": "data-focused",
+      "parts": "Thumb",
+      "values": "the switch in the enclosing Field has focus."
     }
   ]
 }

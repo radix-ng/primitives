@@ -10,5 +10,9 @@ authored native checkbox, external form association, `required` and reset. The f
 real `FormData` and native events. The activation fixtures also verify that the technical checkbox
 is hidden from the accessibility tree.
 
+The Field cases cover native label activation, an explicit name and label reference, the combined
+accessible description, and shared Root and Thumb state. They exercise focus cleanup on disable
+or unmount, blocked required submission, and server errors through canceled and held requests.
+
 See the [Switch matrix](../../../../packages/primitives/switch/PARITY.md) for Angular-specific
 behavior and [expected differences](expected-differences.json).

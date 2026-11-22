@@ -151,7 +151,15 @@ class NumberFieldDefaultsPage {
 
 @Component({
     selector: 'app-switch-defaults',
-    imports: [ReactiveFormsModule, RdxSwitchInput, RdxSwitchRoot, RdxSwitchThumb],
+    imports: [
+        ReactiveFormsModule,
+        RdxFieldRoot,
+        RdxFieldLabel,
+        RdxFieldDescription,
+        RdxSwitchInput,
+        RdxSwitchRoot,
+        RdxSwitchThumb
+    ],
     template: `
         <button id="explicit" [checked]="false" defaultChecked rdxSwitchRoot>
             <span rdxSwitchThumb></span>
@@ -159,10 +167,14 @@ class NumberFieldDefaultsPage {
         <button id="from-form" [formControl]="control" defaultChecked rdxSwitchRoot>
             <span rdxSwitchThumb></span>
         </button>
-        <button id="from-default" defaultChecked rdxSwitchRoot>
-            <span rdxSwitchThumb></span>
-            <input rdxSwitchInput />
-        </button>
+        <div rdxFieldRoot name="alerts" required>
+            <label id="switch-label" rdxFieldLabel>Alerts</label>
+            <p id="switch-description" rdxFieldDescription>Sends email updates.</p>
+            <button id="from-default" name="fallback" defaultChecked rdxSwitchRoot>
+                <span rdxSwitchThumb></span>
+                <input rdxSwitchInput />
+            </button>
+        </div>
     `
 })
 class SwitchDefaultsPage {
@@ -683,14 +695,20 @@ describe('SSR rendering', () => {
         expect(parsed.querySelector<HTMLInputElement>('input[rdxnumberfieldhiddeninput]')?.value).toBe('0');
         expect(html).toMatch(/ngh=/);
     });
-    it('resolves Switch defaults before server serialization and includes the authored input', async () => {
+    it('resolves Switch defaults, Field associations and the authored input before server serialization', async () => {
         const html = await renderToString('app-switch-defaults', SwitchDefaultsPage);
         const parsed = new DOMParser().parseFromString(html, 'text/html');
         const switches = [...parsed.querySelectorAll('[role="switch"]')];
         expect(switches.map((control) => control.getAttribute('aria-checked'))).toEqual(['false', 'false', 'true']);
         expect(switches[2].querySelector('[rdxswitchthumb]')?.hasAttribute('data-checked')).toBe(true);
+        expect(switches[2].querySelector('[rdxswitchthumb]')?.hasAttribute('data-filled')).toBe(true);
+        expect(switches[2].getAttribute('aria-labelledby')).toBe('switch-label');
+        expect(switches[2].getAttribute('aria-describedby')).toBe('switch-description');
+        expect(parsed.querySelector('#switch-label')?.getAttribute('for')).toBe('from-default');
+        expect(switches[2].getAttribute('aria-required')).toBe('true');
         const inputs = [...parsed.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')];
         expect(inputs.map((input) => input.checked)).toEqual([true]);
+        expect(inputs.map((input) => [input.name, input.required])).toEqual([['alerts', true]]);
         expect(html).toMatch(/ngh=/);
     });
     it('resolves Checkbox form values and the group relationship before server serialization', async () => {

@@ -9,49 +9,56 @@ import {
 } from '@radix-ng/primitives/switch';
 import { formId, initialDefault, installProbe, isControlled, record, required, scenario } from './contract';
 
+import { AngularSwitchField } from './field.angular';
+
 installProbe();
 
 @Component({
     selector: 'parity-switch',
-    imports: [NgTemplateOutlet, RdxSwitchRoot, RdxSwitchThumb, RdxSwitchInput],
+    imports: [AngularSwitchField, NgTemplateOutlet, RdxSwitchRoot, RdxSwitchThumb, RdxSwitchInput],
     template: `
-        <form id="preferences">
-            @if (!formId) {
+        @if (fieldCase) {
+            <parity-switch-field />
+        } @else {
+            <form id="preferences">
+                @if (!formId) {
+                    <ng-container [ngTemplateOutlet]="control" />
+                }
+                <button id="save" type="submit">Save</button>
+                <button id="reset" type="reset">Reset</button>
+            </form>
+            @if (formId) {
                 <ng-container [ngTemplateOutlet]="control" />
             }
-            <button id="save" type="submit">Save</button>
-            <button id="reset" type="reset">Reset</button>
-        </form>
-        @if (formId) {
-            <ng-container [ngTemplateOutlet]="control" />
+            <ng-template #control>
+                <label for="alerts">Alerts</label>
+                <button
+                    id="alerts"
+                    [controlledChecked]="controlled()"
+                    [defaultChecked]="defaultChecked()"
+                    [disabled]="disabled"
+                    [readonly]="readOnly"
+                    [required]="required"
+                    [form]="formId"
+                    (onCheckedChange)="request($event)"
+                    name="alerts"
+                    value="yes"
+                    uncheckedValue="no"
+                    rdxSwitchRoot
+                >
+                    <span rdxSwitchThumb data-testid="thumb"></span>
+                    @if (authored) {
+                        <input rdxSwitchInput />
+                    }
+                </button>
+            </ng-template>
+            <button (click)="defaultChecked.set(!defaultChecked())" type="button">Change default</button>
+            <button (click)="apply()" type="button">Apply request</button>
         }
-        <ng-template #control>
-            <label for="alerts">Alerts</label>
-            <button
-                id="alerts"
-                [controlledChecked]="controlled()"
-                [defaultChecked]="defaultChecked()"
-                [disabled]="disabled"
-                [readonly]="readOnly"
-                [required]="required"
-                [form]="formId"
-                (onCheckedChange)="request($event)"
-                name="alerts"
-                value="yes"
-                uncheckedValue="no"
-                rdxSwitchRoot
-            >
-                <span rdxSwitchThumb data-testid="thumb"></span>
-                @if (authored) {
-                    <input rdxSwitchInput />
-                }
-            </button>
-        </ng-template>
-        <button (click)="defaultChecked.set(!defaultChecked())" type="button">Change default</button>
-        <button (click)="apply()" type="button">Apply request</button>
     `
 })
 class SwitchFixture {
+    protected readonly fieldCase = scenario?.startsWith('field');
     protected readonly required = required;
     protected readonly formId = formId;
     protected readonly authored = scenario === 'authored';

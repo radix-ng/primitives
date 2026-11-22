@@ -41,6 +41,7 @@ native `required` validation and bubbling `input` and `change` events. Set `name
 - [Disabled](../examples/switch--disabled.md)
 - [Read-only](../examples/switch--read-only.md)
 - [Reactive Forms](../examples/switch--reactive-forms.md)
+- [Field](../examples/switch--field.md)
 
 ## API & styling contract
 

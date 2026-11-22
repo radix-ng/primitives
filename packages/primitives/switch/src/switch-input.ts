@@ -13,6 +13,7 @@ import { injectSwitchContext } from './switch-context';
         type: 'checkbox',
         tabindex: '-1',
         'aria-hidden': 'true',
+        'data-rdx-native-input': '',
         '[attr.name]': 'rootContext.name()',
         '[attr.form]': 'rootContext.form()',
         '[attr.value]': 'rootContext.value()',
@@ -22,8 +23,6 @@ import { injectSwitchContext } from './switch-context';
         '[attr.required]': 'rootContext.required() ? "" : undefined',
         '[attr.aria-label]': 'rootContext.ariaLabel()',
         '[attr.aria-labelledby]': 'rootContext.ariaLabelledBy()',
-        // The hidden form input carries no `data-*` (Base UI parity) — state attributes live on the
-        // root button and thumb.
         style: 'transform: translateX(-100%); position: absolute; overflow: hidden; pointer-events: none; opacity: 0; margin: 0;',
         '(click)': 'rootContext.onNativeInputClick(input, $event)',
         '(focus)': 'rootContext.focus()'

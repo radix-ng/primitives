@@ -37870,6 +37870,30 @@ export class SwitchReactiveForms implements OnInit {
 }
 ```
 
+### Field
+
+Import `RdxFieldRoot`, `RdxFieldLabel`, `RdxFieldDescription`, and `RdxFieldError` from
+`@radix-ng/primitives/field` and `RdxFormRoot` from `@radix-ng/primitives/form`. Switch registers
+its button with Field and inherits its form name, disabled state and required state.
+
+```html
+<form rdxFormRoot>
+    <div rdxFieldRoot name="alerts" required validationMode="onSubmit">
+        <label rdxFieldLabel>Email alerts</label>
+        <p rdxFieldDescription>Send account updates by email.</p>
+        <button rdxSwitchRoot>
+            <span rdxSwitchThumb></span>
+        </button>
+        <p rdxFieldError match="valueMissing">Enable email alerts to continue.</p>
+    </div>
+    <button type="submit">Save</button>
+</form>
+```
+
+The button uses the Field label as its accessible name. Set `[aria-label]` to supply a name directly
+or `[aria-labelledby]` to point to a label by ID. `[aria-describedby]` adds descriptions to those
+registered by Field. A blocked submit focuses the switch and links the visible error to it.
+
 ## Change events
 
 `onCheckedChange` emits `{ checked, eventDetails }`. Use `eventDetails.cancel()` to reject a
@@ -37910,6 +37934,12 @@ access the active native input.
 | `data-disabled`  | the switch is disabled. |
 | `data-readonly`  | the switch is readonly. |
 | `data-required`  | the switch is required. |
+| `data-valid`     | the displayed validity is valid. |
+| `data-invalid`   | the displayed validity is invalid. |
+| `data-touched`   | the switch or Field has been touched. |
+| `data-dirty`     | the switch or Field has a changed value. |
+| `data-filled`    | the enclosing Field has a checked value. |
+| `data-focused`   | the switch in the enclosing Field has focus. |
 
 ### Thumb
 
@@ -37925,6 +37955,12 @@ has no inputs.
 | `data-disabled`  | the switch is disabled. |
 | `data-readonly`  | the switch is readonly. |
 | `data-required`  | the switch is required. |
+| `data-valid`     | the displayed validity is valid. |
+| `data-invalid`   | the displayed validity is invalid. |
+| `data-touched`   | the switch or Field has been touched. |
+| `data-dirty`     | the switch or Field has a changed value. |
+| `data-filled`    | the enclosing Field has a checked value. |
+| `data-focused`   | the switch in the enclosing Field has focus. |
 
 ### Input
 

@@ -32,9 +32,13 @@ import {
     useNativeFormControl,
     watch
 } from '@radix-ng/primitives/core';
-import { fieldDescribedBy, injectFieldRootContext, type RdxFieldRootContext } from '@radix-ng/primitives/field';
+import {
+    fieldDescribedBy,
+    injectFieldRootContext,
+    type RdxFieldRootContext,
+    useFieldValueMissing
+} from '@radix-ng/primitives/field';
 import { injectFormRootContext, type RdxPortaledFormEntry } from '@radix-ng/primitives/form';
-import { useCheckboxFieldValidity } from './checkbox-field';
 import { injectCheckboxGroupContext } from './checkbox-group';
 import { useGeneratedCheckboxInput } from './checkbox-native-input';
 
@@ -497,7 +501,7 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl, Control
                 if (!input) return;
                 const unregister = group.registerFieldInput({
                     element: input,
-                    button: () => this.button,
+                    focusTarget: () => this.button,
                     participates: () => !this.parent()
                 });
                 if (unregister) onCleanup(unregister);
@@ -520,10 +524,12 @@ export class RdxCheckboxRootDirective implements RdxFormCheckboxControl, Control
                     filled: this.checkedState,
                     blurred: field.touchedState,
                     changed: field.dirtyState,
-                    ...useCheckboxFieldValidity(
+                    ...useFieldValueMissing(
                         () => {
                             const element = this.nativeInput();
-                            return element ? [{ element, button: () => this.button, participates: () => true }] : [];
+                            return element
+                                ? [{ element, focusTarget: () => this.button, participates: () => true }]
+                                : [];
                         },
                         () => (this.disabledState() ? null : this.button)
                     ),

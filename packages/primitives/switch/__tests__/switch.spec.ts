@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
+import { RdxFieldRoot } from '@radix-ng/primitives/field';
 import { vi } from 'vitest';
 import { RdxSwitchInput } from '../src/switch-input';
 import { RdxSwitchCheckedChangeEvent, RdxSwitchRoot } from '../src/switch-root';
@@ -362,6 +363,49 @@ describe('RdxSwitch native form contract', () => {
         fixture.detectChanges();
         expect(new FormData(form).has('notifications')).toBe(false);
     });
+});
+
+@Component({
+    imports: [RdxFieldRoot, RdxSwitchRoot, RdxSwitchThumb],
+    template: `
+        <form>
+            <div rdxFieldRoot name="alerts" required>
+                <button rdxSwitchRoot>
+                    <span rdxSwitchThumb></span>
+                    Alerts
+                </button>
+            </div>
+        </form>
+    `
+})
+class SwitchFieldHost {}
+
+it('restores Field interaction state and required validity on native reset', async () => {
+    const fixture = TestBed.createComponent(SwitchFieldHost);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const host = fixture.nativeElement as HTMLElement;
+    const form = host.querySelector('form')!;
+    const button = host.querySelector('button')!;
+    const thumb = host.querySelector('[rdxSwitchThumb]')!;
+    expect(form.checkValidity()).toBe(false);
+    button.click();
+    button.dispatchEvent(new FocusEvent('blur'));
+    fixture.detectChanges();
+    expect(form.checkValidity()).toBe(true);
+    for (const name of ['data-dirty', 'data-touched', 'data-filled']) {
+        expect(button.hasAttribute(name)).toBe(true);
+        expect(thumb.hasAttribute(name)).toBe(true);
+    }
+
+    form.reset();
+    await new Promise<void>((resolve) => setTimeout(resolve, 0));
+    fixture.detectChanges();
+    expect(form.checkValidity()).toBe(false);
+    for (const name of ['data-dirty', 'data-touched', 'data-filled']) {
+        expect(button.hasAttribute(name)).toBe(false);
+        expect(thumb.hasAttribute(name)).toBe(false);
+    }
 });
 
 @Component({

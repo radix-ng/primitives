@@ -28,9 +28,14 @@ import {
     useNativeFormControl,
     watch
 } from '@radix-ng/primitives/core';
-import { fieldDescribedBy, injectFieldRootContext, type RdxFieldRootContext } from '@radix-ng/primitives/field';
+import {
+    fieldDescribedBy,
+    injectFieldRootContext,
+    type RdxFieldNativeInput,
+    type RdxFieldRootContext,
+    useFieldValueMissing
+} from '@radix-ng/primitives/field';
 import { injectFormRootContext, type RdxPortaledFormEntry } from '@radix-ng/primitives/form';
-import { type CheckboxFieldInput, useCheckboxFieldValidity } from './checkbox-field';
 import type { CheckedState } from './checkbox-root';
 
 export type RdxCheckboxGroupValueChangeReason = 'none';
@@ -66,7 +71,7 @@ export interface RdxCheckboxGroupContext {
     /** Register a child's value and disabled state so the parent can preserve disabled items. */
     registerChild: (value: string, disabled: Signal<boolean>) => () => void;
     /** Register an authored input for the group's native Field constraints. */
-    registerFieldInput: (input: CheckboxFieldInput) => (() => void) | undefined;
+    registerFieldInput: (input: RdxFieldNativeInput) => (() => void) | undefined;
     /** Register a child's control element id so the parent can reference it via `aria-controls`. */
     registerControl: (value: string, id: string) => () => void;
 }
@@ -127,7 +132,7 @@ export class RdxCheckboxGroupDirective
     /** @ignore The enclosing Field is labelled by the group and scoped away from individual items. */
     readonly field = injectFieldRootContext(true);
     private readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
-    private readonly fieldInputs = new Set<CheckboxFieldInput>();
+    private readonly fieldInputs = new Set<RdxFieldNativeInput>();
     private readonly formRoot = injectFormRootContext(true);
 
     /** Override the group's accessible label supplied by Field. */
@@ -253,7 +258,7 @@ export class RdxCheckboxGroupDirective
                 filled: () => this.currentValue().length > 0,
                 blurred: field.touchedState,
                 changed: field.dirtyState,
-                ...useCheckboxFieldValidity(
+                ...useFieldValueMissing(
                     () => this.fieldInputs,
                     () => this.firstEnabledItem()
                 ),
@@ -311,7 +316,7 @@ export class RdxCheckboxGroupDirective
         );
     }
 
-    private ownerlessInputs(): CheckboxFieldInput[] {
+    private ownerlessInputs(): RdxFieldNativeInput[] {
         return [...this.fieldInputs].filter(
             ({ element, participates }) => participates() && element.isConnected && hasNoNativeFormOwner(element)
         );
@@ -343,7 +348,7 @@ export class RdxCheckboxGroupDirective
     }
 
     /** @ignore Register an authored checkbox input for Field. */
-    registerFieldInput(input: CheckboxFieldInput): (() => void) | undefined {
+    registerFieldInput(input: RdxFieldNativeInput): (() => void) | undefined {
         if (!this.field) return undefined;
         this.fieldInputs.add(input);
         return () => this.fieldInputs.delete(input);

@@ -1,25 +1,24 @@
 import { afterEveryRender, computed, signal } from '@angular/core';
 import { hasNoNativeFormOwner, type RdxValidationError } from '@radix-ng/primitives/core';
-import type { RdxFieldControlState } from '@radix-ng/primitives/field';
 import { injectFormRootContext } from '@radix-ng/primitives/form';
+import type { RdxFieldControlState } from './field-root';
 
-export interface CheckboxFieldInput {
+/** @internal A native input with a visible control for invalid focus. */
+export interface RdxFieldNativeInput {
     element: HTMLInputElement;
-    button(): HTMLButtonElement | null;
+    focusTarget(): HTMLElement | null;
     participates(): boolean;
 }
 
-/** Read browser constraints from native inputs and report the visible invalid control to Field. */
-export function useCheckboxFieldValidity(
-    inputs: () => Iterable<CheckboxFieldInput>,
-    fallbackFocusTarget: () => HTMLButtonElement | null
+/** @internal Read native required constraints and report the visible invalid control to Field. */
+export function useFieldValueMissing(
+    inputs: () => Iterable<RdxFieldNativeInput>,
+    fallbackFocusTarget: () => HTMLElement | null
 ): Pick<RdxFieldControlState, 'nativeErrors' | 'refreshNativeValidity' | 'invalidFocusTarget'> {
     const form = injectFormRootContext(true)?.element;
-    const failure = signal<{ element: HTMLInputElement; button: HTMLButtonElement | null; message: string } | null>(
-        null
-    );
+    const failure = signal<{ element: HTMLInputElement; target: HTMLElement | null; message: string } | null>(null);
     const refreshNativeValidity = () => {
-        let invalid: CheckboxFieldInput | undefined;
+        let invalid: RdxFieldNativeInput | undefined;
         for (const input of inputs()) {
             const element = input.element;
             if (!input.participates() || !element.isConnected || !element.willValidate) continue;
@@ -34,11 +33,11 @@ export function useCheckboxFieldValidity(
             return;
         }
         const element = invalid.element;
-        const button = invalid.button();
+        const target = invalid.focusTarget();
         const message = element.validationMessage;
         const previous = failure();
-        if (previous?.element !== element || previous.button !== button || previous.message !== message) {
-            failure.set({ element, button, message });
+        if (previous?.element !== element || previous.target !== target || previous.message !== message) {
+            failure.set({ element, target, message });
         }
     };
 
@@ -49,6 +48,6 @@ export function useCheckboxFieldValidity(
             const invalid = failure();
             return invalid ? [{ kind: 'valueMissing', message: invalid.message }] : [];
         }),
-        invalidFocusTarget: () => failure()?.button ?? fallbackFocusTarget()
+        invalidFocusTarget: () => failure()?.target ?? fallbackFocusTarget()
     };
 }

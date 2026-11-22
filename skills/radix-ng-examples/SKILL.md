@@ -43,7 +43,7 @@ and follow its links to the other Agents guides.
 addressed by the component slug and the kebab-cased example name. Cheaper than re-reading the whole
 component doc.
 
-Total: **318 examples** across **44 components**.
+Total: **319 examples** across **44 components**.
 
 ## Components
 
@@ -83,7 +83,7 @@ Total: **318 examples** across **44 components**.
 - **[Signal Forms](./references/components/signal-forms.md)** — Bridge Angular [Signal Forms](https://angular.dev/guide/forms/signals/overview) into headless `Field` and `Form`. _(6 examples)_
 - **[Slider](./references/components/slider.md)** — An input where the user selects a value, or a range of values, from within a given range. _(5 examples)_
 - **[Stepper](./references/components/stepper.md)** — A set of steps that are used to indicate progress through a multi-step process. _(2 examples)_
-- **[Switch](./references/components/switch.md)** — A control that allows the user to toggle between checked and not checked. _(4 examples)_
+- **[Switch](./references/components/switch.md)** — A control that allows the user to toggle between checked and not checked. _(5 examples)_
 - **[Tabs](./references/components/tabs.md)** — A set of layered sections of content—known as tab panels—that are displayed one at a time. _(9 examples)_
 - **[Time Field](./references/components/time-field.md)** — A segmented time input that lets users enter a time hour-by-hour with full keyboard control and localization. _(7 examples)_
 - **[Toast](./references/components/toast.md)** — A succinct, low-priority message that appears temporarily, stacks, and can be swiped away. _(11 examples)_

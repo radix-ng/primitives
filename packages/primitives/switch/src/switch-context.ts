@@ -25,6 +25,11 @@ export interface RdxSwitchContext {
 
     readonly ariaLabel: Signal<string | undefined>;
     readonly ariaLabelledBy: Signal<string | undefined>;
+    readonly displayValid: Signal<boolean | null>;
+    readonly touched: Signal<boolean>;
+    readonly dirty: Signal<boolean>;
+    readonly filled: Signal<boolean>;
+    readonly focused: Signal<boolean>;
 
     registerNativeInput(input: HTMLInputElement): () => void;
     markAsTouched(): void;

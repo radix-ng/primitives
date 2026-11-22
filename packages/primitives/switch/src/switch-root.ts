@@ -1,8 +1,11 @@
 import {
+    afterNextRender,
     afterRenderEffect,
     booleanAttribute,
     computed,
+    DestroyRef,
     Directive,
+    effect,
     ElementRef,
     inject,
     input,
@@ -27,6 +30,7 @@ import {
     useNativeFormControl,
     watch
 } from '@radix-ng/primitives/core';
+import { fieldDescribedBy, injectFieldRootContext, useFieldValueMissing } from '@radix-ng/primitives/field';
 import { provideSwitchContext, RdxSwitchContext } from './switch-context';
 
 export type RdxSwitchCheckedChangeReason = 'none';
@@ -44,12 +48,17 @@ const context = (): RdxSwitchContext => {
         checked: root.checkedState,
         disabled: root.disabledState,
         readonly: root.readonly,
-        required: root.required,
-        name: root.name,
+        required: root.requiredState,
+        name: root.nativeName,
         form: root.form,
         value: root.submitValue,
         ariaLabel: root.ariaLabel,
         ariaLabelledBy: root.ariaLabelledBy,
+        displayValid: root.displayValid,
+        touched: root.touchedState,
+        dirty: root.dirtyState,
+        filled: root.filledState,
+        focused: root.focusedState,
         registerNativeInput: (input) => root.registerNativeInput(input),
         markAsTouched: () => root.markAsTouched(),
         focus: () => root.focus(),
@@ -71,21 +80,27 @@ const context = (): RdxSwitchContext => {
         type: 'button',
         '[id]': 'id()',
         '[attr.aria-checked]': 'checkedState()',
-        '[attr.aria-required]': 'required() ? "true" : undefined',
+        '[attr.aria-required]': 'requiredState() ? "true" : undefined',
         '[attr.aria-readonly]': 'readonly() ? "true" : undefined',
-        '[attr.aria-invalid]': 'displayValid() === false ? "true" : undefined',
+        '[attr.aria-invalid]': '!disabledState() && displayValid() === false ? "true" : undefined',
+        '[attr.aria-label]': 'ariaLabel()',
+        '[attr.aria-labelledby]': 'labelledBy()',
+        '[attr.aria-describedby]': 'describedBy()',
         '[attr.data-checked]': 'checkedState() ? "" : undefined',
         '[attr.data-unchecked]': 'checkedState() ? undefined : ""',
         '[attr.data-disabled]': 'disabledState() ? "" : undefined',
         '[attr.data-readonly]': 'readonly() ? "" : undefined',
-        '[attr.data-required]': 'required() ? "" : undefined',
+        '[attr.data-required]': 'requiredState() ? "" : undefined',
         '[attr.data-invalid]': 'displayValid() === false ? "" : undefined',
         '[attr.data-valid]': 'displayValid() === true ? "" : undefined',
         '[attr.data-touched]': 'touchedState() ? "" : undefined',
         '[attr.data-dirty]': 'dirtyState() ? "" : undefined',
+        '[attr.data-filled]': 'filledState() ? "" : undefined',
+        '[attr.data-focused]': 'focusedState() ? "" : undefined',
         '[disabled]': 'disabledState()',
         '(click)': 'activate($event)',
-        '(blur)': 'markAsTouched()'
+        '(focus)': 'onFocus()',
+        '(blur)': 'onBlur()'
     }
 })
 export class RdxSwitchRoot
@@ -93,10 +108,12 @@ export class RdxSwitchRoot
     implements RdxFormCheckboxControl, ControlValueAccessor, OnChanges
 {
     private readonly element = inject<ElementRef<HTMLButtonElement>>(ElementRef).nativeElement;
+    private readonly field = injectFieldRootContext(true);
     private readonly disabledByCva = signal(false);
     private readonly authoredInput = signal<HTMLInputElement | null>(null);
     private hasCheckedInput = false;
     private hasCvaValue = false;
+    private fieldInitialChecked = false;
     private onChange?: (value: boolean) => void;
     private onTouched?: () => void;
 
@@ -167,8 +184,17 @@ export class RdxSwitchRoot
      */
     readonly uncheckedValue = input<string>();
 
-    readonly ariaLabelledBy = input<string | undefined>(undefined, { alias: 'aria-labelledby' });
-    readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
+    /** Explicit ID references for the switch label. */
+    readonly ariaLabelledBy = input<string>(undefined, { alias: 'aria-labelledby' });
+    /** Accessible name supplied directly to the visible switch. */
+    readonly ariaLabel = input<string>(undefined, { alias: 'aria-label' });
+    /** Additional description IDs, followed by Field descriptions and errors. */
+    readonly ariaDescribedBy = input<string>(undefined, { alias: 'aria-describedby' });
+
+    protected readonly labelledBy = computed(
+        () => this.ariaLabelledBy() ?? (this.ariaLabel()?.trim() ? undefined : this.field?.labelId())
+    );
+    protected readonly describedBy = computed(() => fieldDescribedBy(this.ariaDescribedBy(), this.field));
 
     /** Event handler called when the checked state of the switch changes. */
     readonly onCheckedChange = output<RdxSwitchCheckedChangeEvent>();
@@ -176,7 +202,13 @@ export class RdxSwitchRoot
     /** @ignore */
     readonly checkedState = computed(() => this.controlledChecked() ?? this.checked());
     /** @ignore */
-    readonly disabledState = computed(() => this.disabled() || this.disabledByCva());
+    readonly disabledState = computed(
+        () => this.disabled() || this.disabledByCva() || (this.field?.disabledState() ?? false)
+    );
+    /** @ignore */
+    readonly requiredState = computed(() => this.required() || (this.field?.requiredState() ?? false));
+    /** @ignore */
+    readonly nativeName = computed(() => this.field?.name() ?? this.name());
     /** The active native checkbox, generated after browser rendering when the template omits it. */
     readonly nativeInput = computed(() => this.authoredInput() ?? this.browserForm.inputElement());
     private readonly nativeInputOwnsValue = computed(
@@ -186,12 +218,16 @@ export class RdxSwitchRoot
     /** @ignore */
     readonly invalidState = this.formUi.invalidState;
     /** @ignore */
-    readonly touchedState = this.formUi.touchedState;
+    readonly touchedState = computed(() => this.field?.touchedState() ?? this.formUi.touchedState());
     /** @ignore */
-    readonly dirtyState = this.formUi.dirtyState;
+    readonly dirtyState = computed(() => this.field?.dirtyState() ?? this.formUi.dirtyState());
+    /** @ignore */
+    readonly filledState = computed(() => this.field?.filledState() ?? false);
+    /** @ignore */
+    readonly focusedState = computed(() => this.field?.focusedState() ?? false);
 
     private readonly browserForm = useNativeFormControl({
-        name: this.name,
+        name: this.nativeName,
         form: this.form,
         disabled: this.disabledState,
         value: this.checkedState,
@@ -207,10 +243,10 @@ export class RdxSwitchRoot
         input: {
             type: () => 'checkbox',
             enabled: () => this.authoredInput() === null,
-            name: this.name,
+            name: this.nativeName,
             value: this.submitValue,
             checked: this.checkedState,
-            required: this.required,
+            required: this.requiredState,
             anchor: () => this.element,
             onClick: (input, event) => this.onNativeInputClick(input, event),
             onFocus: () => this.focus()
@@ -227,6 +263,7 @@ export class RdxSwitchRoot
         super();
         watch([], () => {
             if (this.controlledChecked() === undefined) this.checked.set(this.initialChecked());
+            this.fieldInitialChecked = this.checkedState();
         });
         afterRenderEffect({
             read: (onCleanup) => {
@@ -237,6 +274,40 @@ export class RdxSwitchRoot
                 onCleanup(() => ref(null));
             }
         });
+        const field = this.field;
+        if (field) {
+            effect(() => field.setControlId(this.id()));
+            const focusTarget = () => (this.disabledState() ? null : this.element);
+            const unregister = field.registerControlState({
+                filled: this.checkedState,
+                blurred: this.touchedState,
+                changed: this.dirtyState,
+                ...useFieldValueMissing(() => {
+                    const element = this.nativeInput();
+                    return element ? [{ element, focusTarget, participates: () => true }] : [];
+                }, focusTarget)
+            });
+            afterNextRender(() => {
+                const owner = this.element.getRootNode() as Document | ShadowRoot;
+                if (owner.activeElement === this.element) this.onFocus();
+            });
+            watch([this.disabledState], ([disabled]) => {
+                if (disabled) field.setFocused(false, this.element);
+            });
+            watch(
+                [this.checkedState],
+                ([checked]) => {
+                    field.setDirty(checked !== this.fieldInitialChecked);
+                    field.notifyEdited();
+                },
+                { defer: true }
+            );
+            inject(DestroyRef).onDestroy(() => {
+                field.setFocused(false, this.element);
+                if (field.controlId() === this.id()) field.setControlId('');
+                unregister();
+            });
+        }
     }
 
     /** @ignore */
@@ -278,10 +349,28 @@ export class RdxSwitchRoot
 
     /**
      * Mark the switch touched — CVA for Reactive forms, plus the `touched` model + `touch` output for
-     * Signal Forms. Called on blur of the root button or the hidden input.
+     * Signal Forms. Called when focus leaves the visible switch.
      */
     markAsTouched(): void {
+        this.field?.setTouched(true);
         this.formUi.markAsTouched();
+    }
+
+    protected onFocus(): void {
+        if (!this.disabledState()) this.field?.setFocused(true, this.element);
+    }
+
+    protected onBlur(): void {
+        this.field?.setFocused(false, this.element);
+        if (!this.disabledState()) this.markAsTouched();
+    }
+
+    override reset(): void {
+        super.reset();
+        this.fieldInitialChecked = this.checkedState();
+        this.field?.setDirty(false);
+        this.field?.setTouched(false);
+        this.field?.setFocused(false, this.element);
     }
 
     /** @ignore Forward native invalid focus to the visible switch. */

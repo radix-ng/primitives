@@ -8291,14 +8291,22 @@
           "description": "A control that toggles between on and off.\n\nSee https://base-ui.com/react/components/switch",
           "inputs": [
             {
+              "name": "aria-describedby",
+              "type": "string",
+              "default": "undefined",
+              "description": "Additional description IDs, followed by Field descriptions and errors."
+            },
+            {
               "name": "aria-label",
-              "type": "string | undefined",
-              "default": "undefined"
+              "type": "string",
+              "default": "undefined",
+              "description": "Accessible name supplied directly to the visible switch."
             },
             {
               "name": "aria-labelledby",
-              "type": "string | undefined",
-              "default": "undefined"
+              "type": "string",
+              "default": "undefined",
+              "description": "Explicit ID references for the switch label."
             },
             {
               "name": "checked",
