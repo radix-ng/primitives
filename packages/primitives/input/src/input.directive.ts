@@ -1,6 +1,7 @@
 import {
     afterNextRender,
     booleanAttribute,
+    ChangeDetectorRef,
     computed,
     DestroyRef,
     Directive,
@@ -84,6 +85,7 @@ export interface RdxInputValueChangeEvent {
         '(focus)': 'onFocus()',
         '(blur)': 'onBlur()',
         '(keydown)': 'onKeyDown($event)',
+        '(beforeinput)': 'onBeforeInput($event)',
         '(input)': 'onInput($event)',
         '(change)': 'onChange($event)'
     }
@@ -95,8 +97,10 @@ export class RdxInputDirective implements RdxFormValueControl<RdxInputValue | un
     private readonly legacyForm = this.ngControl instanceof NgControl;
     private readonly ngControlState = injectNgControlState();
     private readonly destroyRef = inject(DestroyRef);
+    private readonly view = inject(ChangeDetectorRef);
     private initialValue = '';
     private committedValue = '';
+    private readonly pendingControlledEdit = signal<string | undefined>(undefined);
     private readonly initialStandaloneValue = signal<string | undefined>(undefined);
     private readonly filledValue = signal(false);
     private readonly focusedValue = signal(false);
@@ -328,7 +332,8 @@ export class RdxInputDirective implements RdxFormValueControl<RdxInputValue | un
         });
 
         if (!this.legacyForm) {
-            watch([this.effectiveValue, this.parentValue], ([value, parent]) => {
+            watch([this.effectiveValue, this.parentValue, this.pendingControlledEdit], ([value, parent, pending]) => {
+                if (pending !== undefined) this.pendingControlledEdit.set(undefined);
                 if (value === undefined) return;
                 const previous = this.committedValue;
                 this.writeValue(value);
@@ -431,21 +436,36 @@ export class RdxInputDirective implements RdxFormValueControl<RdxInputValue | un
         this.fieldRootContext?.setTouched(true);
     }
 
+    protected onBeforeInput(event: InputEvent): void {
+        if (this.pendingControlledEdit() === undefined || event.isComposing || event.defaultPrevented) return;
+        // Rapid keystrokes can arrive before Angular's scheduled render. Reconcile the previous
+        // request in the binding's view before the browser applies the next edit.
+        this.view.detectChanges();
+    }
+
     onInput(event: Event): void {
         const nextValue = this.element.value;
-        if (nextValue === this.committedValue) return;
-        const { eventDetails } = createCancelableChangeEventDetails('none', event);
+        if (nextValue === (this.pendingControlledEdit() ?? this.committedValue)) return;
         if (event.defaultPrevented || this.disabledState() || this.readonly()) {
+            this.pendingControlledEdit.set(undefined);
             this.writeValue(this.committedValue);
             return;
         }
+        const { eventDetails } = createCancelableChangeEventDetails('none', event);
+        const parent = this.parentValue();
+        if (parent !== undefined) {
+            // The binding is refreshed during the view update. Keep the native edit until then
+            // so an accepted value doesn't reset the caret or interrupt the active composition.
+            this.pendingControlledEdit.set(nextValue);
+        }
         this.onValueChange.emit({ value: nextValue, eventDetails });
 
-        const parent = this.parentValue();
-        if (eventDetails.isCanceled() || parent !== undefined) {
-            this.writeValue(parent ?? this.committedValue);
+        if (eventDetails.isCanceled()) {
+            this.pendingControlledEdit.set(undefined);
+            this.writeValue(this.parentValue() ?? this.committedValue);
             return;
         }
+        if (parent !== undefined) return;
 
         this.value.set(nextValue);
         this.syncFieldState();

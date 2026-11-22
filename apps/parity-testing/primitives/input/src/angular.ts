@@ -20,6 +20,7 @@ installProbe();
                 id="profile-input"
                 #editable="rdxInput"
                 [attr.data-editable-value]="editable.value()"
+                [attr.data-parent-value]="value()"
                 [controlledValue]="value()"
                 [defaultValue]="defaults()"
                 [readonly]="locked"
@@ -53,6 +54,7 @@ class InputFixture {
     protected request(change: RdxInputValueChangeEvent): void {
         record(change.value, change.eventDetails);
         this.pending = change.value;
+        if (window.inputParity.acceptEdit) this.value.set(change.value);
     }
 }
 

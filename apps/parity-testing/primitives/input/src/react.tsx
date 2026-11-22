@@ -29,8 +29,10 @@ function InputFixture() {
                     onValueChange={(next, details) => {
                         record(next, details);
                         pending.current = next;
+                        if (window.inputParity.acceptEdit) setValue(next);
                     }}
                     data-test-input=""
+                    data-parent-value={value}
                     id="profile-input"
                     name="local-name"
                     form="profile"

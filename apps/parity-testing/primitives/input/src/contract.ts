@@ -12,6 +12,7 @@ interface Probe {
     requests: Request[];
     events: string[];
     submissions: Record<string, string>[];
+    acceptEdit: boolean;
     cancelEdit: boolean;
     cancelBeforeInput: boolean;
     cancelReset: boolean;
@@ -25,7 +26,12 @@ declare global {
 }
 
 export const scenario = new URLSearchParams(location.search).get('case');
-export const initialValue = scenario === 'controlled' ? '' : undefined;
+export const initialValue =
+    scenario === 'controlled-caret'
+        ? 'abcd'
+        : ['controlled', 'controlled-ime'].includes(scenario ?? '')
+          ? ''
+          : undefined;
 export const required = scenario === 'field';
 export const locked = scenario === 'locked';
 export const initialDefault = required
@@ -40,6 +46,7 @@ export function installProbe(): void {
         requests: [],
         events: [],
         submissions: [],
+        acceptEdit: false,
         cancelEdit: false,
         cancelBeforeInput: false,
         cancelReset: false

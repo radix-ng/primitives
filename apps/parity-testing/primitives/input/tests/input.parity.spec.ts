@@ -43,7 +43,7 @@ class InputDriver {
         this.checkpoints.push({ name, state });
     }
 
-    async setFlag(flag: 'cancelEdit' | 'cancelReset' | 'cancelBeforeInput', value: boolean) {
+    async setFlag(flag: 'acceptEdit' | 'cancelEdit' | 'cancelReset' | 'cancelBeforeInput', value: boolean) {
         await this.page.evaluate(([flag, value]) => (window.inputParity[flag] = value), [flag, value] as const);
     }
 
@@ -80,6 +80,64 @@ const scenarios: { name: string; run(driver: InputDriver): Promise<void> }[] = [
         }
     },
     {
+        name: 'controlled-caret',
+        async run(driver) {
+            await driver.setFlag('acceptEdit', true);
+            await driver.input.focus();
+            await driver.input.evaluate((input: HTMLInputElement) => input.setSelectionRange(1, 1));
+            await driver.input.press('x');
+            await driver.state('parent immediately accepts a middle insertion', 'axbcd', ['axbcd']);
+            await expect(driver.input).toHaveAttribute('data-parent-value', 'axbcd');
+            const selection = await driver.input.evaluate((input: HTMLInputElement) => [
+                input.selectionStart,
+                input.selectionEnd
+            ]);
+            expect(selection).toEqual([2, 2]);
+            driver.checkpoints.push({ name: 'accepted insertion preserves the caret', state: { selection } });
+            await driver.input.press('y');
+            await driver.state('next key stays in the middle of the string', 'axybcd', ['axbcd', 'axybcd']);
+            await expect(driver.input).toHaveAttribute('data-parent-value', 'axybcd');
+            await driver.input.pressSequentially('zw');
+            const typed = ['axbcd', 'axybcd', 'axyzbcd', 'axyzwbcd'];
+            await driver.state('rapid typing keeps accepted letters and the caret', 'axyzwbcd', typed);
+            await driver.commitReplacement('name', false);
+            await driver.state('the input and change pair requests replacement once', 'name', [...typed, 'name']);
+        }
+    },
+    {
+        name: 'controlled-ime',
+        async run(driver) {
+            await driver.setFlag('acceptEdit', true);
+            const session = await driver.page.context().newCDPSession(driver.page);
+            try {
+                await driver.input.focus();
+                const candidates = ['に', 'にほ'];
+                for (const [index, text] of candidates.entries()) {
+                    await session.send('Input.imeSetComposition', {
+                        text,
+                        selectionStart: text.length,
+                        selectionEnd: text.length
+                    });
+                    await driver.state('native candidate ' + (index + 1), text, candidates.slice(0, index + 1));
+                    await expect(driver.input).toHaveAttribute('data-parent-value', text);
+                }
+                await session.send('Input.insertText', { text: '日本' });
+                await driver.state('composition replaces candidates and commits final text', '日本', [
+                    'に',
+                    'にほ',
+                    '日本'
+                ]);
+                await expect(driver.input).toHaveAttribute('data-parent-value', '日本');
+                const composing = await driver.page.evaluate(() =>
+                    window.inputParity.requests.map(({ composing }) => composing)
+                );
+                expect(composing).toEqual([true, true, true]);
+            } finally {
+                await session.detach();
+            }
+        }
+    },
+    {
         name: 'late-default',
         async run(driver) {
             await driver.state('starts empty', '', []);
@@ -102,6 +160,16 @@ const scenarios: { name: string; run(driver: InputDriver): Promise<void> }[] = [
             await driver.state('parent replaces accepted value', 'parent', ['a', 'b']);
             await driver.action('Reset profile');
             await driver.state('reset retains controlled value', 'parent', ['a', 'b']);
+            await driver.input.focus();
+            await driver.input.evaluate((input: HTMLInputElement) => {
+                input.setSelectionRange(input.value.length, input.value.length);
+            });
+            await driver.input.pressSequentially('cdefgh');
+            await driver.state('rapid rejected keystrokes use the accepted text', 'parent', [
+                'a',
+                'b',
+                ...Array.from('cdefgh', (key) => 'parent' + key)
+            ]);
         }
     },
     {
@@ -266,7 +334,7 @@ const run = createParityRunner({
 for (const scenario of scenarios) {
     test(scenario.name, async ({ browser, baseURL, browserName }, info) => {
         test.skip(
-            browserName !== 'chromium' && ['native-composition', 'autofill'].includes(scenario.name),
+            browserName !== 'chromium' && ['native-composition', 'controlled-ime', 'autofill'].includes(scenario.name),
             'Native IME and autofill injection use Chromium DevTools Protocol.'
         );
         // The headless shell does not expose Chromium's Autofill domain.
