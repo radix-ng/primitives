@@ -21,10 +21,11 @@ Set `RADIX_PORTABLE_RECORD=tools/storybook-portability/verification.json` to ref
 examples, supporting files and rendered stylesheet that passed. The negative published-array probe
 must also produce Angular's NG1010 diagnostic.
 
-Public MDX presents the same component source, local dependencies and CSS through `?raw` / `Source`.
-The **Setup and shared files** section is appended to consumer example shards by the Markdown bundle
-renderer. Keep directives explicitly imported from public entry points: published arrays such as
-`popoverImports` cannot be spread in Angular metadata when their declarations have no initializer.
+Public MDX presents component and local helper sources through `?raw` and `Source`. Guides → Styling
+contains the shared setup and CSS. The Markdown bundle carries the guide link and local **Example
+files** section into example shards. Import directives explicitly from their public entry points.
+Published arrays such as `popoverImports` lack the declaration initializers Angular needs for
+component metadata spreads.
 
 AOT verifies templates and published imports. Browser regressions separately verify appearance,
 focus/disabled states, entry/exit motion and reopening during exit against built Storybook/Playground.

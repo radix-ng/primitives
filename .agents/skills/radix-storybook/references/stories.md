@@ -106,4 +106,4 @@ When creating or rewriting primitive stories, follow this format by default:
 - Each story export gets `parameters: source(itsOwnRawFile)` — never point two story exports at one combined source file.
 - For portable examples with shared CSS, use public imports and follow [copyable source contract](../../../../docs/engineering/ux-guidelines.md#copyable-public-source).
 
-- The MDX **Setup and shared files** section uses `Source` with raw CSS and local wrapper/helper imports. State dependencies and import Tailwind before the copied stylesheet. The consumer bundle appends this section to every example shard. Run the [external AOT check](../../../../tools/storybook-portability/README.md); explicit public directive imports avoid the published-array spread failure.
+- Link styled examples to the shared setup in **Guides → Styling**. Put additional packages and raw local `Source` blocks under **Example files**. Run the [external AOT check](../../../../tools/storybook-portability/README.md) for copyable sources.

@@ -13,17 +13,25 @@ const sections = (body) => {
 };
 
 function splitExamples(doc) {
-    const section = sections(doc.body).find(({ title }) => title === 'Examples');
+    const docSections = sections(doc.body);
+    const section = docSections.find(({ title }) => title === 'Examples');
     if (!section) return [];
-    const setup = sections(doc.body).find(({ title }) => title === 'Setup and shared files');
-    const sharedFiles = setup ? doc.body.slice(setup.start, setup.end).trim() : '';
+    const setup = markdownLinks(doc.body).find(({ url }) =>
+        url.endsWith('?path=/docs/guides-styling--docs#copy-an-example-into-your-app')
+    );
+    const exampleFiles = docSections.find(({ title }) => title === 'Example files');
+    const sharedFiles = exampleFiles ? doc.body.slice(exampleFiles.start, exampleFiles.end).trim() : '';
     const headings = markdownHeadings(doc.body).filter(
         ({ depth, start }) => depth === 3 && start > section.start && start < section.end
     );
     return headings.map((heading, index) => ({
         ...heading,
         file: `examples/${doc.slug}--${exampleSlug(heading.title)}.md`,
-        block: [doc.body.slice(heading.end, headings[index + 1]?.start ?? section.end).trim(), sharedFiles]
+        block: [
+            doc.body.slice(heading.end, headings[index + 1]?.start ?? section.end).trim(),
+            setup ? `[Example setup](${setup.url})` : '',
+            sharedFiles
+        ]
             .filter(Boolean)
             .join('\n\n')
     }));

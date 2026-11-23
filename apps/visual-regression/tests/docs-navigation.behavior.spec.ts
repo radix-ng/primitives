@@ -152,3 +152,17 @@ test('navigation fits beside the manager sidebar on a laptop', async ({ page }) 
         await preview.locator('html').evaluate((el) => el.scrollWidth - el.ownerDocument.defaultView!.innerWidth)
     ).toBeLessThanOrEqual(0);
 });
+
+test('example setup opens the shared Styling guide from primitive docs', async ({ page }) => {
+    await page.goto('/?path=/docs/primitives-select--docs', { waitUntil: 'domcontentloaded' });
+    const preview = page.frameLocator('#storybook-preview-iframe');
+    await expect(preview.getByRole('heading', { name: './select-typed-control.ts', exact: true })).toBeVisible();
+    await expect(preview.getByRole('heading', { name: 'Setup and shared files', exact: true })).toHaveCount(0);
+
+    await preview.getByRole('link', { name: 'Example setup', exact: true }).click();
+    await expect(page).toHaveURL(/path=\/docs\/guides-styling--docs#copy-an-example-into-your-app$/);
+    await expect(preview.getByRole('heading', { name: 'Copy an example into your app', exact: true })).toBeInViewport();
+    const stylesheet = preview.locator('details', { hasText: 'demo-styles.css' });
+    await stylesheet.locator('summary').click();
+    await expect(stylesheet).toContainText('@theme');
+});

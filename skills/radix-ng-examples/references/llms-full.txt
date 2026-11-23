@@ -702,6 +702,8 @@ import {
 
 ## Examples
 
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
+
 ### Default
 
 The preview above uses this standalone component. Copy the setup and shared files below as well.
@@ -1664,37 +1666,6 @@ export class AccordionKeepMountedExample {
 }
 ```
 
-## Setup and shared files
-
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
-
 ## API Reference
 
 ### Root
@@ -1962,6 +1933,8 @@ import { RdxAlertDialogModule } from '@radix-ng/primitives/alert-dialog';
 ```
 
 ## Examples
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 ### Default
 
@@ -2627,37 +2600,6 @@ export class RdxAlertDialogFromMenuComponent {
 }
 ```
 
-## Setup and shared files
-
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
-
 ## API Reference
 
 ### Root
@@ -2924,6 +2866,8 @@ in place (non-matching items are hidden, not destroyed).
 ```
 
 ## Examples
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 ### Default
 
@@ -5166,36 +5110,9 @@ With `loopFocus=false`, navigation stops at the boundary. Disabled items can be 
 arrows but cannot be activated. `autoHighlight="always"` starts at the first item; `autoHighlight=true`
 highlights the opening edge and updates the highlight on input changes.
 
-## Setup and shared files
+## Example files
 
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives` and `match-sorter`, `@tanstack/angular-virtual`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+Install `match-sorter`, `@tanstack/angular-virtual` when an example imports them.
 
 ## API Reference
 
@@ -5438,6 +5355,8 @@ restores the default. An explicit tab index makes the application responsible fo
 
 ## Examples
 
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
+
 ### Default
 
 The preview above uses this standalone component. Copy the setup and shared files below as well.
@@ -5640,36 +5559,9 @@ export class RdxButtonLoadingComponent {
 <a rdxButton href="/docs">Docs</a>
 ```
 
-## Setup and shared files
+## Example files
 
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives` and `@lucide/angular`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+Install `@lucide/angular` when an example imports it.
 
 ## API Reference
 
@@ -5848,36 +5740,9 @@ Import all parts and piece them together.
 </div>
 ```
 
-## Setup and shared files
+## Example files
 
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives` and `@internationalized/date`, `@lucide/angular`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+Install `@internationalized/date`, `@lucide/angular` when an example imports them.
 
 ## API Reference
 
@@ -5954,6 +5819,8 @@ system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook 
 | `[data-focused]`              | Present when focused                                                          |
 
 ## Examples
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 ### Default
 
@@ -7028,6 +6895,8 @@ over automatically.
 
 ## Examples
 
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
+
 ### Default
 
 The preview above uses this standalone component. Copy the setup and shared files below as well.
@@ -7816,36 +7685,9 @@ export class CheckboxGroupExample {
 }
 ```
 
-## Setup and shared files
+## Example files
 
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives` and `@lucide/angular`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+Install `@lucide/angular` when an example imports it.
 
 ## API Reference
 
@@ -8348,6 +8190,8 @@ the wrapping element so the popup aligns to the whole control instead of the inl
 ```
 
 ## Examples
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 ### Default
 
@@ -10993,36 +10837,9 @@ browser so text editing keeps working. IME composition is respected — the list
 select mid-composition. Focus stays on the input throughout; the highlighted option is communicated
 via `aria-activedescendant` and `data-highlighted`.
 
-## Setup and shared files
+## Example files
 
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives` and `@lucide/angular`, `@tanstack/angular-virtual`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+Install `@lucide/angular`, `@tanstack/angular-virtual` when an example imports them.
 
 ## API Reference
 
@@ -11402,6 +11219,8 @@ standard Menu parts and positioned at the pointer, so `rdxMenuPositioner` needs 
 ```
 
 ## Examples
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 ### Default
 
@@ -12245,36 +12064,9 @@ The popup then behaves like a [Menu](components/menu.md):
 `ArrowDown` / `ArrowUp` move between items, `Home` / `End` jump to the first / last item, typeahead matches
 item text, and `Escape` closes the menu.
 
-## Setup and shared files
+## Example files
 
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives` and `@lucide/angular`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+Install `@lucide/angular` when an example imports it.
 
 ## API Reference
 
@@ -12400,6 +12192,8 @@ Import all parts and piece them together.
 ```
 
 ## Examples
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 ### Default
 
@@ -12578,37 +12372,6 @@ mode, and its accessible name can be customized with the `ariaLabel` input.
 | Arrow keys              | Pan the image within the crop area. |
 | `+` / `=` / `Page Up`   | Zoom in.                            |
 | `-` / `_` / `Page Down` | Zoom out.                           |
-
-## Setup and shared files
-
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
 
 ## API Reference
 
@@ -13023,6 +12786,8 @@ custom portal target).
 ```
 
 ## Examples
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 ### Default
 
@@ -14651,36 +14416,9 @@ export class RdxDialogFromMenuComponent {
 }
 ```
 
-## Setup and shared files
+## Example files
 
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives` and `@lucide/angular`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+Install `@lucide/angular` when an example imports it.
 
 ## API Reference
 
@@ -15010,6 +14748,8 @@ The same popup transition works without a backdrop. If you choose exit keyframes
 ```
 
 ## Examples
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 ### Default
 
@@ -16279,36 +16019,9 @@ Drawer composes the corresponding Dialog parts and adds the gesture hooks below.
 | `data-disabled`                             | SwipeArea                            | Swipe-to-open interaction is disabled.      |
 | `data-active`                               | Indent, IndentBackground             | The provider has an active drawer.          |
 
-## Setup and shared files
+## Example files
 
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives` and `@lucide/angular`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+Install `@lucide/angular` when an example imports it.
 
 ## API Reference
 
@@ -16485,6 +16198,8 @@ submitValue(change: RdxEditableValueChangeEvent) {
 
 ## Examples
 
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
+
 ### Default
 
 The preview above uses this standalone component. Copy the setup and shared files below as well.
@@ -16654,37 +16369,6 @@ export class EditableAutoResizeExample {
 }
 ```
 
-## Setup and shared files
-
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
-
 ## API Reference
 
 ### Root
@@ -16831,6 +16515,8 @@ reflecting the field's validation state; its `disabled` is OR'd with the root's.
 ```
 
 ## Examples
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 ### Default
 
@@ -17043,36 +16729,7 @@ export class FieldCustomControlExample {
 }
 ```
 
-## Setup and shared files
-
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+## Example files
 
 #### `./field.shared.ts`
 
@@ -17207,6 +16864,8 @@ import { RdxFieldsetRoot, RdxFieldsetLegend } from '@radix-ng/primitives/fieldse
 ```
 
 ## Examples
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 ### Default
 
@@ -17406,37 +17065,6 @@ export class FieldsetSignupFormExample {
 }
 ```
 
-## Setup and shared files
-
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
-
 ## API Reference
 
 ### Root
@@ -17572,6 +17200,8 @@ matches against; the native control's `name` is what `FormData` serializes.
 ```
 
 ## Examples
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 ### Default
 
@@ -18045,36 +17675,7 @@ export class FormNativeControlsExample {
 }
 ```
 
-## Setup and shared files
-
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+## Example files
 
 #### `./form.shared.ts`
 
@@ -18171,6 +17772,8 @@ Use `rdxInput` directly on a native input. Wrap it in Field when you need label,
 ```
 
 ## Examples
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 Use `[(value)]` for an editable model, or bind `[controlledValue]` to keep the value with the
 parent. `onValueChange` requests a change. The parent can apply it by updating `controlledValue`.
@@ -18445,36 +18048,9 @@ export class InputSignupFormExample {
 }
 ```
 
-## Setup and shared files
+## Example files
 
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives` and `@lucide/angular`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+Install `@lucide/angular` when an example imports it.
 
 ## API Reference
 
@@ -18757,6 +18333,8 @@ content multi-root.
 ```
 
 ## Examples
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 ### Multiple triggers
 
@@ -22784,36 +22362,9 @@ export class RdxMenuLifecycleComponent {
 from `(onOpenChange)`; a deferred `(onOpenChangeComplete)` waits for `unmount()` instead of firing
 while the popup is still retained.
 
-## Setup and shared files
+## Example files
 
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives` and `@lucide/angular`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+Install `@lucide/angular` when an example imports it.
 
 ## API Reference
 
@@ -23422,6 +22973,8 @@ mounting, exits and optional retention.
 ```
 
 ## Examples
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 ### Default
 
@@ -24514,36 +24067,9 @@ state. Without a native opening request, focus starts on Popup; ArrowDown then e
 Native keyboard opening still selects the first/last item. External openings participate in sibling
 coordination and return-focus behavior, just like interaction-driven changes.
 
-## Setup and shared files
+## Example files
 
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives` and `@lucide/angular`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+Install `@lucide/angular` when an example imports it.
 
 ## API Reference
 
@@ -25196,6 +24722,8 @@ wrapper's host. Moving the Root into the wrapper's template puts it out of the p
 and they throw a missing-context error.
 
 ## Examples
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 ### Default
 
@@ -26370,36 +25898,9 @@ export class RdxNavigationMenuNestedInlineComponent {
 }
 ```
 
-## Setup and shared files
+## Example files
 
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives` and `@lucide/angular`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+Install `@lucide/angular` when an example imports it.
 
 ## API Reference
 
@@ -27237,6 +26738,8 @@ The root's `length` is required and should match the number of slot inputs. Slot
 
 ## Examples
 
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
+
 ### Default
 
 The preview above uses this standalone component. Copy the setup and shared files below as well.
@@ -27926,37 +27429,6 @@ export class OtpFieldSignalFormsExample {
 }
 ```
 
-## Setup and shared files
-
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
-
 ## API Reference
 
 ### Root
@@ -28353,6 +27825,8 @@ the positioner — use the explicit `<ng-template rdxPopoverPortal>` form (and t
 ```
 
 ## Examples
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 ### Default
 
@@ -29370,36 +28844,9 @@ export class RdxPopoverViewportComponent {
 }
 ```
 
-## Setup and shared files
+## Example files
 
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives` and `@lucide/angular`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+Install `@lucide/angular` when an example imports it.
 
 ## API Reference
 
@@ -29664,6 +29111,8 @@ to the positioner — use the explicit `<ng-template rdxPreviewCardPortal>` form
 ```
 
 ## Examples
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 ### Default
 
@@ -30064,37 +29513,6 @@ import {
 })
 export class RdxPreviewCardViewportComponent {}
 ```
-
-## Setup and shared files
-
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
 
 ## API Reference
 
@@ -30886,6 +30304,8 @@ receives `null` or runs the cleanup function its callback returned.
 
 ## Examples
 
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
+
 ### Default
 
 A radio group with labels, hidden native inputs and an animated indicator.
@@ -31109,37 +30529,6 @@ export class RadioTemplateDrivenFormsComponent {
     }
 }
 ```
-
-## Setup and shared files
-
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
 
 ## API Reference
 
@@ -31910,6 +31299,8 @@ the behavior of a native `<select>`. Use `rdxSelectItemAlignedPosition` and
 ```
 
 ## Examples
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 ### Default
 
@@ -35340,36 +34731,9 @@ Because interaction type is tracked explicitly (`openMethod`, `openInteractionTy
 from low-level DOM events. That matters for accessible UX: keyboard-only flows can preserve focus and
 validation policy independently from touch and mouse dismiss/open behavior.
 
-## Setup and shared files
+## Example files
 
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives` and `@lucide/angular`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+Install `@lucide/angular` when an example imports it.
 
 #### `./select-typed-control.ts`
 
@@ -36309,6 +35673,8 @@ export class SignalFormsValidationLifecycleExample {
 
 ## Examples
 
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
+
 ### Field driven by Signal Forms
 
 The `rdxFieldRoot` carries no manual `[invalid]`/`[touched]`/`[dirty]` — `rdxSignalField` maps them from
@@ -36699,36 +36065,7 @@ CVA-less controls (`date-field`, `time-field`, `editable`) bind via Signal Forms
 extends the base but skips the `implements FormValueControl` check (its `number | number[]` value
 collides with the shim's scalar `min`/`max`) — it still ships the same runtime surface.
 
-## Setup and shared files
-
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+## Example files
 
 #### `../../form/stories/form.shared.ts`
 
@@ -38202,6 +37539,8 @@ position. Restoring focus after a view move does not request automatic activatio
 
 ## Examples
 
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
+
 ### Default
 
 The preview above uses this standalone component. Copy the setup and shared files below as well.
@@ -38715,37 +38054,6 @@ class TabsProjectedWrapper {}
 })
 export class TabsProjectedWrapperExample {}
 ```
-
-## Setup and shared files
-
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
 
 ## API Reference
 
@@ -39577,6 +38885,8 @@ An anchored toast is wrapped in `rdxToastPositioner` instead of joining the stac
 ```
 
 ## Examples
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 ### Default
 
@@ -40650,36 +39960,9 @@ export class ToastAnchoredExample {
 The root also writes CSS variables for styling: `--toast-index`, `--toast-height`,
 `--toast-offset-y`, and `--toast-swipe-movement-x` / `--toast-swipe-movement-y`.
 
-## Setup and shared files
+## Example files
 
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives` and `@lucide/angular`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+Install `@lucide/angular` when an example imports it.
 
 ## API Reference
 
@@ -41177,6 +40460,8 @@ set `[nativeButton]="false"`; Enter and Space activate the control, with Space h
 
 ## Examples
 
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
+
 ### Default
 
 The preview above uses this standalone component. Copy the setup and shared files below as well.
@@ -41673,36 +40958,9 @@ const stepClass =
 export class ToolbarWithNumberFieldExample {}
 ```
 
-## Setup and shared files
+## Example files
 
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives` and `@lucide/angular`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+Install `@lucide/angular` when an example imports it.
 
 ## API Reference
 
@@ -41874,6 +41132,8 @@ exit keyframes on its root element finish. Use the `*` microsyntax on the positi
 `--available-*`, and `--transform-origin` CSS variables. `rdxTooltipPopup` carries `role="tooltip"`.
 
 ## Examples
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 ### Default
 
@@ -42203,36 +41463,9 @@ export class RdxTooltipSliderComponent {
 }
 ```
 
-## Setup and shared files
+## Example files
 
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives` and `@lucide/angular`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+Install `@lucide/angular` when an example imports it.
 
 ## API Reference
 
@@ -44519,24 +43752,30 @@ or size utilities override the corresponding common defaults regardless of class
 
 ## Copy an example into your app
 
-The component's **Show code** uses explicit imports from public Radix NG entry points. The page's
-**Setup and shared files** section includes wrapper/helper sources, dependencies and the actual CSS
-read with `?raw` from the file used by both applications. Consumer skills preserve those same blocks.
-The old TS style exports and Playground's re-export are no longer needed.
+Install `@radix-ng/primitives` and any additional packages listed under **Example files** on the
+component page. Copy the standalone component from **Show code** and any local files listed in
+that section. Preserve their relative paths, then import the component into its parent and use
+its selector.
 
-Install `@radix-ng/primitives` and the dependencies listed on the example page, such as
-`@lucide/angular` for icons. Configure Tailwind v4 through `@tailwindcss/postcss`. Save the supplied
-CSS as `demo-styles.css`, then import it after Tailwind in your global stylesheet:
+Install `tailwindcss`, `@tailwindcss/postcss` and `postcss` for Tailwind v4. Configure the PostCSS plugin.
+
+```json
+{ "plugins": { "@tailwindcss/postcss": {} } }
+```
+
+Save the stylesheet below as `demo-styles.css` next to your global stylesheet. Import Tailwind first.
 
 ```css
 @import 'tailwindcss';
 @import './demo-styles.css';
 ```
 
-Import the example component into its parent and use its selector. Copy additional files alongside
-it, preserving their relative import paths. Set `data-theme="dark"` on `<html>` for the dark theme.
-Explicit directive imports also work when Angular compiles the copied component against an installed
-package: avoid spreading published arrays such as `popoverImports` in component metadata.
+Set `data-theme="dark"` on `<html>` for the dark theme. The stylesheet includes theme tokens, shared
+classes and animation keyframes. Its font stacks include system fallbacks. You can self-host Inter
+and JetBrains Mono to match Storybook typography.
+
+Use the explicit public directive imports shown in the example so Angular can compile it against
+the installed package.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
@@ -46316,6 +45555,8 @@ const ok = await this.confirm.confirm({
 
 ## Examples
 
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
+
 ### Default
 
 A destructive action awaits the shared dialog. Confirm resolves `true`; Cancel and Escape resolve
@@ -46502,37 +45743,6 @@ and focus returns to the previously focused element on close. Always pass a `tit
 | `Escape`          | Closes the dialog and resolves the promise as a cancel (`false`).          |
 | `Tab`             | Moves focus to the next focusable element; focus is trapped in the dialog. |
 | `Shift` + `Tab`   | Moves focus to the previous focusable element inside the dialog.           |
-
-## Setup and shared files
-
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
 
 ---
 
@@ -46828,6 +46038,8 @@ lives inside the scroll area's `Content`; the vertical `Scrollbar` and `Thumb` s
 
 ## Examples
 
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
+
 ### Default
 
 A bell button shows the unread count. Opening the popover reveals the list; clicking a notification
@@ -47011,36 +46223,9 @@ panel is closed.
 | `Tab`             | Moves focus into and through the panel — the actions and notification list. |
 | `Escape`          | Closes the panel and returns focus to the trigger.                         |
 
-## Setup and shared files
+## Example files
 
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives` and `@lucide/angular`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+Install `@lucide/angular` when an example imports it.
 
 ---
 
@@ -47061,6 +46246,8 @@ screen-reader-friendly.
 
 A bug report with a text input and a textarea. On submit the values are validated and any errors are
 shown next to each field.
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
@@ -47728,36 +46915,9 @@ export class SignalFormsArray {
 - **Primitives / Field**, **Primitives / Form** — the headless layers these recipes compose.
 - **Recipes / Forms / TanStack Form** — the same forms built with TanStack Form.
 
-## Setup and shared files
+## Example files
 
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives` and `@lucide/angular`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+Install `@lucide/angular` when an example imports it.
 
 ---
 
@@ -47912,6 +47072,8 @@ teleports into `document.body` while open and animates out before unmounting. Bi
 
 ## Examples
 
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
+
 ### Default
 
 A primary "Save" action with a menu of related save actions. The primary button runs the default
@@ -48040,36 +47202,9 @@ Once the menu is open it follows the [Menu](components/menu.md) keyboard model �
 `ArrowUp` / `ArrowDown` move between items, `Home` / `End` jump to the first / last item, typeahead
 matches item text, and `Escape` closes the menu and returns focus to the trigger.
 
-## Setup and shared files
+## Example files
 
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives` and `@lucide/angular`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+Install `@lucide/angular` when an example imports it.
 
 ---
 
@@ -48097,6 +47232,8 @@ Signal Forms recipe, only the engine differs.
 
 A bug report with a text input and a textarea. On submit the values are validated and any errors are
 shown next to each field.
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
@@ -49124,36 +48261,9 @@ export class TanstackArray {
 - **Primitives / Field**, **Primitives / Form** — the headless layers these recipes compose.
 - **Recipes / Forms / Signal Forms** — the same forms built with Angular Signal Forms.
 
-## Setup and shared files
+## Example files
 
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives` and `@lucide/angular`, `@tanstack/angular-form`, `zod`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
+Install `@lucide/angular`, `@tanstack/angular-form`, `zod` when an example imports them.
 
 ---
 
@@ -49204,6 +48314,8 @@ import {
 registration. Use `data-composite-item-active` on an item when it should provide the initial highlighted index.
 
 ## Examples
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 ### Default
 
@@ -49403,37 +48515,6 @@ export class RdxCompositeReorderComponent {
     }
 }
 ```
-
-## Setup and shared files
-
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
 
 ## API Reference
 
@@ -49750,6 +48831,8 @@ manage initial focus or focus restoration manually.
 Each field below calls `injectId('rdx-field-')` in its own injection context, wiring its `<label for>`
 to the matching `<input id>` without hardcoding an id or risking a collision.
 
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
+
 ```typescript
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
@@ -49859,37 +48942,6 @@ export class ExampleComponent {
 }
 ```
 
-## Setup and shared files
-
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
-
 ---
 
 # LiveAnnouncer
@@ -49898,6 +48950,8 @@ system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook 
 
 The buttons below send messages to the live region. It is visually hidden, so the on-screen log
 mirrors what assistive technology reads aloud.
+
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
 
 ```typescript
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
@@ -49998,37 +49052,6 @@ export class StepperComponent {
   writes `message` into the live region. `politeness` sets `aria-live` (default `'polite'`); when
   `duration` is provided, the message is cleared after that many milliseconds.
 - `clear(): void` — empties the live region.
-
-## Setup and shared files
-
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
 
 ---
 
@@ -50478,6 +49501,8 @@ signal through `provideRdxPresenceContext`.
 
 The template roots participate automatically. CSS transitions and keyframes both work.
 
+<a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
+
 ```typescript
 import { ChangeDetectionStrategy, Component, Directive, inject, signal } from '@angular/core';
 import { provideRdxPresenceContext, RdxPresenceDirective } from '@radix-ng/primitives/presence';
@@ -50715,37 +49740,6 @@ export class PresenceDynamicTargets {
     readonly showChild = signal(true);
 }
 ```
-
-## Setup and shared files
-
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-[Download demo-styles.css](demo-styles.css)
-
-</details>
 
 ## API Reference
 

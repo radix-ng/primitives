@@ -39,7 +39,7 @@ test('composition examples export real source from the existing stories', () => 
     for (const { body } of [tabs, menu, select]) assert.doesNotMatch(body, /<Canvas\b/);
 });
 
-test('portable examples link to a single copy of the rendered stylesheet', () => {
+test('portable examples reach the single setup guide and rendered stylesheet', () => {
     const { files, fullDocs } = createMarkdownBundle(docs, { versionLine: 'Test version' });
     const example = files.get('examples/popover--default.md');
     const sharedStyles = readFileSync(
@@ -48,8 +48,15 @@ test('portable examples link to a single copy of the rendered stylesheet', () =>
     );
     const [, defaultCode] = example.match(/```typescript\n([\s\S]*?)\n```/);
     assert.equal(files.get('demo-styles.css'), sharedStyles);
-    assert.match(example, /\]\(\.\.\/demo-styles\.css\)/);
+    assert.match(example, /\]\(\.\.\/guides\/styling\.md#copy-an-example-into-your-app\)/);
+    assert.match(files.get('guides/styling.md'), /\]\(\.\.\/demo-styles\.css\)/);
+    assert.match(files.get('guides/styling.md'), /"@tailwindcss\/postcss": \{\}/);
+    assert.deepEqual(
+        docs.filter(({ assets }) => assets.has('demo-styles.css')).map(({ slug }) => slug),
+        ['styling']
+    );
     assert.match(fullDocs.join('\n\n'), /\]\(demo-styles\.css\)/);
+    assert.doesNotMatch(fullDocs.join('\n\n'), /^## Setup and shared files$/m);
     const pages = [...files].filter(([file]) => file.endsWith('.md')).map(([, body]) => body);
     assert.ok([...pages, ...fullDocs].every((body) => !body.includes(sharedStyles.trim())));
     assert.match(defaultCode, /class="demo-surface [^"]*w-80 p-4"/);
@@ -59,7 +66,7 @@ test('portable examples link to a single copy of the rendered stylesheet', () =>
     assert.doesNotMatch(example, /<Source\b/);
 });
 
-test('migrated example shards retain setup, the CSS link and local wrapper sources', () => {
+test('example shards share the setup link and retain local dependencies and wrapper sources', () => {
     const { files } = createMarkdownBundle(docs, { versionLine: 'Test version' });
     for (const name of [
         'button--default',
@@ -71,10 +78,12 @@ test('migrated example shards retain setup, the CSS link and local wrapper sourc
     ]) {
         const source = files.get(`examples/${name}.md`);
         assert.ok(source, name);
-        assert.match(source, /\]\(\.\.\/demo-styles\.css\)/, `${name} links to the shared stylesheet`);
-        assert.match(source, /Setup and shared files/);
-        assert.match(source, /@tailwindcss\/postcss/);
+        assert.match(source, /\]\(\.\.\/guides\/styling\.md#copy-an-example-into-your-app\)/, name);
+        assert.doesNotMatch(source, /@tailwindcss\/postcss/);
         assert.doesNotMatch(source, /from ['"][^'"]*storybook\/styles|<Source\b/);
     }
+    assert.match(files.get('examples/button--default.md'), /Install `@lucide\/angular`/);
+    assert.match(files.get('examples/calendar--default.md'), /Install `@internationalized\/date`, `@lucide\/angular`/);
     assert.match(files.get('examples/select--typed-application-wrapper.md'), /export class SelectTypedControl/);
+    assert.match(files.get('examples/field--default.md'), /#### `\.\/field\.shared\.ts`/);
 });

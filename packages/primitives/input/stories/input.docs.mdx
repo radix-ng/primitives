@@ -1,5 +1,4 @@
 import defaultExampleSource from './input-default-example?raw';
-import demoStylesSource from '../../../../apps/radix-storybook/.storybook/demo-styles.css?raw';
 import { Source, Canvas, Meta, ArgTypes } from '@storybook/addon-docs/blocks';
 import * as Stories from './input.stories';
 import { RdxInputDirective } from '../src/input.directive';
@@ -40,6 +39,8 @@ Use `rdxInput` directly on a native input. Wrap it in Field when you need label,
 
 ## Examples
 
+<a href="./?path=/docs/guides-styling--docs#copy-an-example-into-your-app" target="_top">Example setup</a>
+
 Use `[(value)]` for an editable model, or bind `[controlledValue]` to keep the value with the
 parent. `onValueChange` requests a change. The parent can apply it by updating `controlledValue`.
 Angular Forms own the value when attached. A standalone `defaultValue` is read once and sets
@@ -75,38 +76,9 @@ Combines multiple inputs, Field state, a checkbox, and a submit button in a larg
 
 <Canvas of={Stories.SignupForm} />
 
-## Setup and shared files
+## Example files
 
-These examples use Angular standalone components and Tailwind CSS v4. Install
-`@radix-ng/primitives` and `@lucide/angular`. Copy the component from **Show code** and any shared files below,
-preserving their relative import paths. Import the example component in its parent and use its selector.
-
-Install `tailwindcss`, `@tailwindcss/postcss` and `postcss`. Configure the PostCSS plugin:
-
-```json
-{ "plugins": { "@tailwindcss/postcss": {} } }
-```
-
-Save the CSS below as `demo-styles.css` next to your global stylesheet. Import Tailwind first,
-then the demo styles. Both Storybook and Playground use this same CSS through `main.css`.
-
-```css
-@import 'tailwindcss';
-@import './demo-styles.css';
-```
-
-The shared file supplies theme values, light/dark tokens, common classes and animation keyframes.
-Set `data-theme="dark"` on `<html>` for the dark theme; the default is light. The font stacks have
-system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook typography.
-
-<details>
-<summary>demo-styles.css</summary>
-
-<Source language="css" code={demoStylesSource} />
-
-</details>
-
-
+Install `@lucide/angular` when an example imports it.
 
 ## API Reference
 

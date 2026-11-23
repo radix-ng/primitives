@@ -71,12 +71,12 @@ Use explicit imports of the required directives from public `@radix-ng/primitive
 Published arrays such as `popoverImports` lack statically evaluable initializers in declarations;
 spreading them in component metadata can pass Storybook but fail a consumer's AOT build.
 
-The MDX **Setup and shared files** section lists dependencies, PostCSS configuration and stylesheet
-order (`tailwindcss` first, then `demo-styles.css`). Its `Source` blocks import the rendered CSS and
-local wrapper/helper files with `?raw`. Include external HTML for `templateUrl` examples. Preserve
-relative paths when copying multiple files. The consumer Markdown pipeline appends this same setup
-to each example shard with the wrapper sources and a link to the shared `demo-styles.css` file
-in the bundle.
+Link styled examples to **Copy an example into your app** in
+[Guides → Styling](../../packages/primitives/storybook/styling.docs.mdx#copy-an-example-into-your-app).
+This guide owns the Tailwind and PostCSS instructions and the raw stylesheet. Use a local
+**Example files** section for additional packages and raw `Source` blocks for wrappers, helpers or
+external templates. Preserve their relative paths. The consumer Markdown pipeline adds the guide
+link and any local files to each example shard.
 
 Run the [external portability check](../../tools/storybook-portability/README.md) against an installed
 tarball. It compiles all selected examples with strict Angular templates and Tailwind v4 outside

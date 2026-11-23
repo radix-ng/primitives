@@ -69,24 +69,30 @@ or size utilities override the corresponding common defaults regardless of class
 
 ## Copy an example into your app
 
-The component's **Show code** uses explicit imports from public Radix NG entry points. The page's
-**Setup and shared files** section includes wrapper/helper sources, dependencies and the actual CSS
-read with `?raw` from the file used by both applications. Consumer skills preserve those same blocks.
-The old TS style exports and Playground's re-export are no longer needed.
+Install `@radix-ng/primitives` and any additional packages listed under **Example files** on the
+component page. Copy the standalone component from **Show code** and any local files listed in
+that section. Preserve their relative paths, then import the component into its parent and use
+its selector.
 
-Install `@radix-ng/primitives` and the dependencies listed on the example page, such as
-`@lucide/angular` for icons. Configure Tailwind v4 through `@tailwindcss/postcss`. Save the supplied
-CSS as `demo-styles.css`, then import it after Tailwind in your global stylesheet:
+Install `tailwindcss`, `@tailwindcss/postcss` and `postcss` for Tailwind v4. Configure the PostCSS plugin.
+
+```json
+{ "plugins": { "@tailwindcss/postcss": {} } }
+```
+
+Save the stylesheet below as `demo-styles.css` next to your global stylesheet. Import Tailwind first.
 
 ```css
 @import 'tailwindcss';
 @import './demo-styles.css';
 ```
 
-Import the example component into its parent and use its selector. Copy additional files alongside
-it, preserving their relative import paths. Set `data-theme="dark"` on `<html>` for the dark theme.
-Explicit directive imports also work when Angular compiles the copied component against an installed
-package: avoid spreading published arrays such as `popoverImports` in component metadata.
+Set `data-theme="dark"` on `<html>` for the dark theme. The stylesheet includes theme tokens, shared
+classes and animation keyframes. Its font stacks include system fallbacks. You can self-host Inter
+and JetBrains Mono to match Storybook typography.
+
+Use the explicit public directive imports shown in the example so Angular can compile it against
+the installed package.
 
 <Source language="typescript" code={buttonExampleSource} />
 
