@@ -8,6 +8,7 @@ Set `multiple` to let several items stay open at once.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { LucidePlus } from '@lucide/angular';
 import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
@@ -21,6 +22,7 @@ import {
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'accordion-multiple-example',
     imports: [
+        LucidePlus,
         RdxAccordionRootDirective,
         RdxAccordionItemDirective,
         RdxAccordionHeaderDirective,
@@ -30,79 +32,85 @@ import {
     ],
     template: `
         <div
-            class="demo-accordion-root w-[300px] overflow-hidden"
+            class="demo-accordion-root w-80 max-w-full"
             [defaultValue]="['item-2', 'item-3']"
             multiple
             rdxAccordionRoot
         >
-            <div
-                class="border-border focus-within:ring-ring overflow-hidden border-b last:border-b-0 focus-within:relative focus-within:z-[1] focus-within:ring-2 focus-within:outline-none focus-within:ring-inset"
-                [value]="'item-1'"
-                rdxAccordionItem
-            >
+            <div class="border-foreground border-b last:border-b-0" [value]="'item-1'" rdxAccordionItem>
                 <h3 class="flex" rdxAccordionHeader>
                     <button
-                        class="demo-accordion-trigger flex h-12 w-full flex-1 items-center justify-between px-5 aria-disabled:opacity-60"
+                        class="demo-accordion-trigger group flex min-h-9 w-full flex-1 items-center justify-between gap-4 px-3 py-2 text-start aria-disabled:opacity-60"
                         type="button"
                         rdxAccordionTrigger
                     >
                         Is it accessible?
+                        <svg
+                            class="shrink-0 group-data-panel-open:rotate-45 motion-safe:transition-transform motion-safe:duration-100"
+                            lucidePlus
+                            size="16"
+                            aria-hidden="true"
+                        ></svg>
                     </button>
                 </h3>
                 <div
-                    class="demo-accordion-content [&[data-open][data-orientation=vertical]]:animate-accordion-down [&:not([data-open])[data-orientation=vertical]]:animate-accordion-up [&[data-open][data-orientation=horizontal]]:animate-accordion-right [&:not([data-open])[data-orientation=horizontal]]:animate-accordion-left overflow-hidden [&:not([data-open])[data-orientation=horizontal]]:w-0 [&:not([data-open])[data-orientation=vertical]]:h-0"
+                    class="demo-accordion-content h-(--accordion-panel-height) overflow-hidden data-ending-style:h-0 data-starting-style:h-0 motion-safe:transition-[height] motion-safe:duration-150 motion-safe:ease-out"
                     *rdxAccordionPanelPresence
                     rdxAccordionPanel
                 >
-                    <div class="px-5 py-4">Yes. It adheres to the WAI-ARIA design pattern.</div>
+                    <div class="px-3 pt-1 pb-3">Yes. It adheres to the WAI-ARIA design pattern.</div>
                 </div>
             </div>
 
-            <div
-                class="border-border focus-within:ring-ring overflow-hidden border-b last:border-b-0 focus-within:relative focus-within:z-[1] focus-within:ring-2 focus-within:outline-none focus-within:ring-inset"
-                [value]="'item-2'"
-                rdxAccordionItem
-            >
+            <div class="border-foreground border-b last:border-b-0" [value]="'item-2'" rdxAccordionItem>
                 <h3 class="flex" rdxAccordionHeader>
                     <button
-                        class="demo-accordion-trigger flex h-12 w-full flex-1 items-center justify-between px-5 aria-disabled:opacity-60"
+                        class="demo-accordion-trigger group flex min-h-9 w-full flex-1 items-center justify-between gap-4 px-3 py-2 text-start aria-disabled:opacity-60"
                         type="button"
                         rdxAccordionTrigger
                     >
                         Is it unstyled?
+                        <svg
+                            class="shrink-0 group-data-panel-open:rotate-45 motion-safe:transition-transform motion-safe:duration-100"
+                            lucidePlus
+                            size="16"
+                            aria-hidden="true"
+                        ></svg>
                     </button>
                 </h3>
                 <div
-                    class="demo-accordion-content [&[data-open][data-orientation=vertical]]:animate-accordion-down [&:not([data-open])[data-orientation=vertical]]:animate-accordion-up [&[data-open][data-orientation=horizontal]]:animate-accordion-right [&:not([data-open])[data-orientation=horizontal]]:animate-accordion-left overflow-hidden [&:not([data-open])[data-orientation=horizontal]]:w-0 [&:not([data-open])[data-orientation=vertical]]:h-0"
+                    class="demo-accordion-content h-(--accordion-panel-height) overflow-hidden data-ending-style:h-0 data-starting-style:h-0 motion-safe:transition-[height] motion-safe:duration-150 motion-safe:ease-out"
                     *rdxAccordionPanelPresence
                     rdxAccordionPanel
                 >
-                    <div class="px-5 py-4">
+                    <div class="px-3 pt-1 pb-3">
                         Yes. It's unstyled by default, giving you freedom over the look and feel.
                     </div>
                 </div>
             </div>
 
-            <div
-                class="border-border focus-within:ring-ring overflow-hidden border-b last:border-b-0 focus-within:relative focus-within:z-[1] focus-within:ring-2 focus-within:outline-none focus-within:ring-inset"
-                [value]="'item-3'"
-                rdxAccordionItem
-            >
+            <div class="border-foreground border-b last:border-b-0" [value]="'item-3'" rdxAccordionItem>
                 <h3 class="flex" rdxAccordionHeader>
                     <button
-                        class="demo-accordion-trigger flex h-12 w-full flex-1 items-center justify-between px-5 aria-disabled:opacity-60"
+                        class="demo-accordion-trigger group flex min-h-9 w-full flex-1 items-center justify-between gap-4 px-3 py-2 text-start aria-disabled:opacity-60"
                         type="button"
                         rdxAccordionTrigger
                     >
                         Can it be animated?
+                        <svg
+                            class="shrink-0 group-data-panel-open:rotate-45 motion-safe:transition-transform motion-safe:duration-100"
+                            lucidePlus
+                            size="16"
+                            aria-hidden="true"
+                        ></svg>
                     </button>
                 </h3>
                 <div
-                    class="demo-accordion-content [&[data-open][data-orientation=vertical]]:animate-accordion-down [&:not([data-open])[data-orientation=vertical]]:animate-accordion-up [&[data-open][data-orientation=horizontal]]:animate-accordion-right [&:not([data-open])[data-orientation=horizontal]]:animate-accordion-left overflow-hidden [&:not([data-open])[data-orientation=horizontal]]:w-0 [&:not([data-open])[data-orientation=vertical]]:h-0"
+                    class="demo-accordion-content h-(--accordion-panel-height) overflow-hidden data-ending-style:h-0 data-starting-style:h-0 motion-safe:transition-[height] motion-safe:duration-150 motion-safe:ease-out"
                     *rdxAccordionPanelPresence
                     rdxAccordionPanel
                 >
-                    <div class="px-5 py-4">
+                    <div class="px-3 pt-1 pb-3">
                         Yes. It's unstyled by default, giving you freedom over the look and feel.
                     </div>
                 </div>

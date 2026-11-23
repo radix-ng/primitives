@@ -64,6 +64,7 @@ both scrollbars are present.
 
 ## Examples
 
+- [Default](../examples/scroll-area--default.md)
 - [Horizontal](../examples/scroll-area--horizontal.md)
 - [Both scrollbars](../examples/scroll-area--both-scrollbars.md)
 - [Gradient scroll fade](../examples/scroll-area--gradient-scroll-fade.md)

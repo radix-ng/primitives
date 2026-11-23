@@ -37,7 +37,7 @@ import {
     template: `
         <ng-container rdxSelectRoot>
             <button
-                class="demo-select-trigger data-[placeholder]:text-muted-foreground data-[invalid]:border-destructive data-[invalid]:aria-invalid:ring-destructive/30 demo-focus inline-flex min-h-9 min-w-40 items-center justify-between gap-2 px-3 py-1.5 disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
+                class="demo-button demo-button-outline data-placeholder:text-muted-foreground data-invalid:border-destructive data-popup-open:bg-muted h-8 min-w-40 justify-between gap-3 ps-2 pe-1 leading-none"
                 aria-label="Customise options"
                 rdxSelectTrigger
             >
@@ -49,20 +49,23 @@ import {
 
             <div class="z-[100]" *rdxSelectPortal [sideOffset]="sideOffset()" rdxSelectPositioner>
                 <div
-                    class="demo-select-popup min-w-[var(--anchor-width,10rem)] will-change-[opacity,transform]"
+                    class="demo-popup demo-popup-motion min-w-(--anchor-width) outline-none data-[side=none]:min-w-[calc(var(--anchor-width)+1.75rem)] data-[side=none]:transition-none data-[side=none]:data-starting-style:scale-100 data-[side=none]:data-starting-style:opacity-100"
                     rdxSelectPopup
                 >
-                    <div class="p-1" rdxSelectList>
+                    <div
+                        class="relative max-h-(--available-height) scroll-py-6 overflow-y-auto overscroll-contain py-1"
+                        rdxSelectList
+                    >
                         <div class="demo-select-group-label px-6" rdxSelectGroupLabel>Fruits</div>
                         <div rdxSelectGroup>
                             @for (option of options; track option) {
                                 <div
-                                    class="demo-select-item data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground data-[disabled]:text-muted-foreground relative flex min-h-7 items-center gap-2 ps-6 pe-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                    class="demo-option relative flex items-center gap-2 py-1.5 ps-8 pe-4"
                                     [value]="option"
                                     rdxSelectItem
                                 >
                                     <span
-                                        class="absolute start-0 inline-flex w-6 items-center justify-center"
+                                        class="absolute start-2 inline-flex w-4 items-center justify-center"
                                         rdxSelectItemIndicator
                                     >
                                         <svg class="size-4 shrink-0" lucideCheck size="16" aria-hidden="true" />
@@ -71,17 +74,17 @@ import {
                                 </div>
                             }
                         </div>
-                        <div class="bg-border mx-1 my-1 h-px"></div>
+                        <div class="bg-foreground mx-1 my-1 h-px"></div>
                         <div class="demo-select-group-label px-6" rdxSelectGroupLabel>Vegetables</div>
                         <div rdxSelectGroup>
                             @for (vegetable of vegetables; track vegetable) {
                                 <div
-                                    class="demo-select-item data-[highlighted]:bg-primary data-[highlighted]:text-primary-foreground data-[disabled]:text-muted-foreground relative flex min-h-7 items-center gap-2 ps-6 pe-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                                    class="demo-option relative flex items-center gap-2 py-1.5 ps-8 pe-4"
                                     [value]="vegetable"
                                     rdxSelectItem
                                 >
                                     <span
-                                        class="absolute start-0 inline-flex w-6 items-center justify-center"
+                                        class="absolute start-2 inline-flex w-4 items-center justify-center"
                                         rdxSelectItemIndicator
                                     >
                                         <svg class="size-4 shrink-0" lucideCheck size="16" aria-hidden="true" />

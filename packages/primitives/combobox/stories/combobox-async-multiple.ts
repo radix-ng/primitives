@@ -127,7 +127,7 @@ interface DirectoryUser {
                     <div class="flex flex-col" rdxComboboxList aria-label="People">
                         @for (user of items(); track user.id) {
                             <div
-                                class="data-[highlighted]:bg-muted relative grid cursor-default grid-cols-[1rem_1fr] items-start gap-2 rounded-sm px-2 py-2 text-sm outline-none select-none"
+                                class="data-highlighted:bg-primary data-highlighted:text-primary-foreground relative grid cursor-default grid-cols-[1rem_1fr] items-start gap-2 rounded-sm px-2 py-2 text-sm outline-none select-none"
                                 [value]="user"
                                 [textValue]="user.name"
                                 rdxComboboxItem

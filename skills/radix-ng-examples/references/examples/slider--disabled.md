@@ -22,9 +22,9 @@ import {
     template: `
         <div class="relative w-56 select-none data-[disabled]:opacity-50" [value]="45" rdxSliderRoot disabled>
             <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>
-                <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
-                    <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>
-                    <div class="border-border bg-background block size-5 rounded-full border shadow-sm" rdxSliderThumb>
+                <div class="relative h-1 w-full bg-neutral-200 dark:bg-neutral-800" rdxSliderTrack>
+                    <div class="bg-primary h-full" rdxSliderIndicator></div>
+                    <div class="border-border bg-background block size-5 border" rdxSliderThumb>
                         <input rdxSliderThumbInput aria-label="Value" />
                     </div>
                 </div>
@@ -34,3 +34,5 @@ import {
 })
 export class SliderDisabledExample {}
 ```
+
+[Example setup](../guides/styling.md#copy-an-example-into-your-app)

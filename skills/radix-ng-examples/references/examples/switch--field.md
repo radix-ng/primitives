@@ -25,3 +25,5 @@ its button with Field and inherits its form name, disabled state and required st
 The button uses the Field label as its accessible name. Set `[aria-label]` to supply a name directly
 or `[aria-labelledby]` to point to a label by ID. `[aria-describedby]` adds descriptions to those
 registered by Field. A blocked submit focuses the switch and links the visible error to it.
+
+[Example setup](../guides/styling.md#copy-an-example-into-your-app)

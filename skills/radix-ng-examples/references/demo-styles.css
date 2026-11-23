@@ -1,3 +1,5 @@
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
 @theme {
     --duration-demo-drawer-swipe: 450ms;
     --duration-demo-drawer-keyboard: 200ms;
@@ -64,13 +66,13 @@
         'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
         monospace;
 
-    --text-xs: 0.8125rem;
-    --text-xs--line-height: 1.25rem;
-    --text-xs--letter-spacing: 0.001em;
+    --text-xs: 0.75rem;
+    --text-xs--line-height: 1rem;
+    --text-xs--letter-spacing: 0em;
 
     --text-sm: 0.875rem;
     --text-sm--line-height: 1.25rem;
-    --text-sm--letter-spacing: 0.016em;
+    --text-sm--letter-spacing: 0em;
 
     --text-md: 0.9375rem;
     --text-md--line-height: 1.375rem;
@@ -179,39 +181,58 @@
     --animate-popover-popup-out: popover-popup-out 120ms ease-in forwards;
 }
 
+/* Neutral and status scales used by the Base UI Tailwind demos. */
+@theme static {
+    --color-neutral-50: oklch(98.5% 0 0deg);
+    --color-neutral-100: oklch(97% 0 0deg);
+    --color-neutral-200: oklch(92.2% 0 0deg);
+    --color-neutral-300: oklch(87% 0 0deg);
+    --color-neutral-400: oklch(70.8% 0 0deg);
+    --color-neutral-500: oklch(55.6% 0 0deg);
+    --color-neutral-600: oklch(43.9% 0 0deg);
+    --color-neutral-700: oklch(37.1% 0 0deg);
+    --color-neutral-800: oklch(26.9% 0 0deg);
+    --color-neutral-900: oklch(20.5% 0 0deg);
+    --color-neutral-950: oklch(14.5% 0 0deg);
+    --color-blue-500: oklch(62.3% 0.214 259.815deg);
+    --color-blue-700: oklch(48.8% 0.243 264.376deg);
+    --color-blue-800: oklch(42.4% 0.199 265.638deg);
+    --color-red-400: oklch(70.4% 0.191 22.216deg);
+    --color-red-700: oklch(50.5% 0.213 27.518deg);
+    --color-green-400: oklch(79.2% 0.209 151.711deg);
+    --color-green-700: oklch(52.7% 0.154 150.069deg);
+    --ease-demo-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+    --ease-demo-toast: cubic-bezier(0.22, 1, 0.36, 1);
+    --shadow-demo-popup: 0.25rem 0.25rem 0 rgb(0 0 0 / 12%);
+}
+
 :root {
+    color-scheme: light;
     --background: white;
-    --foreground: oklch(14.5% 1% 264deg);
-    --card: white;
+    --foreground: var(--color-neutral-950);
+    --card: var(--background);
     --card-foreground: var(--foreground);
-    --popover: white;
+    --popover: var(--background);
     --popover-foreground: var(--foreground);
-    --primary: oklch(20.5% 1% 264deg);
-    --primary-foreground: white;
-    --muted: oklch(96.5% 0.5% 264deg);
-    --muted-foreground: oklch(46% 1% 264deg);
-    --destructive: oklch(57.7% 0.245 27.325deg);
+    --primary: var(--foreground);
+    --primary-foreground: var(--background);
+    --muted: var(--color-neutral-100);
+    --muted-foreground: var(--color-neutral-600);
+    --destructive: var(--color-red-700);
     --destructive-foreground: white;
-    --border: oklch(90% 1% 264deg);
-    --ring: oklch(55% 1% 264deg);
+    --border: var(--foreground);
+    --ring: var(--foreground);
     --match: oklch(45% 50% 264deg);
 }
 
 :root[data-theme='dark'] {
-    --background: oklch(14.5% 1% 264deg);
-    --foreground: oklch(96% 0.5% 264deg);
-    --card: oklch(18% 1% 264deg);
-    --card-foreground: var(--foreground);
-    --popover: oklch(18% 1% 264deg);
-    --popover-foreground: var(--foreground);
-    --primary: oklch(92% 0.5% 264deg);
-    --primary-foreground: oklch(18% 1% 264deg);
-    --muted: oklch(24% 1% 264deg);
-    --muted-foreground: oklch(70% 1% 264deg);
-    --destructive: oklch(70.4% 0.191 22.216deg);
-    --destructive-foreground: oklch(18% 1% 264deg);
-    --border: oklch(30% 1% 264deg);
-    --ring: oklch(65% 1% 264deg);
+    color-scheme: dark;
+    --background: var(--color-neutral-950);
+    --foreground: white;
+    --muted: var(--color-neutral-800);
+    --muted-foreground: var(--color-neutral-400);
+    --destructive: var(--color-red-400);
+    --destructive-foreground: var(--background);
     --match: oklch(69% 50% 264deg);
 
     --color-gray-50: oklch(17% 0.25% 264deg);
@@ -250,6 +271,18 @@
     .demo-surface {
         @apply bg-card text-card-foreground border-border rounded-md border shadow-sm;
     }
+
+    .demo-popup,
+    .demo-combobox-popup,
+    .demo-menu-popup,
+    .demo-select-popup,
+    .demo-tooltip-popup {
+        @apply border-border bg-popover text-popover-foreground shadow-demo-popup border dark:shadow-none;
+    }
+
+    .demo-popup-arrow {
+        @apply before:border-border before:bg-popover relative block size-full overflow-clip before:absolute before:top-0 before:left-1/2 before:aspect-square before:w-[70.71%] before:-translate-x-1/2 before:-translate-y-1/2 before:rotate-45 before:border before:content-[''];
+    }
 }
 
 @keyframes popover-popup-in {
@@ -277,10 +310,7 @@
 }
 
 @layer components {
-    .demo-focus,
-    .demo-button,
-    .demo-input,
-    .demo-combobox-select-trigger {
+    .demo-focus {
         @apply focus-visible:ring-ring focus-visible:ring-offset-background outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
     }
 
@@ -288,8 +318,13 @@
         @apply fill-current drop-shadow-[0_1px_0_var(--color-border)];
     }
 
+    .demo-button,
+    .demo-input {
+        @apply focus-visible:outline-ring focus-visible:outline-2 focus-visible:-outline-offset-1;
+    }
+
     .demo-button {
-        @apply inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-colors disabled:pointer-events-none disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 data-[disabled]:pointer-events-none data-[disabled]:opacity-50;
+        @apply inline-flex items-center justify-center gap-2 text-sm font-normal whitespace-nowrap transition-colors disabled:pointer-events-none disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50 data-[disabled]:pointer-events-none data-[disabled]:opacity-50;
     }
 
     .demo-button-primary {
@@ -301,7 +336,7 @@
     }
 
     .demo-button-outline {
-        @apply border-border bg-background text-foreground hover:bg-muted border;
+        @apply border-foreground bg-background text-foreground hover:not-disabled:not-aria-disabled:not-data-disabled:bg-muted border active:not-disabled:not-aria-disabled:not-data-disabled:bg-neutral-200 dark:active:not-disabled:not-aria-disabled:not-data-disabled:bg-neutral-700;
     }
 
     .demo-button-ghost {
@@ -313,19 +348,15 @@
     }
 
     .demo-input {
-        @apply border-border bg-background text-foreground placeholder:text-muted-foreground rounded-md border text-sm;
+        @apply border-foreground bg-background text-foreground focus:outline-ring border text-sm placeholder:text-neutral-500 focus:outline-2 focus:-outline-offset-1 dark:placeholder:text-neutral-400 any-pointer-coarse:text-base;
     }
 
     .demo-select-trigger {
-        @apply border-border bg-background text-foreground hover:bg-muted rounded-md border text-start text-sm shadow-sm disabled:cursor-not-allowed;
-    }
-
-    .demo-select-popup {
-        @apply border-border bg-popover text-popover-foreground rounded-lg border shadow-md;
+        @apply border-foreground bg-background text-foreground hover:bg-muted focus-visible:outline-ring border text-start text-sm focus-visible:outline-2 focus-visible:-outline-offset-1 disabled:cursor-not-allowed;
     }
 
     .demo-select-item {
-        @apply text-popover-foreground cursor-default rounded-sm text-sm leading-none outline-none select-none;
+        @apply text-popover-foreground cursor-default text-sm leading-none outline-none select-none;
     }
 
     .demo-select-group-label {
@@ -337,11 +368,11 @@
     }
 
     .demo-otp-field-slot {
-        @apply border-border bg-background text-foreground rounded-md border text-center font-mono text-lg;
+        @apply border-foreground bg-background text-foreground focus:outline-ring border text-center text-base focus:outline-2 focus:-outline-offset-1;
     }
 
     .demo-label {
-        @apply text-foreground text-sm font-medium;
+        @apply text-foreground text-sm font-bold;
     }
 
     .demo-editable-preview {
@@ -361,51 +392,71 @@
     }
 
     .demo-dialog-title {
-        @apply text-card-foreground text-base font-semibold;
+        @apply text-card-foreground text-base font-bold;
     }
 
     .demo-drawer-popup {
-        @apply bg-card text-card-foreground shadow-lg;
+        @apply bg-card text-card-foreground shadow-demo-popup dark:shadow-none;
     }
 
     .demo-drawer-side-bottom {
-        @apply border-border rounded-t-2xl border-t border-b-0;
+        @apply border-border border-t border-b-0;
     }
 
     .demo-drawer-side-top {
-        @apply border-border rounded-b-2xl border-b;
+        @apply border-border border-b;
     }
 
     .demo-drawer-side-left {
-        @apply border-border rounded-r-2xl border-r;
+        @apply border-border border-r;
     }
 
     .demo-drawer-side-right {
-        @apply border-border rounded-l-2xl border-l;
+        @apply border-border border-l;
     }
 
     .demo-toast-title {
-        @apply text-card-foreground text-sm font-semibold;
+        @apply text-card-foreground text-sm font-bold;
     }
 
     .demo-popover-title {
-        @apply text-popover-foreground text-sm font-semibold;
+        @apply text-popover-foreground text-base font-bold;
+    }
+
+    .demo-popup-motion {
+        @apply origin-(--transform-origin) data-ending-style:scale-[0.98] data-ending-style:opacity-0 data-instant:transition-none data-starting-style:scale-[0.98] data-starting-style:opacity-0 motion-safe:transition-[scale,opacity] motion-safe:duration-100 motion-safe:ease-out;
+    }
+
+    .demo-option {
+        @apply data-highlighted:bg-primary data-highlighted:text-primary-foreground cursor-default text-sm outline-none select-none data-disabled:opacity-50;
+    }
+
+    .demo-menu-option {
+        @apply data-highlighted:text-primary-foreground data-highlighted:before:bg-primary relative isolate cursor-default text-sm leading-4 outline-none select-none data-disabled:opacity-50 data-highlighted:before:absolute data-highlighted:before:inset-x-1 data-highlighted:before:inset-y-0 data-highlighted:before:-z-1;
+    }
+
+    .demo-toolbar-pressable {
+        @apply text-foreground hover:bg-muted data-pressed:bg-primary data-pressed:text-primary-foreground data-pressed:hover:bg-primary relative select-none focus-visible:z-1 focus-visible:outline-offset-1 active:not-data-pressed:bg-neutral-200 dark:active:not-data-pressed:bg-neutral-700;
+    }
+
+    .demo-choice {
+        @apply border-foreground bg-background data-checked:bg-primary data-checked:text-primary-foreground data-indeterminate:bg-primary data-indeterminate:text-primary-foreground focus-visible:outline-ring flex shrink-0 items-center justify-center border p-0 text-transparent focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50 aria-disabled:opacity-50 data-disabled:opacity-50;
     }
 
     .demo-checkbox-button {
-        @apply border-border bg-background rounded-md border shadow-sm disabled:cursor-not-allowed aria-disabled:cursor-not-allowed;
+        @apply border-foreground bg-background border disabled:cursor-not-allowed aria-disabled:cursor-not-allowed;
     }
 
     .demo-radio-item {
-        @apply border-border bg-background hover:bg-muted rounded-full border shadow-sm disabled:cursor-not-allowed;
+        @apply border-foreground bg-background hover:bg-muted rounded-full border disabled:cursor-not-allowed;
     }
 
     .demo-avatar-root {
-        @apply bg-muted rounded-full select-none;
+        @apply rounded-full bg-neutral-200 select-none dark:bg-neutral-800;
     }
 
     .demo-accordion-root {
-        @apply border-border bg-card rounded-xl border shadow-xs;
+        @apply border-foreground bg-background border;
     }
 
     .demo-accordion-item-h {
@@ -413,19 +464,19 @@
     }
 
     .demo-accordion-trigger {
-        @apply bg-background text-foreground hover:bg-muted aria-disabled:text-muted-foreground aria-disabled:hover:bg-background cursor-default text-[15px] transition-colors aria-disabled:cursor-not-allowed;
+        @apply bg-background text-foreground hover:bg-muted focus-visible:outline-ring aria-disabled:text-muted-foreground aria-disabled:hover:bg-background cursor-default text-sm font-normal focus-visible:outline-2 focus-visible:-outline-offset-1 aria-disabled:cursor-not-allowed;
     }
 
     .demo-accordion-content {
-        @apply text-muted-foreground bg-muted text-[15px];
+        @apply bg-background text-foreground text-sm;
     }
 
     .demo-navigation-menu-trigger {
-        @apply hover:bg-muted focus-visible:bg-muted rounded-md outline-none;
+        @apply text-foreground hover:bg-muted focus-visible:bg-muted focus-visible:outline-ring focus-visible:outline-2 focus-visible:-outline-offset-1;
     }
 
     .demo-navigation-menu-card-link {
-        @apply hover:bg-muted focus-visible:bg-muted rounded-md transition-colors outline-none select-none;
+        @apply text-foreground hover:bg-muted focus-visible:bg-muted focus-visible:outline-ring transition-colors select-none focus-visible:outline-2 focus-visible:-outline-offset-1;
     }
 
     .demo-navigation-menu-card-text {
@@ -433,35 +484,35 @@
     }
 
     .demo-tooltip-popup {
-        @apply border-border bg-popover text-popover-foreground rounded-md border text-sm select-none;
+        @apply text-sm select-none;
     }
 
     .demo-menubar-root {
-        @apply border-border bg-background rounded-md border shadow-sm;
+        @apply bg-background text-foreground;
     }
 
     .demo-menubar-trigger {
-        @apply hover:bg-muted focus-visible:bg-muted cursor-default rounded-sm text-sm font-medium whitespace-nowrap outline-none select-none;
+        @apply hover:bg-muted focus-visible:bg-muted focus-visible:outline-ring cursor-default text-sm font-normal whitespace-nowrap select-none focus-visible:outline-2 focus-visible:-outline-offset-1;
     }
 
     .demo-menu-context-area {
-        @apply border-border text-muted-foreground focus-visible:outline-ring rounded-md border-2 border-dashed text-sm select-none focus-visible:outline-2;
+        @apply border-foreground bg-background text-foreground focus-visible:outline-ring border text-sm select-none focus-visible:outline-2 focus-visible:-outline-offset-1;
     }
 
     .demo-menu-popup {
-        @apply bg-popover text-popover-foreground border-border rounded-md border shadow-md outline-none;
+        @apply outline-none;
     }
 
     .demo-menu-item {
-        @apply cursor-default rounded-sm text-sm outline-none select-none;
+        @apply cursor-default text-sm outline-none select-none;
     }
 
     .demo-menu-selectable-item {
-        @apply cursor-default rounded-sm text-start text-sm outline-none select-none;
+        @apply cursor-default text-start text-sm outline-none select-none;
     }
 
     .demo-menu-group-label {
-        @apply text-muted-foreground text-xs font-semibold;
+        @apply text-muted-foreground text-xs font-bold;
     }
 
     .demo-cropper-root {
@@ -477,11 +528,11 @@
     }
 
     .demo-combobox-control {
-        @apply border-border bg-background rounded-md border;
+        @apply border-foreground bg-background focus-within:outline-ring border focus-within:outline-2 focus-within:-outline-offset-1;
     }
 
     .demo-combobox-input {
-        @apply text-foreground rounded-md bg-transparent text-sm outline-none;
+        @apply text-foreground bg-transparent text-sm outline-none any-pointer-coarse:text-base;
     }
 
     .demo-combobox-input-inline {
@@ -489,27 +540,23 @@
     }
 
     .demo-combobox-trigger {
-        @apply text-muted-foreground hover:text-foreground rounded-sm;
-    }
-
-    .demo-combobox-popup {
-        @apply border-border bg-popover text-popover-foreground rounded-md border shadow-md;
+        @apply text-foreground hover:bg-muted;
     }
 
     .demo-combobox-empty {
-        @apply text-muted-foreground text-center text-sm;
+        @apply text-muted-foreground text-start text-sm;
     }
 
     .demo-combobox-select-trigger {
-        @apply border-border bg-background text-foreground hover:bg-muted rounded-md border text-sm;
+        @apply border-foreground bg-background text-foreground hover:bg-muted border text-sm;
     }
 
     .demo-combobox-popup-input {
-        @apply text-foreground rounded-sm bg-transparent text-sm outline-none;
+        @apply text-foreground bg-transparent text-sm outline-none;
     }
 
     .demo-combobox-chip {
-        @apply bg-muted text-foreground rounded text-xs;
+        @apply bg-muted text-foreground text-xs;
     }
 }
 
@@ -816,29 +863,29 @@
 
 @layer components {
     .demo-switch {
-        @apply bg-muted cursor-pointer rounded-full border-0 shadow-sm transition-colors;
+        @apply border-foreground bg-background data-checked:bg-primary focus-visible:outline-ring flex shrink-0 border focus-visible:outline-2 focus-visible:outline-offset-2 data-disabled:cursor-not-allowed data-disabled:opacity-50 motion-safe:transition-colors motion-safe:duration-150;
     }
 
     .demo-switch-thumb {
-        @apply bg-background rounded-full shadow-sm;
+        @apply bg-foreground data-checked:bg-primary-foreground pointer-events-none block motion-safe:transition-[translate,background-color] motion-safe:duration-150;
     }
 }
 
 @layer components {
     .demo-tabs-root {
-        @apply border-border bg-background text-foreground rounded-xl border shadow-sm;
+        @apply border-foreground bg-background text-foreground border;
     }
 }
 
 @layer components {
     .demo-tabs-list {
-        @apply border-border bg-muted/30 border-b;
+        @apply border-foreground bg-background border-b;
     }
 }
 
 @layer components {
     .demo-tabs-tab {
-        @apply text-muted-foreground hover:text-foreground text-sm font-medium transition-colors outline-none;
+        @apply text-foreground hover:bg-muted focus-visible:outline-ring text-sm font-normal transition-colors focus-visible:outline-2 focus-visible:-outline-offset-1;
     }
 }
 
@@ -850,24 +897,24 @@
 
 @layer components {
     .demo-toolbar-root {
-        @apply border-border bg-background rounded-lg border shadow-sm;
+        @apply border-foreground bg-background border;
     }
 }
 
 @layer components {
     .demo-toolbar-button {
-        @apply text-foreground hover:bg-muted rounded-md text-sm font-medium transition-colors outline-none;
+        @apply text-foreground hover:bg-muted focus-visible:outline-ring text-sm font-normal transition-colors focus-visible:outline-2 focus-visible:outline-offset-1;
     }
 }
 
 @layer components {
     .demo-toolbar-toggle {
-        @apply text-muted-foreground hover:bg-muted rounded-md transition-colors outline-none;
+        @apply text-foreground hover:bg-muted focus-visible:outline-ring transition-colors focus-visible:outline-2 focus-visible:outline-offset-1;
     }
 }
 
 @layer components {
     .demo-toolbar-link {
-        @apply text-muted-foreground hover:text-foreground rounded-md text-sm outline-none;
+        @apply text-muted-foreground focus-visible:outline-ring text-sm hover:text-blue-700 focus-visible:outline-2 dark:hover:text-blue-500;
     }
 }

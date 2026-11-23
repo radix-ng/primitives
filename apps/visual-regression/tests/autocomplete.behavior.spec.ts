@@ -146,26 +146,27 @@ test.describe('Autocomplete scroll into view', () => {
     test('arrowing down a long list scrolls the highlighted option into view', async ({ page }) => {
         await gotoStory(page, 'primitives-autocomplete--default');
 
+        const list = page.locator('[rdxAutocompleteList]');
         await page.locator(input).click();
         // "component" matches 35 options — more than the popup can show at once.
         await page.locator(input).pressSequentially('component');
         await expect(page.locator(visibleItems).first()).toBeVisible();
-        expect(await page.locator(popup).evaluate((el) => el.scrollTop)).toBe(0);
+        expect(await list.evaluate((el) => el.scrollTop)).toBe(0);
 
         // Walk far enough down that the active option leaves the initial viewport.
         for (let i = 0; i < 14; i++) {
             await page.locator(input).press('ArrowDown');
         }
 
-        // The popup scrolled to keep the highlighted option visible.
-        expect(await page.locator(popup).evaluate((el) => el.scrollTop)).toBeGreaterThan(0);
+        // The list scrolled to keep the highlighted option visible.
+        expect(await list.evaluate((el) => el.scrollTop)).toBeGreaterThan(0);
         const active = page.locator(highlighted);
         await expect(active).toBeVisible();
         const box = await active.boundingBox();
-        const popupBox = await page.locator(popup).boundingBox();
-        if (!box || !popupBox) throw new Error('missing layout boxes');
-        expect(box.y).toBeGreaterThanOrEqual(popupBox.y - 1);
-        expect(box.y + box.height).toBeLessThanOrEqual(popupBox.y + popupBox.height + 1);
+        const listBox = await list.boundingBox();
+        if (!box || !listBox) throw new Error('missing layout boxes');
+        expect(box.y).toBeGreaterThanOrEqual(listBox.y - 1);
+        expect(box.y + box.height).toBeLessThanOrEqual(listBox.y + listBox.height + 1);
     });
 });
 

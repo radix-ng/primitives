@@ -32,8 +32,8 @@ import {
                 <span class="text-muted-foreground text-sm tabular-nums" rdxMeterValue></span>
             </div>
 
-            <div class="bg-muted h-3 overflow-hidden rounded-full" rdxMeterTrack>
-                <div class="bg-primary rounded-full" rdxMeterIndicator></div>
+            <div class="h-3 overflow-hidden bg-neutral-200 dark:bg-neutral-800" rdxMeterTrack>
+                <div class="bg-primary" rdxMeterIndicator></div>
             </div>
         </div>
     `

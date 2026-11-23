@@ -1,5 +1,16 @@
-import { computed, DestroyRef, Directive, effect, ElementRef, inject, Injector, input, signal } from '@angular/core';
-import { createContext, elementSize, injectId } from '@radix-ng/primitives/core';
+import {
+    afterNextRender,
+    computed,
+    DestroyRef,
+    Directive,
+    effect,
+    ElementRef,
+    inject,
+    Injector,
+    input,
+    signal
+} from '@angular/core';
+import { createContext, elementSize, injectId, waitForAnimations } from '@radix-ng/primitives/core';
 import { RdxToastManager } from './toast-provider';
 import { RdxToastSwipeDirection, useToastSwipe } from './toast-swipe';
 import { RdxToastObject } from './toast.types';
@@ -51,7 +62,8 @@ const rootContext = (): RdxToastRootContext => {
  * - `[data-state]` — `open` while visible, `closed` once dismissal begins.
  * - `[data-swiping]` / `[data-swipe-direction]` / `[data-swipe-dismiss]` — gesture state.
  *
- * When the leave animation (driven by `data-state="closed"`) ends, the toast leaves the queue.
+ * The toast leaves the queue after finite CSS animations and transitions on the Root finish.
+ * Without motion, it is removed after the closed state has rendered.
  */
 @Directive({
     selector: '[rdxToastRoot]',
@@ -75,8 +87,7 @@ const rootContext = (): RdxToastRootContext => {
         '[attr.data-expanded]': 'manager.expanded() ? "" : undefined',
         '[style.--toast-index]': 'index()',
         '[style.--toast-height]': 'height() + "px"',
-        '[style.--toast-offset-y]': 'offsetY() + "px"',
-        '(animationend)': 'onAnimationEnd()'
+        '[style.--toast-offset-y]': 'offsetY() + "px"'
     }
 })
 export class RdxToastRoot {
@@ -135,11 +146,43 @@ export class RdxToastRoot {
             onRelease: () => this.manager.resumeAll()
         });
 
+        effect((onCleanup) => {
+            if (this.dataState() !== 'closed') return;
+
+            const controller = new AbortController();
+            const render = afterNextRender(
+                {
+                    read: () => {
+                        const id = this.toast().id;
+                        waitForAnimations(
+                            [this.elementRef.nativeElement],
+                            () => {
+                                // Re-adding an id can revive it before this effect cleans up.
+                                if (
+                                    this.manager.toasts().find((toast) => toast.id === id)?.transitionStatus ===
+                                    'ending'
+                                ) {
+                                    this.manager.remove(id);
+                                }
+                            },
+                            controller.signal
+                        );
+                    }
+                },
+                { injector: this.injector }
+            );
+            onCleanup(() => {
+                render.destroy();
+                controller.abort();
+            });
+        });
+
         // Replay the enter animation on an upsert that bumps `updateKey`. The toast keeps the same
         // DOM node (tracked by id), so restart the running animation by clearing and re-reading it.
+        const updateKey = computed(() => this.toast().updateKey);
         let firstKey = true;
         effect(() => {
-            this.toast().updateKey;
+            updateKey();
             if (firstKey) {
                 firstKey = false;
                 return;
@@ -155,12 +198,5 @@ export class RdxToastRoot {
 
     close(): void {
         this.manager.close(this.toast().id);
-    }
-
-    protected onAnimationEnd(): void {
-        // Remove from the queue only after the leave ("closed") animation completes.
-        if (this.toast().transitionStatus === 'ending') {
-            this.manager.remove(this.toast().id);
-        }
     }
 }

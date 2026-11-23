@@ -25,9 +25,9 @@ import {
                 <span class="text-muted-foreground text-sm tabular-nums" rdxProgressValue></span>
             </div>
 
-            <div class="bg-muted h-3 overflow-hidden rounded-full" rdxProgressTrack>
+            <div class="h-3 overflow-hidden bg-neutral-200 dark:bg-neutral-800" rdxProgressTrack>
                 <div
-                    class="bg-primary h-full w-1/3 rounded-full transition-transform duration-500 ease-out data-[indeterminate]:animate-pulse data-[indeterminate]:rounded-none"
+                    class="bg-primary h-full w-1/3 transition-transform duration-500 ease-out data-[indeterminate]:animate-pulse data-[indeterminate]:rounded-none"
                     rdxProgressIndicator
                 ></div>
             </div>

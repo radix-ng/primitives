@@ -13,8 +13,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxScrollAreaRoot, RdxScrollAreaViewport } from '@radix-ng/primitives/scroll-area';
 import { RdxTabsIndicator, RdxTabsList, RdxTabsPanel, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 
-const html = String.raw;
-
 /**
  * Combining Scroll Area with Tabs. The Angular equivalent of Base UI's `render` prop is stacking
  * both directives on a single element: `rdxTabsList` + `rdxScrollAreaViewport` make the tab list
@@ -34,9 +32,9 @@ const html = String.raw;
         RdxTabsPanel,
         RdxTabsIndicator
     ],
-    template: html`
+    template: `
         <div
-            class="border-border bg-background text-foreground w-80 overflow-hidden rounded-md border"
+            class="border-border bg-background text-foreground w-80 overflow-hidden border"
             rdxTabsRoot
             defaultValue="overview"
         >
@@ -47,13 +45,13 @@ const html = String.raw;
                     rdxScrollAreaViewport
                 >
                     @for (tab of tabs; track tab.value) {
-                    <button
-                        class="text-muted-foreground hover:text-foreground focus-visible:ring-ring data-[active]:text-foreground shrink-0 px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors outline-none focus-visible:ring-2"
-                        rdxTabsTab
-                        [value]="tab.value"
-                    >
-                        {{ tab.label }}
-                    </button>
+                        <button
+                            class="text-muted-foreground hover:text-foreground focus-visible:ring-ring data-[active]:text-foreground shrink-0 px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors outline-none focus-visible:ring-2"
+                            [value]="tab.value"
+                            rdxTabsTab
+                        >
+                            {{ tab.label }}
+                        </button>
                     }
 
                     <!-- Lives inside the scrolling list, so it tracks the active tab even while scrolled. -->
@@ -65,7 +63,7 @@ const html = String.raw;
             </div>
 
             @for (tab of tabs; track tab.value) {
-            <div class="p-4 text-sm leading-6 outline-none" rdxTabsPanel [value]="tab.value">{{ tab.content }}</div>
+                <div class="p-4 text-sm leading-6 outline-none" [value]="tab.value" rdxTabsPanel>{{ tab.content }}</div>
             }
         </div>
     `
@@ -83,3 +81,5 @@ export class ScrollAreaTabsExample {
     ];
 }
 ```
+
+[Example setup](../guides/styling.md#copy-an-example-into-your-app)

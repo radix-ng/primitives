@@ -14,3 +14,9 @@ the Base UI API because Toggle Group is already a CVA/Signal Forms value control
   <button rdxToggle value="italic">Italic</button>
 </div>
 ```
+
+[Example setup](../guides/styling.md#copy-an-example-into-your-app)
+
+## Example files
+
+Install `@lucide/angular` for the icons.

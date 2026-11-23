@@ -38,7 +38,8 @@ test('updates the transform origin when the arrow renders and its border box res
 
     await expectMeasuredOrigin();
 
-    await arrow.locator('svg').evaluate((element: SVGElement) => {
+    await arrow.evaluate((element: HTMLElement) => {
+        element.style.boxSizing = 'content-box';
         element.style.width = '24px';
         element.style.height = '12px';
     });

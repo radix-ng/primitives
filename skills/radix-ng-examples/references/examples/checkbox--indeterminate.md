@@ -11,7 +11,7 @@ To clear the mixed state after an accepted edit, update the value bound to `[ind
 ```typescript
 import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, model } from '@angular/core';
-import { LucideDynamicIcon } from '@lucide/angular';
+import { LucideCheck, LucideDynamicIcon, LucideMinus } from '@lucide/angular';
 import {
     RdxCheckboxButtonDirective,
     RdxCheckboxIndicatorDirective,
@@ -50,7 +50,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                     <svg
                         class="text-primary flex items-center"
                         *rdxCheckboxIndicatorPresence
-                        [lucideIcon]="iconName()"
+                        [lucideIcon]="icon()"
                         rdxCheckboxIndicator
                         size="16"
                     />
@@ -77,7 +77,7 @@ export class CheckboxIndeterminate {
     readonly indeterminate = model<boolean>(false);
 
     // `checked` and `indeterminate` are orthogonal; the mixed state takes visual priority.
-    readonly iconName = computed(() => (this.indeterminate() ? 'minus' : 'check'));
+    readonly icon = computed(() => (this.indeterminate() ? LucideMinus : LucideCheck));
 
     toggleIndeterminate() {
         this.indeterminate.update((value) => !value);

@@ -9,24 +9,24 @@ async function story(page: Page, name: string, theme: string) {
 const motionCases = [
     {
         story: 'popover--default',
-        trigger: 'Add details',
+        trigger: 'Shipping information',
         popup: '[rdxPopoverPopup]',
-        entry: 'animation:popover-popup-in',
+        entry: 'transition:scale',
         closing: 'data-ending-style'
     },
     {
         story: 'dialog--default',
         trigger: 'Edit profile',
         popup: '[rdxDialogPopup]',
-        entry: 'animation:dialog-popup-in',
-        closing: 'data-closed'
+        entry: 'transition:scale',
+        closing: 'data-ending-style'
     },
     {
         story: 'drawer--default',
         trigger: 'Open drawer',
         popup: '[rdxDrawerPopup]',
         entry: 'transition:transform',
-        closing: 'data-closed'
+        closing: 'data-ending-style'
     },
     {
         story: 'menu--animated',
@@ -38,10 +38,63 @@ const motionCases = [
 ] as const;
 
 for (const theme of ['light', 'dark']) {
+    test(`Switch hero toggles with the keyboard and shows focus in ${theme}`, async ({ page, browserName }) => {
+        await story(page, 'switch--default', theme);
+        const control = page.getByRole('switch', { name: 'Notifications', exact: true });
+        const thumb = page.locator('[rdxSwitchThumb]');
+        const thumbOffset = () =>
+            thumb.evaluate((node) =>
+                Math.round(node.getBoundingClientRect().left - node.parentElement!.getBoundingClientRect().left)
+            );
+        const checkedColor = await control.evaluate((node) => getComputedStyle(node).backgroundColor);
+
+        await expect(control).toHaveCSS('width', '36px');
+        await expect(control).toHaveAttribute('aria-checked', 'true');
+        await expect.poll(thumbOffset).toBe(19);
+        // On macOS, WebKit uses Option+Tab to include switches in the full Tab order.
+        await page.keyboard.press(browserName === 'webkit' && process.platform === 'darwin' ? 'Alt+Tab' : 'Tab');
+        await expect(control).toBeFocused();
+        await expect(control).toHaveCSS('outline-width', '2px');
+        await control.press('Space');
+        await expect(control).toHaveAttribute('aria-checked', 'false');
+        await expect.poll(thumbOffset).toBe(3);
+        await expect(control).not.toHaveCSS('background-color', checkedColor);
+        await page.getByText('Notifications', { exact: true }).click();
+        await expect(control).toHaveAttribute('aria-checked', 'true');
+    });
+
+    test(`Accordion hero animates the panel and can reopen during exit in ${theme}`, async ({ page }) => {
+        await story(page, 'accordion--default', theme);
+        const trigger = page.getByRole('button', { name: 'What is Radix NG?', exact: true });
+        const selector = '[rdxAccordionPanel]';
+        const panel = page.locator(selector);
+        await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+        await page.keyboard.press('Tab');
+        await expect(trigger).toBeFocused();
+        await expect(trigger).toHaveCSS('outline-width', '2px');
+        await trigger.press('Enter');
+        await expect(panel).toBeVisible();
+        const exit = await holdExitAnimations(page, [selector], 'data-ending-style');
+        await panel.evaluate((node) => node.setAttribute('data-test-retained', ''));
+        await trigger.press('Enter');
+        await expect(panel).toHaveAttribute('data-ending-style', '');
+        await expect.poll(exit.count).toBeGreaterThan(0);
+        await exit.seek(0.4);
+        await exit.dispose();
+        await trigger.press('Enter');
+        await expect(panel).not.toHaveAttribute('data-ending-style');
+        await expect(panel).toHaveAttribute('data-test-retained', '');
+        const finalExit = await holdExitAnimations(page, [selector], 'data-ending-style');
+        await trigger.press('Enter');
+        await expect.poll(finalExit.count).toBeGreaterThan(0);
+        await finalExit.finish();
+        await expect(panel).toHaveCount(0);
+    });
+
     test(`shared controls, utility overrides, focus-visible and disabled in ${theme}`, async ({ page }) => {
         await story(page, 'button--default', theme);
         const button = page.getByRole('button', { name: 'Button', exact: true });
-        await expect(button).toHaveCSS('height', '36px');
+        await expect(button).toHaveCSS('height', '32px');
         const overrides = await button.evaluate((element) => {
             const reference = document.createElement('button');
             reference.className = 'bg-muted border border-transparent shadow-none';
@@ -68,15 +121,15 @@ for (const theme of ['light', 'dark']) {
         await page.keyboard.press('Tab');
         await expect(button).toBeFocused();
         expect(await button.evaluate((element) => element.matches(':focus-visible'))).toBe(true);
-        await expect(button).not.toHaveCSS('box-shadow', 'none');
+        await expect(button).toHaveCSS('outline-width', '2px');
 
         await story(page, 'input--default', theme);
-        const input = page.locator('input');
+        const input = page.getByRole('textbox', { name: 'Email' });
         await expect(input).toBeVisible();
         await page.keyboard.press('Tab');
         await expect(input).toBeFocused();
-        await expect(input).toHaveCSS('height', '36px');
-        await expect(input).not.toHaveCSS('box-shadow', 'none');
+        await expect(input).toHaveCSS('height', '32px');
+        await expect(input).toHaveCSS('outline-width', '2px');
         await input.fill('Keyboard input');
         await expect(input).toHaveValue('Keyboard input');
 
@@ -102,19 +155,27 @@ for (const theme of ['light', 'dark']) {
             const errors: string[] = [];
             page.on('pageerror', (error) => errors.push(error.message));
             await story(page, example.story, theme);
-            await page.evaluate((selector) => {
-                const record = (event: AnimationEvent | TransitionEvent, kind: string, name: string) => {
-                    if (
-                        event.target instanceof HTMLElement &&
-                        event.target.matches(selector) &&
-                        event.target.hasAttribute('data-open')
-                    ) {
-                        event.target.dataset['testEntry'] = `${kind}:${name}`;
-                    }
-                };
-                document.addEventListener('animationstart', (event) => record(event, 'animation', event.animationName));
-                document.addEventListener('transitionrun', (event) => record(event, 'transition', event.propertyName));
-            }, example.popup);
+            await page.evaluate(
+                ({ selector, expected }) => {
+                    const record = (event: AnimationEvent | TransitionEvent, kind: string, name: string) => {
+                        if (
+                            event.target instanceof HTMLElement &&
+                            event.target.matches(selector) &&
+                            event.target.hasAttribute('data-open') &&
+                            `${kind}:${name}` === expected
+                        ) {
+                            event.target.dataset['testEntry'] = `${kind}:${name}`;
+                        }
+                    };
+                    document.addEventListener('animationstart', (event) =>
+                        record(event, 'animation', event.animationName)
+                    );
+                    document.addEventListener('transitionrun', (event) =>
+                        record(event, 'transition', event.propertyName)
+                    );
+                },
+                { selector: example.popup, expected: example.entry }
+            );
             const trigger = page.getByRole('button', { name: example.trigger, exact: true });
             await trigger.click();
             const popup = page.locator(example.popup);

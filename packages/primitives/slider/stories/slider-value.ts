@@ -28,10 +28,10 @@ import {
                 <output class="text-muted-foreground tabular-nums" rdxSliderValue></output>
             </div>
             <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>
-                <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
-                    <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>
+                <div class="relative h-1 w-full bg-neutral-200 dark:bg-neutral-800" rdxSliderTrack>
+                    <div class="bg-primary h-full" rdxSliderIndicator></div>
                     <div
-                        class="border-border bg-background focus-within:ring-ring block size-5 rounded-full border shadow-sm focus-within:ring-2"
+                        class="border-border bg-background focus-within:ring-ring block size-5 border focus-within:ring-2"
                         rdxSliderThumb
                     >
                         <input rdxSliderThumbInput aria-labelledby="slider-value-label" />

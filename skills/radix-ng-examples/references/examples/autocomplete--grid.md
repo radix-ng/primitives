@@ -123,7 +123,7 @@ function chunk<T>(items: T[], size: number): T[][] {
                                         <div class="grid grid-cols-5" rdxAutocompleteRow>
                                             @for (item of row; track item.emoji) {
                                                 <div
-                                                    class="data-[highlighted]:bg-muted flex h-10 cursor-default items-center justify-center rounded-sm text-xl outline-none data-[disabled]:opacity-50"
+                                                    class="data-highlighted:bg-primary data-highlighted:text-primary-foreground flex h-10 cursor-default items-center justify-center rounded-sm text-xl outline-none data-[disabled]:opacity-50"
                                                     [textValue]="item.name"
                                                     rdxAutocompleteItem
                                                 >

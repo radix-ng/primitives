@@ -43,18 +43,18 @@ and follow its links to the other Agents guides.
 addressed by the component slug and the kebab-cased example name. Cheaper than re-reading the whole
 component doc.
 
-Total: **319 examples** across **44 components**.
+Total: **326 examples** across **44 components**.
 
 ## Components
 
 - **[Accordion](./references/components/accordion.md)** — A vertically stacked set of interactive headings that each reveal an associated section of content. _(10 examples)_
 - **[Alert Dialog](./references/components/alert-dialog.md)** — A modal dialog that interrupts the user with important content and expects a response. _(7 examples)_
 - **[Autocomplete](./references/components/autocomplete.md)** — A text input with a list of suggestions: free-form text whose value **is** the input string, with the active option tracked via `aria-activedescendant`. _(16 examples)_
-- **[Avatar](./references/components/avatar.md)** — An image element with a fallback for representing the user. _(3 examples)_
+- **[Avatar](./references/components/avatar.md)** — An image element with a fallback for representing the user. _(4 examples)_
 - **[Button](./references/components/button.md)** — A button, or any element that should behave like one. _(6 examples)_
 - **[Calendar](./references/components/calendar.md)** — Displays dates and days of the week, facilitating date-related interactions. _(8 examples)_
 - **[Checkbox](./references/components/checkbox.md)** — A control that allows the user to toggle between checked and not checked. _(10 examples)_
-- **[Collapsible](./references/components/collapsible.md)** — A collapsible panel controlled by a button. _(3 examples)_
+- **[Collapsible](./references/components/collapsible.md)** — A collapsible panel controlled by a button. _(4 examples)_
 - **[Combobox](./references/components/combobox.md)** — A filterable select: a text input that filters a list of options, with the highlighted option tracked via `aria-activedescendant`. _(17 examples)_
 - **[Context Menu](./references/components/context-menu.md)** — A menu that appears at the pointer on right click (or touch long-press), built on the Menu primitive. _(6 examples)_
 - **[Cropper](./references/components/cropper.md)** — Headless component for interactive image cropping — inspired by the experience on [X](https://x.com/). _(3 examples)_
@@ -77,17 +77,17 @@ Total: **319 examples** across **44 components**.
 - **[Preview Card](./references/components/preview-card.md)** — A popup that appears when a link is hovered or focused, showing a visual preview. _(5 examples)_
 - **[Progress](./references/components/progress.md)** — Displays task completion with accessible label, value, track, and indicator parts. _(4 examples)_
 - **[Radio Group](./references/components/radio.md)** — A set of checkable buttons—known as radio buttons—where no more than one of the buttons can be checked at a time. _(3 examples)_
-- **[Scroll Area](./references/components/scroll-area.md)** — A native scroll container with a custom, cross-browser scrollbar. _(4 examples)_
+- **[Scroll Area](./references/components/scroll-area.md)** — A native scroll container with a custom, cross-browser scrollbar. _(5 examples)_
 - **[Select](./references/components/select.md)** — A control that presents a list of options for the user to pick from, triggered by a button. _(24 examples)_
 - **[Separator](./references/components/separator.md)** — A separator element accessible to screen readers. _(2 examples)_
 - **[Signal Forms](./references/components/signal-forms.md)** — Bridge Angular [Signal Forms](https://angular.dev/guide/forms/signals/overview) into headless `Field` and `Form`. _(6 examples)_
-- **[Slider](./references/components/slider.md)** — An input where the user selects a value, or a range of values, from within a given range. _(5 examples)_
+- **[Slider](./references/components/slider.md)** — An input where the user selects a value, or a range of values, from within a given range. _(6 examples)_
 - **[Stepper](./references/components/stepper.md)** — A set of steps that are used to indicate progress through a multi-step process. _(2 examples)_
-- **[Switch](./references/components/switch.md)** — A control that allows the user to toggle between checked and not checked. _(5 examples)_
+- **[Switch](./references/components/switch.md)** — A control that allows the user to toggle between checked and not checked. _(6 examples)_
 - **[Tabs](./references/components/tabs.md)** — A set of layered sections of content—known as tab panels—that are displayed one at a time. _(9 examples)_
 - **[Time Field](./references/components/time-field.md)** — A segmented time input that lets users enter a time hour-by-hour with full keyboard control and localization. _(7 examples)_
 - **[Toast](./references/components/toast.md)** — A succinct, low-priority message that appears temporarily, stacks, and can be swiped away. _(11 examples)_
-- **[Toggle](./references/components/toggle.md)** — A two-state button that can be either on or off. _(3 examples)_
-- **[Toggle Group](./references/components/toggle-group.md)** — A set of two-state buttons that can be toggled on or off. _(4 examples)_
+- **[Toggle](./references/components/toggle.md)** — A two-state button that can be either on or off. _(4 examples)_
+- **[Toggle Group](./references/components/toggle-group.md)** — A set of two-state buttons that can be toggled on or off. _(5 examples)_
 - **[Toolbar](./references/components/toolbar.md)** — A container for grouping a set of controls, such as buttons, toggle groups or menus. _(6 examples)_
 - **[Tooltip](./references/components/tooltip.md)** — Displays contextual information when a trigger is hovered or focused. _(6 examples)_

@@ -44,12 +44,12 @@ import {
     template: `
         <div class="relative w-52 select-none" [value]="45" [step]="5" rdxSliderRoot>
             <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>
-                <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
-                    <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>
+                <div class="bg-muted relative h-1 w-full" rdxSliderTrack>
+                    <div class="bg-primary h-full" rdxSliderIndicator></div>
 
                     <ng-container [open]="showTooltipState()" rdxTooltip disabled>
                         <div
-                            class="border-border bg-background focus-within:ring-ring focus-within:ring-offset-background block size-5 rounded-full border shadow-sm focus-within:ring-2 focus-within:ring-offset-2"
+                            class="border-border bg-background focus-within:ring-ring focus-within:ring-offset-background block size-5 border focus-within:ring-2 focus-within:ring-offset-2"
                             [rdxOnPointerDown]="handlePointerDown"
                             rdxSliderThumb
                             rdxTooltipTrigger

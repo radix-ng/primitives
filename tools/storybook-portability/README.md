@@ -7,7 +7,7 @@ pnpm primitives:build
 node tools/storybook-portability/check.mjs
 ```
 
-The check discovers CSF raw component sources using the shared demo classes, follows local wrapper,
+The check discovers CSF raw component sources using the shared demo classes or semantic colors, follows local wrapper,
 helper and HTML dependencies, and copies them into a fresh Angular application outside the workspace.
 It installs the built Radix NG tarball and the examples' dependencies, then runs a production AOT build
 with strict template checks and Tailwind v4. There are no workspace `paths` or source package links.

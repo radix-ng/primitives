@@ -131,7 +131,7 @@ const CREATE = '__rdx_create__';
                     <div class="flex flex-col" rdxComboboxList aria-label="Labels">
                         @for (label of options(); track label) {
                             <div
-                                class="demo-menu-item data-[highlighted]:bg-muted relative flex items-center py-1.5 pr-2 pl-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[selected]:font-medium"
+                                class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex items-center py-1.5 pr-2 pl-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[selected]:font-medium"
                                 [value]="label"
                                 rdxComboboxItem
                             >
@@ -146,7 +146,7 @@ const CREATE = '__rdx_create__';
                         }
                         @if (showCreate()) {
                             <div
-                                class="demo-menu-item data-[highlighted]:bg-muted relative flex items-center py-1.5 pr-2 pl-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[selected]:font-medium"
+                                class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex items-center py-1.5 pr-2 pl-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[selected]:font-medium"
                                 [value]="CREATE"
                                 [textValue]="query()"
                                 rdxComboboxItem
@@ -170,7 +170,7 @@ const CREATE = '__rdx_create__';
                     rdxDialogBackdrop
                 ></div>
                 <div
-                    class="demo-surface data-[open]:animate-dialog-popup-in data-[closed]:animate-dialog-popup-out fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 p-6 transition-[transform,scale] focus:outline-none data-[nested-dialog-open]:scale-[0.96]"
+                    class="demo-popup data-[open]:animate-dialog-popup-in data-[closed]:animate-dialog-popup-out fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 p-6 transition-[transform,scale] focus:outline-none data-[nested-dialog-open]:scale-[0.96]"
                     rdxDialogPopup
                 >
                     <h2 class="demo-dialog-title" rdxDialogTitle>Create new label</h2>

@@ -33,8 +33,8 @@ import {
                 <span class="text-muted-foreground text-sm tabular-nums" rdxMeterValue></span>
             </div>
 
-            <div class="bg-muted h-3 overflow-hidden rounded-full" rdxMeterTrack>
-                <div class="bg-destructive rounded-full" rdxMeterIndicator></div>
+            <div class="h-3 overflow-hidden bg-neutral-200 dark:bg-neutral-800" rdxMeterTrack>
+                <div class="bg-destructive" rdxMeterIndicator></div>
             </div>
         </div>
     `
@@ -44,3 +44,5 @@ export class MeterAriaValueTextStory {
     protected readonly ariaValueText = 'Memory pressure is high';
 }
 ```
+
+[Example setup](../guides/styling.md#copy-an-example-into-your-app)

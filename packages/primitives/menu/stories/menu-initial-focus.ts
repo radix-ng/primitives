@@ -80,7 +80,7 @@ import {
                             @if (nested()) {
                                 <ng-container rdxMenuRoot>
                                     <button
-                                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                        class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                         [disabled]="allDisabled()"
                                         rdxMenuSubTrigger
                                     >
@@ -98,7 +98,7 @@ import {
                                                 rdxMenuPopup
                                             >
                                                 <button
-                                                    class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                    class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                                     [disabled]="firstDisabled() || allDisabled()"
                                                     (onSelect)="selected.set('First child command')"
                                                     rdxMenuItem
@@ -106,7 +106,7 @@ import {
                                                     First child command
                                                 </button>
                                                 <button
-                                                    class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                    class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                                     [disabled]="allDisabled()"
                                                     (onSelect)="selected.set('Second child command')"
                                                     rdxMenuItem
@@ -119,7 +119,7 @@ import {
                                 </ng-container>
                             }
                             <button
-                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                 [disabled]="firstDisabled() || allDisabled()"
                                 (onSelect)="selected.set('First command')"
                                 rdxMenuItem
@@ -127,7 +127,7 @@ import {
                                 First command
                             </button>
                             <button
-                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                 [disabled]="allDisabled()"
                                 (onSelect)="selected.set('Second command')"
                                 rdxMenuItem

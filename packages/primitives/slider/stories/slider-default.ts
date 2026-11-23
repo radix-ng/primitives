@@ -14,11 +14,11 @@ import {
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
         <div class="relative w-56 select-none" [value]="45" [step]="5" rdxSliderRoot>
-            <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>
-                <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
-                    <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>
+            <div class="flex w-full touch-none items-center py-3" rdxSliderControl>
+                <div class="relative h-1 w-full bg-neutral-200 dark:bg-neutral-800" rdxSliderTrack>
+                    <div class="bg-primary h-full" rdxSliderIndicator></div>
                     <div
-                        class="border-border bg-background focus-within:ring-ring block size-5 rounded-full border shadow-sm focus-within:ring-2"
+                        class="border-foreground bg-background has-focus-visible:outline-ring block size-4 border has-focus-visible:outline-2 has-focus-visible:outline-offset-2"
                         rdxSliderThumb
                     >
                         <input rdxSliderThumbInput aria-label="Value" />

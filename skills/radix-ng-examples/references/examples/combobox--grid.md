@@ -74,7 +74,7 @@ import {
                             <div class="flex gap-1" rdxComboboxRow>
                                 @for (size of row; track size) {
                                     <div
-                                        class="data-[highlighted]:bg-muted data-[selected]:bg-primary data-[selected]:text-primary-foreground flex h-9 flex-1 cursor-default items-center justify-center rounded-sm text-sm outline-none"
+                                        class="data-highlighted:bg-primary data-highlighted:text-primary-foreground data-[selected]:bg-primary data-[selected]:text-primary-foreground flex h-9 flex-1 cursor-default items-center justify-center rounded-sm text-sm outline-none"
                                         [value]="size"
                                         rdxComboboxItem
                                     >

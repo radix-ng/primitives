@@ -48,7 +48,7 @@ import {
             <ng-template rdxDialogPortal>
                 <div class="bg-foreground/50 fixed inset-0 z-50" rdxDialogBackdrop></div>
                 <div
-                    class="demo-surface fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 p-6 transition-[transform,scale] focus:outline-none data-[nested-dialog-open]:scale-[0.96]"
+                    class="demo-popup fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 p-6 transition-[transform,scale] focus:outline-none data-[nested-dialog-open]:scale-[0.96]"
                     rdxDialogPopup
                 >
                     <h2 class="demo-dialog-title" rdxDialogTitle>Workspace commands</h2>
@@ -100,7 +100,7 @@ import {
                                         rdxMenuPopup
                                     >
                                         <button
-                                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                            class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                             (onSelect)="selected.set('Rename')"
                                             rdxMenuItem
                                         >
@@ -108,7 +108,7 @@ import {
                                         </button>
                                         <ng-container rdxMenuRoot>
                                             <button
-                                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                                 rdxMenuSubTrigger
                                             >
                                                 Share
@@ -127,14 +127,14 @@ import {
                                                         rdxMenuPopup
                                                     >
                                                         <button
-                                                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                            class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                                             (onSelect)="selected.set('Copy link')"
                                                             rdxMenuItem
                                                         >
                                                             Copy link
                                                         </button>
                                                         <button
-                                                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                            class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                                             (onSelect)="selected.set('Invite member')"
                                                             rdxMenuItem
                                                         >
@@ -145,7 +145,7 @@ import {
                                             </ng-template>
                                         </ng-container>
                                         <button
-                                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                            class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                             (onSelect)="selected.set('Archive')"
                                             rdxMenuItem
                                         >

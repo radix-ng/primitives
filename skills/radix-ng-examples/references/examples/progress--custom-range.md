@@ -42,11 +42,8 @@ import {
                 <span class="text-muted-foreground text-sm tabular-nums" rdxProgressValue></span>
             </div>
 
-            <div class="bg-muted h-3 overflow-hidden rounded-full" rdxProgressTrack>
-                <div
-                    class="bg-primary h-full rounded-full transition-[width] duration-500 ease-out"
-                    rdxProgressIndicator
-                ></div>
+            <div class="h-3 overflow-hidden bg-neutral-200 dark:bg-neutral-800" rdxProgressTrack>
+                <div class="bg-primary h-full transition-[width] duration-500 ease-out" rdxProgressIndicator></div>
             </div>
         </div>
     `
@@ -58,3 +55,5 @@ export class ProgressCustomRangeStory {
     protected readonly valueLabel = (value: number, min: number, max: number) => `${value - min} of ${max - min} MB`;
 }
 ```
+
+[Example setup](../guides/styling.md#copy-an-example-into-your-app)

@@ -25,7 +25,7 @@ import {
                 }
             </div>
             @for (section of sections; track section) {
-                <div class="border-border rounded border p-4" *rdxTabsPanelPresence="section" rdxTabsPanel>
+                <div class="border-border border p-4" *rdxTabsPanelPresence="section" rdxTabsPanel>
                     {{ section.description }}
                 </div>
             }

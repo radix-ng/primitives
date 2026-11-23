@@ -29,26 +29,20 @@ import {
         RdxNumberFieldDecrement
     ],
     template: `
-        <div class="flex flex-col gap-1.5" [id]="'quantity'" [defaultValue]="100" [min]="0" rdxNumberFieldRoot>
-            <label class="text-foreground text-sm font-medium" for="quantity">Quantity</label>
-            <div
-                class="border-border bg-background focus-within:ring-ring flex h-9 w-fit items-center rounded-md border shadow-sm focus-within:ring-2"
-                rdxNumberFieldGroup
-            >
-                <button
-                    class="text-foreground hover:bg-muted flex size-9 items-center justify-center rounded-l-md outline-none select-none disabled:pointer-events-none disabled:opacity-40"
-                    rdxNumberFieldDecrement
-                >
+        <div
+            class="flex flex-col items-start gap-1"
+            [id]="'quantity'"
+            [defaultValue]="100"
+            [min]="0"
+            rdxNumberFieldRoot
+        >
+            <label class="text-foreground text-sm font-bold" for="quantity">Quantity</label>
+            <div class="flex h-8" rdxNumberFieldGroup>
+                <button class="demo-button demo-button-outline size-8 border-e-0" rdxNumberFieldDecrement>
                     <svg class="flex" [lucideIcon]="Minus" size="16" />
                 </button>
-                <input
-                    class="text-foreground h-9 w-16 bg-transparent text-center tabular-nums outline-none"
-                    rdxNumberFieldInput
-                />
-                <button
-                    class="text-foreground hover:bg-muted flex size-9 items-center justify-center rounded-r-md outline-none select-none disabled:pointer-events-none disabled:opacity-40"
-                    rdxNumberFieldIncrement
-                >
+                <input class="demo-input h-full w-[7ch] px-2 text-start tabular-nums focus:z-1" rdxNumberFieldInput />
+                <button class="demo-button demo-button-outline size-8 border-s-0" rdxNumberFieldIncrement>
                     <svg class="flex" [lucideIcon]="Plus" size="16" />
                 </button>
             </div>
@@ -60,3 +54,5 @@ export class NumberFieldDefaultExample {
     protected readonly Plus = Plus;
 }
 ```
+
+[Example setup](../guides/styling.md#copy-an-example-into-your-app)

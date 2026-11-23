@@ -30,26 +30,20 @@ import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator }
         RdxToolbarSeparator
     ],
     template: `
-        <div class="demo-toolbar-root flex w-fit items-center gap-1 p-1" rdxToolbarRoot aria-label="Formatting options">
-            <div class="flex gap-1" rdxToggleGroupWithoutFocus multiple aria-label="Text formatting">
-                <button
-                    class="demo-toolbar-toggle data-[pressed]:bg-primary data-[pressed]:text-primary-foreground focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center focus-visible:ring-2"
-                    rdxToggle
-                    value="bold"
-                    aria-label="Bold"
-                >
+        <div
+            class="border-foreground bg-background flex w-150 max-w-full flex-wrap items-center gap-px border p-px"
+            rdxToolbarRoot
+            aria-label="Formatting options"
+        >
+            <div class="flex gap-px" rdxToggleGroupWithoutFocus multiple aria-label="Text formatting">
+                <button class="demo-button demo-toolbar-pressable size-8" rdxToggle value="bold" aria-label="Bold">
                     <svg lucideBold size="16"></svg>
                 </button>
-                <button
-                    class="demo-toolbar-toggle data-[pressed]:bg-primary data-[pressed]:text-primary-foreground focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center focus-visible:ring-2"
-                    rdxToggle
-                    value="italic"
-                    aria-label="Italic"
-                >
+                <button class="demo-button demo-toolbar-pressable size-8" rdxToggle value="italic" aria-label="Italic">
                     <svg lucideItalic size="16"></svg>
                 </button>
                 <button
-                    class="demo-toolbar-toggle data-[pressed]:bg-primary data-[pressed]:text-primary-foreground focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center focus-visible:ring-2"
+                    class="demo-button demo-toolbar-pressable size-8"
                     rdxToggle
                     value="underline"
                     aria-label="Underline"
@@ -58,11 +52,11 @@ import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator }
                 </button>
             </div>
 
-            <div class="bg-border mx-1 h-5 w-px" rdxToolbarSeparator orientation="vertical"></div>
+            <div class="bg-foreground m-1 h-4 w-px" rdxToolbarSeparator orientation="vertical"></div>
 
-            <div class="flex gap-1" [value]="alignment" rdxToggleGroupWithoutFocus aria-label="Text alignment">
+            <div class="flex gap-px" [value]="alignment" rdxToggleGroupWithoutFocus aria-label="Text alignment">
                 <button
-                    class="demo-toolbar-toggle data-[pressed]:bg-primary data-[pressed]:text-primary-foreground focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center focus-visible:ring-2"
+                    class="demo-button demo-toolbar-pressable size-8"
                     rdxToggle
                     value="left"
                     aria-label="Align left"
@@ -70,7 +64,7 @@ import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator }
                     <svg lucideTextAlignStart size="16"></svg>
                 </button>
                 <button
-                    class="demo-toolbar-toggle data-[pressed]:bg-primary data-[pressed]:text-primary-foreground focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center focus-visible:ring-2"
+                    class="demo-button demo-toolbar-pressable size-8"
                     rdxToggle
                     value="center"
                     aria-label="Align center"
@@ -78,7 +72,7 @@ import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator }
                     <svg lucideTextAlignCenter size="16"></svg>
                 </button>
                 <button
-                    class="demo-toolbar-toggle data-[pressed]:bg-primary data-[pressed]:text-primary-foreground focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center focus-visible:ring-2"
+                    class="demo-button demo-toolbar-pressable size-8"
                     rdxToggle
                     value="right"
                     aria-label="Align right"
@@ -87,17 +81,16 @@ import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator }
                 </button>
             </div>
 
-            <div class="bg-border mx-1 h-5 w-px" rdxToolbarSeparator orientation="vertical"></div>
+            <div class="bg-foreground m-1 h-4 w-px" rdxToolbarSeparator orientation="vertical"></div>
 
-            <a class="demo-toolbar-link focus-visible:ring-ring px-1 focus-visible:ring-2" href="#" rdxToolbarLink>
+            <a
+                class="text-muted-foreground focus-visible:outline-ring ms-auto px-2 text-sm hover:text-blue-700 focus-visible:outline-2 dark:hover:text-blue-500"
+                href="#"
+                rdxToolbarLink
+            >
                 Edited 2h ago
             </a>
-            <button
-                class="demo-toolbar-button focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-primary/90 ml-2 inline-flex h-8 items-center justify-center px-2.5 focus-visible:ring-2 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                rdxToolbarButton
-            >
-                Share
-            </button>
+            <button class="demo-button demo-button-ghost h-8 px-3" rdxToolbarButton>Share</button>
         </div>
     `
 })

@@ -70,7 +70,7 @@ import {
                 rdxPreviewCardPositioner
             >
                 <div
-                    class="demo-surface relative w-80 overflow-hidden p-4 transition-[width,height] duration-200"
+                    class="demo-popup relative w-80 overflow-hidden p-4 transition-[width,height] duration-200"
                     rdxPreviewCardPopup
                 >
                     <span class="text-card demo-arrow my-px" rdxPreviewCardArrow></span>

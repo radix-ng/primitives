@@ -19,7 +19,7 @@ import { RdxInputDirective } from '@radix-ng/primitives/input';
     selector: 'rdx-fieldset-disabled-example',
     imports: [ReactiveFormsModule, RdxFieldLabel, RdxFieldRoot, RdxInputDirective, RdxFieldsetLegend, RdxFieldsetRoot],
     template: `
-        <fieldset class="border-border w-80 space-y-4 rounded-md border p-4" rdxFieldsetRoot disabled>
+        <fieldset class="border-border w-80 space-y-4 border p-4" rdxFieldsetRoot disabled>
             <legend class="text-foreground px-1 text-sm font-semibold data-[disabled]:opacity-50" rdxFieldsetLegend>
                 Billing address
             </legend>
@@ -28,7 +28,7 @@ import { RdxInputDirective } from '@radix-ng/primitives/input';
                 <label class="text-foreground text-sm font-medium data-[disabled]:opacity-50" rdxFieldLabel>
                     Company
                 </label>
-                <input class="demo-input h-9 w-full px-3" rdxInput defaultValue="Acme Inc." />
+                <input class="demo-input h-8 w-full px-2" rdxInput defaultValue="Acme Inc." />
             </div>
         </fieldset>
     `

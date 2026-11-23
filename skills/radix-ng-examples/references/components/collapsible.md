@@ -46,6 +46,7 @@ discoverable by browser find-in-page.
 
 ## Examples
 
+- [Default](../examples/collapsible--default.md)
 - [Keep mounted](../examples/collapsible--keep-mounted.md)
 - [Animation](../examples/collapsible--animation.md)
 - [External trigger](../examples/collapsible--external-trigger.md)

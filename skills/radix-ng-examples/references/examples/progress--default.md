@@ -29,15 +29,15 @@ const progressSteps = [12, 28, 44, 60, 76, 92, 100] as const;
         RdxProgressIndicatorDirective
     ],
     template: `
-        <div class="flex w-80 flex-col gap-2" [value]="progress()" rdxProgressRoot>
-            <div class="flex items-center justify-between gap-4">
-                <span class="text-foreground text-sm font-medium" rdxProgressLabel>Upload progress</span>
-                <span class="text-muted-foreground text-sm tabular-nums" rdxProgressValue></span>
+        <div class="grid w-60 max-w-full grid-cols-2 gap-y-2" [value]="progress()" rdxProgressRoot>
+            <div class="contents">
+                <span class="text-foreground text-sm" rdxProgressLabel>Upload progress</span>
+                <span class="text-foreground text-end text-sm tabular-nums" rdxProgressValue></span>
             </div>
 
-            <div class="bg-muted h-3 overflow-hidden rounded-full" rdxProgressTrack>
+            <div class="col-span-2 h-1 overflow-hidden bg-neutral-200 dark:bg-neutral-800" rdxProgressTrack>
                 <div
-                    class="bg-primary data-[complete]:bg-primary/80 h-full rounded-full transition-all duration-700 ease-out"
+                    class="bg-primary h-full motion-safe:transition-[width] motion-safe:duration-500"
                     rdxProgressIndicator
                 ></div>
             </div>
@@ -60,3 +60,5 @@ export class ProgressLinearComponent {
     }
 }
 ```
+
+[Example setup](../guides/styling.md#copy-an-example-into-your-app)

@@ -54,7 +54,7 @@ import {
                 </a>
 
                 <div class="z-50" *rdxPreviewCardPortal [side]="side()" sideOffset="8" rdxPreviewCardPositioner>
-                    <div class="demo-surface relative w-80 p-4" rdxPreviewCardPopup>
+                    <div class="demo-popup relative w-80 p-4" rdxPreviewCardPopup>
                         <span class="text-card demo-arrow my-px" rdxPreviewCardArrow></span>
                         <p class="text-muted-foreground text-sm">
                             The positioner exposes placement attributes and CSS variables for styling.

@@ -51,6 +51,12 @@ discoverable by browser find-in-page.
 
 ## Examples
 
+<a href="./?path=/docs/guides-styling--docs#copy-an-example-into-your-app" target="_top">Example setup</a>
+
+### Default
+
+<Canvas of={CollapsibleStories.Default} />
+
 ### Keep mounted
 
 With `keepMounted`, the closed panel stays in the DOM and receives `hidden` after the close
@@ -69,6 +75,10 @@ The panel exposes `--collapsible-panel-height` so its contents can animate open 
 The open state can be controlled from outside the collapsible via the `open` model.
 
 <Canvas sourceState="hidden" of={CollapsibleStories.ExternalTrigger} />
+
+## Example files
+
+Install `@lucide/angular` for the icons.
 
 ## API Reference
 

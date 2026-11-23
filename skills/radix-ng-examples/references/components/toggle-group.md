@@ -36,6 +36,7 @@ The API follows [Base UI Toggle Group](https://base-ui.com/react/components/togg
 
 ## Examples
 
+- [Default](../examples/toggle-group--default.md)
 - [Native forms](../examples/toggle-group--native-forms.md)
 - [Multiple](../examples/toggle-group--multiple.md)
 - [Disabled](../examples/toggle-group--disabled.md)

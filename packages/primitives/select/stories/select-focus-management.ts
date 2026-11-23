@@ -164,7 +164,7 @@ export class SelectFocusControls {
                         <ng-template rdxDialogPortal>
                             <div class="bg-foreground/50 fixed inset-0 z-50" rdxDialogBackdrop></div>
                             <div
-                                class="demo-surface fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 p-6 transition-[transform,scale] focus:outline-none data-[nested-dialog-open]:scale-[0.96]"
+                                class="demo-popup fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 p-6 transition-[transform,scale] focus:outline-none data-[nested-dialog-open]:scale-[0.96]"
                                 rdxDialogPopup
                             >
                                 <h2 class="demo-dialog-title" rdxDialogTitle>Choose a fruit</h2>
@@ -190,7 +190,7 @@ export class SelectFocusControls {
                             Open popover
                         </button>
                         <div class="z-50" *rdxPopoverPortal sideOffset="8" rdxPopoverPositioner>
-                            <div class="demo-surface relative w-80 p-4" rdxPopoverPopup>
+                            <div class="demo-popup relative w-80 p-4" rdxPopoverPopup>
                                 <select-focus-controls
                                     [keepMounted]="keepMounted()"
                                     [closeOnFocusOut]="closeOnFocusOut()"

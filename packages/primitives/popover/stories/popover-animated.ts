@@ -33,7 +33,7 @@ import {
 
             <div class="z-50" *rdxPopoverPortal sideOffset="8" rdxPopoverPositioner>
                 <div
-                    class="demo-surface data-[open]:animate-popover-popup-in data-[starting-style]:animate-popover-popup-in data-[ending-style]:animate-popover-popup-out relative w-80 p-4"
+                    class="demo-popup data-[open]:animate-popover-popup-in data-[starting-style]:animate-popover-popup-in data-[ending-style]:animate-popover-popup-out relative w-80 p-4"
                     rdxPopoverPopup
                 >
                     <span class="text-card demo-arrow my-px" rdxPopoverArrow></span>

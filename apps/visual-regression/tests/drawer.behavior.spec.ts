@@ -194,75 +194,56 @@ test.describe('Drawer mobile navigation', () => {
 });
 
 test.describe('Drawer default', () => {
-    test('stretches the anchored-edge bleed while pulling up', async ({ page }) => {
+    test('swipes a right drawer, keeps its edge covered on reversal and finishes closing', async ({ page }) => {
         await gotoStory(page, 'primitives-drawer--default');
-        await page.getByRole('button', { name: 'Open drawer' }).click();
+        const trigger = page.getByRole('button', { name: 'Open drawer' });
+        await trigger.click();
 
-        const popup = page.locator('[rdxDrawerPopup]');
-        await popup.evaluate((element) =>
-            Promise.allSettled(element.getAnimations().map((animation) => animation.finished))
-        );
-        const box = await popup.boundingBox();
+        const selector = '[rdxDrawerPopup]';
+        const popup = page.locator(selector);
+        const exit = await holdExitAnimations(page, [selector], 'data-ending-style');
+        const box = (await popup.boundingBox())!;
+        expect(box.width).toBe(320);
+        expect(box.x + box.width).toBe(page.viewportSize()!.width);
+        const x = box.x + 40;
+        const y = box.y + 120;
+        const pointer = { bubbles: true, button: 0, clientY: y, isPrimary: true, pointerId: 1 };
 
-        expect(box).not.toBeNull();
-
-        await popup.dispatchEvent('pointerdown', {
-            button: 0,
-            clientX: box!.x + box!.width / 2,
-            clientY: box!.y + 24,
-            isPrimary: true,
-            pointerId: 1
-        });
+        await popup.dispatchEvent('pointerdown', { ...pointer, clientX: x });
         await page.evaluate(
-            ({ clientX, clientY }) => {
-                window.dispatchEvent(
-                    new PointerEvent('pointermove', {
-                        bubbles: true,
-                        button: 0,
-                        clientX,
-                        clientY,
-                        isPrimary: true,
-                        pointerId: 1
-                    })
-                );
-            },
-            { clientX: box!.x + box!.width / 2, clientY: box!.y - 176 }
+            ({ pointer, clientX }) => window.dispatchEvent(new PointerEvent('pointermove', { ...pointer, clientX })),
+            { pointer, clientX: x - 166 }
         );
-
         await expect(popup).toHaveAttribute('data-swiping', '');
-        // Swipe writes are coalesced into RAF. Read the related geometry in one browser task
-        // after that write, rather than sampling opposite sides of a frame boundary.
         await expect
             .poll(() =>
                 popup.evaluate((element) => {
-                    const bleedHeight = Number.parseFloat(getComputedStyle(element, '::after').height);
-                    const movement = Math.abs(new DOMMatrixReadOnly(getComputedStyle(element).transform).m42);
-                    return movement > 48 && bleedHeight >= movement + 47.5;
+                    const bleed = Number.parseFloat(getComputedStyle(element, '::after').width);
+                    const movement = new DOMMatrixReadOnly(getComputedStyle(element).transform).m41;
+                    return movement < -40 && bleed >= Math.abs(movement) + 47.5;
                 })
             )
             .toBe(true);
+        await page.evaluate(
+            ({ pointer, clientX }) => window.dispatchEvent(new PointerEvent('pointercancel', { ...pointer, clientX })),
+            { pointer, clientX: x - 166 }
+        );
+        await expect.poll(async () => (await popup.boundingBox())?.x).toBe(box.x);
 
-        await page.evaluate(() => {
-            window.dispatchEvent(
-                new PointerEvent('pointerup', {
-                    bubbles: true,
-                    button: 0,
-                    clientX: 0,
-                    clientY: 0,
-                    isPrimary: true,
-                    pointerId: 1
-                })
-            );
-        });
-
-        await page.waitForTimeout(75);
-
-        const { settlingBleedHeight, settlingMovement } = await popup.evaluate((element) => ({
-            settlingBleedHeight: Number.parseFloat(getComputedStyle(element, '::after').height),
-            settlingMovement: Math.abs(new DOMMatrixReadOnly(getComputedStyle(element).transform).m42)
-        }));
-
-        expect(settlingBleedHeight).toBeGreaterThanOrEqual(settlingMovement + 47.5);
+        await popup.dispatchEvent('pointerdown', { ...pointer, clientX: x });
+        await page.evaluate(
+            ({ pointer, clientX }) => {
+                window.dispatchEvent(new PointerEvent('pointermove', { ...pointer, clientX }));
+                window.dispatchEvent(new PointerEvent('pointerup', { ...pointer, clientX }));
+            },
+            { pointer, clientX: x + 210 }
+        );
+        await expect(popup).toHaveAttribute('data-ending-style', '');
+        await expect.poll(exit.count).toBeGreaterThan(0);
+        await expect(popup).toBeAttached();
+        await exit.finish();
+        await expect(popup).toHaveCount(0);
+        await expect(trigger).toBeFocused();
     });
 });
 

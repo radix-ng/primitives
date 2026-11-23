@@ -18,10 +18,10 @@ import {
                 <span class="text-foreground text-sm font-medium">Center</span>
                 <div class="relative px-2 select-none" [value]="50" thumbAlignment="center" rdxSliderRoot>
                     <div class="flex h-6 w-full touch-none items-center" rdxSliderControl>
-                        <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
-                            <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>
+                        <div class="relative h-1 w-full bg-neutral-200 dark:bg-neutral-800" rdxSliderTrack>
+                            <div class="bg-primary h-full" rdxSliderIndicator></div>
                             <div
-                                class="border-border bg-background focus-within:ring-ring block size-5 rounded-full border shadow-sm focus-within:ring-2"
+                                class="border-border bg-background focus-within:ring-ring block size-5 border focus-within:ring-2"
                                 rdxSliderThumb
                             >
                                 <input rdxSliderThumbInput aria-label="Centered thumb value" />
@@ -35,10 +35,10 @@ import {
                 <span class="text-foreground text-sm font-medium">Edge</span>
                 <div class="relative px-2 select-none" [value]="50" thumbAlignment="edge" rdxSliderRoot>
                     <div class="flex h-6 w-full touch-none items-center" rdxSliderControl>
-                        <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
-                            <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>
+                        <div class="relative h-1 w-full bg-neutral-200 dark:bg-neutral-800" rdxSliderTrack>
+                            <div class="bg-primary h-full" rdxSliderIndicator></div>
                             <div
-                                class="border-border bg-background focus-within:ring-ring block size-5 rounded-full border shadow-sm focus-within:ring-2"
+                                class="border-border bg-background focus-within:ring-ring block size-5 border focus-within:ring-2"
                                 rdxSliderThumb
                             >
                                 <input rdxSliderThumbInput aria-label="Edge aligned thumb value" />
@@ -52,10 +52,10 @@ import {
                 <span class="text-foreground text-sm font-medium">Edge client only</span>
                 <div class="relative px-2 select-none" [value]="50" thumbAlignment="edge-client-only" rdxSliderRoot>
                     <div class="flex h-6 w-full touch-none items-center" rdxSliderControl>
-                        <div class="bg-muted relative h-1 w-full rounded-full" rdxSliderTrack>
-                            <div class="bg-primary h-full rounded-full" rdxSliderIndicator></div>
+                        <div class="relative h-1 w-full bg-neutral-200 dark:bg-neutral-800" rdxSliderTrack>
+                            <div class="bg-primary h-full" rdxSliderIndicator></div>
                             <div
-                                class="border-border bg-background focus-within:ring-ring block size-5 rounded-full border shadow-sm focus-within:ring-2"
+                                class="border-border bg-background focus-within:ring-ring block size-5 border focus-within:ring-2"
                                 rdxSliderThumb
                             >
                                 <input rdxSliderThumbInput aria-label="Client-only edge aligned thumb value" />

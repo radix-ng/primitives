@@ -43,10 +43,11 @@ import {
 
                     <div
                         class="relative w-full select-none"
-                        [(value)]="item.value"
+                        [value]="item.value()"
                         [min]="0"
                         [max]="100"
                         [step]="5"
+                        (valueChange)="typeof $event === 'number' && item.value.set($event)"
                         rdxSliderRoot
                     >
                         <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>

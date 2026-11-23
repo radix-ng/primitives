@@ -32,43 +32,36 @@ import {
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <ng-container #root="rdxMenuRoot" rdxMenuRoot>
-            <button class="demo-button demo-button-outline h-9 px-4" rdxMenuTrigger>File</button>
+            <button
+                class="demo-button demo-button-outline data-popup-open:bg-muted h-8 gap-1.5 ps-3 pe-2 leading-none"
+                rdxMenuTrigger
+            >
+                File
+            </button>
 
             <div class="z-50 data-[closed]:pointer-events-none" *rdxMenuPortal sideOffset="4" rdxMenuPositioner>
                 <div
-                    class="demo-menu-popup min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                    class="demo-popup demo-popup-motion min-w-[8rem] py-1 outline-none data-closed:pointer-events-none"
                     rdxMenuPopup
                 >
-                    <button
-                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
-                        rdxMenuItem
-                    >
+                    <button class="demo-menu-option flex w-full items-center gap-2 px-4 py-2 text-start" rdxMenuItem>
                         New Tab
                     </button>
-                    <button
-                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
-                        rdxMenuItem
-                    >
+                    <button class="demo-menu-option flex w-full items-center gap-2 px-4 py-2 text-start" rdxMenuItem>
                         New Window
                     </button>
                     <button
-                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                        class="demo-menu-option flex w-full items-center gap-2 px-4 py-2 text-start"
                         [disabled]="true"
                         rdxMenuItem
                     >
                         New Private Window
                     </button>
-                    <div class="bg-border -mx-1 my-1 h-px" rdxMenuSeparator></div>
-                    <button
-                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
-                        rdxMenuItem
-                    >
+                    <div class="bg-foreground mx-1 my-1 h-px" rdxMenuSeparator></div>
+                    <button class="demo-menu-option flex w-full items-center gap-2 px-4 py-2 text-start" rdxMenuItem>
                         Save Page As…
                     </button>
-                    <button
-                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
-                        rdxMenuItem
-                    >
+                    <button class="demo-menu-option flex w-full items-center gap-2 px-4 py-2 text-start" rdxMenuItem>
                         Print…
                     </button>
                 </div>

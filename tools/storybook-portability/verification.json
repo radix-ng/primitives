@@ -1,15 +1,15 @@
 {
     "aot": "passed",
-    "packageVersion": "1.3.0",
+    "packageVersion": "1.4.0",
     "angularVersion": "22.0.2",
     "tailwindVersion": "4.3.5",
     "workspaceAliases": false,
     "rejectedPublishedArray": true,
-    "examples": 266,
+    "examples": 324,
     "dependencies": 3,
     "stylesheet": {
         "path": "apps/radix-storybook/.storybook/demo-styles.css",
-        "sha256": "e277de0f1fc5405c46ab36aeca3616708a65e4f066b0516d92a75235ccd3d5a3"
+        "sha256": "4133a7ed936bae6424fd82cc3564130c47ca5f7c5f3fc6177a854b562a6157be"
     },
     "files": [
         {
@@ -29,7 +29,7 @@
         },
         {
             "path": "packages/primitives/accordion/stories/accordion-default-example.ts",
-            "sha256": "3e7b851fae9b36fdb3bdcc3abab4c83ae1ad3512ebfd74a095d49526ad1095e9",
+            "sha256": "e1f33d2dacd04d69d50d117b93ea5a61ef6befef218f3a58605e79727b2248e9",
             "kind": "example"
         },
         {
@@ -59,7 +59,7 @@
         },
         {
             "path": "packages/primitives/accordion/stories/accordion-multiple.ts",
-            "sha256": "72b887719e176e9a5bcf5f3bc7c3dc2c1eea9cfb5c78ec67a1b53685647e1a55",
+            "sha256": "de191a6903b56b8444df61539ff6cbfb0dff6bb2b339748ad934800d58dbbcde",
             "kind": "example"
         },
         {
@@ -69,112 +69,122 @@
         },
         {
             "path": "packages/primitives/alert-dialog/stories/alert-dialog-close-confirmation.ts",
-            "sha256": "62cb7f96477eb88a9ae8df65a1b4d19bd5688dedd96518ac3506e71168a733f2",
+            "sha256": "23972faa313808fab65e1b44ac99e576f5d1a1a98ffcd370971d0f4ea7cc4307",
             "kind": "example"
         },
         {
             "path": "packages/primitives/alert-dialog/stories/alert-dialog-controlled-multiple.ts",
-            "sha256": "ade0911158703fbf81814b2093468dae4a0abfdc88cb93137ec307744a99ce73",
+            "sha256": "0258210755824a21103441bd73c60f456d90b46c9c48c7804a43613481e6ce6f",
             "kind": "example"
         },
         {
             "path": "packages/primitives/alert-dialog/stories/alert-dialog-controlled.ts",
-            "sha256": "d9182ae27821bfef109e5237273547e01e56755dcbf7aadb74eaaa20a9cac2ab",
+            "sha256": "76bde2157e006c15b00adaf15f235429460a1d21cf07d77f6bd5492b98d0ea99",
             "kind": "example"
         },
         {
             "path": "packages/primitives/alert-dialog/stories/alert-dialog-default.ts",
-            "sha256": "ed6028cb07e4edbe98e8b7e38f13faa566672eae0123a30df8d29967e458b5c5",
+            "sha256": "d33e54ac3bb1d2297499770a81286ad0f8426f08e181dfd265e2d40bf8fff8fc",
             "kind": "example"
         },
         {
             "path": "packages/primitives/alert-dialog/stories/alert-dialog-detached.ts",
-            "sha256": "7905621a507de0d2af32034920f7021da6ff5ba6645df920ece172fcd3c7b77f",
+            "sha256": "545117cc70169c80af788cb6a29183d45980c164a9dc487c7a1c2869a37a950f",
             "kind": "example"
         },
         {
             "path": "packages/primitives/alert-dialog/stories/alert-dialog-from-menu.ts",
-            "sha256": "9eb28293782d3ce267c40ab27685fb0b40082d634fe27c3011e47b9dc3e08776",
+            "sha256": "73a2e3bdabf648109de14d85c1e5c08cf73db973d4b0d0ae4851cb4410826726",
             "kind": "example"
         },
         {
             "path": "packages/primitives/alert-dialog/stories/alert-dialog-multiple-triggers.ts",
-            "sha256": "6db2aa1084d6b6781a8c7fa9a945c4ab521e7c058a12d79d9c6eb2f303dac2d5",
+            "sha256": "9e4119a27d596f2c03ea188de95ea98e7675fa6e4620e6a79ae23156bad0ecdb",
             "kind": "example"
         },
         {
             "path": "packages/primitives/autocomplete/stories/autocomplete-async.ts",
-            "sha256": "c6eb0d0d21a943fbcdfc52edd86f25ed0428028ae98f24b1f7ab62c3c8ca4a49",
+            "sha256": "2732ced77124b40983adb337d404d114ae63d6fc20ff62f5617928a662ab2a86",
             "kind": "example"
         },
         {
             "path": "packages/primitives/autocomplete/stories/autocomplete-auto-highlight.ts",
-            "sha256": "325384cee06c02e9fe6a78152eeeda10ac6ccb530c999bfbc577257b2b45afd5",
+            "sha256": "79057e8b91f84c0d011f1d30d24c5b28b9b254007e6778f3deb780491db8bce7",
             "kind": "example"
         },
         {
             "path": "packages/primitives/autocomplete/stories/autocomplete-command-palette.ts",
-            "sha256": "8fd2951ad8d93df3d48427dbd044ce0347c806d438b018046b17469ec2c88891",
+            "sha256": "a532e9e5ac6865b3ea5a3c2fb090ba5389af8d11e976ecfe7fee1de99a947b05",
             "kind": "example"
         },
         {
             "path": "packages/primitives/autocomplete/stories/autocomplete-default.ts",
-            "sha256": "0ee38b1d671b7a07052670045ec572101b6ea838a484b1c68ca099de5fd00353",
+            "sha256": "9a7a6067fe621be3d8fcfe4f36befe8362d5ce98387433a58ba2ede02245c582",
             "kind": "example"
         },
         {
             "path": "packages/primitives/autocomplete/stories/autocomplete-disabled.ts",
-            "sha256": "5c3ad51257c76232091b804a977730153d0c5e45a4a84de447174e05a0ce8a17",
+            "sha256": "95b0568a4cb2cb849b601ecddc0ad4d9ee6030c3241f5d51aa0b1ee66ce5ce8b",
             "kind": "example"
         },
         {
             "path": "packages/primitives/autocomplete/stories/autocomplete-fuzzy.ts",
-            "sha256": "936fe0ac78afd8dc25a88b773944b620c798d87e5fab6b641680ab81e7e16899",
+            "sha256": "3599c286c0ffa077c9ed655c16e3d1b3a5842abc6c2a082901c8d96a068bff0d",
             "kind": "example"
         },
         {
             "path": "packages/primitives/autocomplete/stories/autocomplete-grid.ts",
-            "sha256": "9bf874600e0fafd9003b2b5120c82a9d898aebcf570e379f37b0a4a897970799",
+            "sha256": "182a62f9ee5a0be3e38a3120d4441d22be710a537f05dd95ea7014995edf748f",
             "kind": "example"
         },
         {
             "path": "packages/primitives/autocomplete/stories/autocomplete-grouped.ts",
-            "sha256": "c9c5e8e2c5a196f2245f6a84a1ff8f4a64794858a71dfe9f2d2275195474eba5",
+            "sha256": "165dd9efdc7706b33ca4408512d80fc12a2f03d0b86de6035739add5683c4b4f",
             "kind": "example"
         },
         {
             "path": "packages/primitives/autocomplete/stories/autocomplete-inline.ts",
-            "sha256": "38e674b15fa994cb7c9350a484ae8b93dac07ec824c06f32d2b1823cc0a36091",
+            "sha256": "90e8702b2c4775561843f654be22953ff1ef6cf8f867163c406f456c22851270",
             "kind": "example"
         },
         {
             "path": "packages/primitives/autocomplete/stories/autocomplete-limit.ts",
-            "sha256": "4d2c0fd722715f9d1556897f16e2c75c627bc478855112949599f50b84213979",
+            "sha256": "60dd03f6283fcaff85e04d50f65802412e769a8eb981936764724cc90eec2a0d",
             "kind": "example"
         },
         {
             "path": "packages/primitives/autocomplete/stories/autocomplete-locale.ts",
-            "sha256": "64afbaa2beff699db2b6342715ae249e4a3ac149746df4bd6a582b8da7de2394",
+            "sha256": "8aab7280817df0e1d260c2b8691051cb518b76e261c2889bdf81b871bfa32a94",
             "kind": "example"
         },
         {
             "path": "packages/primitives/autocomplete/stories/autocomplete-reactive-forms.ts",
-            "sha256": "c672b690d5598052df7143c18e69e0ae4845351248c58dd3fbb8f2207b928cb2",
+            "sha256": "ab7917a652345de90c7ff1c6c50bae5843560dca75234e3b9b262150d24c674a",
             "kind": "example"
         },
         {
             "path": "packages/primitives/autocomplete/stories/autocomplete-template-forms.ts",
-            "sha256": "b1a40ebd786ae3b7db03bc51f5e97d0e48c986a3fa411cf7f9423ab44ac8a56d",
+            "sha256": "575f5f83ee57dca3a9f4f09b404c097ef487b2468ba51eca9b79cd9297e4e2c0",
             "kind": "example"
         },
         {
             "path": "packages/primitives/autocomplete/stories/autocomplete-validation.ts",
-            "sha256": "dece078354d8fb07a459e726a55a8d47931c9256f4ceaa383ba0684a9978a780",
+            "sha256": "b5bf3137b24d55f423bf1048fd5faf3550966a0361c6e47a26d4df775adeb651",
             "kind": "example"
         },
         {
             "path": "packages/primitives/autocomplete/stories/autocomplete-virtualized.ts",
-            "sha256": "033f3899fbd5267ec232bdaca4a06ff0ff54301c4fef11577d99eed159487d1a",
+            "sha256": "dfdc49f859df88a4862ef52cc44e05e6d248792e11274d717fe00f6bd44d0e28",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/avatar/stories/avatar-default.ts",
+            "sha256": "59912df65a2ae07f383ec670143855e2945079afccd8bbbb5ab58ea257075167",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/avatar/stories/avatar.ts",
+            "sha256": "cb38ecbb3cca3218c89450818f328fc78e3c073e3b7aeb89dd4cad16bae9935e",
             "kind": "example"
         },
         {
@@ -184,7 +194,7 @@
         },
         {
             "path": "packages/primitives/button/stories/button-default-example.ts",
-            "sha256": "6f1e8c870beb9307b244d26125b447664289b03dd0b55adf470618653b56176e",
+            "sha256": "de0af7cd31c51d96f0e16204251605f97844538e431a2a0eb7893b31660c93de",
             "kind": "example"
         },
         {
@@ -194,7 +204,7 @@
         },
         {
             "path": "packages/primitives/button/stories/button-loading.ts",
-            "sha256": "53bc6236dd78b6d08421e1b1b592ea7794f1387004a39cbe96cfc98704779f54",
+            "sha256": "31a9504b63dace453a4d026b87a071dd35e6dd26d90e80f46870296b44bb26cb",
             "kind": "example"
         },
         {
@@ -249,127 +259,147 @@
         },
         {
             "path": "packages/primitives/checkbox/stories/checkbox-default-example.ts",
-            "sha256": "466abcc7a9f6a1b4a7c063e2f306eb7d1960f4a1658a1df82ece4a4ab36099f0",
+            "sha256": "432a588a9a618cd7904e5fe1fc9b3ef10801773e361da0e19eda3792aa4063f1",
             "kind": "example"
         },
         {
             "path": "packages/primitives/checkbox/stories/checkbox-forms.ts",
-            "sha256": "9fd75d32b30030bcbcdd7024762a8d06f700dc1554a15e03c3e5ed5b09fcdc37",
+            "sha256": "87ce3303605538e174f4922625e4e620bc5c1c637ad6c6f653a4b1d4b7790b7d",
             "kind": "example"
         },
         {
             "path": "packages/primitives/checkbox/stories/checkbox-group.ts",
-            "sha256": "4d5a0b0d0ba7a9675cc4921d7df22730f20503a9911c6b0c81d34f3177e1a810",
+            "sha256": "a6fb2eb934f440e825e42338c86ddb61df31c28d46f8d6d93a64f13f1278b0a7",
             "kind": "example"
         },
         {
             "path": "packages/primitives/checkbox/stories/checkbox-indeterminate.ts",
-            "sha256": "c4aa1ca7aacdb1b8037424d93341d7793b5c51d12c577e39189a65094960087c",
+            "sha256": "2e5cfdb636e2bc18d6dcab7a80f73893abb589f4e00c046c565e77e22fe841a3",
             "kind": "example"
         },
         {
             "path": "packages/primitives/checkbox/stories/checkbox-ngmodel.ts",
-            "sha256": "256b1631e38b51c1a3be5b0cfd17e341d4db145f509eb7ca215fd0a8ea5ad78f",
+            "sha256": "e370b1bb9ab08c87b6338aa89f228b81516ec11136e839efcf9e58de4ed50a2c",
             "kind": "example"
         },
         {
             "path": "packages/primitives/checkbox/stories/checkbox-presence.ts",
-            "sha256": "3181007c150891f07c76f47875fa23117ef659f5d184e67093da925145533001",
+            "sha256": "f9728f4a9b6f12feabbc627a556cf75a9d1e56de6c77e36c6f063d7801364ff6",
             "kind": "example"
         },
         {
             "path": "packages/primitives/checkbox/stories/checkbox-select-all.ts",
-            "sha256": "81563618818f82b35dc14c3e316130f632e8d7a44b35cc62ce1cf1a0c3b131d0",
+            "sha256": "85f5fd0581e19d26ef6f1261ea8eb364509dbd0fe763ee1297ff192e9c94ebbe",
             "kind": "example"
         },
         {
             "path": "packages/primitives/checkbox/stories/checkbox-validation.ts",
-            "sha256": "4dd99ad4d681b9df1f139cefa3fc95f6cf1681ec1d6eee01d7036b449aa09be4",
+            "sha256": "67a55e033feac8ec1335d2e0b33204dccfd32718f805ded33e868521cdd9d71d",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/collapsible/stories/collapsible-animation.component.ts",
+            "sha256": "e4585100b94b7f7864e277a9d952d1f2fc73edf1814677f39f9ecb7f159afe76",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/collapsible/stories/collapsible-default.ts",
+            "sha256": "6c46df8136ba1f8ed8c2a64681ca0485fde66d5662673fec10e065b6923f437d",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/collapsible/stories/collapsible-external-triggering.component.ts",
+            "sha256": "2d727c64963d4c98b355dc601672c862a90aa64376f4a680618fffd2f18afd47",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/collapsible/stories/collapsible-keep-mounted.ts",
+            "sha256": "a862e0ff8e70bcab30f541c9415618ad8ceaf8a70cc3e64e8c9ddfa13e88fe7e",
             "kind": "example"
         },
         {
             "path": "packages/primitives/combobox/stories/combobox-async-multiple.ts",
-            "sha256": "1cd931ab8980abbe70230eeba9e15b7cffdfcf555347fefe8c2c68dcf3effe13",
+            "sha256": "ef0dd0cfab9470b9d7de0bebfd0f6e0989de05c831cdb21b264021bb857d0643",
             "kind": "example"
         },
         {
             "path": "packages/primitives/combobox/stories/combobox-async.ts",
-            "sha256": "595ff2d9d45725d414bf3ea676387b4aec1821e62173e98bbf845a0c23540c1d",
+            "sha256": "63c9e3e2e3cb1dd0db3ef737209f038f3f1919875e8da7f4a12ae5d8ae210419",
             "kind": "example"
         },
         {
             "path": "packages/primitives/combobox/stories/combobox-command.ts",
-            "sha256": "99545ed6ae8b1ad957bcbfba4b4282ecdbc5d84f20d7f4e023e87d526613e714",
+            "sha256": "e4e86d6795d132710414b75eabe1bcb952111cd26959213237ce34df14d17233",
             "kind": "example"
         },
         {
             "path": "packages/primitives/combobox/stories/combobox-creatable.ts",
-            "sha256": "b244575bdf020be80843c11b0bcd34d5bf8a3bf3052dfee53c4ab59520807bcb",
+            "sha256": "8517d55aa335b5dc88d0665db570ec7d5a069de24b54c8ae374ae5379ee96176",
             "kind": "example"
         },
         {
             "path": "packages/primitives/combobox/stories/combobox-default.ts",
-            "sha256": "adde16099c3c64f936845a9ba7c0a95676913bc09c7acf37013b95c74eac1786",
+            "sha256": "5a439c1bb8e25207d1da1cc9bef56a6c2f6edd0b16150e09ce76bf38c9d290f0",
             "kind": "example"
         },
         {
             "path": "packages/primitives/combobox/stories/combobox-disabled.ts",
-            "sha256": "505ca35731c74a0d9b30b08f7c172363c6dcaef918c4985d2d83b1288e95a1ee",
+            "sha256": "098a2ee6efe8c6a9694dd8867c2ee3146128003ea546b844da25094d5716338e",
             "kind": "example"
         },
         {
             "path": "packages/primitives/combobox/stories/combobox-empty.ts",
-            "sha256": "e00f3eb5b1e06dd7c16957b7466d29c7cdbf16976e3531ba513a5404465b4bc3",
+            "sha256": "9e464a2457124f6937b948f1ccc123438b289441c9daa3613d10abbcdbe0b053",
             "kind": "example"
         },
         {
             "path": "packages/primitives/combobox/stories/combobox-grid.ts",
-            "sha256": "b98c8d152545b5872910c539ddcd0a1375de85b773273fbd2e5ace373835cbf0",
+            "sha256": "902d6e1235334be668908f42ed58dda027c0b0da19e9eeb25a708b791dc0b244",
             "kind": "example"
         },
         {
             "path": "packages/primitives/combobox/stories/combobox-grouped.ts",
-            "sha256": "69e128c2abf493e03736c528a9a68e9cc29bc40544bbdc461de87ef507bb7d94",
+            "sha256": "cd35c60b69680f1c7379f086556cb24bdf4f817a85adef02a60ee19a288df96f",
             "kind": "example"
         },
         {
             "path": "packages/primitives/combobox/stories/combobox-input-in-popup.ts",
-            "sha256": "891e280cbcdbcb02c891f5e87bc83d2d1f15fb650def2551e9f9d6b6a982758b",
+            "sha256": "66122fc22276ec3131e30303dad4c41855f53c87b16e50c79092b19d28508f78",
             "kind": "example"
         },
         {
             "path": "packages/primitives/combobox/stories/combobox-modal.ts",
-            "sha256": "f05f0b4f73ec3c234e02a7a34b959cf81f873de89b8c075aec6b0f6ff2df72fd",
+            "sha256": "38fcacb0b5aa63e752b02bc2e0f14e3397ba77b2575c2351a0ad0b947177d0e9",
             "kind": "example"
         },
         {
             "path": "packages/primitives/combobox/stories/combobox-multiple.ts",
-            "sha256": "2eb17e2066cb11b2245307a9f692c6cd7e3af9387559aaf1e29c3913ac32bdc6",
+            "sha256": "9ca8b6d07f125fceda6c48a402090f65e637cad2f69bd19b5a82656ef63b0519",
             "kind": "example"
         },
         {
             "path": "packages/primitives/combobox/stories/combobox-open-change.ts",
-            "sha256": "76a1d111b02088a150a84081ddc64593374d471052fa0e66836ee61785d25c0a",
+            "sha256": "28a55f234f778a4a5615959ad12fe8c7469209ee024d4fb098f1d22465064536",
             "kind": "example"
         },
         {
             "path": "packages/primitives/combobox/stories/combobox-reactive-forms.ts",
-            "sha256": "49e316d03243aac71c9666583ee2a4ea7b528989c458c126f4b0b3fdecea40a3",
+            "sha256": "d544ebdea159197e90cb6998ddc85fdf25da78903b0fc9149b5c08e8261f8a9c",
             "kind": "example"
         },
         {
             "path": "packages/primitives/combobox/stories/combobox-reorder.ts",
-            "sha256": "0b0965f4d70f7ab93f3906eebb6f7905207b447dc180c92cc7a1656b9fc33925",
+            "sha256": "c8cc3b47b5706ead35ed1e5dceee6b3eb7fe17670cbb2fe7662c19c00cdc880b",
             "kind": "example"
         },
         {
             "path": "packages/primitives/combobox/stories/combobox-validation.ts",
-            "sha256": "563af57ebcbb35986285e726161acfabcab0a83d98ef41b9ea25c6be4da1a3cc",
+            "sha256": "eafbdaa182fa130b6ce91eb93f7e28f6a71502ea0767a2ddfc41dca4e78c1a81",
             "kind": "example"
         },
         {
             "path": "packages/primitives/combobox/stories/combobox-virtualized.ts",
-            "sha256": "a7b861fb8c9a4ae8691bd9936a5b7ab583abaeab28df8fc92d54fc3a43f599cd",
+            "sha256": "cdb365b3a472d00947b0393efd9a0ef8640c6be19a48dfd9c123ed8595b92570",
             "kind": "example"
         },
         {
@@ -389,27 +419,27 @@
         },
         {
             "path": "packages/primitives/context-menu/stories/context-menu-areas.ts",
-            "sha256": "89e46665f135f7d52d7b68ce84c31bb6ee912b0c0b76916fae51b0305a5a79f5",
+            "sha256": "d8443a74c473c8a2be246e7ab6c500423e95f3137c93b6fb383c250d5b565ea6",
             "kind": "example"
         },
         {
             "path": "packages/primitives/context-menu/stories/context-menu-default.ts",
-            "sha256": "3b2a2c6436478fafc873f701a5d1fd124b43a747850f569fde259df73d81c519",
+            "sha256": "4fe09a7d292592ba579747c4104c0472436d6037fa651501385c94b41af48b4d",
             "kind": "example"
         },
         {
             "path": "packages/primitives/context-menu/stories/context-menu-independent.ts",
-            "sha256": "ff2f6c2b4125ce1b626d20905576d5ff2dd446aa619cabe8f620d1919a52fd89",
+            "sha256": "d9fd3edf942fed0490e03907f9b54828655ec06c936cc286d9c5f0ce553a155a",
             "kind": "example"
         },
         {
             "path": "packages/primitives/context-menu/stories/context-menu-radio.ts",
-            "sha256": "cf778da21e9ada93c6902b9bcadc4eceb621db1806084fba0f081d81ba5b10f1",
+            "sha256": "53de40437a5432fd3db877fbd1132b8d61f6273855f9e2ff0c6383d491212f6a",
             "kind": "example"
         },
         {
             "path": "packages/primitives/context-menu/stories/context-menu-sides.ts",
-            "sha256": "2ff48bbb3769e2abccb69d392c44e6eb698f24fafca982c3ca7f265c8b480a43",
+            "sha256": "4ff01a93d8c89625eb6e870695349a2c4dbaf90a5800bf2fd46e3a166a041cba",
             "kind": "example"
         },
         {
@@ -438,73 +468,83 @@
             "kind": "example"
         },
         {
+            "path": "packages/primitives/date-field/stories/date-field.component.ts",
+            "sha256": "80ba5d432566b8a16350f5ad86997d78bce06d9c5a4f2af1e17b901f6119419c",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/date-field/stories/date-field.invalid.ts",
+            "sha256": "89945f4f4d63c9469a5f178db59d039ac019348c3fd814a8abe146fcd09323a5",
+            "kind": "example"
+        },
+        {
             "path": "packages/primitives/dialog/stories/dialog-close-confirmation.ts",
-            "sha256": "edd9b8dc15221355ac6441b347082dba241744c8d3eaee2ee69ef7c19d826db8",
+            "sha256": "a71af872ef5a22924aae4a2cfc69995bb887eed924633a04587dba68d5e042be",
             "kind": "example"
         },
         {
             "path": "packages/primitives/dialog/stories/dialog-controlled-multiple.ts",
-            "sha256": "c8afe470adda3caa46f4ee7a9660c2689da532a9b1629575b7f5a6068875f448",
+            "sha256": "c2e2cf04d09978a40e1863210a92ab834960e4563785ab12668d94fd021a3a6f",
             "kind": "example"
         },
         {
             "path": "packages/primitives/dialog/stories/dialog-controlled.ts",
-            "sha256": "75c207650b02d02b123129992f22750a334410951fd7af115c04617e22735526",
+            "sha256": "792313d40adcfe04c6b9880668e25690b3e1318df28b1d9b1dd05eea4f8d1938",
             "kind": "example"
         },
         {
             "path": "packages/primitives/dialog/stories/dialog-default.ts",
-            "sha256": "9046a6dd2d8a64c07ee3bd4a76dc3a925f2f25b20391ba4da1da3e8af7433e7c",
+            "sha256": "c6d6b4709279981410bb6f489f87014a9c68f2223fd5e73aeaf52aa3b45bc17f",
             "kind": "example"
         },
         {
             "path": "packages/primitives/dialog/stories/dialog-deferred-open.ts",
-            "sha256": "23253b68a7c84ef14369a997fbb023deacd2456f139954d8a72a35830bf9e95b",
+            "sha256": "187c459edfc164430e3e076659a5a0ec3603d87680252b09934566ec48b2e198",
             "kind": "example"
         },
         {
             "path": "packages/primitives/dialog/stories/dialog-detached.ts",
-            "sha256": "b90343204f18cee50702c30a8b037811629621938f1da0764568fc2ff732eb1a",
+            "sha256": "9bc0aa189ee81f3ecf785e3277d4487775b76596ddd027761cc7797030c210c1",
             "kind": "example"
         },
         {
             "path": "packages/primitives/dialog/stories/dialog-from-menu.ts",
-            "sha256": "e7066919621ecceb98a63cf3d69cf09684f1bbfc88fbeed1fd8e5e20c6945d92",
+            "sha256": "4403d6029dbb6ce0df12e67bd6a9a9583c39606fce399f254b4d7ca7d2210d2b",
             "kind": "example"
         },
         {
             "path": "packages/primitives/dialog/stories/dialog-inside-scroll.ts",
-            "sha256": "61c1370852d22284e9c59eb6423c8635109d569bfb665957b0ade6ae7b5f7bc6",
+            "sha256": "01e8cf7adc3f62b2bd9d61cb305a4a0999052f0f8ad034522b6d297bbf495aeb",
             "kind": "example"
         },
         {
             "path": "packages/primitives/dialog/stories/dialog-manual-close.ts",
-            "sha256": "c986f7aa06e6af36a84be8ee4b74b22133f2346fa095bc5c835b237fd22d7c34",
+            "sha256": "4fb711752d8c488f750e7cda6d825172292077d4558c6034dbf10e01040ddb27",
             "kind": "example"
         },
         {
             "path": "packages/primitives/dialog/stories/dialog-multiple-triggers.ts",
-            "sha256": "b0b51ebd11eb99cc4241062fb096129e773fad3d14fb3089e03915ad9e4b023d",
+            "sha256": "2d81d9012e288ab5e91dec891dbaee68d2d4e60c0eb37e3e2560d562b7ce3797",
             "kind": "example"
         },
         {
             "path": "packages/primitives/dialog/stories/dialog-nested.ts",
-            "sha256": "cd75f1434590882504b7c766dfb48effdd6718247233d14c391287abb3e0ff74",
+            "sha256": "3d2330750c1c99444e5b6d193c93db6df7e1c24715b7340f5e031f813b25fb02",
             "kind": "example"
         },
         {
             "path": "packages/primitives/dialog/stories/dialog-non-modal.ts",
-            "sha256": "341d7921b316db1d4646271aa00f0115b4a8887f3268cad838f56f75c37dfa7d",
+            "sha256": "8c8acbbe7b543a3a8f05a30345af532f108422b14e113b8ed1e5842f8505259b",
             "kind": "example"
         },
         {
             "path": "packages/primitives/dialog/stories/dialog-outside-scroll.ts",
-            "sha256": "c2b17dc54139fa6e7d1df7552fd80f19f792d68bdc90eb48e772a0aa838920cd",
+            "sha256": "244c9d2df951b38c3f3091298b1fad876f484baa090f11c4bf40bd3da02eb584",
             "kind": "example"
         },
         {
             "path": "packages/primitives/dialog/stories/dialog-trap-focus.ts",
-            "sha256": "82e4a9501798b64a2d2eea7f4f9a13f38d8060e58eba876f39752f1904fd40a4",
+            "sha256": "ce7038f43528d3be33db761f9b9d8ec25d6b1edc9d4dcee942b764f83e9eaccc",
             "kind": "example"
         },
         {
@@ -514,7 +554,17 @@
         },
         {
             "path": "packages/primitives/dialog/stories/dialog-without-dismiss.ts",
-            "sha256": "682a85d52fcf1255bc7dc4d006b5e2552f2eac7ffd348f0506bbb348b2ab555b",
+            "sha256": "6b983113a08ecafb07f2ffb158f4540ef9480ec171d233f32c237d5070c150cb",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/direction-provider/stories/direction-provider-slider.ts",
+            "sha256": "dcecd8534b4d4244d1cf6ac902622867ae5d9a66ca56b17661201d2719604a70",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/dismissable-layer/stories/dismissable-layer.ts",
+            "sha256": "32ff9870f5ea95f0ea685aef750abe623e7f818d34c08c163e467383d6dbae9c",
             "kind": "example"
         },
         {
@@ -529,7 +579,7 @@
         },
         {
             "path": "packages/primitives/drawer/stories/drawer-default.ts",
-            "sha256": "8416686b93e4b51eda96e067552d1dde2b2d215d75153ea7867cf8ca27e21b54",
+            "sha256": "1c8c1b483fb3be6db72706af61ec1e6771db3e1e18fc615be1768de34c35d466",
             "kind": "example"
         },
         {
@@ -554,7 +604,7 @@
         },
         {
             "path": "packages/primitives/drawer/stories/drawer-scrollable.ts",
-            "sha256": "9d1253e5184598e493661f10759a918013b754a30873d1bfefd02d0359ee1f86",
+            "sha256": "4e1bd16d19a138539a93dc49cf29e4b0d31c6c8362541e2552387b8da15e2393",
             "kind": "example"
         },
         {
@@ -599,12 +649,12 @@
         },
         {
             "path": "packages/primitives/field/stories/field-default.ts",
-            "sha256": "2f1318a8e7941a99482531ec8f0971cd4d97db7d4a2d4ad661928f91000d04c5",
+            "sha256": "c2bc8090fb360de67d498a67bd7de413a9138d5e2bb3ead87387b8a38ea4bddc",
             "kind": "example"
         },
         {
             "path": "packages/primitives/field/stories/field-invalid.ts",
-            "sha256": "27b0c037357b126c28da3ec47b8fcf001b6d206163c755428c627aabfddf3b71",
+            "sha256": "a367fa018ad925a0667027b871434149399992bf150da0c3e568191baa5f8da6",
             "kind": "example"
         },
         {
@@ -614,27 +664,27 @@
         },
         {
             "path": "packages/primitives/field/stories/field.shared.ts",
-            "sha256": "04ca218459510d129814c85c6d3b76d6b09cdc89282917d1422008a71256a1bc",
+            "sha256": "50bee8d4dc3b397497b16c1eec8d66c64b76a14370d0ce2c056ea0988f908325",
             "kind": "dependency"
         },
         {
             "path": "packages/primitives/fieldset/stories/fieldset-default-example.ts",
-            "sha256": "4b932a3453b62ca8715bd3c67a6d4e3f849bb724f83117d03c78804701aaeaec",
+            "sha256": "c9a067c9fa31726919c2c5c7312820d205f811bd5695a20d9ef93cafd861499b",
             "kind": "example"
         },
         {
             "path": "packages/primitives/fieldset/stories/fieldset-disabled-example.ts",
-            "sha256": "ce1a9390c520fe220749dcc0bf7850f2d5f4cb9816980e7e6f59d5fc49cc4916",
+            "sha256": "ae25800b8c5de38d1fd5e529583b9bb9434d1f7e1ca93132b73541341f9bfa3a",
             "kind": "example"
         },
         {
             "path": "packages/primitives/fieldset/stories/fieldset-signup-form.ts",
-            "sha256": "5b81b45cc63327db87bae4dbea31ea4218187457f9c92cd3ca9f993fd18c7ab0",
+            "sha256": "20997cfa53a8e9101ba51c9e1052d5fb8fb440695e5d9edd94708154a99e671e",
             "kind": "example"
         },
         {
             "path": "packages/primitives/form/stories/form-default.ts",
-            "sha256": "fed56be4d4aad37e60514772ca1c533a076c118a7b31fd1d41b93f8ae2826a1d",
+            "sha256": "2f567a8b6db512461a812b04720499272f3332b5dfef58b181bf4d2906cb2a68",
             "kind": "example"
         },
         {
@@ -654,177 +704,207 @@
         },
         {
             "path": "packages/primitives/form/stories/form.shared.ts",
-            "sha256": "39d42985f3dd7052026473b7a2b1316610e0752a362e0fdd66e78901bd14361a",
+            "sha256": "2297f16e69718abc10514bba5b3e1340f1ea6ac59eee4eafa11d26aebbfa319c",
             "kind": "dependency"
         },
         {
             "path": "packages/primitives/input/stories/input-default-example.ts",
-            "sha256": "342c4b99f7e55419832e5284c98bce99b429b4f70992a0a214b20677d2a28dc7",
+            "sha256": "dba2ab0b1d6e635e46246f8207d8cd28291fbce63bb0249f37b5901cfc28c903",
             "kind": "example"
         },
         {
             "path": "packages/primitives/input/stories/input-disabled-example.ts",
-            "sha256": "0975daa7644773ad13a519762663a2dec79ac442b2f23f72c171497ec58a75c1",
+            "sha256": "3d7660c6d8a5cea2ab30f8f11d89227a95b0943203becaaa08a48aaa4c4980dd",
             "kind": "example"
         },
         {
             "path": "packages/primitives/input/stories/input-field.ts",
-            "sha256": "0f3d48cc3c67bd180869454d30f3cdc008b08530df236be0be9d91513009904a",
+            "sha256": "b35074a239c17a3f6ba729af2b7abce75af7f179e916f28908adf7d7725b8ab3",
             "kind": "example"
         },
         {
             "path": "packages/primitives/input/stories/input-reactive-forms.ts",
-            "sha256": "ba2abaa5148022948e10d579504a6751037b16a6a44a5eb1474b4668746de515",
+            "sha256": "b61b37c48d18848686cbeb1b8fce4fe090f9efe9d3ef8f20d7542e7b0a0ee653",
             "kind": "example"
         },
         {
             "path": "packages/primitives/input/stories/input-signup-form.ts",
-            "sha256": "1ef4f038edea2b019c1f60e969f353872a5431c8ebad402b7fbf58bbbab6b689",
+            "sha256": "2fd5580d4ee7b0beb1a08ef4d14c5bd71be136cbce5295639f50e85fe28c0cae",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/components/menu-checkbox-items.ts",
+            "sha256": "77d965481a39dd3a46bd218e4de91804f4fb095d5d3752355bff3588dfa7c02d",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/components/menu-radio-items.ts",
+            "sha256": "60d62fd1855cd5800fb6fbb7237159672ecd53f870d11bb07840c4458b298bcc",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/menu/stories/components/menu-with-labels-items.ts",
+            "sha256": "c8e0916dc831299f0ffce78dff2c574d4154146e560d8ea141edba47af319b25",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-animated.ts",
-            "sha256": "5a15ad179c849cc16e8bf0cd062aeb9158d5df6dee4a4bf9ea1a1092cd8097fc",
+            "sha256": "12f83ad98852caff43a1a450cc6cdaf1703b690a579c8460f1f038a593f1415a",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-arrow.ts",
-            "sha256": "2864a3e616b7f98a9ff6daeda8b70b13830167a32648921b81f1581d67a3e635",
+            "sha256": "c657f1ff28c31681555a3b9aa1c2580f9d70fe0bfe2b995f4359b5770a73134a",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-async.ts",
-            "sha256": "bbf8c8b8636c6160227df0edde093e44fba8f91d75534fc39d2c5627ea404d3a",
+            "sha256": "ddc80af6aca7bd8831944476c547fcdaac07094d1ddb02c9c90b792e3f584b45",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-backdrop.ts",
-            "sha256": "c94372186d1aa1899b205210fd6659b970a32966c4315906de2735ff8c2658ef",
+            "sha256": "5d3f57606f95f74d3e68bebe55995b86a21053953b05ddd7ddb79e60bc0cc0f9",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-composition.ts",
-            "sha256": "9fdedd91d05a5bf1a9690fd9e19d7606f5ea232c7581748a495b3505cbdee4af",
+            "sha256": "26cab457ac6946afb994063aeb3e83f6778b3d14d0eec13b7debeae903006ef2",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-custom-container.ts",
-            "sha256": "6ad84c3894b36d2df4fc619b69e06ebead2fb765f6baccc65a653fd3448bdd98",
+            "sha256": "92eb2b82368e8802dfe740316ad97285bce1b35492855327c2365dff586830b1",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-default.ts",
-            "sha256": "2f94af20c7a3eec03e012227d2a7fb627b764e2e06fb1f983964956754ca3905",
+            "sha256": "a70417d98ae6675a0fd962c823a682820dd85c17304f3b003106c0b0704216ed",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-events.ts",
-            "sha256": "78e5bdd7d4c5c0ea697a91b3c027fee6acd248234b4cbfbaa23462dec7dc37d5",
+            "sha256": "2e98d0f69afb1ef826e16ec9c4cbab59bfaf0339b3a815a9bb0c3ecaf6022767",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-exit-switch.ts",
-            "sha256": "3b6aecf1d8ee538b6d6621c8ae8f281a4e99817e758b9444abbc51446c9474ed",
+            "sha256": "25b723a6fc8ba41bd8ceea08c09a7711670c72d9c5c0fb6ec0909b818909e6c1",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-focus-return.ts",
-            "sha256": "6417b053a0e00cd347e4de9e5e80d9cf859e4f41e0eb3327dce6c9caf53ea303",
+            "sha256": "826fcd0dc260d6b297362d9c0f85991c399ab3775971ff253e238d4bd54800cd",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-highlight.ts",
-            "sha256": "6b75c7d28df824094a4a9f4a07d28881ad15733a665ff1bdd0a4ce0ea926eeb7",
+            "sha256": "b79cfac51702778dbf7cc974ccc3bba18ba57314a0bb5ec0028c721d636bf28c",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-in-dialog.ts",
-            "sha256": "5e089bcf91e67417f0cddd04972b02795c6b6fcc20169452f7c5a8b9c6aebbef",
+            "sha256": "ff3f561dc53078916f0281c2816c55fdd815c1c2e497d3cfff1c3f5219d22c9f",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-in-popover.ts",
-            "sha256": "cae2ce18f83d4cf7fe68991473683a5adff5650deedb8bbc0673327ed8239261",
+            "sha256": "086e6712f60eb4512723f2c3b33abe2d364cb39ba8e8cbf944a320b72957557c",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-initial-focus.ts",
-            "sha256": "7951eebeb8361ecf248fa4fac57a9db3b0f8a0ce8b51a499da1d7fb7ae37784e",
+            "sha256": "d517e1ccf57a02ded7add2661611ddae7e8ea9dcef6e0c8db1345872ef2274ba",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-keep-mounted.ts",
-            "sha256": "4b821635de2f06e25ccb340a647c1eccfa278fe241f447d3edf05d23fed17129",
+            "sha256": "c82ff230aac4d8ef07555586e2ebc703667104c84ef41d871b4d414600cb3c2d",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-lifecycle.ts",
-            "sha256": "7377d0b44e606c49b740962244eea7d3e14e0e63ebeec0df2ce975452053ea63",
+            "sha256": "0b15149da8275f61c1ef83a3bcf7e0ce8781dc8de641a56d4bccb83823b39f6f",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-multiple-triggers.ts",
-            "sha256": "04283a921afc7c5ab70124fe9f2bdfc754294de4197fd831b5728fe0db68a277",
+            "sha256": "380d6fa315b09b908d6bd26511b93ea141ca078292a71c41dd26897bbf226a45",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-native-elements.ts",
-            "sha256": "960c0f86c7f98c5bf80d8d3750dc2e04a9d09b4ee4e0eb179a85e01e130f984d",
+            "sha256": "30e5ae180905a30290724586f001fe468320b60bf5a0416e35ff964d21d933bc",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-nested-popover.ts",
-            "sha256": "b012241c5c1767580d068a7bcfaf6205288daf0cdbe5d45424715d3f6019374e",
+            "sha256": "1d97a8b750fb765428dcdc25b7c267acd932db5eadc1dc1540e64b42312b12c6",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-nested-rtl.ts",
-            "sha256": "e608efd880fab989693b16a789339ea0e77868cafe4519aaab124f04bc20a653",
+            "sha256": "15aaa5d608d293010612ad252e1c01ef7d029150170acfd41c239b35ac6a15c7",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-nested.ts",
-            "sha256": "8def466fb0465379d3d00abb0ba94f9b27e32f3bbd54c6bdcb0175848bfea327",
+            "sha256": "ac0ac8ec13c6906332dab7a67e993ac42ad2596c4c613abaffbe1042fb52136d",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-open-dialog.ts",
-            "sha256": "efc268020017626363ddac490285b1e128dad3700fbcbc0d57bf08c9a3a4a9e5",
+            "sha256": "047d19ca73aa531adc7f36eda310cfe85059d6edc3f6e6a80327524141a54e7d",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-open-popover.ts",
-            "sha256": "14df1741c82a119ffa943ffab4f85a116b26500f32d7aeffec2db4dc44416957",
+            "sha256": "63fde37bebc3bad4b7d4a5392ea3635e5bd23c6e12f788204a7f0b5bfe899b7d",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-pointer.ts",
-            "sha256": "e41496dd0c619bcb9b9cca6e99dba830ca38eae913949567c6cd6f4865730144",
+            "sha256": "a1f239eb27a106e842219456575d4aaae4783bf29124a1a92837622bc2cc5238",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menu/stories/menu-viewport.ts",
-            "sha256": "cb9a791d7c31b41148067ef3cea218c3457148d8b3e0c34eda118a09bf7c936e",
+            "sha256": "5e0021d73c375049a9f515525bfc15d8f4cd820592abc10968281c7db6f984ea",
             "kind": "example"
         },
         {
             "path": "packages/primitives/menubar/stories/menubar-default.ts",
-            "sha256": "109aaf45004bee900332516ff4bbdd95ad619c643f863c988452e19c0f370d10",
+            "sha256": "1d597abc2fca3d77095ea9b554bab0f059fda1ddc87b2f1461220294e184e1f2",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/meter/stories/meter-aria-value-text-example.ts",
+            "sha256": "0c1d54c366e6e23439aef40536d5087365618e27c554d8c04f337949bf5941e5",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/meter/stories/meter-custom-range-example.ts",
+            "sha256": "16ddeb8d99e17f81fcd8bd52556727945b0df097fcd7cd2a79ce5e8207f52802",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/meter/stories/meter.ts",
+            "sha256": "b83a3a6a48257abddb5dfa175e387b1610d909c7ef37958d48cf048f362f9440",
             "kind": "example"
         },
         {
             "path": "packages/primitives/navigation-menu/stories/navigation-menu-custom-links.ts",
-            "sha256": "536f21c19f13186b169884ea0a7f94c7a7e9439acb74d6ce3b92f73f88204a24",
+            "sha256": "cf3affb46e67129f9a0efb311cb7e6a5ae5718a822ba2be558bb84612c8f0b90",
             "kind": "example"
         },
         {
             "path": "packages/primitives/navigation-menu/stories/navigation-menu-default.ts",
-            "sha256": "8c9567e773da5b11374cea9ed9f70e388f551714cdc8d6159d217f40a0064578",
+            "sha256": "7754172cb6737bc9c8dfd3d2a6e61f0e57584f668b8c041a6deaece5baf63e16",
             "kind": "example"
         },
         {
             "path": "packages/primitives/navigation-menu/stories/navigation-menu-large.ts",
-            "sha256": "7892f3f2069a844f39c7c773cfa94f06d22ff23983f1d5202ec51424cfe8eb78",
+            "sha256": "a31770b9449b66673ce8e729ce0e59f6f999c3b6beeea91acd8d492df9224300",
             "kind": "example"
         },
         {
@@ -834,27 +914,57 @@
         },
         {
             "path": "packages/primitives/navigation-menu/stories/navigation-menu-nested-inline.ts",
-            "sha256": "02347ce0cab180fd30905c286d79cd0a7f7e27b324c7c09080053973b83d4c2f",
+            "sha256": "81578021703399987a6243ff75d609f40acafa4c30ac8f02706a4bffa6140bdb",
             "kind": "example"
         },
         {
             "path": "packages/primitives/navigation-menu/stories/navigation-menu-nested.ts",
-            "sha256": "90615ff781d860071667a698ee300e5270ba6e8743d1884f7e492935ed945d2b",
+            "sha256": "5a83dacea2ca0d56a2821cbe04dcebc27fd6c6a6335481fd5442512ef0ca3fec",
             "kind": "example"
         },
         {
             "path": "packages/primitives/navigation-menu/stories/navigation-menu-rtl.ts",
-            "sha256": "e3ea5aa4f03190ef06ec26c0135de2e83ca37f686d1916cab7ef9dd89663ead8",
+            "sha256": "d6f5d2a6c03044a1a40da1f29cfc16165b09811186db15b5cf665a63708ef44e",
             "kind": "example"
         },
         {
             "path": "packages/primitives/navigation-menu/stories/navigation-menu-vertical.ts",
-            "sha256": "912bd1e3c138d4c685af78ed2ac73a8bdca2e30819e723cc45465f81173f65d2",
+            "sha256": "4f2af847180b5c4b3bce96d9209cc054b701b935c649534eb28466adc0893fb5",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/number-field/stories/number-field-currency.ts",
+            "sha256": "af29defe99bbbc023496faa7fad232f90fb5f3887bd5ec56336dd7113da5ca66",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/number-field/stories/number-field-decimal.ts",
+            "sha256": "d0c3d05f4c12519f681c53fa4c5828efd33b6e3e21d923e5829e2edc28cceb0b",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/number-field/stories/number-field-default.ts",
+            "sha256": "98f9533f91a8ebdd78b9265ec18b93afb5e99870a5989da29ae2741b70795568",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/number-field/stories/number-field-forms.ts",
+            "sha256": "b5116179f596561858f57e026133bcff5372c475ed949d0e6897ed3a4317563d",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/number-field/stories/number-field-percentage.ts",
+            "sha256": "f9010fcb744a537f2c41a00787acbe9193d3e7ea89ae33a6f13d397a7cf2988d",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/number-field/stories/number-field-scrub.ts",
+            "sha256": "889c368dc99af39e034dfe0a79944e964143978b302bc74223e624c1fe6f2f61",
             "kind": "example"
         },
         {
             "path": "packages/primitives/otp-field/stories/otp-field-default.ts",
-            "sha256": "a9e9fb5e780c744b0571cc7cafb771bf62ad411c2ff93447d1c8e77722798cc9",
+            "sha256": "4970813f45e8bcd9ce12c6e5febb811633908de058019ff8fbe7a0ca4fff087e",
             "kind": "example"
         },
         {
@@ -899,57 +1009,57 @@
         },
         {
             "path": "packages/primitives/popover/stories/popover-animated.ts",
-            "sha256": "57f93d1ee6ecb19a5e0ea534655ec12f5717c33f866f09f1b36b92f6b559c7ad",
+            "sha256": "f2edf521d26f49cccf854df67778d68a690ad8d016e7c1c64f5c5d99047c91bd",
             "kind": "example"
         },
         {
             "path": "packages/primitives/popover/stories/popover-controlled-multiple.ts",
-            "sha256": "be8d1ee030242bc77f4b1793ec55b70f8f61aa0c7c1f3d76e34dfd1d77c4ecd8",
+            "sha256": "4d0ff793e7251be3732b39130ed3dc0e303e6013f5bdf9efb3a1fed8898601b5",
             "kind": "example"
         },
         {
             "path": "packages/primitives/popover/stories/popover-controlled.ts",
-            "sha256": "ab5b702f654501d6f0da744518be9a287a31ee1437fc42b9544e7346c8d2fbad",
+            "sha256": "bdc627b03d6bafbf397bb676f6030a265c3f1f160ad28accc056bff01b268802",
             "kind": "example"
         },
         {
             "path": "packages/primitives/popover/stories/popover-custom-anchor.ts",
-            "sha256": "83fca8ab7c62f389e6b78ac942a577adbfb59dd16a6efbbd1c7bda077dfa2675",
+            "sha256": "e7c2f45a2b85d058936d112756e2fca477bfda5add36c60c756d1913eea45819",
             "kind": "example"
         },
         {
             "path": "packages/primitives/popover/stories/popover-default.ts",
-            "sha256": "7b45b738cfce9226372535f901d9f28dcfd515f95ca2195286fd0c2d0de78cb1",
+            "sha256": "55fd968b280b27dc9be65d42f3a971c88fb25cf5283ddac9c05324ad83c0136f",
             "kind": "example"
         },
         {
             "path": "packages/primitives/popover/stories/popover-detached.ts",
-            "sha256": "0d02ed97a32dfc61db812f5d11d7abf2ea913078d908ef49baf9bee777d291c2",
+            "sha256": "91970e6191e1b6de9754598b8e9f9d205ec00e373442d931d2f569595c71ccb6",
             "kind": "example"
         },
         {
             "path": "packages/primitives/popover/stories/popover-hover.ts",
-            "sha256": "e51141fd3ac8c8802512fce9101535bad664cbe5d8d50cde7aea9df7d29b404a",
+            "sha256": "2197e91dd78eb0fbc2c8bd37ad37e37f485f5e17d7e627ddcea3af36fccfdedd",
             "kind": "example"
         },
         {
             "path": "packages/primitives/popover/stories/popover-lifecycle.ts",
-            "sha256": "d78fa296de1a900d39ecefb73f4e3a4cd3b24491f3f4044e237c2234b4d9a8f6",
+            "sha256": "0617e2aa8d3e3b26325de3e2a0c5b24360861ef6254af63f104f8044192e9d93",
             "kind": "example"
         },
         {
             "path": "packages/primitives/popover/stories/popover-modal.ts",
-            "sha256": "0899cceede5d14e80690637c2fafef95df44467e61b0f0d739ae4e6b0e57f2a2",
+            "sha256": "91052fdd186edfffc9939d4b86b15336e4c9d6045ce6425bc6820abbc5b567e1",
             "kind": "example"
         },
         {
             "path": "packages/primitives/popover/stories/popover-positioning.ts",
-            "sha256": "1de448622fbe63a4124db73a1e610352c5be88850381bddb4e3f60f7e2103316",
+            "sha256": "a31c4efbee3052c3de523bf88cc35a47d5b889503d42c6d84dcbb3363781d550",
             "kind": "example"
         },
         {
             "path": "packages/primitives/popover/stories/popover-viewport.ts",
-            "sha256": "a73fffe661e314d24e3380808f74b9b8d08d118835b6d680a74757f50531097f",
+            "sha256": "9f0e2af363bab4b397e5b141fc34afa2aca2a5fd1ffa366d178a339cfd04d2d4",
             "kind": "example"
         },
         {
@@ -984,32 +1094,52 @@
         },
         {
             "path": "packages/primitives/preview-card/stories/preview-card-controlled-multiple.ts",
-            "sha256": "21037803fe2c592d561df3b813ec2248f92e65b394165aa4c760d0bf90d3b30b",
+            "sha256": "d13aefe36e9aa0534e499d70269ee8322a23535103ef8cc70577fa00ab64326c",
             "kind": "example"
         },
         {
             "path": "packages/primitives/preview-card/stories/preview-card-default.ts",
-            "sha256": "8dfc78f4f4aeddbc79e9b585644230da1163d07047d78094edb298a0e0e4f9e7",
+            "sha256": "ddb93906f6156417f58df6cbff68c9ab1c580e643cbf1110823cf2eafc27d061",
             "kind": "example"
         },
         {
             "path": "packages/primitives/preview-card/stories/preview-card-detached.ts",
-            "sha256": "fe3ed03b412f418ddb86273273ee88d7abf04651d58dae01a66e1aa84c35b8b7",
+            "sha256": "cfcf5d1d9589916cbc6c3bfcb630021bdd00a96110d63351e78cd453c1102086",
             "kind": "example"
         },
         {
             "path": "packages/primitives/preview-card/stories/preview-card-positioning.ts",
-            "sha256": "7536376797e91252300499b29e94e7ff1e43c4d9c2df96a8d6f8b8a22c89399e",
+            "sha256": "aa323b02567b85773415761433aab1baff6e69af86b944d9da052e239b820e13",
             "kind": "example"
         },
         {
             "path": "packages/primitives/preview-card/stories/preview-card-viewport.ts",
-            "sha256": "b223b7e7ff8c48dc4d16a61150c3a40bcd27186e553265fa3f84fd0915786cfe",
+            "sha256": "33bf3ce12c0a5e505eabed43cbc0f56e405334620ca1f051c2e9680cb2d0eddd",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/progress/stories/progress-circular.ts",
+            "sha256": "e94289457df614a785e53aa30f26edd5032add9088e610d2fc076b61b1665527",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/progress/stories/progress-custom-range-example.ts",
+            "sha256": "9c0f78232157d9e02f7a940d11d5d6ef62abcd57c4827045380532383c53272b",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/progress/stories/progress-indeterminate-example.ts",
+            "sha256": "d4fdaacf719b8e86b6ecbd03ef0c6889c680e8920b543a2c7b586d6685258886",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/progress/stories/progress-linear.ts",
+            "sha256": "573488b3dc88ebe0338258924bd32a466199efbc2cdf5993087929538b314e4b",
             "kind": "example"
         },
         {
             "path": "packages/primitives/radio/stories/radio-default.ts",
-            "sha256": "53e7eff1cb9a4079f7aeb005cdeb0215ec30e4df8527cdd91180f0f41102e5e8",
+            "sha256": "ab9606ce29d46847fdc069823b8371e24b0fce7702c93d9b5966add6491dfa51",
             "kind": "example"
         },
         {
@@ -1039,7 +1169,7 @@
         },
         {
             "path": "packages/primitives/recipes/forms/signal-forms/signal-forms-complex.ts",
-            "sha256": "bf482f5219616a517947c806b1b0d580a3c48e3463f79d6b4eddfb611e99be9f",
+            "sha256": "768348f47bb3430a41ffd26f9772216e7bf3c8ffc0a716f6909fa463e574dc77",
             "kind": "example"
         },
         {
@@ -1054,7 +1184,7 @@
         },
         {
             "path": "packages/primitives/recipes/forms/tanstack-form/tanstack-complex.ts",
-            "sha256": "4c67b4bbf54188e64d1ffa4ccda6abda846c7ff798be222c965fc3aeff1c0296",
+            "sha256": "7a2c624bd748307566ae448fa5f34669f430102d5dcdbb37e0c4ace78293a0f7",
             "kind": "example"
         },
         {
@@ -1065,6 +1195,31 @@
         {
             "path": "packages/primitives/recipes/split-button/split-button.ts",
             "sha256": "0b343aef9873a3f6fe48b41a0f4e001c023ca93e7c08aabdbd817c7f7d40ab85",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/scroll-area/stories/scroll-area-both.ts",
+            "sha256": "6dc1f96ee9878e7a48c2e63327f006d082d07fc7d2b6501c95300caeda7c0ba5",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/scroll-area/stories/scroll-area-default.ts",
+            "sha256": "4f6e216e8373284e8ac7bfd93b43b1de0c1eb3480d96da883a707a2e06fc1e8a",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/scroll-area/stories/scroll-area-gradient.ts",
+            "sha256": "684ec35817dd7e6b83483a535ec67648139657a4d501a018804686d8b6d869aa",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/scroll-area/stories/scroll-area-horizontal.ts",
+            "sha256": "53d7134722f49e244f3f1c5672db6c197900a3398eb2135774efe633ee007f84",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/scroll-area/stories/scroll-area-tabs.ts",
+            "sha256": "b1db0f02b2b685c14428ac2ee6b4ad835541b442754f786e0929030e05249649",
             "kind": "example"
         },
         {
@@ -1089,7 +1244,7 @@
         },
         {
             "path": "packages/primitives/select/stories/select-default.ts",
-            "sha256": "bfaa2ffc28aeae7a005d92eb9415150f423ee257d86c773b5141998fcf58f697",
+            "sha256": "cb737acb7331c6410007bb5f87d1ad9935d7af9ab1808e303e672ba0168201e5",
             "kind": "example"
         },
         {
@@ -1109,7 +1264,7 @@
         },
         {
             "path": "packages/primitives/select/stories/select-focus-management.ts",
-            "sha256": "fa310d6b5fa029673b7761ff51498a4afe03a18cbb78a9eb026aec6f713d5fa2",
+            "sha256": "0a7054723badd1cb71a7e9aca92235426a9e14b08cb5af13f89c886bc9935537",
             "kind": "example"
         },
         {
@@ -1178,6 +1333,16 @@
             "kind": "example"
         },
         {
+            "path": "packages/primitives/separator/stories/separator-default.ts",
+            "sha256": "33d390090ce0339a6170ca5d3cbbc722168db25d6c9c7ebb883c946b4caeb970",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/separator/stories/separator-horizontal.ts",
+            "sha256": "4273c77fe3c572aaed38a5a8eeb24cfa31f7c6664d3824d9463b74c7e5ad620c",
+            "kind": "example"
+        },
+        {
             "path": "packages/primitives/signal-forms/stories/signal-forms-field.ts",
             "sha256": "68113334f9cc4c5407b96aaa8cf219b1df411f123759c3b9f805f17bde049b8f",
             "kind": "example"
@@ -1193,6 +1358,71 @@
             "kind": "example"
         },
         {
+            "path": "packages/primitives/slider/stories/slider-default.ts",
+            "sha256": "514a65ba3daae1cab6dfb392d87ac5b650212885b07e3dd25c8224198c2655cf",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/slider/stories/slider-disabled.ts",
+            "sha256": "9bf30e35e081abc0517623fd4066afad6649c9250075354fb5c3b46c3dd7d159",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/slider/stories/slider-events.ts",
+            "sha256": "f4bdd510cd9d58e17c2cbfdf6bf3b5c890733e0b369c6512edc6a5f548664fd1",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/slider/stories/slider-forms.ts",
+            "sha256": "bf4f933c85f1619a004d881272120673e1422f2048ca0e3cae94b14c33f0d2d0",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/slider/stories/slider-range.ts",
+            "sha256": "2b03a8138a2bbcc2939ef8f5501d656107dc1edc81b7eb5e0bb6993d206068dc",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/slider/stories/slider-thumb-alignment.ts",
+            "sha256": "4c39af2c2f044827278618653c11f455ee1b284abc83bf1d7144f6b9461dd312",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/slider/stories/slider-value.ts",
+            "sha256": "7ce8d128d0e5d86ec2db3e0802e1fd8a664d2152432b0b8766d6c0013a3e52ab",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/slider/stories/slider-vertical.ts",
+            "sha256": "e74ac91fa88560a955347e5c434e39dab018b26efbac7253ed6fc20cccf3ca35",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/switch/stories/switch-default.ts",
+            "sha256": "3df6f4e301ae95b8b5e63e1deb20757bcbc339bc18bbdea720c3573b358605fe",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/switch/stories/switch-disabled.ts",
+            "sha256": "30075d51b8a22821e2944a35c58764ede90c9a6a182a7fc30b67c9ae40f1df9e",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/switch/stories/switch-preselection.ts",
+            "sha256": "5b5740a503424d3a27b1c6abe7d6d488f77f50dfaccddd1ebd15899c9932f6f9",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/switch/stories/switch-reactive-forms.ts",
+            "sha256": "ea2ed3b4981e43a87ab9a472c707be23bfac6ecbfc9c5ce7b94000167123acbd",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/switch/stories/switch-readonly.ts",
+            "sha256": "24ffec56bd3bab10ecceda9e8378b538b3f980b1e3099de45af20acbb50fa18d",
+            "kind": "example"
+        },
+        {
             "path": "packages/primitives/tabs/stories/tabs-activate-on-focus-example.ts",
             "sha256": "deb1772a53e73028b170701314cc8669fdeb92fea5277066da7e89e6bca0ff44",
             "kind": "example"
@@ -1204,12 +1434,12 @@
         },
         {
             "path": "packages/primitives/tabs/stories/tabs-controlled.ts",
-            "sha256": "544cb2c85085ba92ea862689ed9c83d0fe041901765a7cb9f00b9754f169949f",
+            "sha256": "e573bf18fca5acc93bbf6691b5ac628beb208a0fa9e1877d2cf52043b7a2331e",
             "kind": "example"
         },
         {
             "path": "packages/primitives/tabs/stories/tabs-default-example.ts",
-            "sha256": "36646f21048da2e64a1df0af44678b886500d5666c40cc633908d8e0dbdbd6ed",
+            "sha256": "fbc1dd02533d1da0eabf7f388cc971ab5781510b1a0e588f159f11bbf35256f1",
             "kind": "example"
         },
         {
@@ -1229,7 +1459,7 @@
         },
         {
             "path": "packages/primitives/tabs/stories/tabs-object-values.ts",
-            "sha256": "6ee47e284219c666b5f44452e297976d1b1d13143bc1c40bda1553212e8c4404",
+            "sha256": "672e51835c9aae7cdc4d461cf1b18aae437f15b23ca69e11184775481d1664e4",
             "kind": "example"
         },
         {
@@ -1243,63 +1473,123 @@
             "kind": "example"
         },
         {
+            "path": "packages/primitives/time-field/stories/time-field-default.ts",
+            "sha256": "850362363831019c78b0fd8a2a00430132aeb80c06ea13d27d831d5c8c3aa9a6",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/time-field/stories/time-field-disabled.ts",
+            "sha256": "2b342d25d225a56fa915aa5dfff2363b139f37e9b8c21668c4737ee572f0c577",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/time-field/stories/time-field-granularity.ts",
+            "sha256": "b6d33bb25463274f9d824cf15814e0eb55e3b6f15342ec7c558cf2e4abe4f587",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/time-field/stories/time-field-hour-cycle.ts",
+            "sha256": "b8639eb97403b3859c3cab8d7de195a3974a53d6361be2969bd9d644e4aad9ab",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/time-field/stories/time-field-localization.ts",
+            "sha256": "b45dd11de2cc03c2b3141544e0b00263cabf994d5884787b2b82b423ebc5f83d",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/time-field/stories/time-field-readonly.ts",
+            "sha256": "fea098f4b158a1a221614a86898a8d4a2e89d9656099383f622c90c370bac83b",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/time-field/stories/time-field-validation.ts",
+            "sha256": "f2aefef2321ba193a680908e192acee406d1a77afd0ed253ac3fb21a004d49e7",
+            "kind": "example"
+        },
+        {
             "path": "packages/primitives/toast/stories/toast-anchored.ts",
-            "sha256": "f1ae597cb610be694723a038cc78554d5afeed20d73deee24846401f71d31956",
+            "sha256": "1604a1c9a655466812e86160c0bc870d6a501891afa19ddd3175fc2c9fd77ebe",
             "kind": "example"
         },
         {
             "path": "packages/primitives/toast/stories/toast-custom-data.ts",
-            "sha256": "163ca4917876ee393021e04a000f9ee26853d64b4fb005c9ed3189518e7c9cf0",
+            "sha256": "7439d64885700087732b7e31dc4870b0af37dddbcc284fa9b42f09cf2c2ac96e",
             "kind": "example"
         },
         {
             "path": "packages/primitives/toast/stories/toast-custom-position.ts",
-            "sha256": "2f58a358d87e5d5a9512e7ad738da0fa9d291bf409755bd6671b258b61c9801e",
+            "sha256": "9fd1a622bd343e4bdd3fc5057bc3b2a4b75bff747482ca3bffc892eedd089bbe",
             "kind": "example"
         },
         {
             "path": "packages/primitives/toast/stories/toast-deduplicated.ts",
-            "sha256": "300084fb060100d21efaca65598cad32047df1018e989bbccdaa7cdfec12c3f9",
+            "sha256": "9050f8cf5d5b143b0267e2e86fd65707983f6841ee1c5f9a0fbbdc78f4c491f1",
             "kind": "example"
         },
         {
             "path": "packages/primitives/toast/stories/toast-default.ts",
-            "sha256": "384e9c00653910e2566785acc15c816c60561148e2ee66cdcf0b68cf7c52b669",
+            "sha256": "8e08d43510915a0561f111550feb3c542cb9e8d87244e04c9dcd3b780acf6e6e",
             "kind": "example"
         },
         {
             "path": "packages/primitives/toast/stories/toast-promise.ts",
-            "sha256": "949f182b1a493ca86690b63414e05fba9be82be944ca4486a604abc0ddbbc8ff",
+            "sha256": "daed1a57a8508141d59507ce8fd7bd6b9e89cd85b7066aca70bb567a616cc531",
             "kind": "example"
         },
         {
             "path": "packages/primitives/toast/stories/toast-stacking.ts",
-            "sha256": "35e23f78b6da4b1594de23592463848f2e7c36830ef36f64555571f4830083ba",
+            "sha256": "027d735f51e93928e1252d0ab34dc941aa08b21b8668f13dcfa58f1ba5abd74c",
             "kind": "example"
         },
         {
             "path": "packages/primitives/toast/stories/toast-swipe.ts",
-            "sha256": "8a86cad8c989d8ab311d109912155265d1b0228f423b378fac0c413633f15acb",
+            "sha256": "165cb1e912d02c72fe0e0fb5569c3380756430055f2b23b9910a720bc12a959d",
             "kind": "example"
         },
         {
             "path": "packages/primitives/toast/stories/toast-types.ts",
-            "sha256": "c6d3311e5d737f59ac3fbfb1392cda3f96620e7c57a1611d6a17a64c99bd87d0",
+            "sha256": "b1d5cf7197e294ded94cd97e66d9622b84a6955d017a4ba2d54e801428a5649b",
             "kind": "example"
         },
         {
             "path": "packages/primitives/toast/stories/toast-undo-action.ts",
-            "sha256": "44c999d30a3aed72694a9ec62e94d1104cce16c280e0da78342a68746f83c9be",
+            "sha256": "bee98c1fcab5125f5132446e3e66c28d6f9fdc3f97a3b1d3a84598dc2e5b4e51",
             "kind": "example"
         },
         {
             "path": "packages/primitives/toast/stories/toast-varying-heights.ts",
-            "sha256": "68f40919596629710e8ec2ed2658c6bab5bc3d6f2358b1b60725a99864f8c747",
+            "sha256": "3d249477d0eaa2ef1f8a1911555a27385b6790c95a5058e98777144dc84f5e4d",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/toggle-group/stories/toggle-group-default.ts",
+            "sha256": "d61456016fb69050c31f16c6c97f98f6870ffb809ba3816ad30bc28bd832e2d4",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/toggle-group/stories/toggle-group-states.ts",
+            "sha256": "8c1a0ba7c6b1fa61bed516cf5fca8110739b23c83d8c2328a587012934398af8",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/toggle-group/stories/toggle-group.ts",
+            "sha256": "2f2bccdcd4b94ea9067ba85c91ae79558a2b0bb304bdbb33cfa0bcad69a0ef2b",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/toggle/stories/toggle-default.ts",
+            "sha256": "be03c5ff0ad2d17df6c882afb53ebcb8415137e4b946435555864c27fa865b28",
+            "kind": "example"
+        },
+        {
+            "path": "packages/primitives/toggle/stories/toggle-states.ts",
+            "sha256": "224c0712f87399dc2cebd63282794c1784c7dd300bdd9ea0f5758156e1078360",
             "kind": "example"
         },
         {
             "path": "packages/primitives/toolbar/stories/toolbar-default-example.ts",
-            "sha256": "5654072b26bebd685be5a9861b586e190494ee43fe17a6188a15511a6b92e35c",
+            "sha256": "2720ef4712c0a5bc23bca0b3ae2de6a983da5107bc0ab33424b4458861071137",
             "kind": "example"
         },
         {
@@ -1314,12 +1604,12 @@
         },
         {
             "path": "packages/primitives/toolbar/stories/toolbar-with-menu.ts",
-            "sha256": "4e7139a5202e933d8646f3b92352af7272382b01285163e49b5e9d8b4dc1c7c7",
+            "sha256": "7f3c47e9dccb672d59bab9b480f21b35ac7410f624443143e18d72430f5aa726",
             "kind": "example"
         },
         {
             "path": "packages/primitives/toolbar/stories/toolbar-with-number-field.ts",
-            "sha256": "73a7d3e7611e92da8264d8ae573a87233ad95abc33f638e45738898f39e16bd0",
+            "sha256": "2edf4c96943f3260408d5c1489fb3cb6e0d1765ed6c9c8f73a6a4fe4789f155d",
             "kind": "example"
         },
         {
@@ -1329,7 +1619,7 @@
         },
         {
             "path": "packages/primitives/tooltip/stories/tooltip-default.ts",
-            "sha256": "66cc2dceaf1102d59f39d8e4727917219b7d84e430b22198d109164057829be8",
+            "sha256": "26defd80824dbf5d1dbae28a335328d96154b8b8867a3dc491fcfe99b9e24a75",
             "kind": "example"
         },
         {
@@ -1344,12 +1634,12 @@
         },
         {
             "path": "packages/primitives/tooltip/stories/tooltip-provider.ts",
-            "sha256": "2e8ecef4d45256f95e2140925e4cca9b08bc9248070607b077b944e1fd4149f0",
+            "sha256": "e85d12da0baeaa5f6b26c566d1d6c4697c2d4e3f63b0d485b94dee3070be690e",
             "kind": "example"
         },
         {
             "path": "packages/primitives/tooltip/stories/tooltip-slider.ts",
-            "sha256": "d7cc441b26b1bf3c3b292755f062932b6af48972eb1dddcccc2dce12acd10f0f",
+            "sha256": "fb775107d455cfe9276904a8b01a427906af297c928d07bafc1fb60e2715a3a0",
             "kind": "example"
         },
         {

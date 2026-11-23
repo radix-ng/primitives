@@ -1,26 +1,27 @@
-import { LucideUnfoldVertical, LucideX } from '@lucide/angular';
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
-import { RdxCollapsiblePanelDirective } from '../src/collapsible-panel.directive';
-import { RdxCollapsibleRootDirective } from '../src/collapsible-root.directive';
-import { RdxCollapsibleTriggerDirective } from '../src/collapsible-trigger.directive';
 import { RdxCollapsibleAnimationComponent } from './collapsible-animation.component';
+import animationSource from './collapsible-animation.component?raw';
+import { CollapsibleDefaultExample } from './collapsible-default';
+import defaultSource from './collapsible-default?raw';
 import { RdxCollapsibleExternalTriggeringComponent } from './collapsible-external-triggering.component';
+import externalSource from './collapsible-external-triggering.component?raw';
+import { CollapsibleKeepMountedExample } from './collapsible-keep-mounted';
+import keepMountedSource from './collapsible-keep-mounted?raw';
 
 const html = String.raw;
+
+const source = (code: string) => ({ docs: { source: { code: code.trim(), language: 'typescript', type: 'code' } } });
 
 export default {
     title: 'Primitives/Collapsible',
     decorators: [
         moduleMetadata({
             imports: [
-                RdxCollapsibleRootDirective,
-                RdxCollapsibleTriggerDirective,
-                RdxCollapsiblePanelDirective,
+                CollapsibleKeepMountedExample,
+                CollapsibleDefaultExample,
                 RdxCollapsibleExternalTriggeringComponent,
-                RdxCollapsibleAnimationComponent,
-                LucideX,
-                LucideUnfoldVertical
+                RdxCollapsibleAnimationComponent
             ]
         }),
         tailwindDemoDecorator()
@@ -30,42 +31,12 @@ export default {
 type Story = StoryObj;
 
 export const Default: Story = {
-    render: () => ({
-        template: html`
-            <div class="w-full max-w-sm" rdxCollapsibleRoot [open]="true" #collapsibleRoot="rdxCollapsibleRoot">
-                <div class="flex items-center justify-between gap-3">
-                    <span class="text-foreground text-sm font-medium">&#64;peduarte starred 3 repositories</span>
-                    <button
-                        class="bg-muted text-primary hover:bg-muted/80 focus-visible:ring-ring border-border inline-flex size-6 items-center justify-center rounded-full border shadow-sm transition-colors outline-none focus-visible:ring-2"
-                        type="button"
-                        rdxCollapsibleTrigger
-                    >
-                        @if (collapsibleRoot.open()) {
-                        <svg class="flex" size="16" lucideX></svg>
-                        } @else {
-                        <svg class="flex" size="16" lucideUnfoldVertical></svg>
-                        }
-                    </button>
-                </div>
-
-                <div class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm">
-                    <span class="text-sm">&#64;radix-ui/primitives</span>
-                </div>
-
-                <div rdxCollapsiblePanel>
-                    <div class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm">
-                        <span class="text-sm">&#64;radix-ui/colors</span>
-                    </div>
-                    <div class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm">
-                        <span class="text-sm">&#64;stitches/react</span>
-                    </div>
-                </div>
-            </div>
-        `
-    })
+    parameters: source(defaultSource),
+    render: () => ({ template: '<collapsible-default-example />' })
 };
 
 export const ExternalTrigger: Story = {
+    parameters: source(externalSource),
     render: () => ({
         template: html`
             <rdx-collapsible-external-triggering></rdx-collapsible-external-triggering>
@@ -74,6 +45,7 @@ export const ExternalTrigger: Story = {
 };
 
 export const Animation: Story = {
+    parameters: source(animationSource),
     render: () => ({
         template: html`
             <rdx-collapsible-animation></rdx-collapsible-animation>
@@ -86,47 +58,6 @@ export const Animation: Story = {
  * close transition. During transitions, the data attributes drive a Tailwind grid-rows animation.
  */
 export const KeepMounted: Story = {
-    render: () => ({
-        template: html`
-            <div class="w-full max-w-sm" rdxCollapsibleRoot #collapsibleRoot="rdxCollapsibleRoot">
-                <div class="flex items-center justify-between gap-3">
-                    <span class="text-foreground text-sm font-medium">&#64;peduarte starred 3 repositories</span>
-                    <button
-                        class="bg-muted text-primary hover:bg-muted/80 focus-visible:ring-ring border-border inline-flex size-6 items-center justify-center rounded-full border shadow-sm transition-colors outline-none focus-visible:ring-2"
-                        type="button"
-                        rdxCollapsibleTrigger
-                    >
-                        @if (collapsibleRoot.open()) {
-                        <svg class="flex" size="16" lucideX></svg>
-                        } @else {
-                        <svg class="flex" size="16" lucideUnfoldVertical></svg>
-                        }
-                    </button>
-                </div>
-
-                <div class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm">
-                    <span class="text-sm">&#64;radix-ui/primitives</span>
-                </div>
-
-                <div
-                    class="grid transition-[grid-template-rows] duration-300 ease-out data-[closed]:grid-rows-[0fr] data-[open]:grid-rows-[1fr]"
-                    rdxCollapsiblePanel
-                    [keepMounted]="true"
-                >
-                    <div class="overflow-hidden">
-                        <div
-                            class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm"
-                        >
-                            <span class="text-sm">&#64;radix-ui/colors</span>
-                        </div>
-                        <div
-                            class="bg-card text-card-foreground border-border my-3 rounded-md border px-3 py-2 shadow-sm"
-                        >
-                            <span class="text-sm">&#64;stitches/react</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `
-    })
+    parameters: source(keepMountedSource),
+    render: () => ({ template: '<collapsible-keep-mounted-example />' })
 };

@@ -15,7 +15,7 @@ import { RdxMenuModule } from '@radix-ng/primitives/menu';
                     rdxMenuPopup
                 >
                     <label
-                        class="demo-menu-selectable-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center py-1.5 ps-8 pe-2 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                        class="demo-menu-selectable-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center py-1.5 ps-8 pe-2 data-[disabled]:opacity-50"
                         [checked]="checkedState()"
                         (onCheckedChange)="handleSelectAll()"
                         rdxMenuCheckboxItem
@@ -31,7 +31,7 @@ import { RdxMenuModule } from '@radix-ng/primitives/menu';
                     <div class="bg-border -mx-1 my-1 h-px" rdxMenuSeparator></div>
                     @for (item of options(); track item) {
                         <label
-                            class="demo-menu-selectable-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center py-1.5 ps-8 pe-2 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            class="demo-menu-selectable-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center py-1.5 ps-8 pe-2 data-[disabled]:opacity-50"
                             [checked]="selectedItems().includes(item)"
                             (onCheckedChange)="handleSelection(item)"
                             rdxMenuCheckboxItem

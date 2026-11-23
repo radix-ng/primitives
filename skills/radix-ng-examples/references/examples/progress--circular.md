@@ -58,3 +58,5 @@ export class ProgressCircularComponent {
     );
 }
 ```
+
+[Example setup](../guides/styling.md#copy-an-example-into-your-app)

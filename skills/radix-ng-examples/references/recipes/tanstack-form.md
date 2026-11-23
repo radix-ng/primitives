@@ -728,14 +728,14 @@ const formSchema = z.object({
                         <p class="text-muted-foreground text-sm">Get notified when this issue changes status.</p>
                     </div>
                     <button
-                        class="demo-switch demo-focus data-[checked]:bg-primary relative inline-flex h-6 w-11 shrink-0 items-center p-0 disabled:cursor-not-allowed disabled:opacity-50"
+                        class="demo-switch h-5 w-9 p-0.5"
                         [checked]="notify.api.state.value"
                         (onCheckedChange)="notify.api.handleChange($any($event.checked))"
                         aria-label="Email updates"
                         rdxSwitchRoot
                     >
                         <span
-                            class="demo-switch-thumb pointer-events-none block size-5 translate-x-0.5 transition-transform data-[checked]:translate-x-[22px]"
+                            class="demo-switch-thumb size-3.5 data-checked:translate-x-4 rtl:data-checked:-translate-x-4"
                             rdxSwitchThumb
                         ></span>
                     </button>

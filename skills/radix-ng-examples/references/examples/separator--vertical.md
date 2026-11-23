@@ -6,25 +6,61 @@
 
 Use `orientation="vertical"` when separating inline content groups.
 
-```html
-<div class="flex w-full max-w-lg items-center text-sm">
-    <nav class="flex items-center gap-4" aria-label="Main">
-        <a class="text-foreground hover:text-primary transition-colors" href="#">Home</a>
-        <a class="text-foreground hover:text-primary transition-colors" href="#">Pricing</a>
-        <a class="text-foreground hover:text-primary transition-colors" href="#">Blog</a>
-        <a class="text-foreground hover:text-primary transition-colors" href="#">Support</a>
-    </nav>
+```typescript
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RdxSeparatorRootDirective } from '@radix-ng/primitives/separator';
 
-    <div class="bg-border mx-5 h-5 w-px shrink-0" rdxSeparatorRoot orientation="vertical"></div>
-
-    <div class="flex items-center gap-4">
-        <a class="text-foreground hover:text-primary transition-colors" href="#">Log in</a>
-        <a
-            class="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-3 py-1.5 font-medium transition-colors"
-            href="#"
-        >
-            Sign up
-        </a>
-    </div>
-</div>
+@Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'separator-default-example',
+    imports: [RdxSeparatorRootDirective],
+    template: `
+        <nav class="flex flex-wrap gap-4 text-sm whitespace-nowrap" aria-label="Main">
+            <a
+                class="text-foreground focus-visible:outline-ring decoration-neutral-300 underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 dark:decoration-neutral-700"
+                href="#"
+            >
+                Home
+            </a>
+            <a
+                class="text-foreground focus-visible:outline-ring decoration-neutral-300 underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 dark:decoration-neutral-700"
+                href="#"
+            >
+                Pricing
+            </a>
+            <a
+                class="text-foreground focus-visible:outline-ring decoration-neutral-300 underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 dark:decoration-neutral-700"
+                href="#"
+            >
+                Blog
+            </a>
+            <a
+                class="text-foreground focus-visible:outline-ring decoration-neutral-300 underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 dark:decoration-neutral-700"
+                href="#"
+            >
+                Support
+            </a>
+            <div
+                class="w-px self-stretch bg-neutral-300 dark:bg-neutral-700"
+                rdxSeparatorRoot
+                orientation="vertical"
+            ></div>
+            <a
+                class="text-foreground focus-visible:outline-ring decoration-neutral-300 underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 dark:decoration-neutral-700"
+                href="#"
+            >
+                Log in
+            </a>
+            <a
+                class="text-foreground focus-visible:outline-ring decoration-neutral-300 underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 dark:decoration-neutral-700"
+                href="#"
+            >
+                Sign up
+            </a>
+        </nav>
+    `
+})
+export class SeparatorDefaultExample {}
 ```
+
+[Example setup](../guides/styling.md#copy-an-example-into-your-app)

@@ -42,14 +42,14 @@ import { RdxMenubarRoot, type RdxMenubarOrientation } from '@radix-ng/primitives
     changeDetection: ChangeDetectionStrategy.OnPush,
     template: `
         <div
-            class="demo-menubar-root inline-flex items-center gap-1 p-1"
+            class="text-foreground inline-flex items-center"
             [class]="orientation() === 'vertical' ? 'w-48 flex-col items-stretch' : ''"
             [orientation]="orientation()"
             rdxMenubarRoot
         >
             <ng-container [orientation]="menuOrientation()" rdxMenuRoot>
                 <button
-                    class="demo-menubar-trigger data-[popup-open]:bg-muted flex h-8 shrink-0 items-center px-3 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    class="demo-button demo-button-ghost data-popup-open:bg-muted focus-visible:bg-muted h-8 shrink-0 px-3"
                     rdxMenuTrigger
                 >
                     File
@@ -86,23 +86,23 @@ import { RdxMenubarRoot, type RdxMenubarOrientation } from '@radix-ng/primitives
                                         rdxMenuPositioner
                                     >
                                         <div
-                                            class="demo-menu-popup min-w-40! min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                                            class="demo-popup demo-popup-motion min-w-40! min-w-[8rem] py-1 outline-none data-closed:pointer-events-none"
                                             rdxMenuPopup
                                         >
                                             <div
-                                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                class="demo-menu-option flex w-full items-center gap-2 px-4 py-2 text-start"
                                                 rdxMenuItem
                                             >
                                                 PDF
                                             </div>
                                             <div
-                                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                class="demo-menu-option flex w-full items-center gap-2 px-4 py-2 text-start"
                                                 rdxMenuItem
                                             >
                                                 PNG
                                             </div>
                                             <div
-                                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                class="demo-menu-option flex w-full items-center gap-2 px-4 py-2 text-start"
                                                 rdxMenuItem
                                             >
                                                 SVG
@@ -124,7 +124,7 @@ import { RdxMenubarRoot, type RdxMenubarOrientation } from '@radix-ng/primitives
 
             <ng-container [orientation]="menuOrientation()" rdxMenuRoot>
                 <button
-                    class="demo-menubar-trigger data-[popup-open]:bg-muted flex h-8 shrink-0 items-center px-3 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    class="demo-button demo-button-ghost data-popup-open:bg-muted focus-visible:bg-muted h-8 shrink-0 px-3"
                     rdxMenuTrigger
                 >
                     Edit
@@ -149,7 +149,7 @@ import { RdxMenubarRoot, type RdxMenubarOrientation } from '@radix-ng/primitives
 
             <ng-container [orientation]="menuOrientation()" rdxMenuRoot>
                 <button
-                    class="demo-menubar-trigger data-[popup-open]:bg-muted flex h-8 shrink-0 items-center px-3 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    class="demo-button demo-button-ghost data-popup-open:bg-muted focus-visible:bg-muted h-8 shrink-0 px-3"
                     rdxMenuTrigger
                 >
                     View
@@ -185,23 +185,23 @@ import { RdxMenubarRoot, type RdxMenubarOrientation } from '@radix-ng/primitives
                                         rdxMenuPositioner
                                     >
                                         <div
-                                            class="demo-menu-popup min-w-40! min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                                            class="demo-popup demo-popup-motion min-w-40! min-w-[8rem] py-1 outline-none data-closed:pointer-events-none"
                                             rdxMenuPopup
                                         >
                                             <div
-                                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                class="demo-menu-option flex w-full items-center gap-2 px-4 py-2 text-start"
                                                 rdxMenuItem
                                             >
                                                 Single Page
                                             </div>
                                             <div
-                                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                class="demo-menu-option flex w-full items-center gap-2 px-4 py-2 text-start"
                                                 rdxMenuItem
                                             >
                                                 Two Pages
                                             </div>
                                             <div
-                                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                class="demo-menu-option flex w-full items-center gap-2 px-4 py-2 text-start"
                                                 rdxMenuItem
                                             >
                                                 Continuous
@@ -223,7 +223,7 @@ import { RdxMenubarRoot, type RdxMenubarOrientation } from '@radix-ng/primitives
 
             <ng-container [disabled]="true" [orientation]="menuOrientation()" rdxMenuRoot>
                 <button
-                    class="demo-menubar-trigger data-[popup-open]:bg-muted flex h-8 shrink-0 items-center px-3 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    class="demo-button demo-button-ghost data-popup-open:bg-muted focus-visible:bg-muted h-8 shrink-0 px-3"
                     rdxMenuTrigger
                 >
                     Help
@@ -246,7 +246,7 @@ export class RdxMenubarDefaultComponent {
     );
     protected readonly itemClass = computed(() =>
         [
-            'demo-menu-item relative flex w-full items-center gap-2 px-2 py-1.5 data-[highlighted]:bg-muted data-[highlighted]:outline data-[highlighted]:outline-1 data-[highlighted]:outline-border data-[disabled]:opacity-50',
+            'demo-menu-item relative flex w-full items-center gap-2 px-2 py-1.5 data-highlighted:bg-primary data-highlighted:text-primary-foreground data-[disabled]:opacity-50',
             this.menuOrientation() === 'horizontal' && 'w-auto! whitespace-nowrap'
         ]
             .filter(Boolean)

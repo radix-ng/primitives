@@ -142,6 +142,12 @@ Pin a toast to an element with `rdxToastPositioner` (powered by popper) instead 
 
 <Canvas of={Stories.Anchored} />
 
+## Exit motion
+
+Apply the exit transition or keyframes to `rdxToastRoot[data-state="closed"]`. The queue waits
+for finite CSS motion on that element before removing it. A toast with zero-duration motion
+is removed after its closed state renders. Animations on child parts run independently of removal.
+
 ## Data attributes
 
 | Attribute              | Part | Present when                                            |

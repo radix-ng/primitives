@@ -30,23 +30,19 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
         RdxCheckboxRootDirective
     ],
     template: `
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
             <div [readOnly]="readOnly()" [disabled]="disabled()" [checked]="true" rdxCheckboxRoot>
-                <button
-                    class="demo-checkbox-button demo-focus flex size-6 items-center justify-center disabled:opacity-50 aria-disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
-                    id="checkbox-1"
-                    rdxCheckboxButton
-                >
+                <button class="demo-choice size-4" id="checkbox-1" rdxCheckboxButton>
                     <svg
-                        class="text-primary flex items-center"
+                        class="flex items-center"
                         *rdxCheckboxIndicatorPresence
                         rdxCheckboxIndicator
-                        size="16"
+                        size="12"
                         lucideCheck
                     />
                 </button>
             </div>
-            <label class="text-foreground flex items-center text-sm font-medium" rdxLabel htmlFor="checkbox-1">
+            <label class="text-foreground flex items-center text-sm" rdxLabel htmlFor="checkbox-1">
                 Accept terms and conditions.
             </label>
         </div>

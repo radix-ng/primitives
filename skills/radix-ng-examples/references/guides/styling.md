@@ -4,8 +4,8 @@ Radix NG primitives are **headless** — directives carry no styles. The styling
 Storybook lives entirely in the demos. This page is the single source of truth for how those demos
 look, so examples stay consistent instead of each story reinventing its own classes.
 
-Visual reference: [coss.com](https://coss.com/ui) (Base UI + Tailwind). The Storybook theme in
-`apps/radix-storybook/.storybook/demo-styles.css` defines these tokens and their light and dark values.
+The Base UI Tailwind hero demos provide the visual reference. The shared stylesheet defines
+their neutral and accent palette alongside the light and dark semantic tokens. [Base UI demos](https://base-ui.com/react/components/switch)
 
 ## Rules
 
@@ -17,9 +17,10 @@ Visual reference: [coss.com](https://coss.com/ui) (Base UI + Tailwind). The Stor
    Keep sizes, spacing, layout and state utilities specific to an example visible in its template.
    Reuse the common classes from `demo-styles.css`.
 3. **Reach for semantic tokens first** — `bg-background`, `text-foreground`, `bg-muted`,
-   `bg-popover`, `border-border`, `text-primary-foreground`, `ring-ring`. Avoid raw Radix theme
-   colors (`violet`, `mauve`, `black-a*`) or hard-coded `white`/`black` when a token exists. These
-   tokens respond to the Storybook **theme toolbar** (light/dark), so demos work in both.
+   `bg-popover`, `border-border`, `text-primary-foreground`, `ring-ring`. Pair palette utilities with
+   `dark:` when a part calls for a specific light and dark shade, such as
+   `bg-neutral-200 dark:bg-neutral-800` on a progress track. Semantic tokens and `dark:` both follow
+   `[data-theme]`.
 4. **Wrap demos** with `tailwindDemoDecorator()` (or keep `data-demo="tailwind"` on the outermost
    container) so Tailwind preflight and the theme variables stay active.
 5. **Type dynamic variants in TS** and use full class names (for example, a typed map of
@@ -36,8 +37,10 @@ Storybook and Playground share `apps/radix-storybook/.storybook/main.css`, which
 | `demo-button` | Button appearance, intrinsic alignment, shared focus and disabled states. |
 | `demo-button-primary`, `demo-button-outline`, … | One button color variant. |
 | `demo-input` | Text input appearance and shared focus. |
-| `demo-focus` | The same focus-visible ring for other controls. |
+| `demo-focus` | Focus-visible ring for controls outside the button and input recipes. |
 | `demo-surface` | Card or panel colors, border, rounding and shadow. |
+| `demo-popup`, `demo-popup-motion` | Square popup surface and optional open/close transitions. Apply motion to the part whose lifetime the primitive tracks. |
+| `demo-popup-arrow` | Theme-matched diamond inside the positioned arrow part. |
 | `demo-arrow` | Common popup arrow fill and border shadow. |
 | `demo-label` | Shared label typography. |
 | `demo-select-*`, `demo-combobox-*`, … | Appearance shared by parts of one family. |
@@ -50,13 +53,13 @@ Sizes, spacing, content layout and state rules specific to an example stay in th
 <input rdxInput class="demo-input h-9 w-full px-3" />
 <div
   rdxPopoverPopup
-  class="demo-surface relative w-80 p-4 data-[starting-style]:animate-popover-popup-in data-[ending-style]:animate-popover-popup-out"
+  class="demo-popup demo-popup-motion relative w-72 max-w-(--available-width) p-4"
 >…</div>
 ```
 
 The button variants are `primary`, `secondary`, `outline`, `ghost` and `destructive`. Sizes are
 ordinary utilities on each example. `demo-button` handles native `disabled`, `data-disabled` and
-`aria-disabled`; `demo-focus` is also shared by button and input selectors in a single declaration.
+`aria-disabled`. Button and input recipes use an inset focus outline.
 
 Utilities have priority over `components`. Local `bg-muted`, `border-transparent`, `shadow-none`
 or size utilities override the corresponding common defaults regardless of class-string order.
@@ -98,7 +101,7 @@ import { RdxButtonDirective } from '@radix-ng/primitives/button';
     selector: 'rdx-button-default-example',
     imports: [RdxButtonDirective],
     template: `
-        <button class="demo-button demo-button-primary h-9 px-4" rdxButton>Button</button>
+        <button class="demo-button demo-button-outline h-8 px-3 leading-none" rdxButton>Button</button>
     `
 })
 export class ButtonDefaultStory {}

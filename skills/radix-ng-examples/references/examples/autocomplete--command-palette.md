@@ -71,7 +71,7 @@ interface Group {
 
                 <div class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 pt-[12vh]">
                     <div
-                        class="demo-surface relative flex w-[92vw] max-w-lg flex-col overflow-hidden p-0 focus:outline-none"
+                        class="demo-popup relative flex w-[92vw] max-w-lg flex-col overflow-hidden p-0 focus:outline-none"
                         rdxDialogPopup
                         aria-label="Command palette"
                     >
@@ -95,7 +95,7 @@ interface Group {
                                         </div>
                                         @for (item of group.items; track item.value) {
                                             <div
-                                                class="data-[highlighted]:bg-muted grid cursor-default grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-sm px-2 py-2 text-sm outline-none select-none"
+                                                class="data-highlighted:bg-primary data-highlighted:text-primary-foreground grid cursor-default grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-sm px-2 py-2 text-sm outline-none select-none"
                                                 [value]="item"
                                                 [textValue]="item.label"
                                                 rdxAutocompleteItem

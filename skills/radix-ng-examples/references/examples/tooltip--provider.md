@@ -10,7 +10,7 @@ ms after the last one closes.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { LucideDynamicIcon } from '@lucide/angular';
+import { LucideBold, LucideDynamicIcon, LucideItalic, LucidePlus } from '@lucide/angular';
 import {
     RdxTooltip,
     RdxTooltipPopup,
@@ -33,11 +33,16 @@ import {
         LucideDynamicIcon
     ],
     template: `
-        <div class="flex items-center gap-2" [delay]="600" [timeout]="400" rdxTooltipProvider>
+        <div
+            class="border-foreground bg-background flex items-center border"
+            [delay]="600"
+            [timeout]="400"
+            rdxTooltipProvider
+        >
             @for (action of actions; track action.name) {
                 <ng-container rdxTooltip>
                     <button
-                        class="demo-button demo-button-outline size-9 p-0"
+                        class="demo-button demo-button-ghost data-popup-open:bg-muted size-8 p-0"
                         [attr.aria-label]="action.name"
                         rdxTooltipTrigger
                     >
@@ -56,9 +61,9 @@ import {
 })
 export class RdxTooltipProviderComponent {
     protected readonly actions = [
-        { name: 'Bold', icon: 'bold' },
-        { name: 'Italic', icon: 'italic' },
-        { name: 'Add', icon: 'plus' }
+        { name: 'Bold', icon: LucideBold },
+        { name: 'Italic', icon: LucideItalic },
+        { name: 'Add', icon: LucidePlus }
     ];
 }
 ```

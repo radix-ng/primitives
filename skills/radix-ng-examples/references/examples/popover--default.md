@@ -13,7 +13,7 @@ in its template.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { LucidePlus, LucideX } from '@lucide/angular';
+import { LucideInfo, LucideX } from '@lucide/angular';
 import {
     RdxPopoverArrow,
     RdxPopoverClose,
@@ -39,55 +39,50 @@ import {
         RdxPopoverRoot,
         RdxPopoverTitle,
         RdxPopoverTrigger,
-        LucidePlus,
+        LucideInfo,
         LucideX
     ],
     template: `
         <ng-container rdxPopoverRoot>
-            <button class="demo-button demo-button-outline h-9 px-4" type="button" rdxPopoverTrigger>
-                <svg aria-hidden="true" lucidePlus size="16" />
-                Add details
+            <button
+                class="demo-button demo-button-outline data-popup-open:bg-muted size-8 active:bg-neutral-200 dark:active:bg-neutral-700"
+                type="button"
+                aria-label="Shipping information"
+                rdxPopoverTrigger
+            >
+                <svg aria-hidden="true" lucideInfo size="16" />
             </button>
 
             <div class="z-50" *rdxPopoverPortal sideOffset="8" rdxPopoverPositioner>
                 <div
-                    class="demo-surface data-[open]:animate-popover-popup-in data-[starting-style]:animate-popover-popup-in data-[ending-style]:animate-popover-popup-out relative w-80 p-4"
+                    class="demo-popup relative flex max-w-[min(500px,var(--available-width))] origin-(--transform-origin) flex-col gap-1 p-3 transition-[scale,opacity] duration-100 ease-out outline-none data-ending-style:scale-[0.98] data-ending-style:opacity-0 data-starting-style:scale-[0.98] data-starting-style:opacity-0 motion-reduce:transition-none"
                     rdxPopoverPopup
                 >
-                    <span class="demo-arrow text-card my-px" rdxPopoverArrow></span>
-                    <h2 class="text-popover-foreground text-sm font-semibold" rdxPopoverTitle>Dimensions</h2>
-                    <p class="text-muted-foreground mt-1 text-sm" rdxPopoverDescription>
-                        Set the width and height for the element.
+                    <span class="block h-1.5 w-3" rdxPopoverArrow><span class="demo-popup-arrow"></span></span>
+                    <h2 class="pe-8 text-sm font-bold" rdxPopoverTitle>Free shipping</h2>
+                    <p class="text-muted-foreground text-sm" id="shipping-policy" rdxPopoverDescription>
+                        Orders over $50 arrive in 3–5 business days at no extra cost.
                     </p>
-
-                    <div class="mt-4 grid gap-3">
-                        @for (field of fields; track field.label) {
-                            <label class="grid gap-1 text-xs font-medium">
-                                {{ field.label }}
-                                <input class="demo-input h-9 w-full px-3" [value]="field.value" />
-                            </label>
-                        }
-                    </div>
-
+                    <a
+                        class="demo-focus self-start text-sm underline underline-offset-2 hover:no-underline"
+                        href="#shipping-policy"
+                    >
+                        View shipping policy
+                    </a>
                     <button
-                        class="demo-button demo-button-ghost absolute top-2 right-2 size-7 p-0"
+                        class="demo-button demo-button-ghost absolute inset-e-2 top-2 size-7 p-0"
                         type="button"
                         aria-label="Close"
                         rdxPopoverClose
                     >
-                        <svg aria-hidden="true" lucideX size="14" />
+                        <svg aria-hidden="true" lucideX size="16" />
                     </button>
                 </div>
             </div>
         </ng-container>
     `
 })
-export class RdxPopoverDefaultComponent {
-    protected readonly fields = [
-        { label: 'Width', value: '100%' },
-        { label: 'Max width', value: '300px' }
-    ];
-}
+export class RdxPopoverDefaultComponent {}
 ```
 
 The shared stylesheet and setup instructions below apply to every example on this page.

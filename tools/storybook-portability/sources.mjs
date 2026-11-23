@@ -40,7 +40,7 @@ export function portableStoryGroups() {
         const files = new Set(sources.flatMap((file) => [...dependencies(file)]));
         if (
             [...files].some((file) =>
-                /\bdemo-(?:button|input|focus|surface|select|accordion|menu|dialog|drawer|toast|combobox|calendar|checkbox|radio|avatar|tooltip|navigation|menubar|cropper|editable|otp|label|arrow)/.test(
+                /\b(?:demo-[\w-]+|bg-background|bg-primary|border-foreground|text-foreground|text-muted-foreground)\b/.test(
                     read(file)
                 )
             )

@@ -9,7 +9,8 @@ import {
     RdxDrawerPortal,
     RdxDrawerRoot,
     RdxDrawerTitle,
-    RdxDrawerTrigger
+    RdxDrawerTrigger,
+    RdxDrawerViewport
 } from '@radix-ng/primitives/drawer';
 
 @Component({
@@ -20,6 +21,7 @@ import {
         RdxDrawerTrigger,
         RdxDrawerPortal,
         RdxDrawerBackdrop,
+        RdxDrawerViewport,
         RdxDrawerPopup,
         RdxDrawerContent,
         RdxDrawerTitle,
@@ -28,50 +30,39 @@ import {
         LucideX
     ],
     template: `
-        <div rdxDrawerRoot>
-            <button class="demo-button demo-button-primary h-9 px-4" rdxDrawerTrigger>Open drawer</button>
+        <div rdxDrawerRoot swipeDirection="right">
+            <button class="demo-button demo-button-outline h-8 px-3" rdxDrawerTrigger>Open drawer</button>
 
             <ng-template rdxDrawerPortal>
                 <div
-                    class="bg-foreground/50 fixed inset-0 z-50 transition-opacity duration-200 data-[closed]:opacity-0 data-[starting-style]:opacity-0 data-[swiping]:duration-0"
+                    class="motion-safe:ease-demo-drawer fixed inset-0 z-50 bg-black opacity-[calc(var(--backdrop-opacity)*(1-var(--drawer-swipe-progress,0)))] [--backdrop-opacity:0.2] data-ending-style:opacity-0 data-starting-style:opacity-0 data-swiping:duration-0 supports-[-webkit-touch-callout:none]:absolute supports-[-webkit-touch-callout:none]:min-h-dvh motion-safe:transition-opacity motion-safe:duration-450 dark:[--backdrop-opacity:0.7]"
                     rdxDrawerBackdrop
                 ></div>
 
-                <div
-                    class="demo-drawer-popup demo-drawer-side-bottom after:ease fixed inset-x-0 bottom-0 z-50 flex max-h-[90vh] origin-top [transform:translate3d(var(--drawer-swipe-movement-x),var(--drawer-swipe-movement-y),0)] flex-col [--drawer-swipe-movement-x:0px] [--drawer-swipe-movement-y:0px] [transition:var(--transition-demo-drawer)] after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-[calc(3rem+max(0px,calc(-1*var(--drawer-swipe-movement-y))))] after:border-0 after:bg-[inherit] after:transition-[height] after:duration-300 after:content-[''] focus:outline-none data-[closed]:[transform:translateY(100%)] data-[nested-drawer-open]:-translate-y-3 data-[nested-drawer-open]:scale-[0.965] data-[starting-style]:[transform:translateY(100%)] data-[swiping]:[transition:none] data-[swiping]:after:duration-0"
-                    rdxDrawerPopup
-                >
-                    <div class="bg-muted mx-auto mt-3 h-1.5 w-12 shrink-0 rounded-full" aria-hidden="true"></div>
-
-                    <div class="overflow-y-auto p-6" rdxDrawerContent>
-                        <h2 class="demo-dialog-title" rdxDrawerTitle>Drag me down</h2>
-                        <p class="text-muted-foreground mt-1.5 text-sm" rdxDrawerDescription>
-                            Swipe the sheet downwards or press Escape to dismiss it. Releasing before the halfway point
-                            snaps it back.
-                        </p>
-
-                        <p class="text-muted-foreground mt-4 text-sm">
-                            The grab handle above is purely visual — the whole panel is draggable. Scrollable regions
-                            yield to scrolling until they reach their edge.
-                        </p>
-
-                        <div class="mt-6 flex justify-end gap-2">
-                            <button class="demo-button demo-button-outline h-8 px-3 text-xs" rdxDrawerClose>
-                                Cancel
-                            </button>
-                            <button class="demo-button demo-button-primary h-8 px-3 text-xs" rdxDrawerClose>
-                                Confirm
-                            </button>
-                        </div>
-                    </div>
-
-                    <button
-                        class="demo-button demo-button-ghost absolute top-3 right-3 size-7 p-0"
-                        aria-label="Close"
-                        rdxDrawerClose
+                <div class="pointer-events-none fixed inset-0 z-50 flex justify-end overflow-clip" rdxDrawerViewport>
+                    <div
+                        class="border-foreground bg-background text-foreground motion-safe:ease-demo-drawer pointer-events-auto relative h-full w-80 max-w-[calc(100%-3rem)] [transform:translateX(var(--drawer-swipe-movement-x,0px))] border-l after:pointer-events-none after:absolute after:inset-y-0 after:left-full after:w-[calc(3rem+max(0px,calc(-1*var(--drawer-swipe-movement-x,0px))))] after:bg-inherit focus:outline-none data-ending-style:[transform:translateX(100%)] data-starting-style:[transform:translateX(100%)] data-swiping:transition-none data-swiping:select-none motion-safe:transition-transform motion-safe:duration-450"
+                        rdxDrawerPopup
                     >
-                        <svg aria-hidden="true" lucideX size="16"></svg>
-                    </button>
+                        <div class="h-full overflow-y-auto overscroll-contain p-6" rdxDrawerContent>
+                            <h2 class="mb-1 pe-8 text-base font-bold" rdxDrawerTitle>Swipe to dismiss</h2>
+                            <p class="text-muted-foreground mb-6 text-sm" rdxDrawerDescription>
+                                Swipe this panel to the right or press Escape to dismiss it.
+                            </p>
+                            <div class="flex flex-wrap justify-end gap-3">
+                                <button class="demo-button demo-button-outline h-8 px-3" rdxDrawerClose>Cancel</button>
+                                <button class="demo-button demo-button-outline h-8 px-3" rdxDrawerClose>Confirm</button>
+                            </div>
+                        </div>
+
+                        <button
+                            class="demo-button demo-button-ghost absolute top-3 right-3 size-8"
+                            aria-label="Close"
+                            rdxDrawerClose
+                        >
+                            <svg aria-hidden="true" lucideX size="16"></svg>
+                        </button>
+                    </div>
                 </div>
             </ng-template>
         </div>

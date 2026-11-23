@@ -46,7 +46,7 @@ import {
 
                 <!-- The popup stays fixed on screen; only its body scrolls. -->
                 <div
-                    class="demo-surface data-[open]:animate-dialog-popup-in data-[closed]:animate-dialog-popup-out fixed top-1/2 left-1/2 z-50 flex max-h-[85vh] w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col p-6 transition-[transform,scale] focus:outline-none data-[nested-dialog-open]:scale-[0.96]"
+                    class="demo-popup data-[open]:animate-dialog-popup-in data-[closed]:animate-dialog-popup-out fixed top-1/2 left-1/2 z-50 flex max-h-[85vh] w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col p-6 transition-[transform,scale] focus:outline-none data-[nested-dialog-open]:scale-[0.96]"
                     rdxDialogPopup
                 >
                     <h2 class="demo-dialog-title" rdxDialogTitle>Release notes</h2>

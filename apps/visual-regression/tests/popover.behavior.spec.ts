@@ -1,5 +1,4 @@
 import { expect, Page, test } from '@playwright/test';
-import { expectDemoSurface } from '../helpers/demo-surface';
 import { holdExitAnimations } from '../helpers/exit-animations';
 
 /**
@@ -20,14 +19,18 @@ for (const theme of ['light', 'dark']) {
     test(`Default surface, opening and real exit animation in the ${theme} theme`, async ({ page }) => {
         await page.goto(`/iframe.html?id=primitives-popover--default&viewMode=story&globals=theme:${theme}`);
         await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
-        await page.getByRole('button', { name: 'Add details', exact: true }).click();
+        await page.getByRole('button', { name: 'Shipping information', exact: true }).click();
         const surface = page.locator(popup);
         await expect(surface).toBeVisible();
-        await expectDemoSurface(surface);
+        await expect(surface).toHaveCSS('border-top-width', '1px');
+        await expect(surface).toHaveCSS('border-top-left-radius', '0px');
+        await expect(surface).toHaveCSS('padding', '12px');
+        if (theme === 'dark') await expect(surface).not.toHaveCSS('box-shadow', /4px 4px 0px/);
+        else await expect(surface).toHaveCSS('box-shadow', /4px 4px 0px/);
         const exit = await holdExitAnimations(page, [popup], 'data-ending-style');
         await page.getByRole('button', { name: 'Close', exact: true }).click();
         await expect(surface).toHaveAttribute('data-ending-style', '');
-        await expect(surface).toHaveCSS('animation-name', 'popover-popup-out');
+        await expect(surface).toHaveCSS('transition-property', 'scale, opacity');
         await expect.poll(exit.count).toBeGreaterThan(0);
         await expect(page.locator(positioner)).toHaveCount(1);
         await exit.finish();
@@ -36,7 +39,7 @@ for (const theme of ['light', 'dark']) {
     });
 }
 
-test('Default provides separate copyable blocks for the component and Tailwind styles', async ({
+test('Default exposes copyable component source and links to the shared Tailwind setup', async ({
     page,
     context,
     browserName
@@ -48,29 +51,20 @@ test('Default provides separate copyable blocks for the component and Tailwind s
     const code = page.locator(`[id="${panelId}"] pre`);
     await expect(code).toBeVisible();
     await expect(code).toContainText("from '@radix-ng/primitives/popover'");
-    await expect(code).toContainText('class="demo-surface');
-    await expect(code).toContainText('relative w-80 p-4');
-    await expect(code).toContainText('data-[starting-style]:animate-popover-popup-in');
-    await expect(code).toContainText('data-[ending-style]:animate-popover-popup-out');
+    await expect(code).toContainText('class="demo-popup');
+    await expect(code).toContainText('origin-(--transform-origin)');
+    await expect(code).toContainText('data-starting-style:opacity-0');
+    await expect(code).toContainText('data-ending-style:opacity-0');
     await expect(code).not.toContainText('../../storybook');
-    await page
-        .locator('summary')
-        .filter({ hasText: /^demo-styles\.css$/ })
-        .click();
-    const styles = page.locator('pre').filter({ hasText: '--animate-popover-popup-in:' });
-    await expect(styles).toBeVisible();
-    await expect(styles).toContainText('@layer components {');
-    await expect(styles).toContainText('.demo-surface {');
-    await expect(styles).toContainText('--color-card:');
-    await expect(styles).toContainText('@keyframes popover-popup-out');
+    await expect(page.getByRole('link', { name: 'Example setup' })).toHaveAttribute(
+        'href',
+        /guides-styling--docs#copy-an-example-into-your-app$/
+    );
     if (browserName === 'chromium') {
         await context.grantPermissions(['clipboard-read', 'clipboard-write']);
         const copyButtons = page.getByRole('button', { name: 'Copy code', exact: true });
         await copyButtons.first().click();
-        await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toContain('class="demo-surface');
-        const stylesBlock = styles.locator('xpath=ancestor::*[.//button][1]');
-        await stylesBlock.getByRole('button', { name: 'Copy', exact: true }).click();
-        await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toContain('@layer components {');
+        await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toContain('class="demo-popup');
     }
 });
 
@@ -357,7 +351,7 @@ test.describe('Popover — arrow (ADR 0002)', () => {
             .first()
             .evaluate((el: HTMLElement) => {
                 el.style.position = 'fixed';
-                el.style.left = '-100px';
+                el.style.left = `${4 - el.offsetWidth}px`;
                 el.style.top = '250px';
             });
 

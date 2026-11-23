@@ -56,7 +56,7 @@ import {
                 <ng-template [keepMounted]="keep()" rdxPopoverPortal>
                     <div class="z-50" sideOffset="8" rdxPopoverPositioner>
                         <div
-                            class="demo-surface data-[open]:animate-popover-popup-in data-[starting-style]:animate-popover-popup-in data-[ending-style]:animate-popover-popup-out relative grid w-80 gap-3 p-4"
+                            class="demo-popup data-[open]:animate-popover-popup-in data-[starting-style]:animate-popover-popup-in data-[ending-style]:animate-popover-popup-out relative grid w-80 gap-3 p-4"
                             rdxPopoverPopup
                         >
                             <h2 class="demo-popover-title" rdxPopoverTitle>Draft note</h2>

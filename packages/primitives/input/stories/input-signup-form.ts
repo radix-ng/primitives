@@ -43,7 +43,7 @@ import { RdxInputDirective } from '@radix-ng/primitives/input';
                 <div class="flex flex-col gap-2" rdxFieldRoot required>
                     <label class="text-foreground text-sm font-medium" rdxFieldLabel>First name</label>
                     <input
-                        class="demo-input h-9 w-full px-3"
+                        class="demo-input h-8 w-full px-2"
                         rdxInput
                         rdxNgControlField
                         autocomplete="given-name"
@@ -55,7 +55,7 @@ import { RdxInputDirective } from '@radix-ng/primitives/input';
                 <div class="flex flex-col gap-2" rdxFieldRoot required>
                     <label class="text-foreground text-sm font-medium" rdxFieldLabel>Last name</label>
                     <input
-                        class="demo-input h-9 w-full px-3"
+                        class="demo-input h-8 w-full px-2"
                         rdxInput
                         rdxNgControlField
                         autocomplete="family-name"
@@ -68,7 +68,7 @@ import { RdxInputDirective } from '@radix-ng/primitives/input';
             <div class="flex flex-col gap-2" rdxFieldRoot required>
                 <label class="text-foreground text-sm font-medium" rdxFieldLabel>Email</label>
                 <input
-                    class="demo-input h-9 w-full px-3"
+                    class="demo-input h-8 w-full px-2"
                     rdxInput
                     rdxNgControlField
                     type="email"
@@ -85,7 +85,7 @@ import { RdxInputDirective } from '@radix-ng/primitives/input';
             <div class="flex flex-col gap-2" rdxFieldRoot required>
                 <label class="text-foreground text-sm font-medium" rdxFieldLabel>Password</label>
                 <input
-                    class="demo-input h-9 w-full px-3"
+                    class="demo-input h-8 w-full px-2"
                     rdxInput
                     rdxNgControlField
                     type="password"

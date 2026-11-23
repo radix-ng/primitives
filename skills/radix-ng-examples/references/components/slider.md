@@ -65,6 +65,7 @@ form submission.
 
 ## Examples
 
+- [Default](../examples/slider--default.md)
 - [Range](../examples/slider--range.md)
 - [Vertical](../examples/slider--vertical.md)
 - [Value](../examples/slider--value.md)

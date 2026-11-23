@@ -16,31 +16,25 @@ import {
     RdxFieldRoot
 } from '@radix-ng/primitives/field';
 
-import { fieldDescription, fieldError, fieldLabel } from './field.shared';
-
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'field-default-example',
     imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
     template: `
-        <div class="flex w-80 flex-col gap-2" rdxFieldRoot required>
-            <label [class]="labelClass" rdxFieldLabel>Email</label>
+        <div class="flex w-64 max-w-full flex-col items-start gap-1" rdxFieldRoot required>
+            <label class="text-foreground text-sm font-bold" rdxFieldLabel>Email</label>
             <input
-                class="border-border bg-background text-foreground placeholder:text-muted-foreground h-9 w-full rounded-md border px-3 text-sm outline-none"
+                class="demo-input h-8 self-stretch px-2"
                 rdxFieldControl
                 type="email"
                 placeholder="name@example.com"
             />
-            <p [class]="descriptionClass" rdxFieldDescription>Used for account notifications.</p>
-            <p [class]="errorClass" rdxFieldError>Enter a valid email address.</p>
+            <p class="text-muted-foreground text-sm" rdxFieldDescription>Used for account notifications.</p>
+            <p class="text-destructive text-sm" rdxFieldError>Enter a valid email address.</p>
         </div>
     `
 })
-export class FieldDefaultExample {
-    protected readonly labelClass = fieldLabel;
-    protected readonly descriptionClass = fieldDescription;
-    protected readonly errorClass = fieldError;
-}
+export class FieldDefaultExample {}
 ```
 
 [Example setup](../guides/styling.md#copy-an-example-into-your-app)
@@ -50,15 +44,15 @@ export class FieldDefaultExample {
 #### `./field.shared.ts`
 
 ```typescript
-export const fieldLabel = 'text-foreground text-sm font-medium data-[disabled]:opacity-50';
+export const fieldLabel = 'text-foreground text-sm font-bold data-[disabled]:opacity-50';
 export const fieldDescription = 'text-muted-foreground text-sm';
 export const fieldError = 'text-destructive text-sm';
 
 export const fieldInputInvalid =
-    'demo-input h-9 w-full px-3 data-[invalid]:border-destructive data-[invalid]:ring-destructive/20';
+    'demo-input h-8 w-full px-2 data-[invalid]:border-destructive data-[invalid]:ring-destructive/20';
 
 export const fieldCustomTrigger =
-    'demo-input h-9 w-full px-3 inline-flex items-center text-left data-[filled]:text-foreground data-[focused]:ring-2 data-[focused]:ring-ring';
+    'demo-input h-8 w-full px-2 inline-flex items-center text-left data-[filled]:text-foreground data-[focused]:ring-2 data-[focused]:ring-ring';
 
-export const fieldSubmitButton = 'demo-button demo-button-primary h-9 px-4 self-start';
+export const fieldSubmitButton = 'demo-button demo-button-primary h-8 px-3 self-start';
 ```

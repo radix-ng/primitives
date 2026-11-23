@@ -35,6 +35,7 @@ Assemble the parts: a root, the image, and a fallback shown until the image load
 
 ## Examples
 
+- [Default](../examples/avatar--default.md)
 - [Sizes](../examples/avatar--sizes.md)
 - [Fallback](../examples/avatar--fallback.md)
 - [Delayed fallback](../examples/avatar--delayed-fallback.md)

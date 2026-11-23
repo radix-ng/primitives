@@ -34,7 +34,7 @@ import {
             </button>
 
             <div class="z-50" *rdxPopoverPortal sideOffset="8" rdxPopoverPositioner>
-                <div class="demo-surface relative w-80 p-4" rdxPopoverPopup>
+                <div class="demo-popup relative w-80 p-4" rdxPopoverPopup>
                     <span class="text-card demo-arrow my-px" rdxPopoverArrow></span>
                     <h2 class="demo-popover-title" rdxPopoverTitle>Hover popover</h2>
                     <p class="text-muted-foreground mt-1 text-sm" rdxPopoverDescription>

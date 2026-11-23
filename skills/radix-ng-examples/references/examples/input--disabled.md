@@ -17,7 +17,7 @@ import { RdxInputDirective } from '@radix-ng/primitives/input';
     selector: 'rdx-input-disabled-example',
     imports: [FormsModule, ReactiveFormsModule, RdxInputDirective],
     template: `
-        <input class="demo-input h-9 w-full px-3" rdxInput disabled defaultValue="name@example.com" />
+        <input class="demo-input h-8 w-full px-2" rdxInput disabled defaultValue="name@example.com" />
     `
 })
 export class InputDisabledStory {}

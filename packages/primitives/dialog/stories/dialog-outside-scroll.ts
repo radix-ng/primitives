@@ -73,7 +73,7 @@ import {
                         <div class="h-full overscroll-contain" rdxScrollAreaViewport>
                             <div class="flex min-h-full items-center justify-center" rdxScrollAreaContent>
                                 <div
-                                    class="demo-surface data-[open]:animate-dialog-popup-in data-[closed]:animate-dialog-popup-out relative mx-auto my-16 flex w-[min(40rem,calc(100vw-2rem))] flex-col gap-4 p-6 focus:outline-none"
+                                    class="demo-popup data-[open]:animate-dialog-popup-in data-[closed]:animate-dialog-popup-out relative mx-auto my-16 flex w-[min(40rem,calc(100vw-2rem))] flex-col gap-4 p-6 focus:outline-none"
                                     [getInsideElements]="getInsideElements"
                                     rdxDialogPopup
                                 >
@@ -118,7 +118,7 @@ import {
                             rdxFloatingInside
                             orientation="vertical"
                         >
-                            <div class="bg-foreground/50 w-full rounded-full" rdxScrollAreaThumb></div>
+                            <div class="bg-foreground/50 w-full" rdxScrollAreaThumb></div>
                         </div>
                     </div>
                 </div>

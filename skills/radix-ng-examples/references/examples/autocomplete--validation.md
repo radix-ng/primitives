@@ -70,7 +70,7 @@ import {
                         <div class="flex flex-col" rdxAutocompleteList aria-label="Fruits">
                             @for (item of fruits; track item) {
                                 <div
-                                    class="demo-menu-item data-[highlighted]:bg-muted relative flex items-center py-1.5 pr-2 pl-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[selected]:font-medium"
+                                    class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex items-center py-1.5 pr-2 pl-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[selected]:font-medium"
                                     rdxAutocompleteItem
                                 >
                                     {{ item }}

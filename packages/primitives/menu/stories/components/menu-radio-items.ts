@@ -15,13 +15,13 @@ import { RdxMenuModule } from '@radix-ng/primitives/menu';
                     rdxMenuPopup
                 >
                     <button
-                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                        class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50"
                         rdxMenuItem
                     >
                         Minimize window
                     </button>
                     <button
-                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                        class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50"
                         rdxMenuItem
                     >
                         Zoom
@@ -30,7 +30,7 @@ import { RdxMenuModule } from '@radix-ng/primitives/menu';
                     <div [(value)]="selectedItem" rdxMenuRadioGroup>
                         @for (item of items(); track item) {
                             <label
-                                class="demo-menu-selectable-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center py-1.5 ps-8 pe-2 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                class="demo-menu-selectable-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center py-1.5 ps-8 pe-2 data-[disabled]:opacity-50"
                                 [value]="item"
                                 rdxMenuRadioItem
                             >

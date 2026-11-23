@@ -37,7 +37,7 @@ import {
                         >
                             @if (nested()) {
                                 <button
-                                    class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                    class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                     (onSelect)="selected.set('New document')"
                                     rdxMenuItem
                                 >
@@ -45,7 +45,7 @@ import {
                                 </button>
                                 <ng-container #recent="rdxMenuRoot" rdxMenuRoot>
                                     <button
-                                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center justify-between gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                        class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center justify-between gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                         rdxMenuSubTrigger
                                     >
                                         Recent documents
@@ -70,7 +70,7 @@ import {
                                                 }
                                                 @for (document of documents.value() ?? []; track document) {
                                                     <button
-                                                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                        class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                                         (onSelect)="selected.set(document)"
                                                         rdxMenuItem
                                                     >
@@ -89,7 +89,7 @@ import {
                                 }
                                 @for (document of documents.value() ?? []; track document) {
                                     <button
-                                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                        class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                         (onSelect)="selected.set(document)"
                                         rdxMenuItem
                                     >

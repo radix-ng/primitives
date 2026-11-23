@@ -37,7 +37,7 @@ import {
             <ng-template [keepMounted]="keepMounted()" rdxDialogPortal>
                 <div class="bg-foreground/50 fixed inset-0 z-50" rdxDialogBackdrop></div>
                 <div
-                    class="demo-surface fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 p-6 transition-[transform,scale] focus:outline-none data-[nested-dialog-open]:scale-[0.96]"
+                    class="demo-popup fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 p-6 transition-[transform,scale] focus:outline-none data-[nested-dialog-open]:scale-[0.96]"
                     rdxDialogPopup
                 >
                     <h2 class="demo-dialog-title" rdxDialogTitle>Edit draft</h2>

@@ -67,7 +67,7 @@ import { injectVirtualizer } from '@tanstack/angular-virtual';
                             <div class="relative w-full" [style.height.px]="virtualizer.getTotalSize()">
                                 @for (row of virtualizer.getVirtualItems(); track row.key) {
                                     <div
-                                        class="data-[highlighted]:bg-muted absolute top-0 left-0 flex w-full cursor-default items-center rounded-sm pr-2 pl-8 text-sm outline-none select-none data-[selected]:font-medium"
+                                        class="data-highlighted:bg-primary data-highlighted:text-primary-foreground absolute top-0 left-0 flex w-full cursor-default items-center rounded-sm pr-2 pl-8 text-sm outline-none select-none data-[selected]:font-medium"
                                         [value]="cmb.filteredItems()[row.index]"
                                         [index]="row.index"
                                         [style.height.px]="row.size"

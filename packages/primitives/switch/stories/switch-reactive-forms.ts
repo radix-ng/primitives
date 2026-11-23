@@ -9,20 +9,16 @@ import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
     imports: [ReactiveFormsModule, RdxLabelDirective, RdxSwitchRoot, RdxSwitchThumb],
     template: `
         <form class="space-y-3" [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-            <label
-                class="text-foreground flex items-center gap-3 text-sm font-medium"
-                rdxLabel
-                htmlFor="airplane-mode-form"
-            >
+            <label class="text-foreground flex items-center gap-2 text-sm" rdxLabel htmlFor="airplane-mode-form">
                 Airplane mode
                 <button
-                    class="bg-muted data-[checked]:bg-primary focus-visible:ring-ring relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-0 p-0 shadow-sm transition-colors outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    class="demo-switch h-5 w-9 p-0.5"
                     id="airplane-mode-form"
                     formControlName="policy"
                     rdxSwitchRoot
                 >
                     <span
-                        class="bg-background pointer-events-none block size-5 translate-x-0.5 rounded-full shadow-sm transition-transform data-[checked]:translate-x-[22px]"
+                        class="demo-switch-thumb size-3.5 data-checked:translate-x-4 rtl:data-checked:-translate-x-4"
                         rdxSwitchThumb
                     ></span>
                 </button>

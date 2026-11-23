@@ -34,29 +34,31 @@ import {
     ],
     template: `
         <div rdxAlertDialogRoot>
-            <button class="demo-button demo-button-destructive h-9 px-4" rdxAlertDialogTrigger>Delete account</button>
+            <button class="demo-button demo-button-outline h-8 px-3 leading-none" rdxAlertDialogTrigger>
+                Delete account
+            </button>
 
             <ng-template rdxAlertDialogPortal>
                 <div
-                    class="bg-foreground/50 data-[open]:animate-dialog-overlay-in data-[closed]:animate-dialog-overlay-out fixed inset-0 z-50"
+                    class="fixed inset-0 z-50 bg-black opacity-20 data-ending-style:opacity-0 data-starting-style:opacity-0 supports-[-webkit-touch-callout:none]:absolute supports-[-webkit-touch-callout:none]:min-h-dvh motion-safe:transition-opacity motion-safe:duration-150 dark:opacity-50"
                     rdxAlertDialogBackdrop
                 ></div>
 
                 <div
-                    class="demo-surface data-[open]:animate-dialog-popup-in data-[closed]:animate-dialog-popup-out fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 p-6 transition-[transform,scale] focus:outline-none data-[nested-dialog-open]:scale-[0.96]"
+                    class="demo-popup demo-popup-motion fixed top-1/2 left-1/2 z-50 -mt-8 flex max-h-[calc(100dvh-3rem)] w-96 max-w-[calc(100%-3rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-4 overflow-auto p-4 focus:outline-none data-nested-dialog-open:scale-[0.96]"
                     rdxAlertDialogPopup
                 >
-                    <h2 class="demo-dialog-title" rdxAlertDialogTitle>Are you absolutely sure?</h2>
-                    <p class="text-muted-foreground mt-1.5 text-sm" rdxAlertDialogDescription>
-                        This action cannot be undone. This will permanently delete your account and remove your data
-                        from our servers.
-                    </p>
+                    <div class="flex flex-col gap-1">
+                        <h2 class="text-base font-bold" rdxAlertDialogTitle>Are you absolutely sure?</h2>
+                        <p class="text-muted-foreground text-sm" rdxAlertDialogDescription>
+                            This action cannot be undone. This will permanently delete your account and remove your data
+                            from our servers.
+                        </p>
+                    </div>
 
-                    <div class="mt-6 flex justify-end gap-2">
-                        <button class="demo-button demo-button-outline h-8 px-3 text-xs" rdxAlertDialogClose>
-                            Cancel
-                        </button>
-                        <button class="demo-button demo-button-destructive h-8 px-3 text-xs" rdxAlertDialogClose>
+                    <div class="flex flex-wrap justify-end gap-3">
+                        <button class="demo-button demo-button-outline h-8 px-3" rdxAlertDialogClose>Cancel</button>
+                        <button class="demo-button demo-button-destructive h-8 px-3" rdxAlertDialogClose>
                             Yes, delete account
                         </button>
                     </div>

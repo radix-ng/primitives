@@ -34,11 +34,11 @@ import {
             >
                 <label class="text-foreground text-sm font-medium" for="guests">Guests</label>
                 <div
-                    class="border-border bg-background focus-within:ring-ring flex h-9 w-fit items-center rounded-md border shadow-sm focus-within:ring-2"
+                    class="border-border bg-background focus-within:ring-ring flex h-9 w-fit items-center border focus-within:ring-2"
                     rdxNumberFieldGroup
                 >
                     <button
-                        class="text-foreground hover:bg-muted flex size-9 items-center justify-center rounded-l-md outline-none select-none disabled:pointer-events-none disabled:opacity-40"
+                        class="text-foreground hover:bg-muted flex size-9 items-center justify-center outline-none select-none disabled:pointer-events-none disabled:opacity-40"
                         rdxNumberFieldDecrement
                     >
                         <svg class="flex" [lucideIcon]="Minus" size="16" />
@@ -48,7 +48,7 @@ import {
                         rdxNumberFieldInput
                     />
                     <button
-                        class="text-foreground hover:bg-muted flex size-9 items-center justify-center rounded-r-md outline-none select-none disabled:pointer-events-none disabled:opacity-40"
+                        class="text-foreground hover:bg-muted flex size-9 items-center justify-center outline-none select-none disabled:pointer-events-none disabled:opacity-40"
                         rdxNumberFieldIncrement
                     >
                         <svg class="flex" [lucideIcon]="Plus" size="16" />

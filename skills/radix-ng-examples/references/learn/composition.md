@@ -32,6 +32,7 @@ free. The accordion only writes the part that's genuinely new. Here's the result
 
 ```typescript
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { LucidePlus } from '@lucide/angular';
 import {
     RdxAccordionHeaderDirective,
     RdxAccordionItemDirective,
@@ -51,90 +52,66 @@ import {
         RdxAccordionPanelPresenceDirective,
         RdxAccordionPanelDirective,
         RdxAccordionRootDirective,
-        RdxAccordionTriggerDirective
+        RdxAccordionTriggerDirective,
+        LucidePlus
     ],
     template: `
         <div
-            class="demo-accordion-root w-[300px] overflow-hidden"
-            [defaultValue]="['item-1']"
+            class="border-border text-foreground flex w-80 max-w-full flex-col border"
             [disabled]="disabled()"
             [multiple]="multiple()"
             rdxAccordionRoot
         >
-            <div
-                class="border-border focus-within:ring-ring overflow-hidden border-b last:border-b-0 focus-within:relative focus-within:z-[1] focus-within:ring-2 focus-within:outline-none focus-within:ring-inset"
-                [value]="'item-1'"
-                rdxAccordionItem
-            >
-                <h3 class="flex" rdxAccordionHeader>
-                    <button
-                        class="demo-accordion-trigger flex h-12 w-full flex-1 items-center justify-between px-5 aria-disabled:opacity-60"
-                        type="button"
-                        rdxAccordionTrigger
+            @for (item of items; track item.id) {
+                <div class="border-border not-first:border-t" [value]="item.id" rdxAccordionItem>
+                    <h3 rdxAccordionHeader>
+                        <button
+                            class="hover:not-data-disabled:bg-muted focus-visible:outline-ring group flex w-full items-center justify-between gap-4 bg-transparent px-3 py-2 text-start text-sm font-normal select-none focus-visible:relative focus-visible:z-1 focus-visible:outline-2"
+                            type="button"
+                            rdxAccordionTrigger
+                        >
+                            {{ item.question }}
+                            <svg
+                                class="shrink-0 transition-transform duration-100 ease-out group-data-panel-open:rotate-45"
+                                aria-hidden="true"
+                                lucidePlus
+                                size="16"
+                            />
+                        </button>
+                    </h3>
+                    <div
+                        class="h-(--accordion-panel-height) overflow-hidden text-sm transition-[height] duration-150 ease-out data-ending-style:h-0 data-starting-style:h-0 motion-reduce:transition-none"
+                        *rdxAccordionPanelPresence
+                        rdxAccordionPanel
                     >
-                        Is it accessible?
-                    </button>
-                </h3>
-                <div
-                    class="demo-accordion-content [&[data-open][data-orientation=vertical]]:animate-accordion-down [&:not([data-open])[data-orientation=vertical]]:animate-accordion-up [&[data-open][data-orientation=horizontal]]:animate-accordion-right [&:not([data-open])[data-orientation=horizontal]]:animate-accordion-left overflow-hidden [&:not([data-open])[data-orientation=horizontal]]:w-0 [&:not([data-open])[data-orientation=vertical]]:h-0"
-                    *rdxAccordionPanelPresence
-                    rdxAccordionPanel
-                >
-                    <div class="px-5 py-4">Yes. It adheres to the WAI-ARIA design pattern.</div>
-                </div>
-            </div>
-            <div
-                class="border-border focus-within:ring-ring overflow-hidden border-b last:border-b-0 focus-within:relative focus-within:z-[1] focus-within:ring-2 focus-within:outline-none focus-within:ring-inset"
-                [value]="'item-2'"
-                rdxAccordionItem
-            >
-                <h3 class="flex" rdxAccordionHeader>
-                    <button
-                        class="demo-accordion-trigger flex h-12 w-full flex-1 items-center justify-between px-5 aria-disabled:opacity-60"
-                        type="button"
-                        rdxAccordionTrigger
-                    >
-                        Is it unstyled?
-                    </button>
-                </h3>
-                <div
-                    class="demo-accordion-content [&[data-open][data-orientation=vertical]]:animate-accordion-down [&:not([data-open])[data-orientation=vertical]]:animate-accordion-up [&[data-open][data-orientation=horizontal]]:animate-accordion-right [&:not([data-open])[data-orientation=horizontal]]:animate-accordion-left overflow-hidden [&:not([data-open])[data-orientation=horizontal]]:w-0 [&:not([data-open])[data-orientation=vertical]]:h-0"
-                    *rdxAccordionPanelPresence
-                    rdxAccordionPanel
-                >
-                    <div class="px-5 py-4">
-                        Yes. It's unstyled by default, giving you freedom over the look and feel.
+                        <div class="px-3 py-2">{{ item.answer }}</div>
                     </div>
                 </div>
-            </div>
-            <div
-                class="border-border focus-within:ring-ring overflow-hidden border-b last:border-b-0 focus-within:relative focus-within:z-[1] focus-within:ring-2 focus-within:outline-none focus-within:ring-inset"
-                [value]="'item-3'"
-                rdxAccordionItem
-            >
-                <h3 class="flex" rdxAccordionHeader>
-                    <button
-                        class="demo-accordion-trigger flex h-12 w-full flex-1 items-center justify-between px-5 aria-disabled:opacity-60"
-                        type="button"
-                        rdxAccordionTrigger
-                    >
-                        Can it be animated?
-                    </button>
-                </h3>
-                <div
-                    class="demo-accordion-content [&[data-open][data-orientation=vertical]]:animate-accordion-down [&:not([data-open])[data-orientation=vertical]]:animate-accordion-up [&[data-open][data-orientation=horizontal]]:animate-accordion-right [&:not([data-open])[data-orientation=horizontal]]:animate-accordion-left overflow-hidden [&:not([data-open])[data-orientation=horizontal]]:w-0 [&:not([data-open])[data-orientation=vertical]]:h-0"
-                    *rdxAccordionPanelPresence
-                    rdxAccordionPanel
-                >
-                    <div class="px-5 py-4">Yes! You can animate the Accordion with CSS or JavaScript.</div>
-                </div>
-            </div>
+            }
         </div>
     `
 })
 export class AccordionDefaultStory {
     readonly disabled = input(false);
     readonly multiple = input(false);
+
+    protected readonly items = [
+        {
+            id: 'about',
+            question: 'What is Radix NG?',
+            answer: 'Radix NG provides unstyled Angular primitives for design systems and web apps.'
+        },
+        {
+            id: 'start',
+            question: 'How do I get started?',
+            answer: 'Install the primitives and compose them using standalone Angular imports.'
+        },
+        {
+            id: 'license',
+            question: 'Can I use it for my project?',
+            answer: 'Yes. Radix NG is free and open source.'
+        }
+    ];
 }
 ```
 

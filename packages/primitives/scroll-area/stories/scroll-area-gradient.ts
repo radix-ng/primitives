@@ -7,8 +7,6 @@ import {
     RdxScrollAreaViewport
 } from '@radix-ng/primitives/scroll-area';
 
-const html = String.raw;
-
 /**
  * Fades the content near the scroll edges by feeding the viewport's
  * `--scroll-area-overflow-y-start` / `--scroll-area-overflow-y-end` CSS variables
@@ -25,24 +23,21 @@ const html = String.raw;
         RdxScrollAreaScrollbar,
         RdxScrollAreaThumb
     ],
-    template: html`
-        <div class="border-border bg-background h-56 w-72 overflow-hidden rounded-md border" rdxScrollAreaRoot>
+    template: `
+        <div class="border-border bg-background h-56 w-72 overflow-hidden border" rdxScrollAreaRoot>
             <div
                 class="h-full w-full rounded-[inherit] [mask-image:linear-gradient(to_bottom,transparent,#000_var(--scroll-area-overflow-y-start,0px),#000_calc(100%-var(--scroll-area-overflow-y-end,0px)),transparent)]"
                 rdxScrollAreaViewport
             >
                 <div class="text-foreground space-y-3 p-4 text-sm leading-relaxed" rdxScrollAreaContent>
                     @for (paragraph of paragraphs; track $index) {
-                    <p>{{ paragraph }}</p>
+                        <p>{{ paragraph }}</p>
                     }
                 </div>
             </div>
 
             <div class="flex w-2.5 touch-none p-0.5 select-none" rdxScrollAreaScrollbar orientation="vertical">
-                <div
-                    class="bg-foreground/30 hover:bg-foreground/50 w-full rounded-full transition-colors"
-                    rdxScrollAreaThumb
-                ></div>
+                <div class="bg-foreground/30 hover:bg-foreground/50 w-full transition-colors" rdxScrollAreaThumb></div>
             </div>
         </div>
     `

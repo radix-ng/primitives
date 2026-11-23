@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
-import { LucideCheck, LucideDynamicIcon } from '@lucide/angular';
+import { LucideCheck, LucideDynamicIcon, LucideMinus } from '@lucide/angular';
 import {
     CheckedState,
     RdxCheckboxButtonDirective,
@@ -50,7 +50,7 @@ interface Item {
                         <svg
                             class="text-primary flex items-center"
                             *rdxCheckboxIndicatorPresence
-                            [lucideIcon]="parentState() === 'indeterminate' ? 'minus' : 'check'"
+                            [lucideIcon]="parentState() === 'indeterminate' ? minusIcon : checkIcon"
                             rdxCheckboxIndicator
                             size="16"
                         />
@@ -89,6 +89,8 @@ interface Item {
     `
 })
 export class CheckboxSelectAllExample {
+    protected readonly minusIcon = LucideMinus;
+    protected readonly checkIcon = LucideCheck;
     readonly items = signal<Item[]>([
         { id: 'apples', label: 'Apples', checked: true },
         { id: 'bananas', label: 'Bananas', checked: false },

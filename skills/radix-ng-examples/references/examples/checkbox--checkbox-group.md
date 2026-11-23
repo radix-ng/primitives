@@ -26,7 +26,7 @@ the editable selection even when the group has moved outside it.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideCheck, LucideDynamicIcon } from '@lucide/angular';
+import { LucideCheck, LucideDynamicIcon, LucideMinus } from '@lucide/angular';
 import {
     RdxCheckboxButtonDirective,
     RdxCheckboxGroupDirective,
@@ -58,45 +58,44 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
         LucideCheck
     ],
     template: `
-        <div class="flex flex-col gap-3" #group="rdxCheckboxGroup" [(value)]="value" [allValues]="all" rdxCheckboxGroup>
-            <div class="flex items-center gap-3">
+        <div
+            class="flex flex-col items-start gap-1"
+            #group="rdxCheckboxGroup"
+            [(value)]="value"
+            [allValues]="all"
+            rdxCheckboxGroup
+            aria-label="Fruits"
+        >
+            <div class="flex items-center gap-2">
                 <div parent rdxCheckboxRoot>
-                    <button
-                        class="demo-checkbox-button demo-focus flex size-6 items-center justify-center disabled:opacity-50 aria-disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
-                        id="all"
-                        rdxCheckboxButton
-                    >
+                    <button class="demo-choice size-4" id="all" rdxCheckboxButton>
                         <svg
-                            class="text-primary flex items-center"
+                            class="flex items-center"
                             *rdxCheckboxIndicatorPresence
-                            [lucideIcon]="group.parentState() === 'indeterminate' ? 'minus' : 'check'"
+                            [lucideIcon]="group.parentState() === 'indeterminate' ? minusIcon : checkIcon"
                             rdxCheckboxIndicator
-                            size="16"
+                            size="12"
                         />
                     </button>
                 </div>
-                <label class="text-foreground text-sm font-medium" rdxLabel htmlFor="all">Select all</label>
+                <label class="text-foreground text-sm" rdxLabel htmlFor="all">Select all</label>
             </div>
 
-            <div class="ml-6 flex flex-col gap-3">
+            <div class="ms-4 flex flex-col items-start gap-1">
                 @for (item of items; track item.value) {
-                    <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2">
                         <div [value]="item.value" rdxCheckboxRoot>
-                            <button
-                                class="demo-checkbox-button demo-focus flex size-6 items-center justify-center disabled:opacity-50 aria-disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
-                                [id]="item.value"
-                                rdxCheckboxButton
-                            >
+                            <button class="demo-choice size-4" [id]="item.value" rdxCheckboxButton>
                                 <svg
-                                    class="text-primary flex items-center"
+                                    class="flex items-center"
                                     *rdxCheckboxIndicatorPresence
                                     rdxCheckboxIndicator
-                                    size="16"
+                                    size="12"
                                     lucideCheck
                                 />
                             </button>
                         </div>
-                        <label class="text-foreground text-sm font-medium" [htmlFor]="item.value" rdxLabel>
+                        <label class="text-foreground text-sm" [htmlFor]="item.value" rdxLabel>
                             {{ item.label }}
                         </label>
                     </div>
@@ -106,6 +105,8 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
     `
 })
 export class CheckboxGroupExample {
+    protected readonly minusIcon = LucideMinus;
+    protected readonly checkIcon = LucideCheck;
     protected readonly items = [
         { value: 'apples', label: 'Apples' },
         { value: 'bananas', label: 'Bananas' },

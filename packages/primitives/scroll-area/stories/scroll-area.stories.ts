@@ -1,15 +1,11 @@
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
-import {
-    RdxScrollAreaContent,
-    RdxScrollAreaCorner,
-    RdxScrollAreaRoot,
-    RdxScrollAreaScrollbar,
-    RdxScrollAreaThumb,
-    RdxScrollAreaViewport
-} from '../index';
 import { ScrollAreaBothExample } from './scroll-area-both';
+import { ScrollAreaDefaultExample } from './scroll-area-default';
+import defaultSource from './scroll-area-default?raw';
 import { ScrollAreaGradientExample } from './scroll-area-gradient';
+import { ScrollAreaHorizontalExample } from './scroll-area-horizontal';
+import horizontalSource from './scroll-area-horizontal?raw';
 import { ScrollAreaTabsExample } from './scroll-area-tabs';
 
 // Full component source for the "Show code" panel (Vite `?raw` import).
@@ -34,12 +30,8 @@ export default {
     decorators: [
         moduleMetadata({
             imports: [
-                RdxScrollAreaRoot,
-                RdxScrollAreaViewport,
-                RdxScrollAreaContent,
-                RdxScrollAreaScrollbar,
-                RdxScrollAreaThumb,
-                RdxScrollAreaCorner,
+                ScrollAreaHorizontalExample,
+                ScrollAreaDefaultExample,
                 ScrollAreaBothExample,
                 ScrollAreaGradientExample,
                 ScrollAreaTabsExample
@@ -52,58 +44,13 @@ export default {
 type Story = StoryObj;
 
 export const Default: Story = {
-    render: () => ({
-        props: { tags: Array.from({ length: 50 }, (_, i) => `v1.2.0-beta.${i + 1}`) },
-        template: html`
-            <div class="border-border bg-background h-64 w-56 overflow-hidden rounded-md border" rdxScrollAreaRoot>
-                <div class="h-full w-full rounded-[inherit]" rdxScrollAreaViewport>
-                    <div class="p-4" rdxScrollAreaContent>
-                        <div class="text-foreground mb-2 text-sm font-medium">Tags</div>
-                        @for (tag of tags; track tag) {
-                        <div class="border-border text-foreground border-t py-1.5 text-sm">{{ tag }}</div>
-                        }
-                    </div>
-                </div>
-
-                <div class="flex w-2.5 touch-none p-0.5 select-none" rdxScrollAreaScrollbar orientation="vertical">
-                    <div
-                        class="bg-foreground/30 hover:bg-foreground/50 w-full rounded-full transition-colors"
-                        rdxScrollAreaThumb
-                    ></div>
-                </div>
-            </div>
-        `
-    })
+    parameters: source(defaultSource),
+    render: () => ({ template: '<scroll-area-default-example />' })
 };
 
 export const Horizontal: Story = {
-    render: () => ({
-        props: { items: Array.from({ length: 16 }, (_, i) => i + 1) },
-        template: html`
-            <div class="border-border bg-background w-80 overflow-hidden rounded-md border" rdxScrollAreaRoot>
-                <div class="w-full rounded-[inherit]" rdxScrollAreaViewport>
-                    <div class="flex gap-3 p-3" rdxScrollAreaContent>
-                        @for (item of items; track item) {
-                        <figure class="shrink-0">
-                            <div
-                                class="bg-muted text-foreground flex h-28 w-28 items-center justify-center rounded-md text-2xl font-semibold"
-                            >
-                                {{ item }}
-                            </div>
-                        </figure>
-                        }
-                    </div>
-                </div>
-
-                <div class="flex h-2.5 touch-none p-0.5 select-none" rdxScrollAreaScrollbar orientation="horizontal">
-                    <div
-                        class="bg-foreground/30 hover:bg-foreground/50 h-full rounded-full transition-colors"
-                        rdxScrollAreaThumb
-                    ></div>
-                </div>
-            </div>
-        `
-    })
+    parameters: source(horizontalSource),
+    render: () => ({ template: '<scroll-area-horizontal-example />' })
 };
 
 export const BothScrollbars: Story = {

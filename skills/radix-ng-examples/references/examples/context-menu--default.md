@@ -51,7 +51,7 @@ import {
     template: `
         <ng-container #root="rdxContextMenuRoot" rdxContextMenuRoot>
             <div
-                class="demo-menu-context-area data-[popup-open]:bg-muted flex h-[150px] w-[300px] max-w-full items-center justify-center p-4 data-[popup-open]:border-solid"
+                class="border-foreground bg-background text-foreground data-popup-open:bg-muted flex aspect-5/3 w-64 max-w-full items-center justify-center border text-sm select-none"
                 tabindex="0"
                 rdxContextMenuTrigger
             >
@@ -60,40 +60,34 @@ import {
 
             <div class="z-50 data-[closed]:pointer-events-none" *rdxMenuPortal rdxMenuPositioner>
                 <div
-                    class="demo-menu-popup min-w-56! min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                    class="demo-popup demo-popup-motion min-w-56! min-w-[8rem] py-1 outline-none data-closed:pointer-events-none"
                     rdxMenuPopup
                 >
-                    <button
-                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
-                        rdxMenuItem
-                    >
+                    <button class="demo-menu-option flex w-full items-center gap-2 px-4 py-2 text-start" rdxMenuItem>
                         Back
-                        <span class="text-muted-foreground ml-auto pl-4 text-xs">⌘ [</span>
+                        <span class="ms-auto ps-4 text-xs opacity-70">⌘ [</span>
                     </button>
                     <button
-                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                        class="demo-menu-option flex w-full items-center gap-2 px-4 py-2 text-start"
                         [disabled]="true"
                         rdxMenuItem
                     >
                         Forward
-                        <span class="text-muted-foreground ml-auto pl-4 text-xs">⌘ ]</span>
+                        <span class="ms-auto ps-4 text-xs opacity-70">⌘ ]</span>
                     </button>
-                    <button
-                        class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
-                        rdxMenuItem
-                    >
+                    <button class="demo-menu-option flex w-full items-center gap-2 px-4 py-2 text-start" rdxMenuItem>
                         Reload
-                        <span class="text-muted-foreground ml-auto pl-4 text-xs">⌘ R</span>
+                        <span class="ms-auto ps-4 text-xs opacity-70">⌘ R</span>
                     </button>
 
                     <!-- More Tools submenu -->
                     <ng-container #moreSub="rdxMenuRoot" rdxMenuRoot>
                         <button
-                            class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center justify-between gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            class="demo-menu-option flex w-full items-center justify-between gap-2 px-4 py-2 text-start"
                             rdxMenuSubTrigger
                         >
                             More Tools
-                            <span class="text-muted-foreground text-xs">›</span>
+                            <span class="text-xs opacity-70">›</span>
                         </button>
                         <div
                             class="z-50 data-[closed]:pointer-events-none"
@@ -104,23 +98,23 @@ import {
                             rdxMenuPositioner
                         >
                             <div
-                                class="demo-menu-popup min-w-[8rem] p-1 data-[closed]:pointer-events-none data-[closed]:hidden"
+                                class="demo-popup demo-popup-motion min-w-[8rem] py-1 outline-none data-closed:pointer-events-none"
                                 rdxMenuPopup
                             >
                                 <button
-                                    class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                    class="demo-menu-option flex w-full items-center gap-2 px-4 py-2 text-start"
                                     rdxMenuItem
                                 >
                                     Save Page As…
                                 </button>
                                 <button
-                                    class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                    class="demo-menu-option flex w-full items-center gap-2 px-4 py-2 text-start"
                                     rdxMenuItem
                                 >
                                     Create Shortcut…
                                 </button>
                                 <button
-                                    class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                    class="demo-menu-option flex w-full items-center gap-2 px-4 py-2 text-start"
                                     rdxMenuItem
                                 >
                                     Name Window…
@@ -129,10 +123,10 @@ import {
                         </div>
                     </ng-container>
 
-                    <div class="bg-border -mx-1 my-1 h-px" rdxMenuSeparator></div>
+                    <div class="bg-foreground mx-1 my-1 h-px" rdxMenuSeparator></div>
 
                     <button
-                        class="demo-menu-selectable-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center py-1.5 ps-8 pe-2 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                        class="demo-menu-option flex w-full items-center py-2 ps-8 pe-4 text-start"
                         [(checked)]="showBookmarks"
                         type="button"
                         rdxMenuCheckboxItem
@@ -145,10 +139,10 @@ import {
                             <svg [size]="12" lucideCheck></svg>
                         </span>
                         Show Bookmarks
-                        <span class="text-muted-foreground ml-auto pl-4 text-xs">⌘ B</span>
+                        <span class="ms-auto ps-4 text-xs opacity-70">⌘ B</span>
                     </button>
                     <button
-                        class="demo-menu-selectable-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center py-1.5 ps-8 pe-2 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                        class="demo-menu-option flex w-full items-center py-2 ps-8 pe-4 text-start"
                         [(checked)]="showFullUrls"
                         type="button"
                         rdxMenuCheckboxItem
@@ -163,12 +157,12 @@ import {
                         Show Full URLs
                     </button>
 
-                    <div class="bg-border -mx-1 my-1 h-px" rdxMenuSeparator></div>
+                    <div class="bg-foreground mx-1 my-1 h-px" rdxMenuSeparator></div>
 
                     <div [(value)]="person" rdxMenuRadioGroup>
                         <div class="demo-menu-group-label px-2 py-1.5 ps-8" rdxMenuGroupLabel>People</div>
                         <button
-                            class="demo-menu-selectable-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center py-1.5 ps-8 pe-2 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            class="demo-menu-option flex w-full items-center py-2 ps-8 pe-4 text-start"
                             type="button"
                             value="pedro"
                             rdxMenuRadioItem
@@ -183,7 +177,7 @@ import {
                             Pedro Duarte
                         </button>
                         <button
-                            class="demo-menu-selectable-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center py-1.5 ps-8 pe-2 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                            class="demo-menu-option flex w-full items-center py-2 ps-8 pe-4 text-start"
                             type="button"
                             value="colm"
                             rdxMenuRadioItem

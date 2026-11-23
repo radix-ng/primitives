@@ -1,8 +1,11 @@
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { MenuCheckboxItemsStory } from './components/menu-checkbox-items';
+import checkboxItemsSource from './components/menu-checkbox-items?raw';
 import { MenuRadioItemsStory } from './components/menu-radio-items';
+import radioItemsSource from './components/menu-radio-items?raw';
 import { MenuWithLabelsItemsStory } from './components/menu-with-labels-items';
+import labelsSource from './components/menu-with-labels-items?raw';
 import { RdxMenuAnimatedComponent } from './menu-animated';
 import animatedSource from './menu-animated?raw';
 import { RdxMenuArrowExampleComponent } from './menu-arrow';
@@ -161,6 +164,7 @@ export const FocusReturn: Story = {
 };
 
 export const RadioItem: Story = {
+    parameters: source(radioItemsSource),
     render: () => ({
         template: html`
             <menu-radio-items-story />
@@ -169,6 +173,7 @@ export const RadioItem: Story = {
 };
 
 export const CheckboxItem: Story = {
+    parameters: source(checkboxItemsSource),
     render: () => ({
         template: html`
             <menu-checkbox-items-story />
@@ -177,6 +182,7 @@ export const CheckboxItem: Story = {
 };
 
 export const WithLabels: Story = {
+    parameters: source(labelsSource),
     render: () => ({
         template: html`
             <menu-with-labels-items-story />

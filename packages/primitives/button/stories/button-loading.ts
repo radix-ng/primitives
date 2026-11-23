@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { LucideDynamicIcon } from '@lucide/angular';
+import { LucideDynamicIcon, LucideLoaderCircle, LucideSave } from '@lucide/angular';
 import { RdxButtonDirective } from '@radix-ng/primitives/button';
 
 /**
@@ -13,7 +13,7 @@ import { RdxButtonDirective } from '@radix-ng/primitives/button';
     imports: [RdxButtonDirective, LucideDynamicIcon],
     template: `
         <button
-            class="demo-button demo-button-primary h-9 px-4"
+            class="demo-button demo-button-outline h-8 px-3"
             [disabled]="loading()"
             [attr.aria-busy]="loading() ? 'true' : null"
             (click)="run()"
@@ -22,7 +22,7 @@ import { RdxButtonDirective } from '@radix-ng/primitives/button';
         >
             <svg
                 class="flex"
-                [lucideIcon]="loading() ? 'loader-circle' : 'save'"
+                [lucideIcon]="loading() ? loaderIcon : saveIcon"
                 [class.animate-spin]="loading()"
                 size="16"
             />
@@ -31,6 +31,8 @@ import { RdxButtonDirective } from '@radix-ng/primitives/button';
     `
 })
 export class RdxButtonLoadingComponent {
+    protected readonly loaderIcon = LucideLoaderCircle;
+    protected readonly saveIcon = LucideSave;
     protected readonly loading = signal(false);
 
     protected run(): void {

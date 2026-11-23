@@ -34,8 +34,8 @@ import {
                         Security
                     </button>
                 </div>
-                <div class="border-border rounded border p-4" value="account" rdxTabsPanel>Manage your account.</div>
-                <div class="border-border rounded border p-4" value="security" rdxTabsPanel>
+                <div class="border-border border p-4" value="account" rdxTabsPanel>Manage your account.</div>
+                <div class="border-border border p-4" value="security" rdxTabsPanel>
                     Update your security preferences.
                 </div>
             </div>

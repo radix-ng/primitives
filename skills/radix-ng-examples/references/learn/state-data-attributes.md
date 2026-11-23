@@ -49,19 +49,14 @@ import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
     selector: 'switch-default-example',
     imports: [RdxLabelDirective, RdxSwitchRoot, RdxSwitchThumb],
     template: `
-        <label class="text-foreground flex items-center gap-3 text-sm font-medium" rdxLabel htmlFor="airplane-mode">
-            Airplane mode
-            <button
-                class="bg-muted data-[checked]:bg-primary focus-visible:ring-ring relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-0 p-0 shadow-sm transition-colors outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
-                id="airplane-mode"
-                rdxSwitchRoot
-                defaultChecked
-            >
+        <label class="text-foreground flex items-center gap-2 text-sm font-normal" rdxLabel htmlFor="notifications">
+            <button class="demo-switch h-5 w-9 p-0.5" id="notifications" type="button" defaultChecked rdxSwitchRoot>
                 <span
-                    class="bg-background pointer-events-none block size-5 translate-x-0.5 rounded-full shadow-sm transition-transform data-[checked]:translate-x-[22px]"
+                    class="demo-switch-thumb size-3.5 data-checked:translate-x-4 rtl:data-checked:-translate-x-4"
                     rdxSwitchThumb
                 ></span>
             </button>
+            Notifications
         </label>
     `
 })

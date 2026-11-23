@@ -85,7 +85,7 @@ import {
                 </p>
 
                 <div class="z-50" *rdxPreviewCardPortal sideOffset="8" rdxPreviewCardPositioner>
-                    <div class="demo-surface relative w-80 p-4" rdxPreviewCardPopup>
+                    <div class="demo-popup relative w-80 p-4" rdxPreviewCardPopup>
                         <span class="text-card demo-arrow my-px" rdxPreviewCardArrow></span>
                         <div class="grid gap-2">
                             <div class="bg-muted h-24 rounded-md"></div>

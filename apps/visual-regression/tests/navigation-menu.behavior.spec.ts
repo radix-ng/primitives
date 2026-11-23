@@ -80,7 +80,7 @@ test.describe('Navigation Menu — new floating engine migration', () => {
         await expect(page.locator(trigger).first()).toBeFocused();
     });
 
-    test('closing popup animation holds its final frame until unmount', async ({ page }) => {
+    test('closing popup transitions keep outgoing content until unmount', async ({ page }) => {
         await gotoStory(page, 'primitives-navigation-menu--default');
         await page.locator(trigger).first().click();
         await expect(page.locator(popup)).toBeVisible();
@@ -90,7 +90,6 @@ test.describe('Navigation Menu — new floating engine migration', () => {
 
         const closingPopup = page.locator(`${popup}[data-ending-style]`);
         await expect(closingPopup).toBeVisible();
-        await expect(closingPopup).toHaveCSS('animation-fill-mode', 'forwards');
         await expect(page.locator('[rdxNavigationMenuViewport] > [data-current]')).toHaveCount(1);
         await expect(page.locator('[rdxNavigationMenuViewport] > [data-previous]')).toHaveCount(0);
         await expect.poll(exit.count).toBeGreaterThan(0);
@@ -577,8 +576,11 @@ test.describe('Navigation Menu content composition and demo layout', () => {
             await expect
                 .poll(() =>
                     popup.evaluate((element) => {
-                        const polygon = element.querySelector('[rdxNavigationMenuArrow] polygon')!;
-                        return getComputedStyle(polygon).fill === getComputedStyle(element).backgroundColor;
+                        const arrow = element.querySelector('[rdxNavigationMenuArrow] > span')!;
+                        return (
+                            getComputedStyle(arrow, '::before').backgroundColor ===
+                            getComputedStyle(element).backgroundColor
+                        );
                     })
                 )
                 .toBe(true);

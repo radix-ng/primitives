@@ -84,14 +84,14 @@ import {
                             rdxMenuPopup
                         >
                             <div
-                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                 (onSelect)="selected.set('Open')"
                                 rdxMenuItem
                             >
                                 Open
                             </div>
                             <div
-                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                 (onSelect)="selected.set('Duplicate')"
                                 rdxMenuItem
                             >
@@ -99,7 +99,7 @@ import {
                             </div>
                             <ng-container rdxMenuRoot>
                                 <div
-                                    class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border data-[popup-open]:bg-muted relative flex w-full items-center justify-between gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                    class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground data-[popup-open]:bg-muted relative flex w-full items-center justify-between gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                     rdxMenuSubTrigger
                                 >
                                     Share
@@ -119,14 +119,14 @@ import {
                                             rdxMenuPopup
                                         >
                                             <div
-                                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                                 (onSelect)="selected.set('Copy link')"
                                                 rdxMenuItem
                                             >
                                                 Copy link
                                             </div>
                                             <div
-                                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                                class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                                 (onSelect)="selected.set('Send by email')"
                                                 rdxMenuItem
                                             >

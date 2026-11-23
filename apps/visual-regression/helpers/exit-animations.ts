@@ -4,7 +4,7 @@ import type { Page } from '@playwright/test';
 export async function holdExitAnimations(
     page: Page,
     roots: string[],
-    closingAttribute: 'data-closed' | 'data-ending-style' = 'data-closed'
+    closingAttribute: 'data-closed' | 'data-ending-style' | 'data-state' = 'data-closed'
 ) {
     await page.evaluate(async () => {
         await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
@@ -16,7 +16,8 @@ export async function holdExitAnimations(
                 .map((animation) => animation.finished.catch(() => undefined))
         );
     });
-    const selector = roots.map((root) => `${root}[${closingAttribute}]`).join(',');
+    const closing = closingAttribute === 'data-state' ? '[data-state="closed"]' : `[${closingAttribute}]`;
+    const selector = roots.map((root) => `${root}${closing}`).join(',');
     const handle = await page.evaluateHandle(
         ({ selector, closingAttribute }) => {
             const animations = new Set<Animation>();

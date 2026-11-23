@@ -18,7 +18,7 @@ import { RdxInputDirective } from '@radix-ng/primitives/input';
     template: `
         <div class="flex w-80 flex-col gap-2" rdxFieldRoot required>
             <label class="text-foreground text-sm font-medium" rdxFieldLabel>Email</label>
-            <input class="demo-input h-9 w-full px-3" rdxInput type="email" placeholder="name@example.com" />
+            <input class="demo-input h-8 w-full px-2" rdxInput type="email" placeholder="name@example.com" />
             <p class="text-muted-foreground text-sm" rdxFieldDescription>Used for account notifications.</p>
             <p class="text-destructive text-sm" rdxFieldError>Enter a valid email address.</p>
         </div>

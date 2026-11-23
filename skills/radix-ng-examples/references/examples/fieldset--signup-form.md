@@ -35,7 +35,7 @@ import { RdxInputDirective } from '@radix-ng/primitives/input';
     ],
     template: `
         <form class="w-96 space-y-5" [formGroup]="form" (ngSubmit)="submit()">
-            <fieldset class="border-border space-y-4 rounded-md border p-4" [disabled]="submitting" rdxFieldsetRoot>
+            <fieldset class="border-border space-y-4 border p-4" [disabled]="submitting" rdxFieldsetRoot>
                 <legend class="text-foreground px-1 text-sm font-semibold data-[disabled]:opacity-50" rdxFieldsetLegend>
                     Account details
                 </legend>
@@ -43,7 +43,7 @@ import { RdxInputDirective } from '@radix-ng/primitives/input';
                 <div class="space-y-2" rdxFieldRoot required>
                     <label class="text-foreground text-sm font-medium" rdxFieldLabel>First name</label>
                     <input
-                        class="demo-input h-9 w-full px-3"
+                        class="demo-input h-8 w-full px-2"
                         rdxInput
                         rdxNgControlField
                         autocomplete="given-name"
@@ -56,7 +56,7 @@ import { RdxInputDirective } from '@radix-ng/primitives/input';
                 <div class="space-y-2" rdxFieldRoot required>
                     <label class="text-foreground text-sm font-medium" rdxFieldLabel>Email</label>
                     <input
-                        class="demo-input h-9 w-full px-3"
+                        class="demo-input h-8 w-full px-2"
                         rdxInput
                         rdxNgControlField
                         autocomplete="email"

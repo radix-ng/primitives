@@ -8,8 +8,6 @@ import {
     RdxScrollAreaViewport
 } from '@radix-ng/primitives/scroll-area';
 
-const html = String.raw;
-
 /**
  * A scroll area that overflows on both axes. The `Corner` part fills the gap where
  * the vertical and horizontal scrollbars meet.
@@ -25,20 +23,20 @@ const html = String.raw;
         RdxScrollAreaThumb,
         RdxScrollAreaCorner
     ],
-    template: html`
-        <div class="border-border bg-background h-64 w-72 overflow-hidden rounded-md border" rdxScrollAreaRoot>
+    template: `
+        <div class="border-border bg-background h-64 w-72 overflow-hidden border" rdxScrollAreaRoot>
             <div class="h-full w-full rounded-[inherit]" rdxScrollAreaViewport>
                 <div class="flex w-max gap-2 p-3" rdxScrollAreaContent>
                     @for (col of columns; track col) {
-                    <div class="flex flex-col gap-2">
-                        @for (row of rows; track row) {
-                        <div
-                            class="bg-muted text-foreground flex h-10 w-14 items-center justify-center rounded-md text-xs font-medium"
-                        >
-                            {{ col * rows.length + row + 1 }}
+                        <div class="flex flex-col gap-2">
+                            @for (row of rows; track row) {
+                                <div
+                                    class="bg-muted text-foreground flex h-10 w-14 items-center justify-center rounded-md text-xs font-medium"
+                                >
+                                    {{ col * rows.length + row + 1 }}
+                                </div>
+                            }
                         </div>
-                        }
-                    </div>
                     }
                 </div>
             </div>
@@ -48,10 +46,7 @@ const html = String.raw;
                 rdxScrollAreaScrollbar
                 orientation="vertical"
             >
-                <div
-                    class="bg-foreground/30 hover:bg-foreground/50 w-full rounded-full transition-colors"
-                    rdxScrollAreaThumb
-                ></div>
+                <div class="bg-foreground/30 hover:bg-foreground/50 w-full transition-colors" rdxScrollAreaThumb></div>
             </div>
 
             <div
@@ -59,10 +54,7 @@ const html = String.raw;
                 rdxScrollAreaScrollbar
                 orientation="horizontal"
             >
-                <div
-                    class="bg-foreground/30 hover:bg-foreground/50 h-full rounded-full transition-colors"
-                    rdxScrollAreaThumb
-                ></div>
+                <div class="bg-foreground/30 hover:bg-foreground/50 h-full transition-colors" rdxScrollAreaThumb></div>
             </div>
 
             <div class="bg-muted/40" rdxScrollAreaCorner></div>

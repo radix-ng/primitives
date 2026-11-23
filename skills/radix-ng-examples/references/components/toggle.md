@@ -41,6 +41,7 @@ The composed Toggle inherits disabled state from Toolbar or its Group. The toolb
 
 ## Examples
 
+- [Default](../examples/toggle--default.md)
 - [Pressed by default](../examples/toggle--pressed-by-default.md)
 - [Controlled](../examples/toggle--controlled.md)
 - [Disabled](../examples/toggle--disabled.md)

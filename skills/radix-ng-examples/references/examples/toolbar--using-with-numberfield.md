@@ -64,7 +64,7 @@ const stepClass =
                     <svg lucideMinus size="16"></svg>
                 </button>
                 <input
-                    class="border-border bg-background text-foreground focus-visible:ring-ring h-8 w-12 rounded-md border text-center text-sm outline-none focus-visible:ring-2"
+                    class="border-border bg-background text-foreground focus-visible:ring-ring h-8 w-12 border text-center text-sm outline-none focus-visible:ring-2"
                     rdxToolbarInput
                     rdxNumberFieldInput
                 />

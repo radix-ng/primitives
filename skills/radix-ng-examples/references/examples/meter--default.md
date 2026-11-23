@@ -30,19 +30,22 @@ const storageSteps = [24, 38, 52, 67, 81] as const;
     ],
     template: `
         <div
-            class="flex w-80 flex-col gap-2"
+            class="grid w-60 max-w-full grid-cols-2 gap-y-2"
             [value]="value()"
             [format]="format"
             [getAriaValueText]="getAriaValueText"
             rdxMeterRoot
         >
-            <div class="flex items-center justify-between gap-4">
-                <span class="text-foreground text-sm font-medium" rdxMeterLabel>Storage used</span>
-                <span class="text-muted-foreground text-sm tabular-nums" rdxMeterValue></span>
+            <div class="contents">
+                <span class="text-foreground text-sm" rdxMeterLabel>Storage used</span>
+                <span class="text-foreground text-end text-sm tabular-nums" rdxMeterValue></span>
             </div>
 
-            <div class="bg-muted h-3 overflow-hidden rounded-full" rdxMeterTrack>
-                <div class="bg-primary rounded-full transition-[width] duration-700 ease-out" rdxMeterIndicator></div>
+            <div class="col-span-2 h-3 overflow-hidden bg-neutral-200 dark:bg-neutral-800" rdxMeterTrack>
+                <div
+                    class="bg-primary h-full motion-safe:transition-[width] motion-safe:duration-500"
+                    rdxMeterIndicator
+                ></div>
             </div>
         </div>
     `
@@ -66,3 +69,5 @@ export class MeterStorageComponent {
     }
 }
 ```
+
+[Example setup](../guides/styling.md#copy-an-example-into-your-app)

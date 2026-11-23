@@ -54,7 +54,7 @@ import {
                                 <div class="demo-menu-group-label px-2 py-1.5 ps-8" rdxMenuGroupLabel>People</div>
                                 @for (option of people; track option.value) {
                                     <button
-                                        class="demo-menu-selectable-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center py-1.5 ps-8 pe-2 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                        class="demo-menu-selectable-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center py-1.5 ps-8 pe-2 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                         [value]="option.value"
                                         type="button"
                                         rdxMenuRadioItem
@@ -75,7 +75,7 @@ import {
                                 <div class="demo-menu-group-label px-2 py-1.5 ps-8" rdxMenuGroupLabel>Theme</div>
                                 @for (option of themes; track option.value) {
                                     <button
-                                        class="demo-menu-selectable-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center py-1.5 ps-8 pe-2 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                        class="demo-menu-selectable-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center py-1.5 ps-8 pe-2 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                         [value]="option.value"
                                         type="button"
                                         rdxMenuRadioItem

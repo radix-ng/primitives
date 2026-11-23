@@ -78,7 +78,7 @@ const fuzzyFilter: AutocompleteFilter = (value, query) => {
                     <div class="flex flex-col" rdxAutocompleteList aria-label="Documentation">
                         @for (item of items; track item.title) {
                             <div
-                                class="data-[highlighted]:bg-muted flex cursor-default rounded-sm px-2 py-2 outline-none select-none"
+                                class="data-highlighted:bg-primary data-highlighted:text-primary-foreground flex cursor-default rounded-sm px-2 py-2 outline-none select-none"
                                 [value]="item"
                                 [textValue]="item.title"
                                 rdxAutocompleteItem

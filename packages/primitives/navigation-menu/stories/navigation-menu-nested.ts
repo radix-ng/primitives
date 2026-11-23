@@ -120,7 +120,7 @@ import {
                                             rdxNavigationMenuPositioner
                                         >
                                             <div
-                                                class="demo-surface data-[open]:animate-navigation-menu-popup-in data-[starting-style]:animate-navigation-menu-popup-in data-[ending-style]:animate-navigation-menu-popup-out relative origin-[var(--transform-origin)] p-0 text-left"
+                                                class="demo-popup data-[open]:animate-navigation-menu-popup-in data-[starting-style]:animate-navigation-menu-popup-in data-[ending-style]:animate-navigation-menu-popup-out relative origin-[var(--transform-origin)] p-0 text-left"
                                                 rdxNavigationMenuPopup
                                             >
                                                 <div
@@ -144,7 +144,7 @@ import {
                 rdxNavigationMenuPositioner
             >
                 <div
-                    class="demo-surface data-[open]:animate-navigation-menu-popup-in data-[starting-style]:animate-navigation-menu-popup-in data-[ending-style]:animate-navigation-menu-popup-out relative origin-[var(--transform-origin)] p-0"
+                    class="demo-popup data-[open]:animate-navigation-menu-popup-in data-[starting-style]:animate-navigation-menu-popup-in data-[ending-style]:animate-navigation-menu-popup-out relative origin-[var(--transform-origin)] p-0"
                     rdxNavigationMenuPopup
                 >
                     <svg

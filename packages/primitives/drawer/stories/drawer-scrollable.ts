@@ -184,7 +184,7 @@ const LONG_LIST = [
                             rdxScrollAreaScrollbar
                             orientation="vertical"
                         >
-                            <div class="bg-foreground/50 w-full rounded-full" rdxScrollAreaThumb></div>
+                            <div class="bg-foreground/50 w-full" rdxScrollAreaThumb></div>
                         </div>
                     </div>
                 </div>

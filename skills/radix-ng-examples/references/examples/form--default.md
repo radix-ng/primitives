@@ -4,13 +4,12 @@
 
 > Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
 
-The preview above uses this standalone component. Copy the setup and shared files below as well.
+Copy the standalone component and follow the linked example setup.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { RdxFormErrors, RdxFormRoot, RdxFormSubmitEvent } from '@radix-ng/primitives/form';
-import { formError, formField, formInput, formLabel, formSubmit } from './form.shared';
 
 /**
  * Server-error mapping with clear-on-edit. The submit handler simulates a backend that rejects a
@@ -23,19 +22,27 @@ import { formError, formField, formInput, formLabel, formSubmit } from './form.s
     imports: [RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldError],
     template: `
         <form
-            class="flex w-80 flex-col gap-4"
+            class="flex w-64 max-w-full flex-col gap-4"
             [errors]="errors()"
             (onFormSubmit)="onSubmit($event)"
             (onClearErrors)="errors.set($event)"
             rdxFormRoot
         >
-            <div [class]="field" name="email" rdxFieldRoot>
-                <label [class]="label" rdxFieldLabel>Email</label>
-                <input [class]="input" name="email" type="email" rdxFieldControl placeholder="name@example.com" />
-                <p #emailError="rdxFieldError" [class]="error" rdxFieldError>{{ emailError.messages().join(' ') }}</p>
+            <div class="flex flex-col items-start gap-1" name="email" rdxFieldRoot>
+                <label class="text-foreground text-sm font-bold" rdxFieldLabel>Email</label>
+                <input
+                    class="demo-input h-8 w-full px-2"
+                    name="email"
+                    type="email"
+                    rdxFieldControl
+                    placeholder="name@example.com"
+                />
+                <p class="text-destructive text-sm" #emailError="rdxFieldError" rdxFieldError>
+                    {{ emailError.messages().join(' ') }}
+                </p>
             </div>
 
-            <button [class]="submit" type="submit">Create account</button>
+            <button class="demo-button demo-button-outline h-8 px-3" type="submit">Create account</button>
             @if (success()) {
                 <p class="text-muted-foreground text-sm">Account created for {{ success() }}.</p>
             }
@@ -43,12 +50,6 @@ import { formError, formField, formInput, formLabel, formSubmit } from './form.s
     `
 })
 export class FormDefaultExample {
-    protected readonly field = formField;
-    protected readonly label = formLabel;
-    protected readonly input = formInput;
-    protected readonly error = formError;
-    protected readonly submit = formSubmit;
-
     readonly errors = signal<RdxFormErrors | null>(null);
     readonly success = signal<string | null>(null);
 
@@ -85,10 +86,10 @@ export const simulateFormRequest = (duration = 500): Promise<void> =>
     new Promise((resolve) => setTimeout(resolve, duration));
 
 export const formField = 'flex flex-col gap-1.5';
-export const formLabel = 'text-foreground text-sm font-medium';
+export const formLabel = 'text-foreground text-sm font-bold';
 export const formError = 'text-destructive text-sm';
 export const formInput =
-    'demo-input h-9 w-full px-3 data-[invalid]:border-destructive data-[invalid]:ring-destructive/30';
-export const formSubmit = 'demo-button demo-button-primary h-9 px-4 self-start';
-export const formReset = 'demo-button demo-button-outline h-9 px-4';
+    'demo-input h-8 w-full px-2 data-[invalid]:border-destructive data-[invalid]:ring-destructive/30';
+export const formSubmit = 'demo-button demo-button-primary h-8 px-3 self-start';
+export const formReset = 'demo-button demo-button-outline h-8 px-3';
 ```

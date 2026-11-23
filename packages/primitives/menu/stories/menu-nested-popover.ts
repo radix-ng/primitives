@@ -60,7 +60,7 @@ import {
                         >
                             <ng-container [(open)]="editorOpen" [modal]="trap() ? 'trap-focus' : false" rdxPopoverRoot>
                                 <button
-                                    class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                    class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                     [closeOnClick]="false"
                                     rdxMenuItem
                                     rdxPopoverTrigger
@@ -69,7 +69,7 @@ import {
                                 </button>
                                 <ng-template rdxPopoverPortal>
                                     <div class="z-50" side="right" align="start" sideOffset="8" rdxPopoverPositioner>
-                                        <div class="demo-surface relative grid w-80 gap-4 p-4" rdxPopoverPopup>
+                                        <div class="demo-popup relative grid w-80 gap-4 p-4" rdxPopoverPopup>
                                             <span class="text-card demo-arrow my-px" rdxPopoverArrow></span>
                                             <h2 class="demo-popover-title" rdxPopoverTitle>Quick rename</h2>
                                             <p class="text-muted-foreground mt-1 text-sm" rdxPopoverDescription>
@@ -102,13 +102,13 @@ import {
                                 </ng-template>
                             </ng-container>
                             <button
-                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                 rdxMenuItem
                             >
                                 Duplicate
                             </button>
                             <button
-                                class="demo-menu-item data-[highlighted]:bg-muted data-[highlighted]:outline-border relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline data-[highlighted]:outline-1"
+                                class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex w-full items-center gap-2 px-2 py-1.5 data-[disabled]:opacity-50 data-[highlighted]:outline"
                                 rdxMenuItem
                             >
                                 Archive

@@ -92,7 +92,7 @@ const CITIES = ['Ankara', 'Bursa', 'Isparta', 'Iğdır', 'İstanbul', 'İzmir', 
                         <div class="flex flex-col" rdxAutocompleteList aria-label="Cities">
                             @for (city of cities; track city) {
                                 <div
-                                    class="demo-menu-item data-[highlighted]:bg-muted relative flex items-center py-1.5 pr-2 pl-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[selected]:font-medium"
+                                    class="demo-menu-item data-highlighted:bg-primary data-highlighted:text-primary-foreground relative flex items-center py-1.5 pr-2 pl-8 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[selected]:font-medium"
                                     rdxAutocompleteItem
                                 >
                                     {{ city }}

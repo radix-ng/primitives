@@ -37,6 +37,7 @@ native `required` validation and bubbling `input` and `change` events. Set `name
 
 ## Examples
 
+- [Default](../examples/switch--default.md)
 - [Preselection](../examples/switch--preselection.md)
 - [Disabled](../examples/switch--disabled.md)
 - [Read-only](../examples/switch--read-only.md)

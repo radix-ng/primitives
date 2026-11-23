@@ -34,12 +34,7 @@ Keep demo-specific sizes, spacing, layout and `data-*` rules on the element in i
 
 ```html
 <button class="demo-button demo-button-primary h-9 px-4" rdxButton>Save</button>
-<div
-  class="demo-surface data-[open]:animate-popover-popup-in data-[starting-style]:animate-popover-popup-in data-[ending-style]:animate-popover-popup-out relative w-80 p-4"
-  rdxPopoverPopup
->
-  …
-</div>
+<div class="demo-popup demo-popup-motion relative w-72 max-w-(--available-width) p-4" rdxPopoverPopup>…</div>
 ```
 
 Preserve the animated element and its state selectors when changing class storage: Portal lifetime
@@ -86,7 +81,7 @@ the workspace; a Storybook build alone does not establish copyability.
 
 Defined in `apps/radix-storybook/.storybook/demo-styles.css` for light and dark themes.
 
-Use semantic tokens first, never raw palette colors:
+Use semantic tokens for shared roles. The shared theme takes its neutral and accent values from the Base UI Tailwind demos.
 
 - `bg-background`, `text-foreground`
 - `bg-muted`, `text-muted-foreground`
@@ -95,11 +90,11 @@ Use semantic tokens first, never raw palette colors:
 - `bg-destructive`, `text-destructive-foreground`
 - `border-border`, `ring-ring`
 
-Avoid: `violet`, `mauve`, `black-a*`, hard-coded `white`/`black` when a token exists.
+Use palette utilities when an example needs a specific shade, such as `bg-neutral-200 dark:bg-neutral-800` for an empty track. Pair the shades for both themes. Use black with opacity for scrims whose color stays fixed under theme changes.
 
 ## Theme switching
 
-Controlled from the Storybook toolbar (not OS `prefers-color-scheme`). The preview decorator sets `document.documentElement[data-theme]`. Stories must use tokens that respond to `[data-theme]`.
+The Storybook toolbar and Playground set `document.documentElement[data-theme]`. The shared stylesheet binds semantic tokens and Tailwind’s `dark:` variant to this attribute so portaled content follows the active theme.
 
 ## Animation patterns
 

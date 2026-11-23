@@ -123,16 +123,15 @@ test.describe('Dialog structural portal', () => {
 
         await page.locator(trigger).first().click();
         await expect(page.locator(popup)).toBeVisible();
-        const exit = await holdExitAnimations(page, [backdrop, popup]);
+        const exit = await holdExitAnimations(page, [backdrop, popup], 'data-ending-style');
 
         // Close via the popup's X button.
         await page.locator('[rdxDialogClose][aria-label="Close"]').click();
 
-        // Both roots run their closed-state exit keyframes (backdrop overlay-out, popup zoom-out); the
-        // presence machine keeps them mounted until both finish.
+        // The backdrop fades while the popup fades and scales. The portal waits for both roots.
         await expect(page.locator(backdrop)).toHaveAttribute('data-closed', '');
         await expect(page.locator(popup)).toHaveAttribute('data-closed', '');
-        await expect.poll(exit.count).toBe(2);
+        await expect.poll(exit.count).toBe(3);
 
         // Once the exit animations end, the whole view is destroyed — no orphans in <body>.
         await exit.finish();
