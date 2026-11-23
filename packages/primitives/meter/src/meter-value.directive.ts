@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
-import { injectMeterRootContext } from './meter-root.directive';
+import { computed, Directive, input } from '@angular/core';
+import { injectMeterRootContext, MeterValueFormatter } from './meter-root.directive';
 
 /**
  * Displays the formatted meter value.
@@ -11,7 +11,8 @@ import { injectMeterRootContext } from './meter-root.directive';
     exportAs: 'rdxMeterValue',
     host: {
         '[attr.id]': 'meter.valueId()',
-        '[textContent]': 'meter.formattedValueState()',
+        'aria-hidden': 'true',
+        '[textContent]': 'valueText()',
         '[attr.data-value]': 'meter.valueState()',
         '[attr.data-min]': 'meter.minState()',
         '[attr.data-max]': 'meter.maxState()',
@@ -20,4 +21,12 @@ import { injectMeterRootContext } from './meter-root.directive';
 })
 export class RdxMeterValueDirective {
     protected readonly meter = injectMeterRootContext();
+
+    /** Formats visible text from the formatted value and the original supplied number. */
+    readonly getValueText = input<MeterValueFormatter>();
+
+    protected readonly valueText = computed(() => {
+        const formatted = this.meter.formattedValueState();
+        return this.getValueText()?.(formatted, this.meter.value()) ?? formatted;
+    });
 }

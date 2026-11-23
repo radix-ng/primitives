@@ -24559,7 +24559,7 @@ All other parts — `rdxMenuPositioner`, `rdxMenuPopup`, `rdxMenuItem`, `rdxMenu
 #### A graphical display of a numeric value within a range.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { afterNextRender, ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import {
     RdxMeterIndicatorDirective,
     RdxMeterLabelDirective,
@@ -24594,7 +24594,7 @@ const storageSteps = [24, 38, 52, 67, 81] as const;
             </div>
 
             <div class="bg-muted h-3 overflow-hidden rounded-full" rdxMeterTrack>
-                <div [class]="indicatorClass()" rdxMeterIndicator></div>
+                <div class="bg-primary rounded-full transition-[width] duration-700 ease-out" rdxMeterIndicator></div>
             </div>
         </div>
     `
@@ -24606,42 +24606,22 @@ export class MeterStorageComponent {
     protected readonly format: Intl.NumberFormatOptions = { style: 'unit', unit: 'gigabyte', unitDisplay: 'short' };
     protected readonly getAriaValueText = (formattedValue: string) => `${formattedValue} of storage used`;
 
-    protected readonly indicatorClass = computed(() =>
-        ['h-full rounded-full bg-primary transition-all duration-700 ease-out', this.widthClass()]
-            .filter(Boolean)
-            .join(' ')
-    );
-
-    private readonly widthClass = computed(() => {
-        switch (this.value()) {
-            case 24:
-                return 'w-[24%]';
-            case 38:
-                return 'w-[38%]';
-            case 52:
-                return 'w-[52%]';
-            case 67:
-                return 'w-[67%]';
-            case 81:
-                return 'w-[81%]';
-        }
-    });
-
     constructor() {
-        let stepIndex = 0;
-        const interval = window.setInterval(() => {
-            stepIndex = (stepIndex + 1) % storageSteps.length;
-            this.value.set(storageSteps[stepIndex]);
-        }, 1200);
-
-        this.destroyRef.onDestroy(() => window.clearInterval(interval));
+        afterNextRender(() => {
+            let stepIndex = 0;
+            const interval = window.setInterval(() => {
+                stepIndex = (stepIndex + 1) % storageSteps.length;
+                this.value.set(storageSteps[stepIndex]);
+            }, 1200);
+            this.destroyRef.onDestroy(() => window.clearInterval(interval));
+        });
     }
 }
 ```
 
 ## Features
 
-- ✅ Exposes native meter semantics with `role="meter"` and `aria-valuenow`.
+- ✅ Exposes meter semantics with `role="meter"` and `aria-valuenow`.
 - ✅ Supports custom `min` and `max` ranges.
 - ✅ Formats display text with `Intl.NumberFormat`.
 - ✅ Provides Label and Value parts for accessible naming and value text.
@@ -24678,7 +24658,7 @@ import {
 An animated labelled meter with formatted value text.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { afterNextRender, ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import {
     RdxMeterIndicatorDirective,
     RdxMeterLabelDirective,
@@ -24713,7 +24693,7 @@ const storageSteps = [24, 38, 52, 67, 81] as const;
             </div>
 
             <div class="bg-muted h-3 overflow-hidden rounded-full" rdxMeterTrack>
-                <div [class]="indicatorClass()" rdxMeterIndicator></div>
+                <div class="bg-primary rounded-full transition-[width] duration-700 ease-out" rdxMeterIndicator></div>
             </div>
         </div>
     `
@@ -24725,35 +24705,15 @@ export class MeterStorageComponent {
     protected readonly format: Intl.NumberFormatOptions = { style: 'unit', unit: 'gigabyte', unitDisplay: 'short' };
     protected readonly getAriaValueText = (formattedValue: string) => `${formattedValue} of storage used`;
 
-    protected readonly indicatorClass = computed(() =>
-        ['h-full rounded-full bg-primary transition-all duration-700 ease-out', this.widthClass()]
-            .filter(Boolean)
-            .join(' ')
-    );
-
-    private readonly widthClass = computed(() => {
-        switch (this.value()) {
-            case 24:
-                return 'w-[24%]';
-            case 38:
-                return 'w-[38%]';
-            case 52:
-                return 'w-[52%]';
-            case 67:
-                return 'w-[67%]';
-            case 81:
-                return 'w-[81%]';
-        }
-    });
-
     constructor() {
-        let stepIndex = 0;
-        const interval = window.setInterval(() => {
-            stepIndex = (stepIndex + 1) % storageSteps.length;
-            this.value.set(storageSteps[stepIndex]);
-        }, 1200);
-
-        this.destroyRef.onDestroy(() => window.clearInterval(interval));
+        afterNextRender(() => {
+            let stepIndex = 0;
+            const interval = window.setInterval(() => {
+                stepIndex = (stepIndex + 1) % storageSteps.length;
+                this.value.set(storageSteps[stepIndex]);
+            }, 1200);
+            this.destroyRef.onDestroy(() => window.clearInterval(interval));
+        });
     }
 }
 ```
@@ -24771,30 +24731,6 @@ import {
     RdxMeterTrackDirective,
     RdxMeterValueDirective
 } from '@radix-ng/primitives/meter';
-export const AriaValueText: Story = {
-    render: () => ({
-        props: {
-            value: 88,
-            ariaValueText: 'Memory pressure is high',
-            c: meterClasses
-        },
-        template: html`
-            <div class="flex w-80 flex-col gap-2" [value]="value" [aria-valuetext]="ariaValueText" rdxMeterRoot>
-                <div class="flex items-center justify-between gap-4">
-                    <span class="text-foreground text-sm font-medium" rdxMeterLabel>Memory pressure</span>
-                    <span class="text-muted-foreground text-sm tabular-nums" rdxMeterValue></span>
-                </div>
-
-                <div class="bg-muted h-3 overflow-hidden rounded-full" rdxMeterTrack>
-                    <div
-                        class="bg-primary bg-destructive h-full w-[88%] rounded-full transition-all duration-500 ease-out"
-                        rdxMeterIndicator
-                    ></div>
-                </div>
-            </div>
-        `
-    })
-};
 @Component({
     host: { class: 'contents' },
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -24822,10 +24758,7 @@ export const AriaValueText: Story = {
             </div>
 
             <div class="bg-muted h-3 overflow-hidden rounded-full" rdxMeterTrack>
-                <div
-                    class="bg-primary h-full w-[44%] rounded-full transition-all duration-500 ease-out"
-                    rdxMeterIndicator
-                ></div>
+                <div class="bg-primary rounded-full" rdxMeterIndicator></div>
             </div>
         </div>
     `
@@ -24875,10 +24808,7 @@ import {
             </div>
 
             <div class="bg-muted h-3 overflow-hidden rounded-full" rdxMeterTrack>
-                <div
-                    class="bg-primary bg-destructive h-full w-[88%] rounded-full transition-all duration-500 ease-out"
-                    rdxMeterIndicator
-                ></div>
+                <div class="bg-destructive rounded-full" rdxMeterIndicator></div>
             </div>
         </div>
     `
@@ -24895,17 +24825,24 @@ export class MeterAriaValueTextStory {
 
 `RdxMeterRootDirective`
 
+The default announced text is the localized percentage. Use `format` to display a localized
+number based on the clamped value. Pass `getAriaValueText` to derive an announcement from the formatted text and the
+original supplied number. An explicit `aria-valuetext` takes precedence.
+
 ### Label
 
 `RdxMeterLabelDirective`
 
-Gives the meter its accessible name through `aria-labelledby`.
+Gives the meter its accessible name through `aria-labelledby`. Apply to a `<span>`. The Root follows
+the mounted part and its current ID. An authored `aria-labelledby` takes precedence.
 
 ### Value
 
 `RdxMeterValueDirective`
 
-Displays the formatted value text and provides `aria-describedby` text for the meter.
+Displays the formatted value text on a visual element such as a `<span>`. The Root announces the
+value, so this part is hidden from assistive technology. Use `getValueText` to customize the visible
+text using the formatted text and the original supplied number.
 
 ### Track
 
@@ -24917,7 +24854,9 @@ Contains the visual indicator and mirrors root value attributes.
 
 `RdxMeterIndicatorDirective`
 
-Displays the visual meter fill and exposes `data-percent` for styling.
+Displays the visual meter fill. On an HTML element it sets the percentage width, inherits the
+track's height and sets `inset-inline-start: 0` for positioned layouts. SVG hosts use authored
+geometry, which can read `data-percent`.
 
 ## Data attributes
 

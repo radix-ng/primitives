@@ -6,30 +6,6 @@ import {
     RdxMeterTrackDirective,
     RdxMeterValueDirective
 } from '@radix-ng/primitives/meter';
-export const AriaValueText: Story = {
-    render: () => ({
-        props: {
-            value: 88,
-            ariaValueText: 'Memory pressure is high',
-            c: meterClasses
-        },
-        template: html`
-            <div class="flex w-80 flex-col gap-2" [value]="value" [aria-valuetext]="ariaValueText" rdxMeterRoot>
-                <div class="flex items-center justify-between gap-4">
-                    <span class="text-foreground text-sm font-medium" rdxMeterLabel>Memory pressure</span>
-                    <span class="text-muted-foreground text-sm tabular-nums" rdxMeterValue></span>
-                </div>
-
-                <div class="bg-muted h-3 overflow-hidden rounded-full" rdxMeterTrack>
-                    <div
-                        class="bg-primary bg-destructive h-full w-[88%] rounded-full transition-all duration-500 ease-out"
-                        rdxMeterIndicator
-                    ></div>
-                </div>
-            </div>
-        `
-    })
-};
 @Component({
     host: { class: 'contents' },
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -57,10 +33,7 @@ export const AriaValueText: Story = {
             </div>
 
             <div class="bg-muted h-3 overflow-hidden rounded-full" rdxMeterTrack>
-                <div
-                    class="bg-primary h-full w-[44%] rounded-full transition-all duration-500 ease-out"
-                    rdxMeterIndicator
-                ></div>
+                <div class="bg-primary rounded-full" rdxMeterIndicator></div>
             </div>
         </div>
     `

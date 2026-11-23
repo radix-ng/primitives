@@ -16,7 +16,13 @@
       "selector": "[rdxMeterLabel]",
       "exportAs": "rdxMeterLabel",
       "description": "Labels the meter.",
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "id",
+          "type": "string",
+          "description": "ID registered with the Meter Root."
+        }
+      ],
       "outputs": []
     },
     {
@@ -26,8 +32,14 @@
       "description": "Provides meter state and accessibility attributes.",
       "inputs": [
         {
+          "name": "aria-labelledby",
+          "type": "string | null",
+          "default": "undefined",
+          "description": "Explicit IDs of the elements that provide the accessible name."
+        },
+        {
           "name": "aria-valuetext",
-          "type": "string | undefined",
+          "type": "string | null",
           "default": "undefined",
           "description": "Human-readable text alternative for the current value."
         },
@@ -39,16 +51,17 @@
         {
           "name": "getAriaValueText",
           "type": "MeterValueFormatter",
-          "description": "Formats a human-readable text alternative for the current value."
+          "description": "Formats accessible text from the formatted value and the original supplied number."
         },
         {
           "name": "labelId",
-          "default": "`rdx-meter-label-${meterId++}`"
+          "type": "string",
+          "description": "Default ID for a Meter Label without its own ID."
         },
         {
           "name": "locale",
           "type": "Intl.LocalesArgument",
-          "description": "Locale used by `Intl.NumberFormat` when formatting the displayed value."
+          "description": "Locale used by `Intl.NumberFormat`. Defaults to en-US during SSR and the runtime locale after hydration."
         },
         {
           "name": "max",
@@ -69,7 +82,8 @@
         },
         {
           "name": "valueId",
-          "default": "`rdx-meter-value-${meterId++}`"
+          "default": "injectId('rdx-meter-value-')",
+          "description": "ID of the rendered Meter Value."
         }
       ],
       "outputs": []
@@ -87,7 +101,13 @@
       "selector": "[rdxMeterValue]",
       "exportAs": "rdxMeterValue",
       "description": "Displays the formatted meter value.",
-      "inputs": [],
+      "inputs": [
+        {
+          "name": "getValueText",
+          "type": "MeterValueFormatter",
+          "description": "Formats visible text from the formatted value and the original supplied number."
+        }
+      ],
       "outputs": []
     }
   ]

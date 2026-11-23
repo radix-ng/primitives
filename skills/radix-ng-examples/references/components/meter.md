@@ -8,7 +8,7 @@ A graphical display of a numeric value within a range.
 
 ## Features
 
-- ✅ Exposes native meter semantics with `role="meter"` and `aria-valuenow`.
+- ✅ Exposes meter semantics with `role="meter"` and `aria-valuenow`.
 - ✅ Supports custom `min` and `max` ranges.
 - ✅ Formats display text with `Intl.NumberFormat`.
 - ✅ Provides Label and Value parts for accessible naming and value text.

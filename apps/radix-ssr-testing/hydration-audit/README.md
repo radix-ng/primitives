@@ -78,3 +78,11 @@ the browser's locale, accepts value updates and reestablishes its Label after re
 ```bash
 node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=eager-progress
 ```
+
+The `eager-meter` case checks that Meter keeps its server nodes and IDs, applies the browser locale
+to both visible and accessible text, and resizes the fill on a subsequent value change. It also
+checks the authored name when the Label unmounts and the new Label association when it remounts.
+
+```sh
+node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=eager-meter
+```

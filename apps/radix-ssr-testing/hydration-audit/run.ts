@@ -28,29 +28,31 @@ async function snapshot(page: Page) {
         const radioView = radioForm?.parentElement;
         const radioGroup = radioView?.querySelector('[role="radiogroup"]');
         const labelPage = document.querySelector('app-label');
-        const progressRoot = document.querySelector('[data-progress-node="root"]');
+        const rangeKind = document.querySelector('audit-meter-view') ? 'meter' : 'progress';
+        const rangeAttribute = 'data-' + rangeKind + '-node';
+        const rangeRoot = document.querySelector('[' + rangeAttribute + '="root"]');
         return {
             ready: window.portalHydrationAudit?.ready ?? false,
             stable: window.portalHydrationAudit?.stable,
             errors: window.portalHydrationAudit?.errors ?? [],
             constructed: window.portalHydrationAudit?.constructed ?? [],
             duplicateIds: ids.filter((id, index) => ids.indexOf(id) !== index),
-            progress: progressRoot
+            range: rangeRoot
                 ? {
                       nodes: Object.fromEntries(
-                          [progressRoot, ...progressRoot.querySelectorAll('[data-progress-node]')].map((node) => {
-                              const name = node.getAttribute('data-progress-node')!;
+                          [rangeRoot, ...rangeRoot.querySelectorAll('[' + rangeAttribute + ']')].map((node) => {
+                              const name = node.getAttribute(rangeAttribute)!;
                               return [
                                   name,
-                                  { id: node.id, reused: window.auditServerNodes?.['progress:' + name] === node }
+                                  { id: node.id, reused: window.auditServerNodes?.[rangeKind + ':' + name] === node }
                               ];
                           })
                       ),
-                      name: progressRoot.getAttribute('aria-labelledby'),
-                      now: progressRoot.getAttribute('aria-valuenow'),
-                      announcement: progressRoot.getAttribute('aria-valuetext'),
-                      value: progressRoot.querySelector('[data-progress-node="value"]')?.textContent,
-                      width: progressRoot.querySelector<HTMLElement>('[data-progress-node="indicator"]')?.style.width,
+                      name: rangeRoot.getAttribute('aria-labelledby'),
+                      now: rangeRoot.getAttribute('aria-valuenow'),
+                      announcement: rangeRoot.getAttribute('aria-valuetext'),
+                      value: rangeRoot.querySelector('[' + rangeAttribute + '="value"]')?.textContent,
+                      width: rangeRoot.querySelector<HTMLElement>('[' + rangeAttribute + '="indicator"]')?.style.width,
                       locale: new Intl.NumberFormat().resolvedOptions().locale
                   }
                 : null,
@@ -255,31 +257,36 @@ interface Observation {
     frameworkLimits?: string[];
 }
 
-async function checkProgressHydration(
+async function checkRangeHydration(
     page: Page,
+    kind: 'progress' | 'meter',
     observation: Observation,
     record: (label: string) => Promise<Snapshot>,
     release: () => void
 ) {
     const checks = observation.checks;
-    const fixture = page.locator('audit-progress-view');
-    await fixture.evaluate((host) => {
-        for (const node of host.querySelectorAll('[data-progress-node]')) {
-            window.auditServerNodes!['progress:' + node.getAttribute('data-progress-node')] = node;
+    const fixture = page.locator('audit-' + kind + '-view');
+    const role = kind === 'meter' ? 'meter' : 'progressbar';
+    const name = kind === 'meter' ? 'Storage used' : 'Transfer progress';
+    const externalName = kind === 'meter' ? 'External storage' : 'External transfer progress';
+    await fixture.evaluate((host, kind) => {
+        const attribute = 'data-' + kind + '-node';
+        for (const node of host.querySelectorAll('[' + attribute + ']')) {
+            window.auditServerNodes![kind + ':' + node.getAttribute(attribute)] = node;
         }
-    });
-    const before = (await record('server Progress, label, and value')).progress;
-    checks.serverProgress =
+    }, kind);
+    const before = (await record('server range, label, and value')).range;
+    checks.serverRange =
         before?.now === '25' && before.announcement === '25%' && before.value === '25%' && before.width === '25%';
     checks.serverLabelAssociation = Boolean(
-        before?.nodes.label.id.startsWith('rdx-progress-label-') && before.name === before.nodes.label.id
+        before?.nodes.label?.id.startsWith('rdx-' + kind + '-label-') && before.name === before.nodes.label.id
     );
 
     release();
     await page.waitForFunction(() => window.portalHydrationAudit?.ready, undefined, { timeout: 5000 });
-    const hydrated = await record('hydrated Progress adopts the browser locale');
-    const boot = hydrated.progress;
-    checks.claimedProgressNodes = Boolean(
+    const hydrated = await record('hydrated range adopts the browser locale');
+    const boot = hydrated.range;
+    checks.claimedNodes = Boolean(
         before &&
         boot &&
         Object.keys(before.nodes).length === 5 &&
@@ -287,7 +294,7 @@ async function checkProgressHydration(
             ([name, node]) => boot.nodes[name]?.reused && boot.nodes[name].id === node.id
         )
     );
-    checks.hydratedProgress =
+    checks.hydratedRange =
         boot?.locale === 'de-DE' &&
         boot.now === '25' &&
         boot.announcement === '25\u00a0%' &&
@@ -297,11 +304,11 @@ async function checkProgressHydration(
         !!boot &&
         boot.name === before?.name &&
         hydrated.duplicateIds.length === 0 &&
-        (await fixture.getByRole('progressbar', { name: 'Transfer progress' }).count()) === 1;
+        (await fixture.getByRole(role, { name }).count()) === 1;
 
-    await fixture.getByRole('button', { name: 'Advance progress' }).click();
-    const advanced = (await record('external data update on the claimed Progress')).progress;
-    checks.updatesWithoutReplacingProgress =
+    await fixture.getByRole('button', { name: 'Advance ' + kind }).click();
+    const advanced = (await record('external data update on the claimed range')).range;
+    checks.updatesWithoutReplacingNodes =
         advanced?.now === '80' &&
         advanced.value === '80\u00a0%' &&
         advanced.width === '80%' &&
@@ -309,17 +316,17 @@ async function checkProgressHydration(
         advanced.nodes.indicator.reused &&
         advanced.nodes.label.reused;
 
-    const toggle = fixture.getByRole('button', { name: 'Toggle progress label' });
+    const toggle = fixture.getByRole('button', { name: 'Toggle ' + kind + ' label' });
     await toggle.click();
-    const withoutLabel = (await record('the authored association takes over when Label unmounts')).progress;
+    const withoutLabel = (await record('the authored association takes over when Label unmounts')).range;
     checks.externalLabelFallback =
-        withoutLabel?.name === 'progress-external-label' &&
-        (await fixture.getByRole('progressbar', { name: 'External transfer progress' }).count()) === 1;
+        withoutLabel?.name === kind + '-external-label' &&
+        (await fixture.getByRole(role, { name: externalName }).count()) === 1;
     await toggle.click();
-    const restored = (await record('a new Label registers the original ID')).progress;
+    const restored = (await record('a new Label registers its ID')).range;
     checks.restoredLabel =
         !!restored &&
-        restored.name === before?.name &&
+        (kind === 'meter' ? restored.name !== before?.name : restored.name === before?.name) &&
         restored.nodes.label?.id === restored.name &&
         !restored.nodes.label.reused &&
         restored.nodes.root.reused;
@@ -785,7 +792,8 @@ const observations: Observation[] = [];
 try {
     for (const [name, settings] of Object.entries(cases)) {
         if (selected && name !== selected) continue;
-        const page = await browser.newPage(settings.kind === 'progress' ? { locale: 'de-DE' } : undefined);
+        const range = settings.kind === 'progress' || settings.kind === 'meter';
+        const page = await browser.newPage(range ? { locale: 'de-DE' } : undefined);
         const observation: Observation = {
             name,
             browser: project,
@@ -872,8 +880,8 @@ try {
                 await checkLabelHydration(page, observation, record, release);
                 continue;
             }
-            if (settings.kind === 'progress') {
-                await checkProgressHydration(page, observation, record, release);
+            if (settings.kind === 'progress' || settings.kind === 'meter') {
+                await checkRangeHydration(page, settings.kind, observation, record, release);
                 continue;
             }
             const editedBefore = await page.locator('[data-probe="first"] input').isVisible();

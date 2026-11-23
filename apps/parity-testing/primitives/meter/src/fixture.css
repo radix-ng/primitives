@@ -1,0 +1,9 @@
+.meter-track {
+    width: 200px;
+    height: 12px;
+    position: relative;
+}
+
+.meter-fill {
+    position: absolute;
+}

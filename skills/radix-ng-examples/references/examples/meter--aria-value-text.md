@@ -34,10 +34,7 @@ import {
             </div>
 
             <div class="bg-muted h-3 overflow-hidden rounded-full" rdxMeterTrack>
-                <div
-                    class="bg-primary bg-destructive h-full w-[88%] rounded-full transition-all duration-500 ease-out"
-                    rdxMeterIndicator
-                ></div>
+                <div class="bg-destructive rounded-full" rdxMeterIndicator></div>
             </div>
         </div>
     `

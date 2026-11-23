@@ -150,7 +150,8 @@ export function selectChecks(input: {
         'accordion',
         'collapsible',
         'label',
-        'progress'
+        'progress',
+        'meter'
     ].some((family) => affected.has(family));
     // Public Agents reference fixtures cover these four families (tsconfig.agents.json).
     docs ||= ['field', 'select', 'menu', 'tabs'].some((family) => affected.has(family));

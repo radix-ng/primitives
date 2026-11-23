@@ -7,7 +7,7 @@
 An animated labelled meter with formatted value text.
 
 ```typescript
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { afterNextRender, ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import {
     RdxMeterIndicatorDirective,
     RdxMeterLabelDirective,
@@ -42,7 +42,7 @@ const storageSteps = [24, 38, 52, 67, 81] as const;
             </div>
 
             <div class="bg-muted h-3 overflow-hidden rounded-full" rdxMeterTrack>
-                <div [class]="indicatorClass()" rdxMeterIndicator></div>
+                <div class="bg-primary rounded-full transition-[width] duration-700 ease-out" rdxMeterIndicator></div>
             </div>
         </div>
     `
@@ -54,35 +54,15 @@ export class MeterStorageComponent {
     protected readonly format: Intl.NumberFormatOptions = { style: 'unit', unit: 'gigabyte', unitDisplay: 'short' };
     protected readonly getAriaValueText = (formattedValue: string) => `${formattedValue} of storage used`;
 
-    protected readonly indicatorClass = computed(() =>
-        ['h-full rounded-full bg-primary transition-all duration-700 ease-out', this.widthClass()]
-            .filter(Boolean)
-            .join(' ')
-    );
-
-    private readonly widthClass = computed(() => {
-        switch (this.value()) {
-            case 24:
-                return 'w-[24%]';
-            case 38:
-                return 'w-[38%]';
-            case 52:
-                return 'w-[52%]';
-            case 67:
-                return 'w-[67%]';
-            case 81:
-                return 'w-[81%]';
-        }
-    });
-
     constructor() {
-        let stepIndex = 0;
-        const interval = window.setInterval(() => {
-            stepIndex = (stepIndex + 1) % storageSteps.length;
-            this.value.set(storageSteps[stepIndex]);
-        }, 1200);
-
-        this.destroyRef.onDestroy(() => window.clearInterval(interval));
+        afterNextRender(() => {
+            let stepIndex = 0;
+            const interval = window.setInterval(() => {
+                stepIndex = (stepIndex + 1) % storageSteps.length;
+                this.value.set(storageSteps[stepIndex]);
+            }, 1200);
+            this.destroyRef.onDestroy(() => window.clearInterval(interval));
+        });
     }
 }
 ```

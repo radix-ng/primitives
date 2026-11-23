@@ -1,6 +1,8 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as MeterStories from './meter.stories';
+import { RdxMeterLabelDirective } from '../src/meter-label.directive';
 import { RdxMeterRootDirective } from '../src/meter-root.directive';
+import { RdxMeterValueDirective } from '../src/meter-value.directive';
 
 <Meta title="Primitives/Meter" of={MeterStories} />
 
@@ -12,7 +14,7 @@ import { RdxMeterRootDirective } from '../src/meter-root.directive';
 
 ## Features
 
-- ✅ Exposes native meter semantics with `role="meter"` and `aria-valuenow`.
+- ✅ Exposes meter semantics with `role="meter"` and `aria-valuenow`.
 - ✅ Supports custom `min` and `max` ranges.
 - ✅ Formats display text with `Intl.NumberFormat`.
 - ✅ Provides Label and Value parts for accessible naming and value text.
@@ -70,17 +72,28 @@ Use `aria-valuetext` when the numeric value needs a more descriptive text altern
 
 <ArgTypes of={RdxMeterRootDirective} />
 
+The default announced text is the localized percentage. Use `format` to display a localized
+number based on the clamped value. Pass `getAriaValueText` to derive an announcement from the formatted text and the
+original supplied number. An explicit `aria-valuetext` takes precedence.
+
 ### Label
 
 `RdxMeterLabelDirective`
 
-Gives the meter its accessible name through `aria-labelledby`.
+Gives the meter its accessible name through `aria-labelledby`. Apply to a `<span>`. The Root follows
+the mounted part and its current ID. An authored `aria-labelledby` takes precedence.
+
+<ArgTypes of={RdxMeterLabelDirective} />
 
 ### Value
 
 `RdxMeterValueDirective`
 
-Displays the formatted value text and provides `aria-describedby` text for the meter.
+Displays the formatted value text on a visual element such as a `<span>`. The Root announces the
+value, so this part is hidden from assistive technology. Use `getValueText` to customize the visible
+text using the formatted text and the original supplied number.
+
+<ArgTypes of={RdxMeterValueDirective} />
 
 ### Track
 
@@ -92,7 +105,9 @@ Contains the visual indicator and mirrors root value attributes.
 
 `RdxMeterIndicatorDirective`
 
-Displays the visual meter fill and exposes `data-percent` for styling.
+Displays the visual meter fill. On an HTML element it sets the percentage width, inherits the
+track's height and sets `inset-inline-start: 0` for positioned layouts. SVG hosts use authored
+geometry, which can read `data-percent`.
 
 ## Data attributes
 

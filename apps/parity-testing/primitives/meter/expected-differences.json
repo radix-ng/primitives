@@ -1,0 +1,18 @@
+[
+    {
+        "scenario": "svg",
+        "checkpoint": "authored circle starts at 25 percent geometry",
+        "field": "inlineWidth",
+        "angular": "",
+        "react": "25%",
+        "category": "authored-svg-geometry"
+    },
+    {
+        "scenario": "svg",
+        "checkpoint": "authored circle updates to 75 percent geometry",
+        "field": "inlineWidth",
+        "angular": "",
+        "react": "75%",
+        "category": "authored-svg-geometry"
+    }
+]

@@ -45,6 +45,7 @@ import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTa
 import { RdxToggle } from '@radix-ng/primitives/toggle';
 import { RdxToggleGroup } from '@radix-ng/primitives/toggle-group';
 import { describe, expect, it, vi } from 'vitest';
+import { MeterAuditView } from '../hydration-audit/meter-view';
 import { ProgressAuditView } from '../hydration-audit/progress-view';
 import AccordionPage from './app/components/accordion/page';
 import AvatarPage from './app/components/avatar/page';
@@ -882,6 +883,25 @@ describe('SSR rendering', () => {
         expect(root.getAttribute('aria-valuetext')).toBe('25%');
         expect(value.textContent).toBe('25%');
         expect(value.getAttribute('aria-hidden')).toBe('true');
+        expect(html).toMatch(/ngh=/);
+    });
+
+    it('serializes the Meter name, localized text and fill before hydration', async () => {
+        const html = await renderToString('audit-meter-view', MeterAuditView);
+        const document = new DOMParser().parseFromString(html, 'text/html');
+        const root = document.querySelector('[role="meter"]')!;
+        const label = document.querySelector('[data-meter-node="label"]')!;
+        const value = document.querySelector('[data-meter-node="value"]')!;
+        const indicator = document.querySelector<HTMLElement>('[data-meter-node="indicator"]')!;
+
+        expect(label.id).toMatch(/^rdx-meter-label-/);
+        expect(root.getAttribute('aria-labelledby')).toBe(label.id);
+        expect(root.hasAttribute('aria-describedby')).toBe(false);
+        expect(root.getAttribute('aria-valuenow')).toBe('25');
+        expect(root.getAttribute('aria-valuetext')).toBe('25%');
+        expect(value.textContent).toBe('25%');
+        expect(value.getAttribute('aria-hidden')).toBe('true');
+        expect(indicator.style.width).toBe('25%');
         expect(html).toMatch(/ngh=/);
     });
 

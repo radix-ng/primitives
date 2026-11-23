@@ -81,6 +81,7 @@ test('hydration fixtures and shared lifetimes select real SSR browser checks', (
         'packages/primitives/collapsible/src/collapsible-panel.directive.ts',
         'packages/primitives/label/src/label.directive.ts',
         'packages/primitives/progress/src/progress-root.directive.ts',
+        'packages/primitives/meter/src/meter-root.directive.ts',
         'packages/primitives/presence/src/use-presence.ts',
         'packages/primitives/floating-focus-manager/src/trigger-interaction.ts',
         'packages/primitives/popover/src/popover-root.ts',
