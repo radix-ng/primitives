@@ -1,0 +1,18 @@
+[
+    {
+        "scenario": "nested-server-errors",
+        "checkpoint": "both server errors are present",
+        "field": "inner",
+        "angular": "inner-error",
+        "react": "outer-error inner-error",
+        "category": "nested-field-description-scope"
+    },
+    {
+        "scenario": "nested-server-errors",
+        "checkpoint": "inner edit clears only its own server error",
+        "field": "inner",
+        "angular": null,
+        "react": "outer-error",
+        "category": "nested-field-description-scope"
+    }
+]

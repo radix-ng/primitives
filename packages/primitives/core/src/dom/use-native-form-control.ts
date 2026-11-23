@@ -94,8 +94,8 @@ export function serializeNativeFormValue<Value = unknown>(
 }
 
 /** @internal An explicit form attribute takes precedence even when the form does not exist. */
-export function hasNoNativeFormOwner(input: HTMLInputElement): boolean {
-    return input.form === null && !input.hasAttribute('form');
+export function hasNoNativeFormOwner(control: Pick<HTMLInputElement, 'form' | 'hasAttribute'>): boolean {
+    return control.form === null && !control.hasAttribute('form');
 }
 
 /** @internal Reconcile state after the owning form has finished an accepted native reset. */

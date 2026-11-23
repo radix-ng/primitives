@@ -56,10 +56,8 @@ export class RdxSignalField {
                     .map((error) => ({ kind: error.kind, message: error.message }))
         };
 
-        const previous = this.fieldContext.setStateProvider(state);
-        // Identity-checked teardown: only roll back if our provider is still active, so a newer adapter
-        // mounted during a view swap (create-before-destroy) is not clobbered by this destroy.
-        inject(DestroyRef).onDestroy(() => this.fieldContext.clearStateProvider(state, previous));
+        const unregister = this.fieldContext.registerStateProvider(state);
+        inject(DestroyRef).onDestroy(unregister);
     }
 
     /** Current Signal Forms field state, read from the co-located `[formField]` directive. */

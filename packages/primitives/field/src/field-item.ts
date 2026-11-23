@@ -44,10 +44,10 @@ const fieldItemContext = (): RdxFieldRootContext => {
         setFocused: (value, owner) => root.setFocused(value, owner),
         setFilled: (value: boolean) => root.filledValue.set(value),
         registerControlState: (state) => root.registerControlState(state),
+        registerNativeControl: (control) => root.registerNativeControl(control),
         setDirty: (value: boolean) => root.dirtyValue.set(value),
         setTouched: (value: boolean) => root.touchedValue.set(value),
-        setStateProvider: (provider) => root.setStateProvider(provider),
-        clearStateProvider: (provider, previous) => root.clearStateProvider(provider, previous),
+        registerStateProvider: (provider) => root.registerStateProvider(provider),
         hasStateProvider: root.hasStateProvider
     };
 };

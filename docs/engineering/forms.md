@@ -6,6 +6,11 @@
 - `Form` (`form[rdxFormRoot]`, entry `@radix-ng/primitives/form`) is the top layer: it maps server `errors` onto fields by `name` (clearing on edit, `onClearErrors`), intercepts submit (`onFormSubmit` with `FormData`-serialized values, focus first invalid), and resets field state on native reset. It owns no values/validation — `field` → `form` is the only dependency direction (Form never imports Field; keep it acyclic). A `RdxFormState` provider seam mirrors Field's `RdxFieldState` for a future Signal Forms `[rdxSignalForm]` adapter.
 - For larger form demos, prefer composing `Form` → `Fieldset` → `Field` → `Input` so Storybook and `/primitives/components/*.md` examples show real accessible form structure.
 
+Plain native `rdxFieldControl` hosts register browser constraints with their Field. Form refreshes
+those constraints before submit. A Field adapter that supplies invalidity continues to own validation
+for that Field Control. The latest live adapter supplies metadata. Its cleanup restores the latest
+remaining adapter, if any. `disabled` combines Fieldset, Field and adapter state.
+
 Radio Group supplies browser `valueMissing` errors from authored `rdxRadioItemInput` elements
 to its enclosing Field. In Form, Field refreshes the native constraint before the submit guard.
 See the [Radio matrix](../../packages/primitives/radio/PARITY.md#native-required-constraints).

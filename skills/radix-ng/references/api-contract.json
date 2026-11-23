@@ -3775,9 +3775,21 @@
           "description": "Connects a form control to the field label, description, error, and state.",
           "inputs": [
             {
+              "name": "disabled",
+              "type": "boolean",
+              "default": "false",
+              "description": "Disables the control independently of the enclosing Field."
+            },
+            {
               "name": "id",
               "default": "injectId('rdx-field-control-')",
               "description": "Control id. Labels and descriptions use this value for accessible relationships."
+            },
+            {
+              "name": "required",
+              "type": "boolean",
+              "default": "false",
+              "description": "Marks the control required independently of the enclosing Field."
             }
           ],
           "outputs": []
@@ -3852,9 +3864,9 @@
           "inputs": [
             {
               "name": "dirty",
-              "type": "boolean",
-              "default": "false",
-              "description": "Whether the field value has changed from its initial value."
+              "type": "boolean | undefined",
+              "default": "undefined",
+              "description": "Overrides whether the field value has changed from its initial value."
             },
             {
               "name": "disabled",
@@ -3891,9 +3903,9 @@
             },
             {
               "name": "touched",
-              "type": "boolean",
-              "default": "false",
-              "description": "Whether the field has been blurred after receiving focus."
+              "type": "boolean | undefined",
+              "default": "undefined",
+              "description": "Overrides whether the field has been blurred after receiving focus."
             },
             {
               "name": "validationMode",

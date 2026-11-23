@@ -13,8 +13,8 @@ Groups a control with accessible label, description, error message, and field st
 - ✅ Exposes state via `data-invalid`, `data-disabled`, `data-required`, `data-dirty`, `data-touched`, `data-filled`, and `data-focused`.
 - ✅ Works with native controls and custom controls.
 - ✅ Bridges Reactive Forms and `ngModel` without repeated state bindings.
-- ✅ Matches individual validation errors by Angular error key.
-- ✅ Leaves validation and form submission to Angular Forms.
+- ✅ Matches errors by native constraint or Angular validation key.
+- ✅ Inherits disabled state from the enclosing Fieldset.
 
 ## Import
 
@@ -39,6 +39,11 @@ import {
   <p rdxFieldError>Error</p>
 </div>
 ```
+
+For a plain native `rdxFieldControl`, use the browser's constraints such as `required`, `type="email"`,
+or `pattern`. An enclosing `rdxFormRoot` checks those constraints on submit and focuses the first
+invalid control. Set `match="valueMissing"` or `match="typeMismatch"` to describe a specific native
+constraint. An Angular Forms adapter supplies validation when it owns the control's invalid state.
 
 For a checkbox or radio group where each control needs its own label and description, wrap each one in a
 `rdxFieldItem`. The item scopes the label / description / control association to its control while

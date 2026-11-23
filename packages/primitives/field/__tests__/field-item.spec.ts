@@ -14,7 +14,7 @@ import { RdxFieldRoot } from '../src/field-root';
         <div [invalid]="invalid()" [disabled]="rootDisabled()" validationMode="always" rdxFieldRoot>
             <div [disabled]="itemADisabled()" rdxFieldItem>
                 <label rdxFieldLabel>Option A</label>
-                <input id="ctrl-a" rdxFieldControl />
+                <input id="ctrl-a" [required]="itemARequired()" rdxFieldControl />
                 <p rdxFieldDescription>A description</p>
             </div>
             <div rdxFieldItem>
@@ -28,6 +28,7 @@ class FieldItemHost {
     readonly invalid = signal(false);
     readonly rootDisabled = signal(false);
     readonly itemADisabled = signal(false);
+    readonly itemARequired = signal(false);
 }
 
 describe('RdxFieldItem', () => {
@@ -85,5 +86,19 @@ describe('RdxFieldItem', () => {
         fixture.detectChanges();
         expect(items[0].getAttribute('data-disabled')).toBe('');
         expect(items[1].getAttribute('data-disabled')).toBe('');
+    });
+
+    it('checks an earlier required item and drops its constraint when the item is disabled', async () => {
+        host.itemARequired.set(true);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(items[0]).toHaveAttribute('data-invalid');
+        expect(items[1]).toHaveAttribute('data-invalid');
+
+        host.itemADisabled.set(true);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(items[0]).toHaveAttribute('data-valid');
+        expect(items[1]).toHaveAttribute('data-valid');
     });
 });

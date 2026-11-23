@@ -388,19 +388,14 @@ Ordered by value/risk:
    Angular 22.
 4. ✅ **Decouple `Field` from the native `.value` heuristic** — **done.**
    `field-root.ts` now exposes an `RdxFieldState` interface (optional
-   `() => boolean` accessors for `invalid/disabled/required/dirty/touched/
-filled/focused`) and the context gains `setStateProvider(provider | null)`
-   plus a `hasStateProvider` signal. Each `*State` computed resolves
-   **per-state**: a registered provider's accessor wins, otherwise it falls
-   back to the existing root input / DOM-derived value. This lets a future
-   `[rdxSignalField]` adapter (ADR 0004) feed authoritative form state in —
-   including **partial ownership** (own `invalid/touched/dirty` from Signal
-   Forms, leave `filled/focused` to the DOM heuristic) — without changing
-   `RdxFieldRoot`'s input semantics or coupling Field to `@angular/forms`.
-   `setStateProvider` returns the previous provider for clean teardown.
-   The DOM heuristic in `rdxFieldControl`/`rdxInput` is untouched and stays the
-   default; provider precedence simply makes its writes inert for owned states.
-   Covered by 5 new specs in `field.directive.spec.ts`. Version-independent.
+   accessors for validation and interaction state). The context exposes
+   `registerStateProvider(provider)` and a `hasStateProvider` signal. The latest
+   live provider owns the accessors it declares. Omitted accessors fall back
+   to Field inputs and observed state. Disability combines Fieldset, Field
+   and adapter state. Each adapter owns its returned cleanup so a replacement
+   can restore a provider that is still live. `rdxSignalField` can supply
+   `invalid`, `touched` and `dirty` while Field continues observing `filled`
+   and `focused`. The Field unit suite covers these ownership boundaries.
 5. ✅ **Runtime integration gate — DONE.** The original 21.2.9 experimental
    spike remains archived at `docs/spikes/signal-forms-spike.spec.ts`. The
    shipped primitive suites now cover custom-control discovery, value

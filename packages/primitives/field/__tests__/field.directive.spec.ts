@@ -16,7 +16,7 @@ import { RdxFieldRoot } from '../src/field-root';
             [required]="required"
             [dirty]="dirty"
             [touched]="touched"
-            validationMode="always"
+            [validationMode]="validationMode"
             rdxFieldRoot
         >
             <label rdxFieldLabel>Email</label>
@@ -31,8 +31,9 @@ class TestHostComponent {
     invalid = false;
     disabled = false;
     required = false;
-    dirty = false;
-    touched = false;
+    dirty?: boolean;
+    touched?: boolean;
+    validationMode: 'always' | 'onChange' | 'onBlur' = 'always';
     match: boolean | string | undefined;
 }
 
@@ -123,6 +124,34 @@ describe('Field', () => {
         expect(root.hasAttribute('data-focused')).toBe(false);
     });
 
+    it.each(['onChange', 'onBlur'] as const)('honors explicitly false interaction overrides in %s mode', (mode) => {
+        const host = fixture.componentInstance;
+        host.invalid = true;
+        host.dirty = false;
+        host.touched = false;
+        host.validationMode = mode;
+        fixture.changeDetectorRef.markForCheck();
+        fixture.detectChanges();
+
+        input.value = 'edited';
+        input.dispatchEvent(new Event('input'));
+        input.dispatchEvent(new FocusEvent('blur'));
+        fixture.detectChanges();
+
+        expect(root).not.toHaveAttribute('data-dirty');
+        expect(root).not.toHaveAttribute('data-touched');
+        expect(root).not.toHaveAttribute('data-invalid');
+
+        host.dirty = undefined;
+        host.touched = undefined;
+        fixture.changeDetectorRef.markForCheck();
+        fixture.detectChanges();
+
+        expect(root).toHaveAttribute('data-dirty');
+        expect(root).toHaveAttribute('data-touched');
+        expect(root).toHaveAttribute('data-invalid');
+    });
+
     describe('external state provider', () => {
         let fieldRoot: RdxFieldRoot;
 
@@ -132,7 +161,7 @@ describe('Field', () => {
 
         it('lets a provider override the root inputs', () => {
             const invalid = signal(true);
-            fieldRoot.setStateProvider({ invalid: () => invalid() });
+            fieldRoot.registerStateProvider({ invalid: () => invalid() });
             fixture.detectChanges();
 
             // provider wins even though the `invalid` input is still false
@@ -145,9 +174,28 @@ describe('Field', () => {
             expect(root.getAttribute('data-valid')).toBe('');
         });
 
+        it('keeps explicit disability when the adapter is enabled', () => {
+            const providerDisabled = signal(false);
+            fieldRoot.registerStateProvider({ disabled: providerDisabled });
+            fixture.componentInstance.disabled = true;
+            fixture.changeDetectorRef.markForCheck();
+            fixture.detectChanges();
+            expect(input).toBeDisabled();
+
+            fixture.componentInstance.disabled = false;
+            providerDisabled.set(true);
+            fixture.changeDetectorRef.markForCheck();
+            fixture.detectChanges();
+            expect(input).toBeDisabled();
+
+            providerDisabled.set(false);
+            fixture.detectChanges();
+            expect(input).toBeEnabled();
+        });
+
         it('owns provided states while leaving the rest to the DOM heuristic', () => {
             const touched = signal(true);
-            fieldRoot.setStateProvider({ touched: () => touched() });
+            fieldRoot.registerStateProvider({ touched: () => touched() });
             fixture.detectChanges();
 
             // `touched` is provider-owned…
@@ -167,46 +215,46 @@ describe('Field', () => {
             expect(root.getAttribute('data-touched')).toBe('');
 
             // provider asserts not-touched and must win over the DOM value
-            fieldRoot.setStateProvider({ touched: () => false });
+            fieldRoot.registerStateProvider({ touched: () => false });
             fixture.detectChanges();
             expect(root.hasAttribute('data-touched')).toBe(false);
         });
 
         it('restores self-computation when the provider is cleared', () => {
-            fieldRoot.setStateProvider({ invalid: () => true });
+            const unregister = fieldRoot.registerStateProvider({ invalid: () => true });
             fixture.detectChanges();
             expect(root.getAttribute('data-invalid')).toBe('');
             expect(fieldRoot.hasStateProvider()).toBe(true);
 
-            fieldRoot.setStateProvider(null);
+            unregister();
             fixture.detectChanges();
             expect(fieldRoot.hasStateProvider()).toBe(false);
             // back to the `invalid` input (false)
             expect(root.hasAttribute('data-invalid')).toBe(false);
         });
 
-        it('returns the previous provider when replaced', () => {
-            const first = { invalid: () => true };
-            expect(fieldRoot.setStateProvider(first)).toBeNull();
-            expect(fieldRoot.setStateProvider(null)).toBe(first);
+        it('restores the latest remaining live provider', () => {
+            const unregisterFirst = fieldRoot.registerStateProvider({ name: () => 'first' });
+            const unregisterSecond = fieldRoot.registerStateProvider({ name: () => 'second' });
+            expect(fieldRoot.effectiveName()).toBe('second');
+            unregisterSecond();
+            expect(fieldRoot.effectiveName()).toBe('first');
+            unregisterFirst();
+            expect(fieldRoot.hasStateProvider()).toBe(false);
         });
 
-        it('clearStateProvider rolls back only when its provider is still active (identity-checked)', () => {
-            const a = { invalid: () => true };
-            const b = { invalid: () => false };
-            expect(fieldRoot.setStateProvider(a)).toBeNull(); // slot = a
-            expect(fieldRoot.setStateProvider(b)).toBe(a); // slot = b (a is now stale)
-
-            // a's teardown must NOT clobber b (create-before-destroy on a view swap)
-            fieldRoot.clearStateProvider(a, null);
+        it('skips destroyed providers when a replacement is removed', () => {
+            const unregisterFirst = fieldRoot.registerStateProvider({ invalid: () => true });
+            const unregisterSecond = fieldRoot.registerStateProvider({ invalid: () => false });
+            unregisterFirst();
             fixture.detectChanges();
             expect(fieldRoot.hasStateProvider()).toBe(true);
-            expect(root.hasAttribute('data-invalid')).toBe(false); // still b → invalid=false
+            expect(root.hasAttribute('data-invalid')).toBe(false);
 
-            // b's teardown rolls the slot back to a
-            fieldRoot.clearStateProvider(b, a);
+            unregisterSecond();
             fixture.detectChanges();
-            expect(root.getAttribute('data-invalid')).toBe(''); // back to a → invalid=true
+            expect(fieldRoot.hasStateProvider()).toBe(false);
+            expect(root.hasAttribute('data-invalid')).toBe(false);
         });
     });
 });

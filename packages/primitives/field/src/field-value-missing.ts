@@ -3,18 +3,27 @@ import { hasNoNativeFormOwner, type RdxValidationError } from '@radix-ng/primiti
 import { injectFormRootContext } from '@radix-ng/primitives/form';
 import type { RdxFieldControlState } from './field-root';
 
-/** @internal A native input with a visible control for invalid focus. */
-export interface RdxFieldNativeInput {
-    element: HTMLInputElement;
+/** @internal A native control with a visible target for invalid focus. */
+export interface RdxFieldNativeControl {
+    element: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | HTMLButtonElement;
     focusTarget(): HTMLElement | null;
     participates(): boolean;
 }
+
+/** @internal A native input registered by a composite control. */
+export interface RdxFieldNativeInput extends RdxFieldNativeControl {
+    element: HTMLInputElement;
+}
+
+type FieldNativeValidity = Required<
+    Pick<RdxFieldControlState, 'nativeErrors' | 'refreshNativeValidity' | 'invalidFocusTarget'>
+>;
 
 /** @internal Read native required constraints and report the visible invalid control to Field. */
 export function useFieldValueMissing(
     inputs: () => Iterable<RdxFieldNativeInput>,
     fallbackFocusTarget: () => HTMLElement | null
-): Pick<RdxFieldControlState, 'nativeErrors' | 'refreshNativeValidity' | 'invalidFocusTarget'> {
+): FieldNativeValidity {
     return useFieldNativeValidity(inputs, fallbackFocusTarget, ['valueMissing']);
 }
 
@@ -22,19 +31,19 @@ type NativeErrorKind = Exclude<keyof ValidityState, 'valid'>;
 
 /** @internal Read the native validity flags relevant to a field control. */
 export function useFieldNativeValidity(
-    inputs: () => Iterable<RdxFieldNativeInput>,
+    inputs: () => Iterable<RdxFieldNativeControl>,
     fallbackFocusTarget: () => HTMLElement | null,
     kinds: readonly NativeErrorKind[]
-): Pick<RdxFieldControlState, 'nativeErrors' | 'refreshNativeValidity' | 'invalidFocusTarget'> {
+): FieldNativeValidity {
     const form = injectFormRootContext(true)?.element;
     const failure = signal<{
-        element: HTMLInputElement;
+        element: RdxFieldNativeControl['element'];
         target: HTMLElement | null;
         message: string;
         kinds: readonly NativeErrorKind[];
     } | null>(null);
     const refreshNativeValidity = () => {
-        let invalid: RdxFieldNativeInput | undefined;
+        let invalid: RdxFieldNativeControl | undefined;
         let failedKinds: readonly NativeErrorKind[] = [];
         for (const input of inputs()) {
             const element = input.element;

@@ -45,10 +45,10 @@ ADR 0004 kept `Field` form-agnostic and **deferred** a Signal Forms adapter whil
 - **Signal Forms is stable.** Stabilized in Angular **22.0.0** (June 2026).
 - **The workspace baseline moved to Angular 22** (`@angular/core` is `22.0.2` in `package.json`).
 - The provider seams ADR 0004 specified are **already implemented** (readiness prep #1–#6):
-  - `RdxFieldRoot` exposes `RdxFieldState` + `setStateProvider` / `hasStateProvider`; every `*State`
-    computed resolves per-state (a registered accessor wins, else input / DOM heuristic). `RdxFieldState`
-    has the optional `errors: () => RdxValidationError[]` content channel, surfaced through
-    `RdxFieldError.messages()`.
+  - `RdxFieldRoot` exposes `RdxFieldState` with `registerStateProvider` and `hasStateProvider`. A
+    provider owns the accessors it supplies. Field combines disabled state from its inputs, Fieldset
+    and the adapter. `RdxFieldState` has the optional `errors: () => RdxValidationError[]` content
+    channel, surfaced through `RdxFieldError.messages()`.
   - `RdxFormRoot` exposes the form-level counterpart `RdxFormState` + `setStateProvider`
     (`invalid` / `dirty` / `touched` / `submitting` / `errorsFor`).
   - `core/src/signal-forms/form-control.ts` declares the framework-free mirror contracts
@@ -148,13 +148,11 @@ existing seam. They never own the model, never run validation, never wrap `[form
 root, so there is **no duplicate binding**):
 
 - reads the bound field's state from the co-located `[formField]` directive (`inject(FormField).state()`),
-  and registers an `RdxFieldState` on the **ancestor** field context via `setStateProvider({ invalid,
+  and registers an `RdxFieldState` on the **ancestor** field context via `registerStateProvider({ invalid,
 disabled, required, dirty, touched, errors })` (e.g. `invalid: () => state().invalid()`,
   `errors: () => state().errors().map(…)`);
 - leaves `filled` / `focused` to Field's DOM heuristic (partial ownership — the seam already supports it);
-- on destroy rolls the slot back to the previous provider via `clearStateProvider(provider, previous)` —
-  an **identity-checked** teardown that no-ops if a newer adapter already owns the slot (create-before-
-  destroy during a view swap), so the old adapter's destroy can't clobber the new one.
+- runs its own registration cleanup on destroy. The latest remaining live provider becomes active.
 
 `[rdxSignalForm]` (same host as `form[rdxFormRoot]`):
 

@@ -48,10 +48,8 @@ export class RdxNgControlField {
                     errors: () => this.ngControlState.errors()
                 };
 
-                // Registration reads the previous provider internally. Keep that bookkeeping outside
-                // this effect's dependency graph or replacing the provider would retrigger itself.
-                const previous = untracked(() => this.fieldContext.setStateProvider(state));
-                onCleanup(() => untracked(() => this.fieldContext.clearStateProvider(state, previous)));
+                const unregister = untracked(() => this.fieldContext.registerStateProvider(state));
+                onCleanup(unregister);
             },
             { debugName: 'RdxNgControlField.connect' }
         );

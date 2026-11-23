@@ -1,6 +1,17 @@
-import { afterNextRender, computed, Directive, effect, ElementRef, inject, input } from '@angular/core';
-import { injectId } from '@radix-ng/primitives/core';
+import {
+    afterNextRender,
+    booleanAttribute,
+    computed,
+    DestroyRef,
+    Directive,
+    effect,
+    ElementRef,
+    inject,
+    input
+} from '@angular/core';
+import { BooleanInput, injectId } from '@radix-ng/primitives/core';
 import { injectFieldRootContext } from './field-root';
+import type { RdxFieldNativeControl } from './field-value-missing';
 
 const attr = (value: boolean) => (value ? '' : undefined);
 
@@ -21,14 +32,14 @@ const attr = (value: boolean) => (value ? '' : undefined);
         '[attr.aria-invalid]': 'rootContext.validState() === false ? "true" : undefined',
         // On a native control the native `required`/`disabled` attributes already convey the state, so
         // `aria-required`/`aria-disabled` are only emitted on non-native (custom) controls.
-        '[attr.aria-required]': '!isNativeFormControl() && rootContext.requiredState() ? "true" : undefined',
-        '[attr.aria-disabled]': '!isNativeFormControl() && rootContext.disabledState() ? "true" : undefined',
-        '[attr.disabled]': 'isNativeFormControl() && rootContext.disabledState() ? "" : undefined',
-        '[attr.required]': 'isNativeFormControl() && rootContext.requiredState() ? "" : undefined',
+        '[attr.aria-required]': '!isNativeFormControl && requiredState() ? "true" : undefined',
+        '[attr.aria-disabled]': '!isNativeFormControl && disabledState() ? "true" : undefined',
+        '[attr.disabled]': 'isNativeFormControl && disabledState() ? "" : undefined',
+        '[attr.required]': 'isNativeFormControl && requiredState() ? "" : undefined',
         '[attr.data-invalid]': 'dataAttr(rootContext.validState() === false)',
         '[attr.data-valid]': 'dataAttr(rootContext.validState() === true)',
-        '[attr.data-disabled]': 'dataAttr(rootContext.disabledState())',
-        '[attr.data-required]': 'dataAttr(rootContext.requiredState())',
+        '[attr.data-disabled]': 'dataAttr(disabledState())',
+        '[attr.data-required]': 'dataAttr(requiredState())',
         '[attr.data-dirty]': 'dataAttr(rootContext.dirtyState())',
         '[attr.data-touched]': 'dataAttr(rootContext.touchedState())',
         '[attr.data-filled]': 'dataAttr(rootContext.filledState())',
@@ -41,7 +52,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
 })
 export class RdxFieldControl {
     protected readonly rootContext = injectFieldRootContext();
-    private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    private readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
     private initialValue = '';
 
     /**
@@ -50,6 +61,16 @@ export class RdxFieldControl {
      * @group Props
      */
     readonly id = input(injectId('rdx-field-control-'));
+
+    /** Disables the control independently of the enclosing Field. */
+    readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /** Marks the control required independently of the enclosing Field. */
+    readonly required = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    protected readonly disabledState = computed(() => this.disabled() || this.rootContext.disabledState());
+    protected readonly requiredState = computed(() => this.required() || this.rootContext.requiredState());
+    protected readonly isNativeFormControl = ['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON'].includes(this.element.tagName);
 
     protected readonly describedBy = computed(() => {
         const ids = [...this.rootContext.descriptionIds(), ...this.rootContext.errorIds()];
@@ -61,6 +82,15 @@ export class RdxFieldControl {
         effect(() => {
             this.rootContext.setControlId(this.id());
         });
+
+        if (this.isNativeFormControl) {
+            const unregister = this.rootContext.registerNativeControl({
+                element: this.element as RdxFieldNativeControl['element'],
+                focusTarget: () => this.element,
+                participates: () => !this.disabledState()
+            });
+            inject(DestroyRef).onDestroy(unregister);
+        }
 
         afterNextRender(() => {
             this.initialValue = this.currentValue();
@@ -84,14 +114,10 @@ export class RdxFieldControl {
         this.rootContext.setDirty(value !== this.initialValue);
     }
 
-    protected isNativeFormControl(): boolean {
-        return ['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON'].includes(this.elementRef.nativeElement.tagName);
-    }
-
     protected readonly dataAttr = attr;
 
     private currentValue(): string {
-        const element = this.elementRef.nativeElement as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+        const element = this.element as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
         return element.value ?? '';
     }
 }

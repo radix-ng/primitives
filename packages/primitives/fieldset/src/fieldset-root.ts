@@ -43,7 +43,11 @@ export class RdxFieldsetRoot {
      */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    readonly disabledState = computed(() => this.disabled());
+    private readonly parentFieldset = inject(RdxFieldsetRoot, { skipSelf: true, optional: true });
+
+    readonly disabledState: Signal<boolean> = computed(
+        () => this.disabled() || (this.parentFieldset?.disabledState() ?? false)
+    );
 
     /** @ignore Registered legend IDs for composite controls inside the fieldset. */
     readonly legendRegistry = createLabelRegistry();

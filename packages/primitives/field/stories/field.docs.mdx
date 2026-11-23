@@ -15,8 +15,8 @@ import * as FieldStories from './field.stories';
 
 #### Groups a control with accessible label, description, error message, and field state.
 
-Field is form-agnostic. It does not replace Angular Forms; pass custom state through root inputs or use
-the small `rdxNgControlField` / `rdxSignalField` adapters.
+Field groups a control's accessible metadata and decides when to display validity. Angular Forms
+integrations use the `rdxNgControlField` and `rdxSignalField` adapters.
 
 <Canvas sourceState="hidden" of={FieldStories.Default} />
 
@@ -27,8 +27,8 @@ the small `rdxNgControlField` / `rdxSignalField` adapters.
 - ✅ Exposes state via `data-invalid`, `data-disabled`, `data-required`, `data-dirty`, `data-touched`, `data-filled`, and `data-focused`.
 - ✅ Works with native controls and custom controls.
 - ✅ Bridges Reactive Forms and `ngModel` without repeated state bindings.
-- ✅ Matches individual validation errors by Angular error key.
-- ✅ Leaves validation and form submission to Angular Forms.
+- ✅ Matches errors by native constraint or Angular validation key.
+- ✅ Inherits disabled state from the enclosing Fieldset.
 
 ## Import
 
@@ -53,6 +53,11 @@ import {
   <p rdxFieldError>Error</p>
 </div>
 ```
+
+For a plain native `rdxFieldControl`, use the browser's constraints such as `required`, `type="email"`,
+or `pattern`. An enclosing `rdxFormRoot` checks those constraints on submit and focuses the first
+invalid control. Set `match="valueMissing"` or `match="typeMismatch"` to describe a specific native
+constraint. An Angular Forms adapter supplies validation when it owns the control's invalid state.
 
 For a checkbox or radio group where each control needs its own label and description, wrap each one in a
 `rdxFieldItem`. The item scopes the label / description / control association to its control while
@@ -147,6 +152,10 @@ system fallbacks; Inter and JetBrains Mono can be self-hosted for the Storybook 
 <Source language="typescript" code={sharedExampleSource0} />
 
 ## API Reference
+
+An explicit `dirty` or `touched` on Root controls display timing when the Field adapter leaves that
+state unowned. Fieldset, Root, and the adapter can each disable a field. Control can also
+declare its own `required` and `disabled` inputs.
 
 <ArgTypes of={RdxFieldRoot} />
 <ArgTypes of={RdxFieldItem} />

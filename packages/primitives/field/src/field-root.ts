@@ -21,13 +21,29 @@ import {
     RdxValidationError,
     RdxValidationMode
 } from '@radix-ng/primitives/core';
+import { injectFieldsetRootContext } from '@radix-ng/primitives/fieldset';
 import { injectFormRootContext, RdxFormFieldRegistration } from '@radix-ng/primitives/form';
+import { type RdxFieldNativeControl, useFieldNativeValidity } from './field-value-missing';
 
 const attr = (value: boolean) => (value ? '' : undefined);
+const optionalBoolean = (value: BooleanInput) => (value === undefined ? undefined : booleanAttribute(value));
+const fieldHosts = new WeakSet<EventTarget>();
+const nativeErrorKinds = [
+    'badInput',
+    'customError',
+    'patternMismatch',
+    'rangeOverflow',
+    'rangeUnderflow',
+    'stepMismatch',
+    'tooLong',
+    'tooShort',
+    'typeMismatch',
+    'valueMissing'
+] as const;
 
 /**
  * External owner of field state. An adapter (`rdxSignalField` or `rdxNgControlField`) registers one via
- * `setStateProvider` so Field reads authoritative form state instead of
+ * `registerStateProvider` so Field reads authoritative form state instead of
  * self-computing it from the DOM. Each member is an optional signal-like
  * accessor; only the states the adapter owns need to be provided — the rest
  * fall back to the root's inputs / DOM heuristic. Keeping these as plain
@@ -113,15 +129,12 @@ export interface RdxFieldRootContext extends RdxLabelRegistry {
     setFilled: (value: boolean) => void;
     /** @internal Register a composite control's presentation state. */
     registerControlState: (state: RdxFieldControlState) => () => void;
+    /** @internal Register a native Field Control's validity and focus target. */
+    registerNativeControl: (control: RdxFieldNativeControl) => () => void;
     setDirty: (value: boolean) => void;
     setTouched: (value: boolean) => void;
-    setStateProvider: (provider: RdxFieldState | null) => RdxFieldState | null;
-    /**
-     * Identity-checked teardown: roll the slot back to `previous` only if `provider` is still the
-     * active one. A newer adapter that registered after `provider` (create-before-destroy during a
-     * view swap) owns the slot and must not be clobbered by the old adapter's destroy.
-     */
-    clearStateProvider: (provider: RdxFieldState | null, previous: RdxFieldState | null) => void;
+    /** Registers a metadata provider until the returned cleanup runs. The latest live registration wins. */
+    registerStateProvider: (provider: RdxFieldState) => () => void;
     hasStateProvider: Signal<boolean>;
 }
 
@@ -157,17 +170,10 @@ const fieldRootContext = (): RdxFieldRootContext => {
         setFocused: (value, owner) => root.setFocused(value, owner),
         setFilled: (value: boolean) => root.filledValue.set(value),
         registerControlState: (state) => root.registerControlState(state),
+        registerNativeControl: (control) => root.registerNativeControl(control),
         setDirty: (value: boolean) => root.dirtyValue.set(value),
         setTouched: (value: boolean) => root.touchedValue.set(value),
-        /**
-         * Register (or clear with `null`) an external owner of field state.
-         * While a provider is registered, any state it exposes takes precedence
-         * over the root inputs and the DOM-derived values. Returns the previous
-         * provider so adapters can restore it on teardown.
-         */
-        setStateProvider: (provider: RdxFieldState | null) => root.setStateProvider(provider),
-        clearStateProvider: (provider: RdxFieldState | null, previous: RdxFieldState | null) =>
-            root.clearStateProvider(provider, previous),
+        registerStateProvider: (provider) => root.registerStateProvider(provider),
         hasStateProvider: root.hasStateProvider
     };
 };
@@ -232,20 +238,18 @@ export class RdxFieldRoot {
     readonly required = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
     /**
-     * Whether the field value has changed from its initial value.
+     * Overrides whether the field value has changed from its initial value.
      *
      * @group Props
-     * @defaultValue false
      */
-    readonly dirty = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+    readonly dirty = input<boolean | undefined, BooleanInput>(undefined, { transform: optionalBoolean });
 
     /**
-     * Whether the field has been blurred after receiving focus.
+     * Overrides whether the field has been blurred after receiving focus.
      *
      * @group Props
-     * @defaultValue false
      */
-    readonly touched = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+    readonly touched = input<boolean | undefined, BooleanInput>(undefined, { transform: optionalBoolean });
 
     /**
      * Overrides whether the control has a non-empty value.
@@ -279,6 +283,7 @@ export class RdxFieldRoot {
 
     /** The enclosing Form, if any. All Form-related behavior is a no-op when this is `null`. */
     private readonly formContext = injectFormRootContext(true);
+    private readonly fieldsetContext = injectFieldsetRootContext(true);
 
     readonly controlId = signal(injectId('rdx-field-control-'));
     readonly descriptionIds = signal<string[]>([]);
@@ -287,21 +292,31 @@ export class RdxFieldRoot {
     readonly focusedValue = signal(false);
     readonly filledValue = signal(false);
     private readonly controlState = signal<RdxFieldControlState | null>(null);
+    private readonly nativeControls = new Set<RdxFieldNativeControl>();
+    private readonly nativeValidity = useFieldNativeValidity(
+        // A form adapter that reports invalidity owns validation for the plain Field Control.
+        () => (this.stateProvider()?.invalid ? [] : this.nativeControls),
+        () => null,
+        nativeErrorKinds
+    );
     readonly dirtyValue = signal(false);
     readonly touchedValue = signal(false);
 
-    /** External state owner registered through the context; `null` when Field self-computes. */
-    private readonly stateProvider = signal<RdxFieldState | null>(null);
+    private readonly stateProviders = signal<readonly { provider: RdxFieldState }[]>([]);
+    private readonly stateProvider = computed(() => this.stateProviders().at(-1)?.provider);
 
     /** Whether an external adapter currently owns field state. */
-    readonly hasStateProvider = computed(() => this.stateProvider() !== null);
+    readonly hasStateProvider = computed(() => this.stateProvider() !== undefined);
 
     /** Explicit field name wins; an adapter may infer one from its form-control binding. */
     readonly effectiveName = computed(() => this.name() ?? this.stateProvider()?.name?.());
 
     /** Error content from a registered state provider (e.g. a Signal Forms adapter). */
     private readonly providerErrors = computed(() => this.stateProvider()?.errors?.() ?? []);
-    private readonly nativeErrors = computed(() => this.controlState()?.nativeErrors?.() ?? []);
+    private readonly nativeErrors = computed(() => [
+        ...(this.controlState()?.nativeErrors?.() ?? []),
+        ...this.nativeValidity.nativeErrors()
+    ]);
 
     /** **Client** validation errors routed by a form-level provider (`rdxSignalForm`) — gated by `validationMode`. */
     private readonly clientErrors = computed(() => this.formContext?.clientErrorsFor(this.effectiveName()) ?? []);
@@ -355,8 +370,8 @@ export class RdxFieldRoot {
     private readonly validationRevealed = computed(() => {
         const control = this.controlState();
         return isValidationRevealed(this.effectiveValidationMode(), {
-            touched: this.resolveTouched(control?.blurred ?? this.touchedValue),
-            dirty: this.dirtyState() || (control?.changed() ?? false),
+            touched: this.resolveTouched(() => this.touchedValue() || (control?.blurred() ?? false)),
+            dirty: this.resolveDirty(() => this.dirtyValue() || (control?.changed() ?? false)),
             submitAttempted: this.formSubmitAttempted()
         });
     });
@@ -415,15 +430,11 @@ export class RdxFieldRoot {
      */
     readonly actualInvalidState = computed(() => this.serverErrors().length > 0 || this.clientInvalidState());
     readonly pendingState = computed(() => this.resolve('pending', () => false));
-    readonly disabledState = computed(() => this.resolve('disabled', () => this.disabled()));
-    readonly requiredState = computed(() => this.resolve('required', () => this.required()));
-    // `touched`/`dirty` also OR in the enclosing Form's per-name state (`rdxSignalForm` name-routing), so a
-    // field with only a bare `[formField]` (no `rdxSignalField`/`rdxFieldControl`) still reveals on blur.
-    readonly dirtyState = computed(
-        () =>
-            this.resolve('dirty', () => this.dirty() || this.dirtyValue()) ||
-            (this.formContext?.dirtyFor(this.effectiveName()) ?? false)
+    readonly disabledState = computed(
+        () => this.disabled() || Boolean(this.fieldsetContext?.disabledState() || this.stateProvider()?.disabled?.())
     );
+    readonly requiredState = computed(() => this.resolve('required', () => this.required()));
+    readonly dirtyState = computed(() => this.resolveDirty(this.dirtyValue));
     readonly touchedState = computed(() => this.resolveTouched(this.touchedValue));
     readonly filledState = computed(() =>
         this.resolve('filled', () => this.filled() ?? this.controlState()?.filled() ?? this.filledValue())
@@ -433,8 +444,10 @@ export class RdxFieldRoot {
     protected readonly dataAttr = attr;
 
     constructor() {
-        // Register with an enclosing Form (if any) for aggregate state, submit guard, and reset; a
-        // standalone field never enters this branch and behaves exactly as before.
+        const destroyRef = inject(DestroyRef);
+        fieldHosts.add(this.host);
+        destroyRef.onDestroy(() => fieldHosts.delete(this.host));
+
         const formContext = this.formContext;
         if (formContext) {
             const registration: RdxFormFieldRegistration = {
@@ -448,12 +461,15 @@ export class RdxFieldRoot {
                 touched: () => this.touchedState(),
                 focus: () => this.focusControl(),
                 focusTarget: () => this.invalidFocusTarget(),
-                refreshNativeValidity: () => this.controlState()?.refreshNativeValidity?.(),
+                refreshNativeValidity: () => {
+                    this.controlState()?.refreshNativeValidity?.();
+                    this.nativeValidity.refreshNativeValidity();
+                },
                 portaledEntries: () => this.controlState()?.portaledEntries?.(),
                 resetState: () => this.resetState()
             };
             const unregister = formContext.register(registration);
-            inject(DestroyRef).onDestroy(unregister);
+            destroyRef.onDestroy(unregister);
         }
     }
 
@@ -480,10 +496,20 @@ export class RdxFieldRoot {
         };
     }
 
-    /** Technical input events may be rejected; their composite control reports committed edits. */
+    /** @ignore */
+    registerNativeControl(control: RdxFieldNativeControl): () => void {
+        this.nativeControls.add(control);
+        return () => this.nativeControls.delete(control);
+    }
+
+    /** Only the nearest Field clears its errors. Composite controls report their accepted edits. */
     protected onNativeEdit(event: Event): void {
-        if (this.controlState()?.ownsNativeEdit?.(event.target)) return;
-        if ((event.target as Element | null)?.hasAttribute?.('data-rdx-native-input')) return;
+        if (!this.formContext || event.defaultPrevented) return;
+        const path = event.composedPath();
+        if (path.find((target) => fieldHosts.has(target)) !== this.host) return;
+        const target = path[0] ?? event.target;
+        if (this.controlState()?.ownsNativeEdit?.(target)) return;
+        if ((target as Element | null)?.hasAttribute?.('data-rdx-native-input')) return;
         this.notifyEdited();
     }
 
@@ -511,7 +537,12 @@ export class RdxFieldRoot {
     }
 
     private invalidFocusTarget(): HTMLElement | null {
-        return this.controlState()?.invalidFocusTarget?.() ?? this.controlElement();
+        if (this.disabledState()) return null;
+        const target =
+            this.nativeValidity.invalidFocusTarget() ??
+            this.controlState()?.invalidFocusTarget?.() ??
+            this.controlElement();
+        return target?.matches(':disabled') ? null : target;
     }
 
     private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
@@ -526,25 +557,11 @@ export class RdxFieldRoot {
         return id ? this.host.querySelector<HTMLElement>(`[id="${id}"]`) : null;
     }
 
-    /**
-     * Register an external owner of field state, returning the previous one.
-     * @ignore
-     */
-    setStateProvider(provider: RdxFieldState | null): RdxFieldState | null {
-        const previous = this.stateProvider();
-        this.stateProvider.set(provider);
-        return previous;
-    }
-
-    /**
-     * Identity-checked teardown — roll back to `previous` only if `provider` is still active. Prevents
-     * an old adapter's destroy from clobbering a newer adapter that registered after it (create-before-
-     * destroy during a structural view swap).
-     */
-    clearStateProvider(provider: RdxFieldState | null, previous: RdxFieldState | null): void {
-        if (this.stateProvider() === provider) {
-            this.stateProvider.set(previous);
-        }
+    /** @ignore */
+    registerStateProvider(provider: RdxFieldState): () => void {
+        const registration = { provider };
+        this.stateProviders.update((providers) => [...providers, registration]);
+        return () => this.stateProviders.update((providers) => providers.filter((entry) => entry !== registration));
     }
 
     /**
@@ -558,9 +575,16 @@ export class RdxFieldRoot {
     }
 
     private resolveTouched(controlTouched: () => boolean): boolean {
-        return (
-            this.resolve('touched', () => this.touched() || controlTouched()) ||
-            (this.formContext?.touchedFor(this.effectiveName()) ?? false)
+        return this.resolve(
+            'touched',
+            () => this.touched() ?? (controlTouched() || (this.formContext?.touchedFor(this.effectiveName()) ?? false))
+        );
+    }
+
+    private resolveDirty(controlDirty: () => boolean): boolean {
+        return this.resolve(
+            'dirty',
+            () => this.dirty() ?? (controlDirty() || (this.formContext?.dirtyFor(this.effectiveName()) ?? false))
         );
     }
 }
