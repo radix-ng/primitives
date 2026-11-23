@@ -10,6 +10,8 @@ installFixture();
 function FieldFixture() {
     const [submits, setSubmits] = useState(0);
     const [disabled, setDisabled] = useState(true);
+    const [suffix, setSuffix] = useState('');
+    const [showParts, setShowParts] = useState(true);
 
     return (
         <>
@@ -53,6 +55,46 @@ function FieldFixture() {
                         <Field.Error id="inner-error">Inner field error</Field.Error>
                     </Field.Root>
                 </Field.Root>
+            </Form>
+            <span id="authored-name">Account reference</span>
+            <p id="authored-help">Used for billing.</p>
+            <Field.Root data-testid="relationships" validationMode="onBlur">
+                {showParts && <Field.Label>Field reference</Field.Label>}
+                <Field.Control
+                    id={'reference' + suffix}
+                    aria-labelledby="authored-name"
+                    aria-describedby="authored-help"
+                    required
+                />
+                {showParts && (
+                    <>
+                        <Field.Description id={'reference-help' + suffix}>Check your statement.</Field.Description>
+                        <Field.Error id={'reference-error' + suffix} match="valueMissing">
+                            Enter a reference.
+                        </Field.Error>
+                    </>
+                )}
+                <Field.Validity>
+                    {({ validity }) => (
+                        <output data-testid="validity" data-missing={String(validity.valueMissing)}>
+                            {String(validity.valid ?? 'neutral')}
+                        </output>
+                    )}
+                </Field.Validity>
+            </Field.Root>
+            <button onClick={() => setSuffix('-next')} type="button">
+                Change field IDs
+            </button>
+            <button onClick={() => setShowParts(!showParts)} type="button">
+                Toggle field parts
+            </button>
+            <Form>
+                <Field.Root>
+                    <Field.Label>Default mode email</Field.Label>
+                    <Field.Control name="default-email" required />
+                    <Field.Error match="valueMissing">Enter a default mode email.</Field.Error>
+                </Field.Root>
+                <button type="submit">Submit default mode</button>
             </Form>
         </>
     );

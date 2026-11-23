@@ -3775,6 +3775,24 @@
           "description": "Connects a form control to the field label, description, error, and state.",
           "inputs": [
             {
+              "name": "aria-describedby",
+              "type": "string",
+              "default": "undefined",
+              "description": "Authored description IDs, combined with the Field's descriptions and visible errors."
+            },
+            {
+              "name": "aria-label",
+              "type": "string",
+              "default": "undefined",
+              "description": "Accessible name for a control with an authored text label."
+            },
+            {
+              "name": "aria-labelledby",
+              "type": "string | null",
+              "default": "undefined",
+              "description": "Authored label IDs. A custom control can also use its registered Field Label."
+            },
+            {
               "name": "disabled",
               "type": "boolean",
               "default": "false",
@@ -3849,6 +3867,12 @@
           "description": "Labels the field control.",
           "inputs": [
             {
+              "name": "for",
+              "type": "string | null",
+              "default": "undefined",
+              "description": "Authored control ID. Defaults to the currently registered Field Control."
+            },
+            {
               "name": "id",
               "default": "injectId('rdx-field-label-')",
               "description": "Label id."
@@ -3913,6 +3937,14 @@
               "description": "Overrides when this field reveals its validity (error styling + message). Falls back to the\nenclosing `rdxFormRoot`'s `validationMode`, then `'onBlur'`. Server errors always show regardless."
             }
           ],
+          "outputs": []
+        },
+        {
+          "directive": "RdxFieldValidity",
+          "selector": "[rdxFieldValidity]",
+          "exportAs": "rdxFieldValidity",
+          "description": "Reads the field's displayed validity and messages in an Angular template.\nApply to an `ng-container` to expose the template reference without adding a DOM element.",
+          "inputs": [],
           "outputs": []
         },
         {

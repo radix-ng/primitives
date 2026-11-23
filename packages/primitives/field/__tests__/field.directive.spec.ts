@@ -6,6 +6,7 @@ import { RdxFieldDescription } from '../src/field-description';
 import { RdxFieldError } from '../src/field-error';
 import { RdxFieldLabel } from '../src/field-label';
 import { RdxFieldRoot } from '../src/field-root';
+import { RdxFieldValidity } from '../src/field-validity';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -23,9 +24,17 @@ import { RdxFieldRoot } from '../src/field-root';
             <input id="email" rdxFieldControl />
             <p id="email-description" rdxFieldDescription>Enter your work email.</p>
             <p id="email-error" [match]="match" rdxFieldError>Email is required.</p>
+            <ng-container #validity="rdxFieldValidity" rdxFieldValidity>
+                <output
+                    [attr.data-pending]="validity.state().pending"
+                    [attr.data-matches]="validity.matchesError('unique')"
+                >
+                    {{ validity.state().valid ?? 'neutral' }} {{ validity.state().messages.join(' ') }}
+                </output>
+            </ng-container>
         </div>
     `,
-    imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError]
+    imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError, RdxFieldValidity]
 })
 class TestHostComponent {
     invalid = false;
@@ -35,6 +44,19 @@ class TestHostComponent {
     touched?: boolean;
     validationMode: 'always' | 'onChange' | 'onBlur' = 'always';
     match: boolean | string | undefined;
+}
+
+@Component({
+    imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl],
+    template: `
+        <div rdxFieldRoot>
+            <span id="custom-label" rdxFieldLabel>Custom input</span>
+            <div [aria-label]="explicitName()" rdxFieldControl role="textbox" tabindex="0"></div>
+        </div>
+    `
+})
+class CustomControlHost {
+    readonly explicitName = signal<string | undefined>(undefined);
 }
 
 describe('Field', () => {
@@ -107,6 +129,22 @@ describe('Field', () => {
         // `aria-required`/`aria-disabled` are only emitted on non-native (custom) controls.
         expect(input.getAttribute('aria-required')).toBeNull();
         expect(input.getAttribute('aria-disabled')).toBeNull();
+    });
+
+    it('unlinks automatic errors while disabled and keeps an explicitly matched error linked', () => {
+        const host = fixture.componentInstance;
+        host.invalid = true;
+        host.disabled = true;
+        fixture.changeDetectorRef.markForCheck();
+        fixture.detectChanges();
+        expect(error).toHaveAttribute('hidden');
+        expect(input).toHaveAttribute('aria-describedby', 'email-description');
+
+        host.match = true;
+        fixture.changeDetectorRef.markForCheck();
+        fixture.detectChanges();
+        expect(error).not.toHaveAttribute('hidden');
+        expect(input).toHaveAttribute('aria-describedby', 'email-description email-error');
     });
 
     it('tracks focused and filled states from the control', () => {
@@ -193,6 +231,40 @@ describe('Field', () => {
             expect(input).toBeEnabled();
         });
 
+        it('exposes neutral pending state through the Validity template reference', () => {
+            const pending = signal(true);
+            fieldRoot.registerStateProvider({
+                invalid: () => true,
+                pending,
+                errors: () => [{ kind: 'unique', message: 'Already registered.' }]
+            });
+            fixture.detectChanges();
+            const validity = root.querySelector('output');
+            expect(validity).toHaveTextContent('neutral');
+            expect(validity).toHaveAttribute('data-pending', 'true');
+            expect(validity).toHaveAttribute('data-matches', 'false');
+            expect(error).not.toBeVisible();
+
+            pending.set(false);
+            fixture.detectChanges();
+            expect(validity).toHaveTextContent('false Already registered.');
+            expect(validity).toHaveAttribute('data-pending', 'false');
+            expect(validity).toHaveAttribute('data-matches', 'true');
+            expect(error).not.toHaveAttribute('hidden');
+        });
+
+        it('keeps a description ID until its last registration is removed', () => {
+            const unregisterOld = fieldRoot.associations.registerDescription('shared-help');
+            const unregisterNew = fieldRoot.associations.registerDescription('shared-help');
+            unregisterOld();
+            fixture.detectChanges();
+            expect(input).toHaveAttribute('aria-describedby', 'email-description shared-help');
+
+            unregisterNew();
+            fixture.detectChanges();
+            expect(input).toHaveAttribute('aria-describedby', 'email-description');
+        });
+
         it('owns provided states while leaving the rest to the DOM heuristic', () => {
             const touched = signal(true);
             fieldRoot.registerStateProvider({ touched: () => touched() });
@@ -257,4 +329,18 @@ describe('Field', () => {
             expect(root.hasAttribute('data-invalid')).toBe(false);
         });
     });
+});
+
+it('[WCAG 4.1.2] names and focuses a custom control and preserves its authored label', () => {
+    const fixture = TestBed.createComponent(CustomControlHost);
+    fixture.detectChanges();
+    const control = fixture.nativeElement.querySelector('[role="textbox"]') as HTMLElement;
+    const label = fixture.nativeElement.querySelector('#custom-label') as HTMLElement;
+    expect(control).toHaveAccessibleName('Custom input');
+    label.click();
+    expect(control).toHaveFocus();
+
+    fixture.componentInstance.explicitName.set('Authored name');
+    fixture.detectChanges();
+    expect(control).toHaveAccessibleName('Authored name');
 });

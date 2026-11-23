@@ -151,6 +151,106 @@ const scenarios = [
             await expect(page.getByText('Outer field error')).toBeVisible();
             await expect(page.getByText('Inner field error')).toBeHidden();
         }
+    },
+    {
+        name: 'public-relationships',
+        async run(driver: FieldDriver) {
+            const { page } = driver;
+            const field = page.getByTestId('relationships');
+            const input = field.getByRole('textbox', { name: 'Account reference' });
+            const label = field.locator('label');
+            const validity = field.getByTestId('validity');
+            const changeIds = page.getByRole('button', { name: 'Change field IDs' });
+            const toggleParts = page.getByRole('button', { name: 'Toggle field parts' });
+            const read = () =>
+                field.evaluate((element) => {
+                    const control = element.querySelector('input')!;
+                    return {
+                        control: control.id,
+                        forId: element.querySelector('label')?.htmlFor ?? null,
+                        name: control.getAttribute('aria-labelledby'),
+                        description: control.getAttribute('aria-describedby')
+                    };
+                });
+
+            await driver.checkpoint(
+                'authored description precedes the Field description',
+                {
+                    control: 'reference',
+                    forId: 'reference',
+                    name: 'authored-name',
+                    description: 'authored-help reference-help'
+                },
+                read
+            );
+            await expect(validity).toHaveText('neutral');
+            await label.click();
+            await expect(input).toBeFocused();
+            await expect(label).toHaveAttribute('data-focused', '');
+            await expect(page.locator('#reference-help')).toHaveAttribute('data-focused', '');
+            await input.fill('temporary');
+            await input.clear();
+            await changeIds.focus();
+            await expect(validity).toHaveText('false');
+            await expect(validity).toHaveAttribute('data-missing', 'true');
+            await expect(page.locator('#reference-help')).toHaveAttribute('data-invalid', '');
+            await expect(page.locator('#reference-error')).toHaveAttribute('data-touched', '');
+
+            await changeIds.click();
+            await driver.checkpoint(
+                'control, descriptions, and visible error follow new IDs',
+                {
+                    control: 'reference-next',
+                    forId: 'reference-next',
+                    name: 'authored-name',
+                    description: 'authored-help reference-help-next reference-error-next'
+                },
+                read
+            );
+            await toggleParts.click();
+            await driver.checkpoint(
+                'unmounting parts keeps the authored relationships',
+                {
+                    control: 'reference-next',
+                    forId: null,
+                    name: 'authored-name',
+                    description: 'authored-help'
+                },
+                read
+            );
+            await toggleParts.click();
+            await expect(input).toHaveAttribute(
+                'aria-describedby',
+                'authored-help reference-help-next reference-error-next'
+            );
+            await input.fill('confirmed');
+            await changeIds.focus();
+            await expect(validity).toHaveText('true');
+            await expect(validity).toHaveAttribute('data-missing', 'false');
+            await expect(page.locator('#reference-help-next')).toHaveAttribute('data-valid', '');
+            await expect(page.getByText('Enter a reference.')).toBeHidden();
+        }
+    },
+    {
+        name: 'default-validation-mode',
+        async run(driver: FieldDriver) {
+            const { page } = driver;
+            const input = page.getByRole('textbox', { name: 'Default mode email' });
+            const submit = page.getByRole('button', { name: 'Submit default mode' });
+            const read = async () => ({ invalid: await input.getAttribute('aria-invalid') });
+            await driver.checkpoint('initial validity is neutral', { invalid: null }, read);
+            await input.focus();
+            await submit.focus();
+            await driver.checkpoint(
+                'default validity after blur',
+                {
+                    invalid: driver.framework === 'angular' ? 'true' : null
+                },
+                read
+            );
+            await submit.click();
+            await driver.checkpoint('submit reveals a missing value', { invalid: 'true' }, read);
+        }
     }
 ];
 

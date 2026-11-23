@@ -150,6 +150,7 @@ export function selectChecks(input: {
         'accordion',
         'collapsible',
         'label',
+        'field',
         'progress',
         'meter'
     ].some((family) => affected.has(family));

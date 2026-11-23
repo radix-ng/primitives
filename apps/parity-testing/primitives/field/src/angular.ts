@@ -1,6 +1,13 @@
 import { Component, provideZonelessChangeDetection, signal } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
+import {
+    RdxFieldControl,
+    RdxFieldDescription,
+    RdxFieldError,
+    RdxFieldLabel,
+    RdxFieldRoot,
+    RdxFieldValidity
+} from '@radix-ng/primitives/field';
 import { RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
 import { RdxFormRoot } from '@radix-ng/primitives/form';
 import { installFixture, serverErrors } from './contract';
@@ -9,7 +16,16 @@ installFixture();
 
 @Component({
     selector: 'parity-field',
-    imports: [RdxFieldControl, RdxFieldError, RdxFieldLabel, RdxFieldRoot, RdxFieldsetRoot, RdxFormRoot],
+    imports: [
+        RdxFieldControl,
+        RdxFieldDescription,
+        RdxFieldError,
+        RdxFieldLabel,
+        RdxFieldRoot,
+        RdxFieldValidity,
+        RdxFieldsetRoot,
+        RdxFormRoot
+    ],
     template: `
         <form (onFormSubmit)="submits.update(increment)" rdxFormRoot validationMode="onSubmit">
             <div rdxFieldRoot data-testid="email-field" name="email">
@@ -46,6 +62,39 @@ installFixture();
                 </div>
             </div>
         </form>
+        <span id="authored-name">Account reference</span>
+        <p id="authored-help">Used for billing.</p>
+        <div rdxFieldRoot data-testid="relationships" validationMode="onBlur">
+            @if (showParts()) {
+                <label rdxFieldLabel>Field reference</label>
+            }
+            <input
+                [id]="'reference' + suffix()"
+                rdxFieldControl
+                aria-labelledby="authored-name"
+                aria-describedby="authored-help"
+                required
+            />
+            @if (showParts()) {
+                <p [id]="'reference-help' + suffix()" rdxFieldDescription>Check your statement.</p>
+                <p [id]="'reference-error' + suffix()" rdxFieldError match="valueMissing">Enter a reference.</p>
+            }
+            <ng-container #validity="rdxFieldValidity" rdxFieldValidity>
+                <output [attr.data-missing]="validity.matchesError('valueMissing')" data-testid="validity">
+                    {{ validity.state().valid ?? 'neutral' }}
+                </output>
+            </ng-container>
+        </div>
+        <button (click)="suffix.set('-next')" type="button">Change field IDs</button>
+        <button (click)="showParts.set(!showParts())" type="button">Toggle field parts</button>
+        <form rdxFormRoot>
+            <div rdxFieldRoot>
+                <label rdxFieldLabel>Default mode email</label>
+                <input rdxFieldControl name="default-email" required />
+                <p rdxFieldError match="valueMissing">Enter a default mode email.</p>
+            </div>
+            <button type="submit">Submit default mode</button>
+        </form>
     `
 })
 class FieldFixture {
@@ -53,6 +102,8 @@ class FieldFixture {
     protected readonly increment = (count: number) => count + 1;
     protected readonly disabled = signal(true);
     protected readonly errors = serverErrors;
+    protected readonly suffix = signal('');
+    protected readonly showParts = signal(true);
 }
 
 void bootstrapApplication(FieldFixture, { providers: [provideZonelessChangeDetection()] });

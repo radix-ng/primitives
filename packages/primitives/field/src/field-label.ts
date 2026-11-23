@@ -1,6 +1,7 @@
 import { Directive, input } from '@angular/core';
-import { injectId, rdxCheckLabelElement, useLabel } from '@radix-ng/primitives/core';
+import { injectId, useLabel } from '@radix-ng/primitives/core';
 import { injectFieldRootContext } from './field-root';
+import { fieldStateAttributes } from './field-state-attributes';
 
 const attr = (value: boolean) => (value ? '' : undefined);
 
@@ -18,8 +19,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
         '(mousedown)': 'label.onMouseDown($event)',
         '(pointerdown)': 'label.onPointerDown($event)',
         '(click)': 'label.onClick($event)',
-        '[attr.data-invalid]': 'dataAttr(rootContext.invalidState())',
-        '[attr.data-disabled]': 'dataAttr(rootContext.disabledState())',
+        ...fieldStateAttributes,
         '[attr.data-required]': 'dataAttr(rootContext.requiredState())'
     }
 })
@@ -33,17 +33,19 @@ export class RdxFieldLabel {
      */
     readonly id = input(injectId('rdx-field-label-'));
 
+    /** Authored control ID. Defaults to the currently registered Field Control. */
+    readonly authoredFor = input<string | null>(undefined, { alias: 'for' });
+
     protected readonly label = useLabel({
         id: this.id,
-        controlId: () => this.rootContext.controlId() || undefined,
+        controlId: () => {
+            const explicit = this.authoredFor();
+            return explicit === undefined ? this.rootContext.controlId() || undefined : (explicit ?? undefined);
+        },
         registries: [this.rootContext]
     });
 
     readonly htmlFor = this.label.htmlFor;
-
-    constructor() {
-        rdxCheckLabelElement('rdxFieldLabel', 'field/unassociated-label', 'components/field');
-    }
 
     protected readonly dataAttr = attr;
 }

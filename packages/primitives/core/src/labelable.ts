@@ -83,9 +83,10 @@ export function useLabel(options: RdxLabelOptions) {
             if (!native && !ignore(event)) event.preventDefault();
         },
         onClick(event: MouseEvent): void {
-            if (ignore(event) || (native && htmlFor())) return;
+            const nativeLabel = native ? (element as HTMLLabelElement) : null;
+            if (ignore(event) || nativeLabel?.control) return;
             if (event.detail > 1) event.preventDefault();
-            const id = options.controlId?.();
+            const id = nativeLabel?.htmlFor ?? options.controlId?.();
             const control = options.control?.() ?? (id ? getLabelControl(element, id) : null);
             const focusOptions = { preventScroll: false, focusVisible: true };
             control?.focus(focusOptions);

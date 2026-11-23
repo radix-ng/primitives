@@ -13,7 +13,6 @@ import {
     BooleanInput,
     createContext,
     createLabelRegistry,
-    injectId,
     isValidationRevealed,
     RDX_DEFAULT_VALIDATION_MODE,
     RDX_FIELD_VALIDITY,
@@ -23,6 +22,7 @@ import {
 } from '@radix-ng/primitives/core';
 import { injectFieldsetRootContext } from '@radix-ng/primitives/fieldset';
 import { injectFormRootContext, RdxFormFieldRegistration } from '@radix-ng/primitives/form';
+import { createFieldAssociations, createFieldIdRegistry } from './field-description-ids';
 import { type RdxFieldNativeControl, useFieldNativeValidity } from './field-value-missing';
 
 const attr = (value: boolean) => (value ? '' : undefined);
@@ -79,9 +79,6 @@ export interface RdxFieldState {
     errors?: () => readonly RdxValidationError[];
 }
 
-const addId = (ids: string[], id: string) => (ids.includes(id) ? ids : [...ids, id]);
-const removeId = (ids: string[], id: string) => ids.filter((item) => item !== id);
-
 /** @internal Composite control state that Field cannot derive from its native host. */
 export interface RdxFieldControlState {
     filled: () => boolean;
@@ -113,6 +110,7 @@ export interface RdxFieldRootContext extends RdxLabelRegistry {
     validState: Signal<boolean | null>;
     /** Whether the enclosing Form has had a submit attempted (always `false` with no Form). */
     formSubmitAttempted: Signal<boolean>;
+    pendingState: Signal<boolean>;
     invalidState: Signal<boolean>;
     disabledState: Signal<boolean>;
     requiredState: Signal<boolean>;
@@ -121,10 +119,9 @@ export interface RdxFieldRootContext extends RdxLabelRegistry {
     filledState: Signal<boolean>;
     focusedState: Signal<boolean>;
     setControlId: (id: string) => void;
-    addDescriptionId: (id: string) => void;
-    removeDescriptionId: (id: string) => void;
-    addErrorId: (id: string) => void;
-    removeErrorId: (id: string) => void;
+    registerControlId: (id: string) => () => void;
+    registerDescription: (id: string) => () => void;
+    registerError: (id: string) => () => void;
     setFocused: (value: boolean, owner?: object) => void;
     setFilled: (value: boolean) => void;
     /** @internal Register a composite control's presentation state. */
@@ -143,10 +140,10 @@ const fieldRootContext = (): RdxFieldRootContext => {
 
     return {
         ...root.labelRegistry,
-        controlId: root.controlId,
+        ...root.associations,
         name: root.effectiveName,
-        descriptionIds: root.descriptionIds,
         errorIds: root.errorIds,
+        registerError: root.errorsRegistry.register,
         /** Combined messages for `RdxFieldError`: client (provider + form name-routing, when revealed) then
          * server (`errors` input, always). */
         messages: root.messages,
@@ -155,6 +152,7 @@ const fieldRootContext = (): RdxFieldRootContext => {
         notifyEdited: () => root.notifyEdited(),
         validState: root.validState,
         formSubmitAttempted: root.formSubmitAttempted,
+        pendingState: root.pendingState,
         invalidState: root.invalidState,
         disabledState: root.disabledState,
         requiredState: root.requiredState,
@@ -162,11 +160,6 @@ const fieldRootContext = (): RdxFieldRootContext => {
         touchedState: root.touchedState,
         filledState: root.filledState,
         focusedState: root.focusedState,
-        setControlId: (id: string) => root.controlId.set(id),
-        addDescriptionId: (id: string) => root.descriptionIds.update((ids) => addId(ids, id)),
-        removeDescriptionId: (id: string) => root.descriptionIds.update((ids) => removeId(ids, id)),
-        addErrorId: (id: string) => root.errorIds.update((ids) => addId(ids, id)),
-        removeErrorId: (id: string) => root.errorIds.update((ids) => removeId(ids, id)),
         setFocused: (value, owner) => root.setFocused(value, owner),
         setFilled: (value: boolean) => root.filledValue.set(value),
         registerControlState: (state) => root.registerControlState(state),
@@ -285,9 +278,13 @@ export class RdxFieldRoot {
     private readonly formContext = injectFormRootContext(true);
     private readonly fieldsetContext = injectFieldsetRootContext(true);
 
-    readonly controlId = signal(injectId('rdx-field-control-'));
-    readonly descriptionIds = signal<string[]>([]);
-    readonly errorIds = signal<string[]>([]);
+    /** @ignore */
+    readonly associations = createFieldAssociations();
+    /** @ignore */
+    readonly errorsRegistry = createFieldIdRegistry();
+    readonly controlId = this.associations.controlId;
+    readonly descriptionIds = this.associations.descriptionIds;
+    readonly errorIds = this.errorsRegistry.ids;
 
     readonly focusedValue = signal(false);
     readonly filledValue = signal(false);
@@ -334,7 +331,7 @@ export class RdxFieldRoot {
      * Messages shared by more than one source appear once.
      */
     readonly messages = computed(() => {
-        const client = this.validationRevealed()
+        const client = this.clientMessagesRevealed()
             ? [
                   ...this.nativeErrors().map((error) => error.message ?? error.kind),
                   ...this.providerErrors().map((error) => error.message ?? error.kind),
@@ -355,7 +352,7 @@ export class RdxFieldRoot {
     /** Whether a client validation error of `kind` is currently revealed by the field. */
     matchesError(kind: string): boolean {
         return (
-            this.validationRevealed() &&
+            this.clientMessagesRevealed() &&
             (this.nativeErrors().some((error) => error.kind === kind) ||
                 this.providerErrors().some((error) => error.kind === kind))
         );
@@ -375,6 +372,10 @@ export class RdxFieldRoot {
             submitAttempted: this.formSubmitAttempted()
         });
     });
+
+    private readonly clientMessagesRevealed = computed(
+        () => this.validationRevealed() && (!this.pendingState() || this.nativeErrors().length > 0)
+    );
 
     /**
      * Client-side invalidity (gated by `validationMode`): the per-field provider's error content / `invalid`
@@ -554,7 +555,8 @@ export class RdxFieldRoot {
      */
     private controlElement(): HTMLElement | null {
         const id = this.controlId();
-        return id ? this.host.querySelector<HTMLElement>(`[id="${id}"]`) : null;
+        if (!id) return null;
+        return [...this.host.querySelectorAll<HTMLElement>('[id]')].find((element) => element.id === id) ?? null;
     }
 
     /** @ignore */

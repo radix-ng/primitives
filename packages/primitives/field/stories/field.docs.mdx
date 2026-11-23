@@ -39,6 +39,7 @@ import {
   RdxFieldControl,
   RdxFieldDescription,
   RdxFieldError,
+  RdxFieldValidity,
   RdxNgControlField
 } from '@radix-ng/primitives/field';
 ```
@@ -88,7 +89,8 @@ The root owns the relationships between the field parts.
 
 ### Invalid
 
-Pass invalid, dirty, and touched state from your form model.
+Pass invalid, dirty, and touched state from your form model. Read the displayed validity through
+`rdxFieldValidity` when a template needs to render a custom validation message.
 
 <Canvas of={FieldStories.Invalid} />
 
@@ -157,6 +159,11 @@ An explicit `dirty` or `touched` on Root controls display timing when the Field 
 state unowned. Fieldset, Root, and the adapter can each disable a field. Control can also
 declare its own `required` and `disabled` inputs.
 
+`rdxFieldLabel` associates a native label with the registered control. Set its `for` input to name a
+different control explicitly. A non-native label can name and focus a custom Field Control.
+On Control, `aria-describedby` merges authored IDs with mounted descriptions and visible errors.
+Use `aria-labelledby` or `aria-label` to supply an authored name.
+
 <ArgTypes of={RdxFieldRoot} />
 <ArgTypes of={RdxFieldItem} />
 <ArgTypes of={RdxFieldLabel} />
@@ -164,19 +171,37 @@ declare its own `required` and `disabled` inputs.
 <ArgTypes of={RdxFieldDescription} />
 <ArgTypes of={RdxFieldError} />
 
+### Validity
+
+`RdxFieldValidity` exposes a read-only `state()` with `valid`, `pending`, and the displayed
+`messages`. `valid` is `null` while presentation is neutral. Use `matchesError(key)` to test a
+displayed native constraint or Angular error key. Apply it to an `ng-container` inside Field
+to use the reference in a template without adding a DOM element.
+
+```html
+<ng-container rdxFieldValidity #validity="rdxFieldValidity">
+  @if (validity.state().valid === false) {
+    <p rdxFieldError>{{ validity.state().messages.join(' ') }}</p>
+  }
+</ng-container>
+```
+
+Field and Form default to `onBlur`. Use `validationMode="onSubmit"` to keep client validity neutral
+until the first submit attempt. A disabled Field hides automatic Error parts. Bind `[match]="true"`
+for explicitly controlled visibility.
+
 ## Data attributes
 
 Each part exposes its own subset. Presence attributes have an empty string value when present.
 
 | Attribute       | Parts                                                                            | Present when                                                         |
 | --------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| `data-invalid`  | RdxFieldRoot, RdxFieldControl                                                    | Displayed validation is invalid; absent while validation is neutral. |
-| `data-valid`    | RdxFieldRoot, RdxFieldControl                                                    | Displayed validation is valid; absent while validation is neutral.   |
-| `data-invalid`  | RdxFieldLabel, RdxFieldDescription                                               | The field is invalid.                                                |
-| `data-invalid`  | RdxFieldError                                                                    | The error is visible and the field is invalid.                       |
-| `data-disabled` | RdxFieldRoot, RdxFieldControl, RdxFieldLabel, RdxFieldDescription, RdxFieldError | The field is disabled.                                               |
-| `data-required` | RdxFieldRoot, RdxFieldControl, RdxFieldLabel                                     | The field is required.                                               |
-| `data-dirty`    | RdxFieldRoot, RdxFieldControl                                                    | The control value has changed.                                       |
-| `data-touched`  | RdxFieldRoot, RdxFieldControl                                                    | The control has been touched.                                        |
-| `data-filled`   | RdxFieldRoot, RdxFieldControl                                                    | The control contains a value.                                        |
-| `data-focused`  | RdxFieldRoot, RdxFieldControl                                                    | The control is focused.                                              |
+| `data-invalid`  | RdxFieldRoot, RdxFieldItem, RdxFieldControl, RdxFieldLabel, RdxFieldDescription                | Displayed validation is invalid.                 |
+| `data-invalid`  | RdxFieldError                                                                               | The error is visible and the field is invalid.   |
+| `data-valid`    | RdxFieldRoot, RdxFieldItem, RdxFieldControl, RdxFieldLabel, RdxFieldDescription, RdxFieldError | Displayed validation is valid.                   |
+| `data-disabled` | RdxFieldRoot, RdxFieldItem, RdxFieldControl, RdxFieldLabel, RdxFieldDescription, RdxFieldError | The field, item, or control is disabled.         |
+| `data-required` | RdxFieldRoot, RdxFieldItem, RdxFieldControl, RdxFieldLabel                                    | The field or control is required.               |
+| `data-dirty`    | RdxFieldRoot, RdxFieldItem, RdxFieldControl, RdxFieldLabel, RdxFieldDescription, RdxFieldError | The control value has changed.                   |
+| `data-touched`  | RdxFieldRoot, RdxFieldItem, RdxFieldControl, RdxFieldLabel, RdxFieldDescription, RdxFieldError | The control has been touched.                    |
+| `data-filled`   | RdxFieldRoot, RdxFieldItem, RdxFieldControl, RdxFieldLabel, RdxFieldDescription, RdxFieldError | The control contains a value.                    |
+| `data-focused`  | RdxFieldRoot, RdxFieldItem, RdxFieldControl, RdxFieldLabel, RdxFieldDescription, RdxFieldError | The control is focused.                          |

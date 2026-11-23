@@ -1,6 +1,7 @@
-import { computed, Directive, effect, input } from '@angular/core';
-import { injectId } from '@radix-ng/primitives/core';
+import { computed, Directive, input } from '@angular/core';
+import { injectId, watch } from '@radix-ng/primitives/core';
 import { injectFieldRootContext } from './field-root';
+import { fieldStateAttributes } from './field-state-attributes';
 
 const attr = (value: boolean) => (value ? '' : undefined);
 
@@ -16,8 +17,8 @@ const attr = (value: boolean) => (value ? '' : undefined);
         '[attr.id]': 'id()',
         '[attr.hidden]': 'visible() ? undefined : ""',
         '[attr.aria-live]': '"polite"',
-        '[attr.data-invalid]': 'dataAttr(visible() && rootContext.invalidState())',
-        '[attr.data-disabled]': 'dataAttr(rootContext.disabledState())'
+        ...fieldStateAttributes,
+        '[attr.data-invalid]': 'dataAttr(visible() && rootContext.invalidState())'
     }
 })
 export class RdxFieldError {
@@ -44,6 +45,7 @@ export class RdxFieldError {
         if (match === true) {
             return true;
         }
+        if (this.rootContext.disabledState()) return false;
         if (typeof match === 'string') {
             return this.rootContext.matchesError(match);
         }
@@ -59,13 +61,8 @@ export class RdxFieldError {
     readonly messages = this.rootContext.messages;
 
     constructor() {
-        effect((onCleanup) => {
-            const id = this.id();
-            if (!this.visible()) {
-                return;
-            }
-            this.rootContext.addErrorId(id);
-            onCleanup(() => this.rootContext.removeErrorId(id));
+        watch([this.id, this.visible], ([id, visible], onCleanup) => {
+            if (visible) onCleanup(this.rootContext.registerError(id));
         });
     }
 

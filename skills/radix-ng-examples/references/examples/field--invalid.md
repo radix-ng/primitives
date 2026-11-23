@@ -4,7 +4,8 @@
 
 > Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
 
-Pass invalid, dirty, and touched state from your form model.
+Pass invalid, dirty, and touched state from your form model. Read the displayed validity through
+`rdxFieldValidity` when a template needs to render a custom validation message.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
@@ -13,7 +14,8 @@ import {
     RdxFieldDescription,
     RdxFieldError,
     RdxFieldLabel,
-    RdxFieldRoot
+    RdxFieldRoot,
+    RdxFieldValidity
 } from '@radix-ng/primitives/field';
 
 import { fieldDescription, fieldError, fieldInputInvalid, fieldLabel } from './field.shared';
@@ -21,7 +23,7 @@ import { fieldDescription, fieldError, fieldInputInvalid, fieldLabel } from './f
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'field-invalid-example',
-    imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError],
+    imports: [RdxFieldRoot, RdxFieldLabel, RdxFieldControl, RdxFieldDescription, RdxFieldError, RdxFieldValidity],
     template: `
         <div class="flex w-80 flex-col gap-2" rdxFieldRoot invalid required dirty touched>
             <label [class]="labelClass" rdxFieldLabel>Workspace name</label>
@@ -33,7 +35,11 @@ import { fieldDescription, fieldError, fieldInputInvalid, fieldLabel } from './f
                 aria-errormessage="workspace-error"
             />
             <p [class]="descriptionClass" rdxFieldDescription>Use lowercase letters and hyphens.</p>
-            <p id="workspace-error" [class]="errorClass" rdxFieldError>Workspace name is required.</p>
+            <ng-container #validity="rdxFieldValidity" rdxFieldValidity>
+                @if (validity.state().valid === false) {
+                    <p id="workspace-error" [class]="errorClass" rdxFieldError>Workspace name is required.</p>
+                }
+            </ng-container>
         </div>
     `
 })

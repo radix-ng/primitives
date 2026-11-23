@@ -25,6 +25,7 @@ import {
   RdxFieldControl,
   RdxFieldDescription,
   RdxFieldError,
+  RdxFieldValidity,
   RdxNgControlField
 } from '@radix-ng/primitives/field';
 ```

@@ -1,10 +1,9 @@
-import { booleanAttribute, computed, Directive, inject, input, signal } from '@angular/core';
-import { BooleanInput, createLabelRegistry, injectId, RDX_FIELD_VALIDITY } from '@radix-ng/primitives/core';
+import { booleanAttribute, computed, Directive, inject, input } from '@angular/core';
+import { BooleanInput, createLabelRegistry, RDX_FIELD_VALIDITY } from '@radix-ng/primitives/core';
+import { createFieldAssociations } from './field-description-ids';
 import { provideFieldRootContext, RdxFieldRoot, RdxFieldRootContext } from './field-root';
 
 const attr = (value: boolean) => (value ? '' : undefined);
-const addId = (ids: string[], id: string) => (ids.includes(id) ? ids : [...ids, id]);
-const removeId = (ids: string[], id: string) => ids.filter((item) => item !== id);
 
 /**
  * The field item context **re-provides** {@link RdxFieldRootContext} so a label, description, and control
@@ -20,15 +19,16 @@ const fieldItemContext = (): RdxFieldRootContext => {
 
     return {
         ...item.labelRegistry,
-        controlId: item.controlId,
+        ...item.associations,
         name: root.effectiveName,
-        descriptionIds: item.descriptionIds,
         errorIds: root.errorIds,
+        registerError: root.errorsRegistry.register,
         messages: root.messages,
         matchesError: (kind: string) => root.matchesError(kind),
         notifyEdited: () => root.notifyEdited(),
         validState: root.validState,
         formSubmitAttempted: root.formSubmitAttempted,
+        pendingState: root.pendingState,
         invalidState: root.invalidState,
         disabledState: item.disabledState,
         requiredState: root.requiredState,
@@ -36,11 +36,6 @@ const fieldItemContext = (): RdxFieldRootContext => {
         touchedState: root.touchedState,
         filledState: root.filledState,
         focusedState: root.focusedState,
-        setControlId: (id: string) => item.controlId.set(id),
-        addDescriptionId: (id: string) => item.descriptionIds.update((ids) => addId(ids, id)),
-        removeDescriptionId: (id: string) => item.descriptionIds.update((ids) => removeId(ids, id)),
-        addErrorId: (id: string) => root.errorIds.update((ids) => addId(ids, id)),
-        removeErrorId: (id: string) => root.errorIds.update((ids) => removeId(ids, id)),
         setFocused: (value, owner) => root.setFocused(value, owner),
         setFilled: (value: boolean) => root.filledValue.set(value),
         registerControlState: (state) => root.registerControlState(state),
@@ -95,10 +90,10 @@ export class RdxFieldItem {
      */
     readonly disabled = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
-    /** This item's control id — label / description / control inside the item associate with it. */
-    readonly controlId = signal(injectId('rdx-field-item-control-'));
-    /** Description ids for this item's control `aria-describedby`. */
-    readonly descriptionIds = signal<string[]>([]);
+    /** @ignore */
+    readonly associations = createFieldAssociations();
+    readonly controlId = this.associations.controlId;
+    readonly descriptionIds = this.associations.descriptionIds;
 
     /** The item's effective disabled state: the root's disabled OR the item's. */
     readonly disabledState = computed(() => this.root.disabledState() || this.disabled());

@@ -59,6 +59,7 @@ import {
 import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 import LabelPage from '../src/app/components/label/page';
 import { CheckboxAuditView } from './checkbox-view';
+import { FieldAuditView } from './field-view';
 import { LazyPortalView } from './lazy-view';
 import { MeterAuditView } from './meter-view';
 import { ProgressAuditView } from './progress-view';
@@ -163,6 +164,7 @@ export class HydrationProbe {
         HydrationProbe,
         RadioAuditView,
         LabelPage,
+        FieldAuditView,
         ProgressAuditView,
         MeterAuditView,
         RdxPopoverRoot,
@@ -178,6 +180,9 @@ export class HydrationProbe {
             }
             @case ('label') {
                 <app-label />
+            }
+            @case ('field') {
+                <audit-field-view />
             }
             @case ('progress') {
                 <audit-progress-view />

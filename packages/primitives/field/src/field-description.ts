@@ -1,6 +1,7 @@
-import { Directive, effect, input } from '@angular/core';
-import { injectId } from '@radix-ng/primitives/core';
+import { Directive, input } from '@angular/core';
+import { injectId, watch } from '@radix-ng/primitives/core';
 import { injectFieldRootContext } from './field-root';
+import { fieldStateAttributes } from './field-state-attributes';
 
 const attr = (value: boolean) => (value ? '' : undefined);
 
@@ -14,8 +15,7 @@ const attr = (value: boolean) => (value ? '' : undefined);
     exportAs: 'rdxFieldDescription',
     host: {
         '[attr.id]': 'id()',
-        '[attr.data-invalid]': 'dataAttr(rootContext.invalidState())',
-        '[attr.data-disabled]': 'dataAttr(rootContext.disabledState())'
+        ...fieldStateAttributes
     }
 })
 export class RdxFieldDescription {
@@ -29,10 +29,8 @@ export class RdxFieldDescription {
     readonly id = input(injectId('rdx-field-description-'));
 
     constructor() {
-        effect((onCleanup) => {
-            const id = this.id();
-            this.rootContext.addDescriptionId(id);
-            onCleanup(() => this.rootContext.removeDescriptionId(id));
+        watch([this.id], ([id], onCleanup) => {
+            onCleanup(this.rootContext.registerDescription(id));
         });
     }
 

@@ -28,6 +28,8 @@ async function snapshot(page: Page) {
         const radioView = radioForm?.parentElement;
         const radioGroup = radioView?.querySelector('[role="radiogroup"]');
         const labelPage = document.querySelector('app-label');
+        const fieldView = document.querySelector('audit-field-view');
+        const fieldControl = fieldView?.querySelector<HTMLInputElement>('[data-field-node="control"]');
         const rangeKind = document.querySelector('audit-meter-view') ? 'meter' : 'progress';
         const rangeAttribute = 'data-' + rangeKind + '-node';
         const rangeRoot = document.querySelector('[' + rangeAttribute + '="root"]');
@@ -37,6 +39,24 @@ async function snapshot(page: Page) {
             errors: window.portalHydrationAudit?.errors ?? [],
             constructed: window.portalHydrationAudit?.constructed ?? [],
             duplicateIds: ids.filter((id, index) => ids.indexOf(id) !== index),
+            field: fieldControl
+                ? {
+                      nodes: Object.fromEntries(
+                          [...fieldView!.querySelectorAll<HTMLElement>('[data-field-node]')].map((node) => [
+                              node.dataset.fieldNode!,
+                              {
+                                  id: node.id,
+                                  reused: window.auditServerNodes?.['field:' + node.dataset.fieldNode] === node
+                              }
+                          ])
+                      ),
+                      labelFor: fieldView?.querySelector<HTMLLabelElement>('label')?.htmlFor ?? null,
+                      name: fieldControl.getAttribute('aria-labelledby'),
+                      description: fieldControl.getAttribute('aria-describedby'),
+                      validity: fieldView?.querySelector('output')?.textContent?.trim(),
+                      invalid: fieldControl.hasAttribute('aria-invalid')
+                  }
+                : null,
             range: rangeRoot
                 ? {
                       nodes: Object.fromEntries(
@@ -255,6 +275,76 @@ interface Observation {
     scriptRequests: string[];
     document?: string;
     frameworkLimits?: string[];
+}
+
+async function checkFieldHydration(
+    page: Page,
+    observation: Observation,
+    record: (label: string) => Promise<Snapshot>,
+    release: () => void
+) {
+    const fixture = page.locator('audit-field-view');
+    await fixture.evaluate((host) => {
+        for (const node of host.querySelectorAll<HTMLElement>('[data-field-node]'))
+            window.auditServerNodes!['field:' + node.dataset.fieldNode] = node;
+    });
+    const before = (await record('server Field relationships and validity')).field;
+    const checks = observation.checks;
+    checks.serverField = Boolean(
+        before?.nodes.control.id &&
+        before.labelFor === before.nodes.control.id &&
+        before.name === 'audit-field-name' &&
+        before.description === ['audit-field-help', before.nodes.description.id, before.nodes.error.id].join(' ') &&
+        before.invalid &&
+        before.validity === 'This name is taken.'
+    );
+
+    release();
+    await page.waitForFunction(() => window.portalHydrationAudit?.ready, undefined, { timeout: 5000 });
+    const hydrated = await record('Field and its parts after hydration');
+    const field = hydrated.field;
+    checks.claimedFieldNodes = Boolean(
+        before &&
+        field &&
+        Object.keys(before.nodes).length === 6 &&
+        Object.entries(before.nodes).every(
+            ([name, node]) => field.nodes[name]?.reused && field.nodes[name].id === node.id
+        )
+    );
+    checks.hydratedFieldRelationships = Boolean(
+        before &&
+        field &&
+        field.labelFor === before.labelFor &&
+        field.description === before.description &&
+        field.name === before.name &&
+        field.validity === before.validity &&
+        hydrated.duplicateIds.length === 0
+    );
+
+    const control = fixture.getByRole('textbox', { name: 'Account name' });
+    await control.fill('New account');
+    const edited = (await record('editing clears the server error without replacing the control')).field;
+    checks.clearsServerError = Boolean(
+        edited &&
+        edited.nodes.control.reused &&
+        !edited.invalid &&
+        edited.validity === '' &&
+        edited.description === ['audit-field-help', edited.nodes.description.id].join(' ')
+    );
+
+    const toggle = fixture.getByRole('button', { name: 'Toggle account label' });
+    await toggle.click();
+    const removed = (await record('authored name survives Label removal')).field;
+    checks.removesLabel = removed?.labelFor === null && removed.name === 'audit-field-name';
+    await toggle.click();
+    const restored = (await record('replacement Label follows the claimed control')).field;
+    checks.restoresLabel = Boolean(
+        restored?.nodes.label &&
+        !restored.nodes.label.reused &&
+        restored.nodes.control.reused &&
+        restored.labelFor === restored.nodes.control.id &&
+        restored.name === 'audit-field-name'
+    );
 }
 
 async function checkRangeHydration(
@@ -878,6 +968,10 @@ try {
             }
             if (settings.kind === 'label') {
                 await checkLabelHydration(page, observation, record, release);
+                continue;
+            }
+            if (settings.kind === 'field') {
+                await checkFieldHydration(page, observation, record, release);
                 continue;
             }
             if (settings.kind === 'progress' || settings.kind === 'meter') {

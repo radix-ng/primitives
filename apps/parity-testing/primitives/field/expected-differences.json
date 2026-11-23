@@ -14,5 +14,13 @@
         "angular": null,
         "react": "outer-error",
         "category": "nested-field-description-scope"
+    },
+    {
+        "scenario": "default-validation-mode",
+        "checkpoint": "default validity after blur",
+        "field": "invalid",
+        "angular": "true",
+        "react": null,
+        "category": "default-validation-display-mode"
     }
 ]

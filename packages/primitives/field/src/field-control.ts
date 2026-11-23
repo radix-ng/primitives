@@ -4,12 +4,12 @@ import {
     computed,
     DestroyRef,
     Directive,
-    effect,
     ElementRef,
     inject,
     input
 } from '@angular/core';
-import { BooleanInput, injectId } from '@radix-ng/primitives/core';
+import { BooleanInput, injectId, watch } from '@radix-ng/primitives/core';
+import { fieldDescribedBy } from './field-description-ids';
 import { injectFieldRootContext } from './field-root';
 import type { RdxFieldNativeControl } from './field-value-missing';
 
@@ -25,6 +25,8 @@ const attr = (value: boolean) => (value ? '' : undefined);
     exportAs: 'rdxFieldControl',
     host: {
         '[attr.id]': 'id()',
+        '[attr.aria-label]': 'ariaLabel()',
+        '[attr.aria-labelledby]': 'labelledBy()',
         '[attr.aria-describedby]': 'describedBy()',
         // `aria-invalid`/`data-*` follow the field's tri-state `validState`: while it is neutral (`null`,
         // e.g. a field whose `validationMode` defers display (e.g. `onBlur`) before interaction) the control emits no `aria-invalid`
@@ -68,20 +70,34 @@ export class RdxFieldControl {
     /** Marks the control required independently of the enclosing Field. */
     readonly required = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
 
+    /** Accessible name for a control with an authored text label. */
+    readonly ariaLabel = input<string>(undefined, { alias: 'aria-label' });
+
+    /** Authored label IDs. A custom control can also use its registered Field Label. */
+    readonly ariaLabelledBy = input<string | null>(undefined, { alias: 'aria-labelledby' });
+
+    /** Authored description IDs, combined with the Field's descriptions and visible errors. */
+    readonly ariaDescribedBy = input<string>(undefined, { alias: 'aria-describedby' });
+
     protected readonly disabledState = computed(() => this.disabled() || this.rootContext.disabledState());
     protected readonly requiredState = computed(() => this.required() || this.rootContext.requiredState());
     protected readonly isNativeFormControl = ['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON'].includes(this.element.tagName);
 
-    protected readonly describedBy = computed(() => {
-        const ids = [...this.rootContext.descriptionIds(), ...this.rootContext.errorIds()];
-
-        return ids.length ? ids.join(' ') : undefined;
+    protected readonly labelledBy = computed(() => {
+        const explicit = this.ariaLabelledBy();
+        if (explicit !== undefined) return explicit ?? undefined;
+        if (this.isNativeFormControl || this.ariaLabel() !== undefined) return undefined;
+        return this.rootContext.labelId();
     });
 
+    protected readonly describedBy = computed(() => fieldDescribedBy(this.ariaDescribedBy(), this.rootContext));
+
     constructor() {
-        effect(() => {
-            this.rootContext.setControlId(this.id());
+        const destroyRef = inject(DestroyRef);
+        watch([this.id], ([id], onCleanup) => {
+            onCleanup(this.rootContext.registerControlId(id));
         });
+        destroyRef.onDestroy(() => this.rootContext.setFocused(false, this.element));
 
         if (this.isNativeFormControl) {
             const unregister = this.rootContext.registerNativeControl({
@@ -89,7 +105,7 @@ export class RdxFieldControl {
                 focusTarget: () => this.element,
                 participates: () => !this.disabledState()
             });
-            inject(DestroyRef).onDestroy(unregister);
+            destroyRef.onDestroy(unregister);
         }
 
         afterNextRender(() => {
@@ -99,11 +115,11 @@ export class RdxFieldControl {
     }
 
     onFocus(): void {
-        this.rootContext.setFocused(true);
+        this.rootContext.setFocused(true, this.element);
     }
 
     onBlur(): void {
-        this.rootContext.setFocused(false);
+        this.rootContext.setFocused(false, this.element);
         this.rootContext.setTouched(true);
     }
 

@@ -71,6 +71,14 @@ label and control, and retargeting through `htmlFor`.
 node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=eager-label
 ```
 
+The `eager-field` case checks server validation messages, combined authored and generated ARIA
+relationships, stable IDs and node reuse. After hydration, editing clears the server error and
+the native label can be removed and restored while the authored name stays available.
+
+```bash
+node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=eager-field
+```
+
 The `eager-progress` case verifies reuse of the Progress Root and its four parts, stable generated
 IDs and label association. Server text starts in `en-US`. The hydrated view adopts
 the browser's locale, accepts value updates and reestablishes its Label after replacement.

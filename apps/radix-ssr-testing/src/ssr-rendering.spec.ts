@@ -45,6 +45,7 @@ import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTa
 import { RdxToggle } from '@radix-ng/primitives/toggle';
 import { RdxToggleGroup } from '@radix-ng/primitives/toggle-group';
 import { describe, expect, it, vi } from 'vitest';
+import { FieldAuditView } from '../hydration-audit/field-view';
 import { MeterAuditView } from '../hydration-audit/meter-view';
 import { ProgressAuditView } from '../hydration-audit/progress-view';
 import AccordionPage from './app/components/accordion/page';
@@ -883,6 +884,22 @@ describe('SSR rendering', () => {
         expect(root.getAttribute('aria-valuetext')).toBe('25%');
         expect(value.textContent).toBe('25%');
         expect(value.getAttribute('aria-hidden')).toBe('true');
+        expect(html).toMatch(/ngh=/);
+    });
+
+    it('serializes Field Validity and combined authored and generated relationships', async () => {
+        const html = await renderToString('audit-field-view', FieldAuditView);
+        const document = new DOMParser().parseFromString(html, 'text/html');
+        const control = document.querySelector<HTMLInputElement>('[data-field-node="control"]')!;
+        const label = document.querySelector<HTMLLabelElement>('[data-field-node="label"]')!;
+        const description = document.querySelector('[data-field-node="description"]')!;
+        const error = document.querySelector('[data-field-node="error"]')!;
+
+        expect(label.control).toBe(control);
+        expect(control.getAttribute('aria-labelledby')).toBe('audit-field-name');
+        expect(control.getAttribute('aria-describedby')).toBe(['audit-field-help', description.id, error.id].join(' '));
+        expect(control.getAttribute('aria-invalid')).toBe('true');
+        expect(document.querySelector('output')?.textContent?.trim()).toBe('This name is taken.');
         expect(html).toMatch(/ngh=/);
     });
 

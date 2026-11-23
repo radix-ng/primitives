@@ -1147,18 +1147,8 @@
       "dataAttributes": [
         {
           "attribute": "data-invalid",
-          "parts": "RdxFieldRoot, RdxFieldControl",
-          "values": "Displayed validation is invalid; absent while validation is neutral."
-        },
-        {
-          "attribute": "data-valid",
-          "parts": "RdxFieldRoot, RdxFieldControl",
-          "values": "Displayed validation is valid; absent while validation is neutral."
-        },
-        {
-          "attribute": "data-invalid",
-          "parts": "RdxFieldLabel, RdxFieldDescription",
-          "values": "The field is invalid."
+          "parts": "RdxFieldRoot, RdxFieldItem, RdxFieldControl, RdxFieldLabel, RdxFieldDescription",
+          "values": "Displayed validation is invalid."
         },
         {
           "attribute": "data-invalid",
@@ -1166,33 +1156,38 @@
           "values": "The error is visible and the field is invalid."
         },
         {
+          "attribute": "data-valid",
+          "parts": "RdxFieldRoot, RdxFieldItem, RdxFieldControl, RdxFieldLabel, RdxFieldDescription, RdxFieldError",
+          "values": "Displayed validation is valid."
+        },
+        {
           "attribute": "data-disabled",
-          "parts": "RdxFieldRoot, RdxFieldControl, RdxFieldLabel, RdxFieldDescription, RdxFieldError",
-          "values": "The field is disabled."
+          "parts": "RdxFieldRoot, RdxFieldItem, RdxFieldControl, RdxFieldLabel, RdxFieldDescription, RdxFieldError",
+          "values": "The field, item, or control is disabled."
         },
         {
           "attribute": "data-required",
-          "parts": "RdxFieldRoot, RdxFieldControl, RdxFieldLabel",
-          "values": "The field is required."
+          "parts": "RdxFieldRoot, RdxFieldItem, RdxFieldControl, RdxFieldLabel",
+          "values": "The field or control is required."
         },
         {
           "attribute": "data-dirty",
-          "parts": "RdxFieldRoot, RdxFieldControl",
+          "parts": "RdxFieldRoot, RdxFieldItem, RdxFieldControl, RdxFieldLabel, RdxFieldDescription, RdxFieldError",
           "values": "The control value has changed."
         },
         {
           "attribute": "data-touched",
-          "parts": "RdxFieldRoot, RdxFieldControl",
+          "parts": "RdxFieldRoot, RdxFieldItem, RdxFieldControl, RdxFieldLabel, RdxFieldDescription, RdxFieldError",
           "values": "The control has been touched."
         },
         {
           "attribute": "data-filled",
-          "parts": "RdxFieldRoot, RdxFieldControl",
+          "parts": "RdxFieldRoot, RdxFieldItem, RdxFieldControl, RdxFieldLabel, RdxFieldDescription, RdxFieldError",
           "values": "The control contains a value."
         },
         {
           "attribute": "data-focused",
-          "parts": "RdxFieldRoot, RdxFieldControl",
+          "parts": "RdxFieldRoot, RdxFieldItem, RdxFieldControl, RdxFieldLabel, RdxFieldDescription, RdxFieldError",
           "values": "The control is focused."
         }
       ]
