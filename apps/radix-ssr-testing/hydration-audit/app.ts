@@ -64,6 +64,7 @@ import { LazyPortalView } from './lazy-view';
 import { MeterAuditView } from './meter-view';
 import { ProgressAuditView } from './progress-view';
 import { RadioAuditView } from './radio-view';
+import { SeparatorAuditView } from './separator-view';
 import { AuditProbe, Settings } from './settings';
 
 export const SETTINGS = new InjectionToken<Settings>('Portal hydration audit settings');
@@ -167,6 +168,7 @@ export class HydrationProbe {
         FieldAuditView,
         ProgressAuditView,
         MeterAuditView,
+        SeparatorAuditView,
         RdxPopoverRoot,
         RdxPopoverTrigger,
         RdxPopoverPortal,
@@ -189,6 +191,9 @@ export class HydrationProbe {
             }
             @case ('meter') {
                 <audit-meter-view />
+            }
+            @case ('separator') {
+                <audit-separator-view />
             }
             @case ('accordion') {
                 <section [attr.data-widget]="name()">

@@ -76,6 +76,21 @@ async function snapshot(page: Page) {
                       locale: new Intl.NumberFormat().resolvedOptions().locale
                   }
                 : null,
+            separators: Object.fromEntries(
+                [...document.querySelectorAll<HTMLElement>('[data-separator-node]')].map((node) => {
+                    const name = node.dataset.separatorNode!;
+                    return [
+                        name,
+                        {
+                            tag: node.localName,
+                            role: node.getAttribute('role'),
+                            ariaOrientation: node.getAttribute('aria-orientation'),
+                            dataOrientation: node.getAttribute('data-orientation'),
+                            reused: window.auditServerNodes?.['separator:' + name] === node
+                        }
+                    ];
+                })
+            ),
             label: labelPage
                 ? {
                       nodes: Object.fromEntries(
@@ -420,6 +435,54 @@ async function checkRangeHydration(
         restored.nodes.label?.id === restored.name &&
         !restored.nodes.label.reused &&
         restored.nodes.root.reused;
+}
+
+async function checkSeparatorHydration(
+    page: Page,
+    observation: Observation,
+    record: (label: string) => Promise<Snapshot>,
+    release: () => void
+) {
+    const checks = observation.checks;
+    const fixture = page.locator('audit-separator-view');
+    const expected = {
+        standalone: { tag: 'div', orientation: 'horizontal' },
+        native: { tag: 'hr', orientation: 'vertical' },
+        'toolbar-default': { tag: 'div', orientation: 'vertical' },
+        'toolbar-undefined': { tag: 'div', orientation: 'horizontal' }
+    } as const;
+    const parts = Object.entries(expected);
+    const matches = (nodes: Snapshot['separators'], nativeOrientation: 'horizontal' | 'vertical') =>
+        parts.every(([name, { tag, orientation }]) => {
+            const node = nodes[name];
+            const value = name === 'native' ? nativeOrientation : orientation;
+            return (
+                node?.tag === tag &&
+                node.role === 'separator' &&
+                node.ariaOrientation === value &&
+                node.dataOrientation === value
+            );
+        });
+
+    await fixture.evaluate((root) => {
+        for (const node of root.querySelectorAll<HTMLElement>('[data-separator-node]')) {
+            window.auditServerNodes!['separator:' + node.dataset.separatorNode] = node;
+        }
+    });
+    const before = (await record('server separator semantics')).separators;
+    checks.serverSemantics = matches(before, 'vertical');
+
+    release();
+    await page.waitForFunction(() => window.portalHydrationAudit?.ready, undefined, { timeout: 5000 });
+    const boot = (await record('claimed separators after hydration')).separators;
+    checks.hydratedSemantics =
+        matches(boot, 'vertical') && (await fixture.getByRole('separator').count()) === parts.length;
+    checks.claimedNodes = parts.every(([name]) => boot[name]?.reused === true);
+
+    await fixture.getByRole('button', { name: 'Clear separator orientation' }).click();
+    const cleared = (await record('clearing orientation updates the original rule')).separators;
+    checks.clearsOrientationOnOriginalNodes =
+        matches(cleared, 'horizontal') && parts.every(([name]) => cleared[name]?.reused === true);
 }
 
 async function checkLabelHydration(
@@ -976,6 +1039,10 @@ try {
             }
             if (settings.kind === 'progress' || settings.kind === 'meter') {
                 await checkRangeHydration(page, settings.kind, observation, record, release);
+                continue;
+            }
+            if (settings.kind === 'separator') {
+                await checkSeparatorHydration(page, observation, record, release);
                 continue;
             }
             const editedBefore = await page.locator('[data-probe="first"] input').isVisible();

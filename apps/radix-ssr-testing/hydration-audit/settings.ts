@@ -5,6 +5,7 @@ export const cases = {
     'eager-field': { kind: 'field', placement: 'eager' },
     'eager-progress': { kind: 'progress', placement: 'eager' },
     'eager-meter': { kind: 'meter', placement: 'eager' },
+    'eager-separator': { kind: 'separator', placement: 'eager' },
     'reverse-accordion-presence': { kind: 'accordion', placement: 'reverse' },
     'eager-accordion-retained': { kind: 'accordion', placement: 'eager', retain: true },
     'eager-inline': { kind: 'inline', placement: 'eager' },
@@ -64,6 +65,7 @@ export interface Settings {
         | 'field'
         | 'progress'
         | 'meter'
+        | 'separator'
         | 'inline'
         | 'attribute'
         | 'structural'

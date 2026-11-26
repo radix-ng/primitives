@@ -94,3 +94,12 @@ checks the authored name when the Label unmounts and the new Label association w
 ```sh
 node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=eager-meter
 ```
+
+The `eager-separator` case checks the role and both orientation attributes on standalone and Toolbar
+separators before and after hydration. It verifies that Angular reuses the server nodes, that Toolbar
+distinguishes an omitted orientation from explicit `undefined`, and that clearing the authored
+`hr` binding updates the original element.
+
+```bash
+node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=eager-separator
+```

@@ -67,6 +67,9 @@ export default defineConfig({
                     'packages/primitives/collapsible/src/collapsible-root.directive.ts',
                     'packages/primitives/collapsible/src/collapsible-panel.directive.ts',
                     'packages/primitives/collapsible/src/collapsible-panel-owner-context.ts',
+                    'packages/primitives/separator/src/separator.directive.ts',
+                    'packages/primitives/toolbar/src/toolbar-root.ts',
+                    'packages/primitives/toolbar/src/toolbar-separator.ts',
 
                     'packages/primitives/core/src/view-anchor.ts',
                     'packages/primitives/core/src/floating/internal-backdrop.ts',
@@ -85,6 +88,7 @@ export default defineConfig({
                     'checkbox-view.ts',
                     'field-view.ts',
                     'progress-view.ts',
+                    'separator-view.ts',
                     'settings.ts',
                     'client.ts',
                     'server.ts',
