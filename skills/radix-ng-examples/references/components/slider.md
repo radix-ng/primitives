@@ -73,6 +73,7 @@ focuses the native input. In a range slider, give each input a distinct name wit
 
 - [Default](../examples/slider--default.md)
 - [Range](../examples/slider--range.md)
+- [Edge-aligned range](../examples/slider--edge-aligned-range.md)
 - [Vertical](../examples/slider--vertical.md)
 - [Value](../examples/slider--value.md)
 - [Disabled](../examples/slider--disabled.md)

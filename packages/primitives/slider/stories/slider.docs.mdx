@@ -127,11 +127,10 @@ setValue(change: RdxSliderValueChangeEvent) {
 
 ## Thumb alignment
 
-`thumbAlignment="center"` aligns each thumb's center with the control edge at `min` and `max`.
-`thumbAlignment="edge"` and `thumbAlignment="edge-client-only"` inset thumbs so the thumb edge,
-not its center, reaches the control edge. In edge modes the pointer math accounts for the inset thumb
-radius, and the indicator uses measured thumb positions so the filled range lines up with the thumb
-centers. For server-rendered `edge`, an inline script measures and positions the parts before
+`thumbAlignment="center"` aligns each thumb's center with the Track endpoints. Both edge modes
+inset the thumbs so their outer edges meet the Track endpoints. The indicator runs between the
+thumb centers in a range. Control defines the pointer hit area. Its padding and border can extend
+past the Track without changing where thumbs stop. For server-rendered `edge`, an inline script measures and positions the parts before
 hydration. The script uses Angular's `CSP_NONCE` when provided. In `edge-client-only`, the parts
 become visible after client measurement.
 
@@ -152,6 +151,13 @@ Pass an array value and render one `rdxSliderThumb` per value, each with an expl
 `thumbCollisionBehavior` to control what happens when they meet.
 
 <Canvas of={SliderStories.Range} />
+
+### Edge-aligned range
+
+Two thumbs set the minimum and maximum price. The Control has a border and asymmetric padding.
+Drag each thumb to its limit to see how its outer edge aligns with the Track.
+
+<Canvas of={SliderStories.EdgeAlignedRange} />
 
 ### Vertical
 

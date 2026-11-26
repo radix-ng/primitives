@@ -28,25 +28,24 @@ export function getMidpoint(element: Element): { x: number; y: number } {
     return { x: (rect.left + rect.right) / 2, y: (rect.top + rect.bottom) / 2 };
 }
 
-/** Calculates the control-relative percent for an edge-aligned thumb. */
+/** Calculates the thumb center as a percentage of its positioning rail. */
 export function getInsetThumbPositionPercent(
-    control: Element,
+    rail: Element,
     thumb: Element,
     thumbValuePercent: number,
     vertical: boolean
 ): number | undefined {
     const thumbRect = thumb.getBoundingClientRect();
-    const controlRect = control.getBoundingClientRect();
+    const railRect = rail.getBoundingClientRect();
     const side = vertical ? 'height' : 'width';
-    const controlSide = controlRect[side];
-    if (!(controlSide > 0)) {
+    const railSize = railRect[side];
+    if (!(railSize > 0)) {
         return undefined;
     }
 
-    const controlSize = controlSide - thumbRect[side];
-    const thumbOffsetFromControlEdge = thumbRect[side] / 2 + (controlSize * thumbValuePercent) / 100;
-    const nextPosition = (thumbOffsetFromControlEdge / controlSide) * 100;
-    return Number.isFinite(nextPosition) ? nextPosition : undefined;
+    const travel = railSize - thumbRect[side];
+    const position = ((thumbRect[side] / 2 + (travel * thumbValuePercent) / 100) / railSize) * 100;
+    return Number.isFinite(position) ? position : undefined;
 }
 
 /** Converts an array of values into clamped 0–100 percentages. */

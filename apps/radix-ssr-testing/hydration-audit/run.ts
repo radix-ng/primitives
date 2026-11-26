@@ -113,11 +113,11 @@ async function snapshot(page: Page) {
                 const inputs = [...root.querySelectorAll<HTMLInputElement>('input')];
                 const thumbs = inputs.map((input) => input.parentElement!);
                 const indicator = root.querySelector<HTMLElement>('[rdxsliderindicator]')!;
-                const control = root.querySelector<HTMLElement>('[rdxslidercontrol]')!;
+                const track = root.querySelector<HTMLElement>('[rdxslidertrack]')!;
                 const parts = [root, label, indicator, ...thumbs, ...inputs];
                 const vertical = root.dataset.orientation === 'vertical';
                 const rtl = root.dir === 'rtl';
-                const controlRect = control.getBoundingClientRect();
+                const trackRect = track.getBoundingClientRect();
                 return {
                     name: inputs[0].name,
                     ids: [root.id, label.id, ...inputs.map((input) => input.id)],
@@ -132,10 +132,10 @@ async function snapshot(page: Page) {
                         const rect = part.getBoundingClientRect();
                         return Math.round(
                             vertical
-                                ? controlRect.bottom - rect.bottom
+                                ? trackRect.bottom - rect.bottom
                                 : rtl
-                                  ? controlRect.right - rect.right
-                                  : rect.left - controlRect.left
+                                  ? trackRect.right - rect.right
+                                  : rect.left - trackRect.left
                         );
                     }),
                     fill: Math.round(indicator.getBoundingClientRect()[vertical ? 'height' : 'width']),
@@ -629,7 +629,10 @@ async function checkSliderHydration(
         { name: 'edge', start: [0, 0], fill: 10, values: [0] },
         { name: 'edge-client-only', start: [0, 0], fill: 10, values: [0] },
         { name: 'edge-rtl-range', start: [45, 120, 55], fill: 85, values: [25, 75] },
-        { name: 'edge-vertical', start: [144, 0], fill: 154, values: [80] }
+        { name: 'edge-vertical', start: [144, 0], fill: 154, values: [80] },
+        { name: 'padded-ltr', start: [0, 110, 10], fill: 120, values: [0, 100] },
+        { name: 'padded-rtl', start: [0, 110, 10], fill: 120, values: [0, 100] },
+        { name: 'padded-vertical', start: [0, 130, 10], fill: 130, values: [0, 100] }
     ];
     const matchesGeometry = (part: Snapshot['slider'][number], expected: (typeof initialGeometry)[number]) =>
         part.name === expected.name &&
@@ -642,7 +645,7 @@ async function checkSliderHydration(
         before.length === initialGeometry.length &&
         before.every((part, index) => part.named && part.values.join() === initialGeometry[index].values.join());
     observation.checks.serverEdgeGeometry =
-        before.filter((part) => part.name !== 'edge-client-only').length === 3 &&
+        before.filter((part) => part.name !== 'edge-client-only').length === initialGeometry.length - 1 &&
         before.every(
             (part, index) => part.name === 'edge-client-only' || matchesGeometry(part, initialGeometry[index])
         );
@@ -697,6 +700,37 @@ async function checkSliderHydration(
                     : initialGeometry[index]
             )
     );
+    const paddedRangeGeometry = [
+        { name: 'padded-ltr', start: [26, 88, 36], fill: 72, values: [20, 80] },
+        { name: 'padded-rtl', start: [26, 88, 36], fill: 72, values: [20, 80] },
+        { name: 'padded-vertical', start: [26, 104, 36], fill: 78, values: [20, 80] }
+    ];
+    for (const { name } of paddedRangeGeometry) {
+        const slider = fixture.getByRole('group', { name: 'Volume ' + name, exact: true });
+        const track = (await slider.locator('[rdxSliderTrack]').boundingBox())!;
+        const thumbs = await slider.locator('[rdxSliderThumb]').all();
+        const vertical = name === 'padded-vertical';
+        const rtl = name === 'padded-rtl';
+        for (const [index, thumb] of thumbs.entries()) {
+            const box = (await thumb.boundingBox())!;
+            const size = vertical ? track.height : track.width;
+            const radius = (vertical ? box.height : box.width) / 2;
+            const percent = index === 0 ? 0.2 : 0.8;
+            const offset = radius + (size - 2 * radius) * percent;
+            await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+            await page.mouse.down();
+            await page.mouse.move(
+                vertical ? box.x + box.width / 2 : rtl ? track.x + track.width - offset : track.x + offset,
+                vertical ? track.y + track.height - offset : box.y + box.height / 2
+            );
+            await page.mouse.up();
+        }
+    }
+    const dragged = (await record('both thumbs follow the decorated track during dragging')).slider;
+    observation.checks.draggedOnDecoratedTracks = paddedRangeGeometry.every((expected) => {
+        const part = dragged.find((candidate) => candidate.name === expected.name);
+        return !!part?.reused && matchesGeometry(part, expected);
+    });
     await fixture.getByRole('button', { name: 'Reset volume' }).click();
     await page.waitForFunction(() =>
         [

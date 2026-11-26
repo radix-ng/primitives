@@ -258,6 +258,8 @@ export class RdxSliderRoot extends RdxFormUiControlBase implements ControlValueA
 
     /** @ignore */
     readonly controlRef = signal<HTMLElement | null>(null);
+    /** @ignore The element that positions the thumbs and indicator. */
+    readonly trackRef = signal<HTMLElement | null>(null);
 
     /** @ignore Active thumb index (-1 when none). */
     readonly active = signal(-1);

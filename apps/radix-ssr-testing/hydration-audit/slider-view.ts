@@ -43,6 +43,26 @@ import {
         .wide {
             width: 40px;
         }
+        .padded {
+            box-sizing: border-box;
+            border: 0 solid;
+        }
+        .padded[data-orientation='horizontal'] {
+            border-inline-width: 3px 5px;
+            padding-inline: 20px 10px;
+        }
+        .padded[data-orientation='horizontal'] .track {
+            width: calc(100% - 12px);
+            margin-inline: 4px 8px;
+        }
+        .padded[data-orientation='vertical'] {
+            border-block-width: 3px 5px;
+            padding-block: 20px 10px;
+        }
+        .padded[data-orientation='vertical'] .track {
+            height: calc(100% - 12px);
+            margin-block: 4px 8px;
+        }
     `,
     template: `
         <form>
@@ -56,7 +76,7 @@ import {
                     rdxSliderRoot
                 >
                     <div rdxSliderLabel>Volume {{ slider.name }}</div>
-                    <div class="control" rdxSliderControl>
+                    <div class="control" [class.padded]="slider.padded" rdxSliderControl>
                         <div class="track" rdxSliderTrack>
                             <div rdxSliderIndicator></div>
                             @for (index of slider.thumbs; track index) {
@@ -80,6 +100,7 @@ export class SliderAuditView {
         dir: 'ltr' | 'rtl';
         orientation: 'horizontal' | 'vertical';
         thumbs: number[];
+        padded?: boolean;
     }[] = [
         { name: 'edge', alignment: 'edge', value: 0, dir: 'ltr', orientation: 'horizontal', thumbs: [0] },
         {
@@ -98,6 +119,33 @@ export class SliderAuditView {
             orientation: 'horizontal',
             thumbs: [0, 1]
         },
-        { name: 'edge-vertical', alignment: 'edge', value: 80, dir: 'ltr', orientation: 'vertical', thumbs: [0] }
+        { name: 'edge-vertical', alignment: 'edge', value: 80, dir: 'ltr', orientation: 'vertical', thumbs: [0] },
+        {
+            name: 'padded-ltr',
+            alignment: 'edge',
+            value: [0, 100],
+            dir: 'ltr',
+            orientation: 'horizontal',
+            thumbs: [0, 1],
+            padded: true
+        },
+        {
+            name: 'padded-rtl',
+            alignment: 'edge',
+            value: [0, 100],
+            dir: 'rtl',
+            orientation: 'horizontal',
+            thumbs: [0, 1],
+            padded: true
+        },
+        {
+            name: 'padded-vertical',
+            alignment: 'edge',
+            value: [0, 100],
+            dir: 'ltr',
+            orientation: 'vertical',
+            thumbs: [0, 1],
+            padded: true
+        }
     ];
 }

@@ -447,9 +447,10 @@ describe('RdxSlider', () => {
 
     it('updates from touch drag on mobile', () => {
         const control = fixture.debugElement.query(By.css('[rdxSliderControl]')).nativeElement as HTMLElement;
+        const track = fixture.debugElement.query(By.css('[rdxSliderTrack]')).nativeElement as HTMLElement;
         const thumb = fixture.debugElement.query(By.css('[rdxSliderThumb]')).nativeElement as HTMLElement;
 
-        vi.spyOn(control, 'getBoundingClientRect').mockReturnValue({
+        vi.spyOn(track, 'getBoundingClientRect').mockReturnValue({
             width: 100,
             height: 20,
             top: 0,
@@ -636,11 +637,11 @@ describe('RdxSlider', () => {
         const edgeFixture = TestBed.createComponent(EdgeComponent);
         edgeFixture.componentInstance.thumbAlignment.set('center');
         edgeFixture.detectChanges();
-        const control = edgeFixture.debugElement.query(By.css('[rdxSliderControl]')).nativeElement as HTMLElement;
+        const track = edgeFixture.debugElement.query(By.css('[rdxSliderTrack]')).nativeElement as HTMLElement;
         const thumb = edgeFixture.debugElement.query(By.css('[rdxSliderThumb]')).nativeElement as HTMLElement;
         const indicator = edgeFixture.debugElement.query(By.css('[rdxSliderIndicator]')).nativeElement as HTMLElement;
 
-        vi.spyOn(control, 'getBoundingClientRect').mockReturnValue({
+        vi.spyOn(track, 'getBoundingClientRect').mockReturnValue({
             width: 100,
             height: 20,
             top: 0,

@@ -64,6 +64,10 @@ native input explicitly and accepts per-thumb accessible names on that input.
   blocked, then checks server node reuse, keyboard edits and native reset.
 - A browser scenario replaces the Control while retaining the native range input and resizes the
   replacement. Angular keeps the thumb edge flush and the indicator aligned to its center.
+- With a Track present, client layout, prehydration and pointer projection use its bounds. Angular's
+  hydration audit checks padded and bordered Controls with inset ranges in LTR, RTL and vertical
+  layouts. It verifies the initial endpoints, both thumbs during drag and form reset. The pinned
+  Base UI implementation measures the Control bounds for the inset layout.
 
 ## Verification
 

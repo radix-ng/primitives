@@ -134,11 +134,12 @@ export class RdxSliderThumb implements RdxSliderThumbRef {
         afterRenderEffect({
             read: (onCleanup) => {
                 const control = this.root.controlRef();
+                const track = this.root.trackRef();
                 const ResizeObserverCtor = control?.ownerDocument.defaultView?.ResizeObserver;
                 if (!this.root.inset() || !control || !ResizeObserverCtor) return;
                 const observer = new ResizeObserverCtor(() => this.updateInsetPosition());
-                observer.observe(control);
-                observer.observe(this.element);
+                observer.observe(track ?? control, { box: 'border-box' });
+                observer.observe(this.element, { box: 'border-box' });
                 onCleanup(() => observer.disconnect());
             }
         });
@@ -155,7 +156,7 @@ export class RdxSliderThumb implements RdxSliderThumbRef {
         const position =
             control && this.root.inset()
                 ? getInsetThumbPositionPercent(
-                      control,
+                      this.root.trackRef() ?? control,
                       this.element,
                       this.percent(),
                       this.root.orientation() === 'vertical'

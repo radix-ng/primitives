@@ -45,7 +45,6 @@ export class RdxSliderControl {
     private pointerId: number | null = null;
     private awaitingTouchStart = false;
     private touchId: number | null = null;
-    private insetThumbOffset = 0;
     private pressedThumbIndex = -1;
     private pressedThumbCenterOffset: number | null = null;
     private pressedValues: number[] | null = null;
@@ -308,14 +307,6 @@ export class RdxSliderControl {
         }
 
         this.pressedThumbIndex = closestThumbIndex;
-        this.insetThumbOffset = 0;
-        if (this.root.inset()) {
-            const thumb = this.root.thumbList()[closestThumbIndex]?.element;
-            if (thumb) {
-                const rect = thumb.getBoundingClientRect();
-                this.insetThumbOffset = (this.root.orientation() === 'vertical' ? rect.height : rect.width) / 2;
-            }
-        }
     }
 
     private setValueFromPointer(
@@ -346,23 +337,20 @@ export class RdxSliderControl {
         const min = this.root.min();
         const max = this.root.max();
         const step = this.root.step();
+        const thumb = this.root.thumbList()[thumbIndex];
 
-        if (
-            !control ||
-            thumbIndex < 0 ||
-            thumbIndex >= values.length ||
-            this.root.thumbList()[thumbIndex]?.disabled()
-        ) {
+        if (!control || !thumb || thumbIndex >= values.length || thumb.disabled()) {
             return null;
         }
 
-        const { width, height, bottom, left, right } = control.getBoundingClientRect();
-        const controlOffset = getControlOffset(this.styles, vertical, rtl);
-        const controlSize =
-            (vertical ? height : width) - controlOffset.start - controlOffset.end - this.insetThumbOffset * 2;
+        const track = this.root.trackRef();
+        const { width, height, bottom, left, right } = (track ?? control).getBoundingClientRect();
+        const offset = track ? { start: 0, end: 0 } : getControlOffset(this.styles, vertical, rtl);
+        const side = vertical ? 'height' : 'width';
+        const thumbRadius = this.root.inset() ? thumb.element.getBoundingClientRect()[side] / 2 : 0;
+        const travel = (vertical ? height : width) - offset.start - offset.end - thumbRadius * 2;
 
-        // A collapsed/unmeasurable track would divide by zero and yield NaN values.
-        if (!(controlSize > 0)) {
+        if (!(travel > 0)) {
             return null;
         }
 
@@ -371,10 +359,10 @@ export class RdxSliderControl {
         const fingerY = finger.y - thumbCenterOffset;
 
         const valueSize = vertical
-            ? bottom - fingerY - controlOffset.end
-            : (rtl ? right - fingerX : fingerX - left) - controlOffset.start;
+            ? bottom - fingerY - offset.end
+            : (rtl ? right - fingerX : fingerX - left) - offset.start;
 
-        const valueRescaled = clamp((valueSize - this.insetThumbOffset) / controlSize, 0, 1);
+        const valueRescaled = clamp((valueSize - thumbRadius) / travel, 0, 1);
 
         let newValue = (max - min) * valueRescaled + min;
         newValue = roundValueToStep(newValue, step, min);

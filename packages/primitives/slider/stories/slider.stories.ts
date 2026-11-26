@@ -4,6 +4,8 @@ import { SliderDefaultExample } from './slider-default';
 import defaultSource from './slider-default?raw';
 import { SliderDisabledExample } from './slider-disabled';
 import disabledSource from './slider-disabled?raw';
+import { SliderEdgeRangeExample } from './slider-edge-range';
+import edgeRangeSource from './slider-edge-range?raw';
 import { SliderEventsExample } from './slider-events';
 import eventsSource from './slider-events?raw';
 import { SliderFormsExample } from './slider-forms';
@@ -28,6 +30,7 @@ export default {
             imports: [
                 SliderDefaultExample,
                 SliderRangeExample,
+                SliderEdgeRangeExample,
                 SliderVerticalExample,
                 SliderValueExample,
                 SliderDisabledExample,
@@ -56,6 +59,15 @@ export const Range: Story = {
     render: () => ({
         template: html`
             <slider-range-example />
+        `
+    })
+};
+
+export const EdgeAlignedRange: Story = {
+    parameters: source(edgeRangeSource),
+    render: () => ({
+        template: html`
+            <slider-edge-range-example />
         `
     })
 };

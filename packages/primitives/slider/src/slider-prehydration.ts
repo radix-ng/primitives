@@ -10,13 +10,15 @@ const SCRIPT = String.raw`(function positionSlidersBeforeHydration() {
         const control = parts('[data-rdx-slider-control]')[0];
         if (!control) continue;
         const side = root.getAttribute('data-orientation') === 'vertical' ? 'height' : 'width';
-        const size = control.getBoundingClientRect()[side];
+        const rail = parts('[data-rdx-slider-track]')[0] ?? control;
+        const size = rail.getBoundingClientRect()[side];
         if (!size) continue;
         const positions = new Map();
         for (const thumb of parts('[data-rdx-slider-percent]')) {
             const fraction = Number(thumb.getAttribute('data-rdx-slider-percent')) / 100;
             const thumbSize = thumb.getBoundingClientRect()[side];
-            const position = ((thumbSize / 2 + (size - thumbSize) * fraction) / size) * 100;
+            const travel = size - thumbSize;
+            const position = ((thumbSize / 2 + travel * fraction) / size) * 100;
             if (!Number.isFinite(position)) continue;
             positions.set(Number(thumb.getAttribute('data-index')), position);
             thumb.style.setProperty('--rdx-slider-ssr-position', position + '%');

@@ -36,6 +36,7 @@ Base UI is the primary API/behavior reference; Radix UI is secondary.
 
 ## Storybook styling
 
+- Base new stories on the closest existing story for the same primitive. Reuse part shapes, colors, and focus styles. Change styling when the request calls for it or the behavior needs a visible distinction.
 - Use Tailwind v4 utilities directly in story templates and standalone story components.
 - Do not add story-local CSS files, Angular `styleUrl` / `styleUrls` / `styles`, inline `<style>` blocks, or `style="..."` attributes.
 - Prefer semantic tokens for shared roles. Use the shared Base UI palette with `dark:` variants when an example needs a specific shade. See [demo colors](docs/engineering/ux-guidelines.md#semantic-tokens-tailwind-v4).

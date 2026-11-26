@@ -105,9 +105,9 @@ node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=eager-separator
 ```
 
 The `eager-slider` case blocks the Angular bundle while checking `edge` geometry for horizontal,
-vertical and RTL range sliders with unequal thumb sizes. It checks that `edge-client-only` first
-becomes visible after Angular measures it. After hydration it verifies node reuse, stable IDs,
-keyboard edits and native form reset.
+vertical and RTL range sliders. It includes bordered Controls with asymmetric padding and narrower
+Tracks. It checks that `edge-client-only` first becomes visible after Angular measures it. After
+hydration it verifies node reuse, stable IDs, keyboard edits, dragging both thumbs and native reset.
 
 ```bash
 node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=eager-slider
