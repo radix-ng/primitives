@@ -1,4 +1,14 @@
-import { afterNextRender, DestroyRef, Directive, effect, ElementRef, inject, output, signal } from '@angular/core';
+import {
+    afterNextRender,
+    computed,
+    DestroyRef,
+    Directive,
+    effect,
+    ElementRef,
+    inject,
+    output,
+    signal
+} from '@angular/core';
 import {
     RDX_FLOATING_REGISTRATION,
     RDX_FLOATING_ROOT_CONTEXT,
@@ -54,13 +64,12 @@ export class RdxTooltipPositioner extends RdxPopperContentWrapper {
      */
     readonly pointerDownOutside = output<RdxOutsidePressDomEvent>();
 
-    private readonly triggerEl = signal<HTMLElement | null>(null);
+    private readonly triggerEl = computed(() => this.rootContext.trigger() ?? null);
     private readonly containerEl = signal<HTMLElement | null>(null);
 
     private readonly graceArea = useGraceArea(this.triggerEl, this.containerEl, 300);
 
     private readonly afterNextRender = afterNextRender(() => {
-        this.triggerEl.set(this.rootContext.trigger() ?? null);
         this.containerEl.set(this.containerRef.nativeElement);
 
         const handleScroll = (event: Event) => {

@@ -88,7 +88,17 @@ class ProviderHostComponent {}
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxTooltip, RdxTooltipTrigger],
     template: `
-        <div [open]="open()" [delay]="0" (openChange)="requests.push($event)" rdxTooltip>
+        <div
+            [open]="open()"
+            [defaultOpen]="defaultOpen()"
+            [triggerId]="triggerId()"
+            [defaultTriggerId]="defaultTriggerId()"
+            [delay]="0"
+            (openChange)="requests.push($event)"
+            (triggerIdChange)="triggerRequests.push($event)"
+            (onOpenChange)="request($event)"
+            rdxTooltip
+        >
             <button id="trigger-a" rdxTooltipTrigger>A</button>
             <button id="trigger-b" rdxTooltipTrigger payload="B">B</button>
         </div>
@@ -96,7 +106,16 @@ class ProviderHostComponent {}
 })
 class MultipleTriggersHostComponent {
     readonly open = signal<boolean | undefined>(undefined);
+    readonly defaultOpen = signal(false);
+    readonly triggerId = signal<string | null>(null);
+    readonly defaultTriggerId = signal<string | null>(null);
     readonly requests: boolean[] = [];
+    readonly triggerRequests: (string | null)[] = [];
+    cancel = false;
+
+    request(event: RdxTooltipOpenChangeEvent): void {
+        if (this.cancel) event.eventDetails.cancel();
+    }
 }
 
 @Component({
@@ -528,8 +547,9 @@ describe('Tooltip multiple triggers', () => {
         b.dispatchEvent(new Event('pointermove'));
         fixture.detectChanges();
         expect(host.requests).toEqual([true]);
+        expect(host.triggerRequests).toEqual(['trigger-b']);
         expect(root.open()).toBe(false);
-        expect(root.trigger()).toBe(a);
+        expect(root.trigger()).toBeUndefined();
         expect(root.payload()).toBeUndefined();
         expect(b.hasAttribute('aria-describedby')).toBe(false);
 
@@ -541,6 +561,48 @@ describe('Tooltip multiple triggers', () => {
         expect(root.payload()).toBe('B');
         expect(b.getAttribute('aria-describedby')).toBe(root.contentId);
         expect(a.hasAttribute('aria-describedby')).toBe(false);
+    });
+
+    it('allows canceling a trigger change while retaining the controlled selection', () => {
+        TestBed.configureTestingModule({ imports: [MultipleTriggersHostComponent] });
+        const fixture = TestBed.createComponent(MultipleTriggersHostComponent);
+        const host = fixture.componentInstance;
+        host.open.set(true);
+        host.triggerId.set('trigger-a');
+        fixture.detectChanges();
+
+        const b: HTMLButtonElement = fixture.nativeElement.querySelector('#trigger-b');
+        const root = getRoot(fixture);
+        host.cancel = true;
+        b.dispatchEvent(new Event('focus'));
+        fixture.detectChanges();
+        expect(host.triggerRequests).toEqual([]);
+        expect(root.triggerId()).toBe('trigger-a');
+
+        host.cancel = false;
+        b.dispatchEvent(new Event('focus'));
+        fixture.detectChanges();
+        expect(host.triggerRequests).toEqual(['trigger-b']);
+        expect(host.requests).toEqual([]);
+        expect(root.triggerId()).toBe('trigger-a');
+        expect(root.payload()).toBeUndefined();
+
+        host.triggerId.set('trigger-b');
+        fixture.detectChanges();
+        expect(root.trigger()).toBe(b);
+        expect(root.payload()).toBe('B');
+    });
+
+    it('does not pick a trigger for a programmatic open with multiple registered triggers', () => {
+        TestBed.configureTestingModule({ imports: [MultipleTriggersHostComponent] });
+        const fixture = TestBed.createComponent(MultipleTriggersHostComponent);
+        fixture.componentInstance.defaultOpen.set(true);
+        fixture.detectChanges();
+
+        const root = getRoot(fixture);
+        expect(root.open()).toBe(true);
+        expect(root.triggerId()).toBeNull();
+        expect(root.trigger()).toBeUndefined();
     });
 });
 
@@ -768,7 +830,7 @@ describe('Tooltip trigger removal', () => {
         vi.useRealTimers();
     });
 
-    it('closes and clears the active trigger when it is removed', () => {
+    it('closes and clears the active trigger when it is removed', async () => {
         TestBed.configureTestingModule({ imports: [RemovableTriggerHostComponent] });
         const fixture = TestBed.createComponent(RemovableTriggerHostComponent);
         fixture.detectChanges();
@@ -780,6 +842,8 @@ describe('Tooltip trigger removal', () => {
         expect(root.open()).toBe(true);
 
         fixture.componentInstance.showTrigger.set(false);
+        fixture.detectChanges();
+        await Promise.resolve();
         fixture.detectChanges();
 
         expect(root.trigger()).toBeUndefined();

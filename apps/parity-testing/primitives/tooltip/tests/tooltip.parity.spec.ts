@@ -12,8 +12,16 @@ import {
     updatedHoverDelay,
     type OpenRequest
 } from '../src/contract.ts';
+import { copyId, pasteId, type IdentityRequest } from '../src/identity.ts';
 
 type TriggerName = 'Copy' | 'Paste';
+
+interface IdentityState {
+    open: boolean;
+    active: string | null;
+    payload: string | null;
+    requests?: IdentityRequest[];
+}
 
 class TooltipDriver {
     readonly checkpoints: Checkpoint[] = [];
@@ -39,6 +47,7 @@ class TooltipDriver {
             params.set('open', 'false');
         }
         if (name === 'controlled-overrides-default' || name === 'initial-default') params.set('defaultOpen', 'true');
+        if (name.startsWith('identity-')) params.set('identity', name);
         if (
             name.startsWith('provider-') ||
             ['reactive-disabled', 'disable-pending-hover', 'focus-loss-and-reentry'].includes(name)
@@ -106,6 +115,60 @@ class TooltipDriver {
         this.checkpoints.push({ name, state: await read() });
     }
 
+    async recordIdentity(
+        name: string,
+        expected: IdentityState | Record<TooltipDriver['framework'], IdentityState>
+    ): Promise<void> {
+        const read = () =>
+            this.page.evaluate(
+                (ids) => {
+                    const popup = document.querySelector('[data-identity-popup]');
+                    const positioner = document.querySelector('[data-identity-positioner]');
+                    const triggers = ids.map((id) => document.getElementById(id)).filter((element) => element !== null);
+                    const active = triggers.filter((element) => element.hasAttribute('data-popup-open'));
+                    const triggerRect = active[0]?.getBoundingClientRect();
+                    const popupRect = positioner?.getBoundingClientRect();
+                    const anchored = Boolean(
+                        triggerRect &&
+                        popupRect &&
+                        Math.abs(triggerRect.x + triggerRect.width / 2 - (popupRect.x + popupRect.width / 2)) < 4 &&
+                        Math.abs(triggerRect.bottom - popupRect.top) < 4
+                    );
+                    const describedBy = triggers.flatMap((trigger) => {
+                        const description = trigger.getAttribute('aria-describedby');
+                        return description === null ? [] : [description === popup?.id ? trigger.id : 'invalid'];
+                    });
+                    const log = document.querySelector('[data-identity-requests]')!.textContent;
+                    return {
+                        describedBy,
+                        state: {
+                            popup: popup === null ? 'unmounted' : popup.hasAttribute('data-open') ? 'open' : 'closed',
+                            active: active.map((element) => element.id),
+                            payload: popup?.textContent?.trim() || null,
+                            anchored,
+                            requests: JSON.parse(log)
+                        }
+                    };
+                },
+                [copyId, pasteId]
+            );
+
+        const resolved = 'open' in expected ? expected : expected[this.framework];
+        const active = resolved.active ? [resolved.active] : [];
+        await expect.poll(read, name).toEqual({
+            describedBy: this.framework === 'angular' ? active : [],
+            state: {
+                popup: resolved.open ? 'open' : 'unmounted',
+                active,
+                payload: resolved.payload,
+                anchored: active.length > 0,
+                requests: resolved.requests ?? []
+            }
+        });
+        // Role and description differences are already recorded in the open-ownership cases.
+        this.checkpoints.push({ name, state: (await read()).state });
+    }
+
     private getTrigger(name: TriggerName) {
         return this.page.getByRole('button', { name, exact: true });
     }
@@ -115,6 +178,10 @@ const hoverOpen = { open: true, reason: 'trigger-hover', canceled: false };
 const hoverClose = { open: false, reason: 'trigger-hover', canceled: false };
 const focusOpen = { open: true, reason: 'trigger-focus', canceled: false };
 const focusClose = { open: false, reason: 'trigger-focus', canceled: false };
+
+const copyActive = { open: true, active: copyId, payload: 'Copy payload' };
+const pasteActive = { open: true, active: pasteId, payload: 'Paste payload' };
+const noActiveTrigger = { open: false, active: null, payload: null };
 
 const scenarios = [
     {
@@ -372,6 +439,92 @@ const scenarios = [
             await driver.trigger.focus();
             await page.clock.runFor(32);
             await driver.record('returning focus reopens the tooltip', true, focusOpen);
+        }
+    },
+    {
+        name: 'identity-controlled',
+        async run(driver: TooltipDriver) {
+            await driver.recordIdentity('controlled ID takes precedence over the default', copyActive);
+            await driver.set('Use Paste trigger');
+            await driver.recordIdentity('parent moves the open tooltip to Paste', pasteActive);
+            await driver.set('Use Copy trigger');
+            await driver.recordIdentity('parent moves the tooltip back to Copy silently', copyActive);
+            await driver.set('Release trigger');
+            await driver.recordIdentity('null binding restores the local trigger ID', pasteActive);
+        }
+    },
+    {
+        name: 'identity-default',
+        async run(driver: TooltipDriver) {
+            await driver.recordIdentity('default trigger owns the initially open tooltip', pasteActive);
+            await driver.set('Set default to Copy');
+            await driver.recordIdentity('late default leaves the current anchor unchanged', pasteActive);
+            await driver.set('Update Paste payload');
+            const updated = { ...pasteActive, payload: 'Updated Paste payload' };
+            await driver.recordIdentity('popup reads the active trigger payload live', updated);
+            await driver.set('Replace Paste');
+            await driver.recordIdentity('same ID replacement preserves open state', updated);
+
+            await driver.set('Cancel next close');
+            await driver.set('Hide Paste');
+            const refusedClose = { open: false, reason: 'none', canceled: true, trigger: null };
+            await driver.recordIdentity('canceled removal keeps the popup and payload', {
+                ...updated,
+                active: null,
+                requests: [refusedClose]
+            });
+            await driver.set('Show Paste');
+            await driver.recordIdentity('showing the same ID restores the association', {
+                ...updated,
+                requests: [refusedClose]
+            });
+            await driver.set('Hide Paste');
+            await driver.recordIdentity('active removal requests close without claiming Copy', {
+                ...noActiveTrigger,
+                requests: [refusedClose, { ...refusedClose, canceled: false }]
+            });
+        }
+    },
+    {
+        name: 'identity-late-trigger',
+        async run(driver: TooltipDriver) {
+            await driver.recordIdentity('unregistered controlled ID remains pending', {
+                ...noActiveTrigger,
+                open: true
+            });
+            await driver.set('Show Paste');
+            await driver.recordIdentity('late registration resolves the pending ID', pasteActive);
+        }
+    },
+    {
+        name: 'identity-detached-handle',
+        async run(driver: TooltipDriver) {
+            await driver.recordIdentity('detached triggers start closed', noActiveTrigger);
+            await driver.set('Open Copy via handle');
+            const openCopy = { open: true, reason: 'imperative-action', canceled: false, trigger: copyId };
+            await driver.recordIdentity('handle selects Copy by ID', { ...copyActive, requests: [openCopy] });
+            await driver.set('Open Paste via handle');
+            const openPaste = { ...openCopy, trigger: pasteId };
+            await driver.recordIdentity('handle moves the open tooltip and payload to Paste', {
+                ...pasteActive,
+                requests: [openCopy, openPaste]
+            });
+            await driver.set('Close via handle');
+            await driver.recordIdentity('handle closes from the active trigger', {
+                ...noActiveTrigger,
+                requests: [openCopy, openPaste, { ...openPaste, open: false }]
+            });
+        }
+    },
+    {
+        name: 'identity-implicit',
+        async run(driver: TooltipDriver) {
+            await driver.recordIdentity('open with no ID and multiple triggers', {
+                angular: { ...noActiveTrigger, open: true },
+                react: copyActive
+            });
+            await driver.set('Hide Paste');
+            await driver.recordIdentity('lone trigger becomes the anchor', copyActive);
         }
     }
 ];

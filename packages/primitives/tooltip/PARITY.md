@@ -6,9 +6,9 @@ Initial inventory: 2026-11-17. Reference pin: **Base UI 1.9.0**,
 Primary counterpart: [tooltip](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/tooltip).
 Pinned exported parts/functions: `Root`, `Trigger`, `Portal`, `Positioner`, `Popup`, `Arrow`, `Provider`, `Viewport`, `createHandle`, `Handle`.
 
-**Scope: open ownership, initial defaults, provider timing, disabling, and focus.** The paired suite
-verifies the scenarios below. Trigger identity inputs, full motion and part contracts, and hydration
-remain open for comparison.
+**Scope: open and trigger ownership, initial defaults, provider timing, disabling, and focus.**
+The paired suite verifies the scenarios below. Viewport, full motion and part contracts, and
+hydration remain open for comparison.
 
 **Breaking changes are permitted; backward compatibility does not constrain the target.** Apply the
 [state ownership/defaults contract](../../../docs/engineering/state-ownership.md) per field. Inputs,
@@ -21,16 +21,16 @@ Source of truth: [entry barrel](index.ts). These are directly exported decorated
 claim that inherited/host-directive APIs or every upstream prop have already been compared. Exported
 composition bases, guards and internal helpers are not thereby promoted to stable public widget parts.
 
-| Angular declaration                                    | Selector / role                       | Direct input/model/output declarations                                                                                                                                  |
-| ------------------------------------------------------ | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`RdxTooltip`](src/tooltip.ts)                         | `[rdxTooltip]`                        | `open` (input alias), `defaultOpen`, `delay`, `closeDelay`, `disableHoverablePopup`, `trackCursorAxis`, `disabled`, `handle`, `onOpenChange` and `openChange` (outputs) |
-| [`RdxTooltipArrow`](src/tooltip-arrow.ts)              | `[rdxTooltipArrow]`                   | No direct signal input/model/output declaration.                                                                                                                        |
-| [`RdxTooltipPopup`](src/tooltip-popup.ts)              | `[rdxTooltipPopup]`                   | No direct signal input/model/output declaration.                                                                                                                        |
-| [`RdxTooltipPortal`](src/tooltip-portal.ts)            | `ng-template[rdxTooltipPortal]`       | No direct signal input/model/output declaration.                                                                                                                        |
-| [`RdxTooltipPortalMisuseGuard`](src/tooltip-portal.ts) | `[rdxTooltipPortal]:not(ng-template)` | No direct signal input/model/output declaration.                                                                                                                        |
-| [`RdxTooltipPositioner`](src/tooltip-positioner.ts)    | `[rdxTooltipPositioner]`              | `escapeKeyDown` (output), `pointerDownOutside` (output)                                                                                                                 |
-| [`RdxTooltipProvider`](src/tooltip-provider.ts)        | `[rdxTooltipProvider]`                | `delay`, `closeDelay`, `timeout`                                                                                                                                        |
-| [`RdxTooltipTrigger`](src/tooltip-trigger.ts)          | `[rdxTooltipTrigger]`                 | `handle`, `payload`, `id`, `closeOnClick`, `disabled`, `delay`, `closeDelay`, `rdxOnPointerDown`                                                                        |
+| Angular declaration                                    | Selector / role                       | Direct input/model/output declarations                                                                                                                                                                                            |
+| ------------------------------------------------------ | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`RdxTooltip`](src/tooltip.ts)                         | `[rdxTooltip]`                        | `open` and `triggerId` (input aliases), `defaultOpen`, `defaultTriggerId`, `delay`, `closeDelay`, `disableHoverablePopup`, `trackCursorAxis`, `disabled`, `handle`, `onOpenChange`, `openChange`, and `triggerIdChange` (outputs) |
+| [`RdxTooltipArrow`](src/tooltip-arrow.ts)              | `[rdxTooltipArrow]`                   | No direct signal input/model/output declaration.                                                                                                                                                                                  |
+| [`RdxTooltipPopup`](src/tooltip-popup.ts)              | `[rdxTooltipPopup]`                   | No direct signal input/model/output declaration.                                                                                                                                                                                  |
+| [`RdxTooltipPortal`](src/tooltip-portal.ts)            | `ng-template[rdxTooltipPortal]`       | No direct signal input/model/output declaration.                                                                                                                                                                                  |
+| [`RdxTooltipPortalMisuseGuard`](src/tooltip-portal.ts) | `[rdxTooltipPortal]:not(ng-template)` | No direct signal input/model/output declaration.                                                                                                                                                                                  |
+| [`RdxTooltipPositioner`](src/tooltip-positioner.ts)    | `[rdxTooltipPositioner]`              | `escapeKeyDown` (output), `pointerDownOutside` (output)                                                                                                                                                                           |
+| [`RdxTooltipProvider`](src/tooltip-provider.ts)        | `[rdxTooltipProvider]`                | `delay`, `closeDelay`, `timeout`                                                                                                                                                                                                  |
+| [`RdxTooltipTrigger`](src/tooltip-trigger.ts)          | `[rdxTooltipTrigger]`                 | `handle`, `payload`, `id`, `closeOnClick`, `disabled`, `delay`, `closeDelay`, `rdxOnPointerDown`                                                                                                                                  |
 
 Inherited classes and composed directives may add state/API. Follow those sources when completing
 the comparison; similar part names or selector counts do not prove the same contract.
@@ -47,10 +47,18 @@ For strict controlled UI state, a request must not mutate the effective value be
 | [`RdxTooltip.open`](src/tooltip.ts)        | `openInput` aliased to `open`, effective `open()`, `openChange` | A supplied Boolean controls rendering. Undefined releases control to the local state. Uncanceled requests emit `openChange`, including for `[(open)]`. Parent writes emit neither output. |
 | [`RdxTooltip.defaultOpen`](src/tooltip.ts) | `input<boolean, BooleanInput>(false)`                           | Snapshots the initial uncontrolled state once. Controlled false takes precedence over a true default. A late default leaves the effective state unchanged.                                |
 
-`onOpenChange` carries the native event, reason, and trigger for a cancellable request. The popup,
+`onOpenChange` carries the event, reason, and trigger for a cancellable request. The popup,
 trigger description, and active trigger/payload follow the committed state. To migrate a consumer
 that called `root.open.set(value)`, update the state bound to `[open]`. Angular coerces supported
 Boolean input strings. Tooltip has no form-value or reset contract.
+
+An explicit `triggerId` resolves before the local selection. A nullish input releases control
+to that local selection. `defaultTriggerId` is sampled once. Registered IDs supply the anchor and
+live payload for inline and detached triggers. Angular also exposes `triggerIdChange` for accepted
+requests to change the selection. An open with multiple registered triggers and no selected ID
+stays unassociated. In the detached-trigger fixture, pinned Base UI claims the first registration
+in that case. If a resolved trigger unregisters, the root waits a microtask for a same-ID
+replacement before requesting a close. A veto retains the ID and payload while the element is absent.
 
 ## Family-specific comparison matrix
 
@@ -61,7 +69,8 @@ describe the target work, not a certificate or a reproduced defect count.
 | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
 | Open/default ownership | The paired suite covers controlled precedence and release, initial/late defaults, delayed hover, keyboard focus, and canceled, ignored, and later accepted requests. | Verified |
 | Provider versus state  | The suite covers live delay overrides and timeout, sibling handoff, disabled requests and veto, and focus loss and re-entry.                                         | Verified |
-| Tooltip behavior       | Compare multiple triggers/handles, trigger identity inputs, pointer grace, viewport/arrow, animation completion, and SSR/hydration.                                  | P2       |
+| Trigger identity       | Controlled and default IDs, live payload and anchor, late registration, same-ID replacement, active removal and veto, and detached handle handoff.                   | Verified |
+| Tooltip behavior       | Compare pointer grace, Viewport and Arrow, animation completion, and SSR/hydration.                                                                                  | P2       |
 
 Also compare the actual emitted per-part attributes/CSS variables with both the pinned declaration
 files and runtime state mapping. Check native hosts, event reasons/details/default prevention,
@@ -72,7 +81,7 @@ are permitted; changed observable behavior needs evidence or an explicitly revie
 
 - [Tooltip units](__tests__/tooltip.spec.ts) cover directives, handle/provider behavior, and deferred commit of the active trigger and payload.
 - [Angular browser regressions](../../../apps/visual-regression/tests/tooltip.behavior.spec.ts) exercise Tooltip in Storybook.
-- [Pinned comparisons](../../../apps/parity-testing/primitives/tooltip/README.md) cover open ownership and interaction in eleven scenarios across Chromium, Firefox, and WebKit. The [reviewed differences](../../../apps/parity-testing/primitives/tooltip/expected-differences.json) cover Angular's popup role and description link, its return to local state when a controlled binding becomes undefined, and its handling of pending hover and trigger markers on disable.
+- [Pinned comparisons](../../../apps/parity-testing/primitives/tooltip/README.md) cover open ownership, interaction, and trigger selection in sixteen scenarios across Chromium, Firefox, and WebKit. The [reviewed differences](../../../apps/parity-testing/primitives/tooltip/expected-differences.json) cover Angular's popup role and description link, its return to local state when a controlled binding becomes undefined, its handling of pending hover and trigger markers on disable, and implicit selection with multiple detached triggers.
 - Tooltip SSR/hydration comparison is pending.
 
 See the [verification skill](../../../.agents/skills/radix-testing/SKILL.md),

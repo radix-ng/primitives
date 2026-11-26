@@ -21,12 +21,13 @@ export interface OpenRequest {
     canceled: boolean;
 }
 
-export function installFixture(): { open?: boolean; defaultOpen: boolean; interactions: boolean } {
+export function installFixture(): { open?: boolean; defaultOpen: boolean; interactions: boolean; identity: boolean } {
     window.tooltipParity = __PARITY_REFERENCE__;
     const params = new URLSearchParams(window.location.search);
     return {
         open: params.has('open') ? params.get('open') === 'true' : undefined,
         defaultOpen: params.get('defaultOpen') === 'true',
-        interactions: params.has('interactions')
+        interactions: params.has('interactions'),
+        identity: params.has('identity')
     };
 }

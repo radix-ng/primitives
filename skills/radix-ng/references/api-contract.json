@@ -9712,9 +9712,6 @@
         {
           "directive": "RdxTooltipTrigger",
           "selector": "[rdxTooltipTrigger]",
-          "hostDirectives": [
-            "RdxPopperAnchor"
-          ],
           "inputs": [
             {
               "name": "closeDelay",
@@ -9748,7 +9745,7 @@
             {
               "name": "id",
               "type": "string",
-              "description": "ID used to identify this trigger when opening a detached tooltip imperatively."
+              "description": "ID used by the root's trigger selection and by detached handles."
             },
             {
               "name": "payload",
@@ -9784,6 +9781,12 @@
               "description": "Whether the tooltip is initially open. Uncontrolled."
             },
             {
+              "name": "defaultTriggerId",
+              "type": "string | null",
+              "default": "null",
+              "description": "ID of the trigger associated with an initially open uncontrolled tooltip."
+            },
+            {
               "name": "delay",
               "type": "number | undefined",
               "default": "undefined",
@@ -9817,6 +9820,12 @@
               "type": "RdxTrackCursorAxis",
               "default": "'none'",
               "description": "Determines which axis the tooltip should track the cursor on."
+            },
+            {
+              "name": "triggerId",
+              "type": "string | null",
+              "default": "undefined",
+              "description": "ID of the active trigger. Null or undefined falls back to the local selection."
             }
           ],
           "outputs": [
@@ -9829,10 +9838,16 @@
               "name": "openChange",
               "type": "boolean",
               "description": "Emitted for open/close requests that were not canceled. Supports `[(open)]`."
+            },
+            {
+              "name": "triggerIdChange",
+              "type": "string | null",
+              "description": "Accepted requests to change the active trigger. Supports `[(triggerId)]`."
             }
           ],
           "twoWay": [
-            "open"
+            "open",
+            "triggerId"
           ]
         }
       ]

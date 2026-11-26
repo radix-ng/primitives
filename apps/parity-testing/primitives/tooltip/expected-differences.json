@@ -368,5 +368,29 @@
         "angular": false,
         "react": true,
         "category": "disabled-trigger-open-marker"
+    },
+    {
+        "scenario": "identity-implicit",
+        "checkpoint": "open with no ID and multiple triggers",
+        "field": "active",
+        "angular": [],
+        "react": ["copy-format"],
+        "category": "implicit-detached-trigger"
+    },
+    {
+        "scenario": "identity-implicit",
+        "checkpoint": "open with no ID and multiple triggers",
+        "field": "payload",
+        "angular": null,
+        "react": "Copy payload",
+        "category": "implicit-detached-trigger"
+    },
+    {
+        "scenario": "identity-implicit",
+        "checkpoint": "open with no ID and multiple triggers",
+        "field": "anchored",
+        "angular": false,
+        "react": true,
+        "category": "implicit-detached-trigger"
     }
 ]

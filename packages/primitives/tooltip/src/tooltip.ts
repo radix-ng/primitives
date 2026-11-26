@@ -1,4 +1,5 @@
 import {
+    afterRenderEffect,
     booleanAttribute,
     computed,
     DestroyRef,
@@ -7,6 +8,7 @@ import {
     ElementRef,
     inject,
     input,
+    linkedSignal,
     numberAttribute,
     output,
     Signal,
@@ -42,6 +44,17 @@ export interface RdxTooltipTriggerRegistration {
     disabled: Signal<boolean>;
 }
 
+interface RdxTooltipRegisteredTrigger {
+    element: HTMLElement;
+    payload: () => unknown;
+    options?: RdxTooltipTriggerRegistration;
+}
+
+interface RdxTooltipTriggerSelection {
+    id: string | null;
+    external?: { element: HTMLElement; payload: unknown };
+}
+
 export interface RdxTooltipContext {
     contentId: string;
     isOpen: Signal<boolean>;
@@ -58,14 +71,19 @@ export interface RdxTooltipContext {
     trigger: Signal<HTMLElement | undefined>;
     triggers: Signal<HTMLElement[]>;
     payload: Signal<unknown>;
-    open: (trigger?: HTMLElement, payload?: unknown, event?: Event) => void;
+    open: (trigger?: HTMLElement, payload?: unknown, event?: Event, reason?: RdxTooltipOpenChangeReason) => void;
     close: (reason?: RdxTooltipOpenChangeReason, event?: Event) => void;
     openChangeReason: Signal<RdxTooltipOpenChangeReason>;
     cancelPendingOpen: (trigger?: HTMLElement) => void;
     closeHoverOpen: (event?: Event) => void;
     /** Closes after the resolved hover close delay. */
     closeDelayed: (event?: Event) => void;
-    registerTrigger: (trigger: HTMLElement, options?: RdxTooltipTriggerRegistration) => () => void;
+    registerTrigger: (
+        id: string,
+        trigger: HTMLElement,
+        payload: () => unknown,
+        options?: RdxTooltipTriggerRegistration
+    ) => () => void;
     /** Hover entered a trigger — opens after the resolved delay (or instantly). */
     onTriggerEnter: (trigger: HTMLElement, payload: unknown, event: Event, delay?: number) => void;
     /** Hover left a trigger — cancels a pending open and closes when appropriate. */
@@ -121,7 +139,8 @@ export class RdxTooltip {
     private readonly popper = inject(RdxPopper);
     private readonly destroyRef = inject(DestroyRef);
     private readonly uncontrolledOpen = signal(false);
-    private readonly triggerOptions = new Map<HTMLElement, RdxTooltipTriggerRegistration>();
+    private readonly registeredTriggers = signal<ReadonlyMap<string, RdxTooltipRegisteredTrigger>>(new Map());
+    private readonly localTrigger = signal<RdxTooltipTriggerSelection>({ id: null });
     // Commit trigger and lifecycle metadata when the controlled input changes.
     private pendingOpenChange?: { open: boolean; commit: () => void };
 
@@ -152,6 +171,23 @@ export class RdxTooltip {
      * Whether the tooltip is initially open. Uncontrolled.
      */
     readonly defaultOpen = input<boolean, BooleanInput>(false, { transform: booleanAttribute });
+
+    /** ID of the active trigger. Null or undefined falls back to the local selection. */
+    readonly triggerIdInput = input<string | null>(undefined, { alias: 'triggerId' });
+
+    /** ID of the trigger associated with an initially open uncontrolled tooltip. */
+    readonly defaultTriggerId = input<string | null>(null);
+
+    /** Accepted requests to change the active trigger. Supports `[(triggerId)]`. */
+    readonly triggerIdChange = output<string | null>();
+
+    private readonly implicitTriggerId = computed(() => {
+        if (!this.open() || this.localTrigger().external) return null;
+        const triggers = this.registeredTriggers();
+        return triggers.size === 1 ? (triggers.keys().next().value ?? null) : null;
+    });
+
+    readonly triggerId = computed(() => this.triggerIdInput() ?? this.localTrigger().id ?? this.implicitTriggerId());
 
     /**
      * How long to wait before opening the tooltip. Specified in milliseconds.
@@ -197,9 +233,26 @@ export class RdxTooltip {
     readonly onOpenChange = output<RdxTooltipOpenChangeEvent>();
 
     readonly contentId = injectId('rdx-tooltip-content-');
-    readonly trigger = signal<HTMLElement | undefined>(undefined);
-    readonly triggers = signal<HTMLElement[]>([]);
-    readonly payload = signal<unknown>(undefined);
+    private readonly activeRegistration = computed(() => {
+        const id = this.triggerId();
+        return id === null ? undefined : this.registeredTriggers().get(id);
+    });
+    private readonly externalTrigger = computed(() => {
+        const local = this.localTrigger();
+        return local.id === this.triggerId() ? local.external : undefined;
+    });
+    private readonly detachedPayload = linkedSignal<string | null, { value: unknown } | undefined>({
+        source: this.triggerId,
+        computation: () => undefined
+    });
+    readonly trigger = computed(() => this.activeRegistration()?.element ?? this.externalTrigger()?.element);
+    readonly triggers = computed(() => Array.from(this.registeredTriggers().values(), ({ element }) => element));
+    readonly payload = computed(() => {
+        const active = this.activeRegistration();
+        if (active) return active.payload();
+        const external = this.externalTrigger();
+        return external ? external.payload : this.detachedPayload()?.value;
+    });
     readonly cursorPosition = signal<{ x: number; y: number } | undefined>(undefined);
     readonly openChangeReason = signal<RdxTooltipOpenChangeReason>('none');
     private readonly preventUnmountOnClose = signal(false);
@@ -217,7 +270,15 @@ export class RdxTooltip {
         this.open() && this.trackCursorAxis() !== 'none' ? 'tracking-cursor' : this.openedInstantType()
     );
     /** @internal Shared with structural Portal. */
-    readonly renderLifecycle = useRenderLifecycle(undefined, { open: () => this.open() });
+    readonly renderLifecycle = useRenderLifecycle(
+        (open) => {
+            if (!open && !this.openState() && !this.preventUnmountOnClose()) {
+                this.localTrigger.set({ id: null });
+                this.detachedPayload.set(undefined);
+            }
+        },
+        { open: () => this.open() }
+    );
     readonly present = computed(() => this.open() || this.preventUnmountOnClose());
 
     private readonly virtualAnchor = computed<ReferenceElement | undefined>(() => {
@@ -260,7 +321,17 @@ export class RdxTooltip {
 
     constructor() {
         watch([], () => {
+            this.localTrigger.set({ id: this.defaultTriggerId() });
             this.uncontrolledOpen.set(this.defaultOpen());
+        });
+
+        afterRenderEffect({
+            read: () => {
+                if (this.triggerIdInput() != null || this.localTrigger().id !== null) return;
+
+                const id = this.implicitTriggerId();
+                if (id !== null) this.localTrigger.set({ id });
+            }
         });
 
         let previousState = false;
@@ -324,9 +395,14 @@ export class RdxTooltip {
     }
 
     /** Opens immediately, optionally switching the active trigger/payload. */
-    show(trigger = this.trigger(), payload?: unknown, event?: Event) {
+    show(
+        trigger = this.trigger(),
+        payload?: unknown,
+        event?: Event,
+        reason: RdxTooltipOpenChangeReason = 'trigger-focus'
+    ) {
         this.blurTimer.stop();
-        this.applyOpen(true, trigger, payload, 'trigger-focus', event);
+        this.applyOpen(true, trigger, payload, reason, event);
     }
 
     close(reason: RdxTooltipOpenChangeReason = 'none', event?: Event) {
@@ -360,16 +436,14 @@ export class RdxTooltip {
         this.cancelPendingOpen();
         const trigger = this.trigger();
         if (!this.open() || !trigger) return;
-        if (this.triggerOptions.get(trigger)?.disabled()) return;
+        const options = this.activeRegistration()?.options;
+        if (options?.disabled()) return;
         if (this.openChangeReason() === 'trigger-focus' && trigger.contains(getActiveElement(trigger.ownerDocument))) {
             return;
         }
 
         const delay =
-            this.triggerOptions.get(trigger)?.closeDelay() ??
-            this.closeDelay() ??
-            this.provider?.closeDelay() ??
-            this.defaultConfig.closeDelay;
+            options?.closeDelay() ?? this.closeDelay() ?? this.provider?.closeDelay() ?? this.defaultConfig.closeDelay;
         if (delay <= 0) {
             this.applyClose('trigger-hover', event);
         } else {
@@ -412,8 +486,8 @@ export class RdxTooltip {
 
             const next = isNode(event.relatedTarget) ? event.relatedTarget : activeElement;
             if (
-                this.triggers().some(
-                    (candidate) => candidate.contains(next) && !this.triggerOptions.get(candidate)?.disabled()
+                Array.from(this.registeredTriggers().values()).some(
+                    ({ element, options }) => element.contains(next) && !options?.disabled()
                 )
             ) {
                 return;
@@ -423,30 +497,48 @@ export class RdxTooltip {
         }, 0);
     }
 
-    registerTrigger(trigger: HTMLElement, options?: RdxTooltipTriggerRegistration) {
-        if (options) this.triggerOptions.set(trigger, options);
-        this.triggers.update((triggers) => (triggers.includes(trigger) ? triggers : [...triggers, trigger]));
+    registerTrigger(id: string, trigger: HTMLElement, payload: () => unknown, options?: RdxTooltipTriggerRegistration) {
+        const registration = { element: trigger, payload, options };
+        const previous = this.registeredTriggers().get(id);
+        if (previous && previous.element !== trigger) this.floatingContext.triggers.delete(previous.element);
+
+        this.registeredTriggers.update((triggers) => new Map(triggers).set(id, registration));
         this.floatingContext.triggers.add(trigger);
 
-        if (!this.trigger()) {
-            this.trigger.set(trigger);
-        }
-
         return () => {
+            const triggers = this.registeredTriggers();
+            if (triggers.get(id) !== registration) return;
+
+            const lostActiveTrigger = this.open() && this.triggerId() === id;
+            if (lostActiveTrigger) this.detachedPayload.set({ value: payload() });
             this.cancelPendingOpen(trigger);
-            this.triggerOptions.delete(trigger);
-            this.triggers.update((triggers) => triggers.filter((candidate) => candidate !== trigger));
+            const remaining = new Map(triggers);
+            remaining.delete(id);
+            this.registeredTriggers.set(remaining);
             this.floatingContext.triggers.delete(trigger);
 
-            if (this.trigger() === trigger) {
-                const nextTrigger = this.triggers()[0];
-                this.trigger.set(nextTrigger);
+            if (lostActiveTrigger) {
+                // Allow a replacement view or a changed ID to register before treating the anchor as lost.
+                queueMicrotask(() => {
+                    if (this.destroyRef.destroyed || !this.open() || this.triggerId() !== id) return;
+                    if (this.registeredTriggers().has(id)) return;
 
-                if (!nextTrigger && !this.destroyRef.destroyed) {
-                    this.applyClose('none');
-                }
+                    const replacementId = this.registeredId(trigger);
+                    if (replacementId !== undefined && this.triggerIdInput() == null) {
+                        this.localTrigger.set({ id: replacementId });
+                        return;
+                    }
+                    this.close('none');
+                });
             }
         };
+    }
+
+    private registeredId(trigger: HTMLElement): string | undefined {
+        for (const [id, registration] of this.registeredTriggers()) {
+            if (registration.element === trigger) return id;
+        }
+        return undefined;
     }
 
     setCursorPosition(position: { x: number; y: number } | undefined) {
@@ -465,10 +557,12 @@ export class RdxTooltip {
             return;
         }
         const wasOpen = this.open();
+        const selection = this.requestedTriggerSelection(trigger, payload);
+        const changesTrigger = selection !== undefined && selection.id !== this.triggerId();
 
         this.closeTimer.stop();
 
-        if (!wasOpen) {
+        if (!wasOpen || changesTrigger || reason === 'imperative-action') {
             const { eventDetails } = createCancelableChangeEventDetails(
                 reason,
                 event ?? new Event('tooltip.open-change'),
@@ -483,11 +577,8 @@ export class RdxTooltip {
 
         const inInstantGroup = this.provider?.isInstant() ?? false;
         const commit = () => {
-            if (trigger?.isConnected) {
-                this.trigger.set(trigger);
-                this.payload.set(payload);
-            } else {
-                this.payload.set(undefined);
+            if (selection && (!selection.external || selection.external.element.isConnected)) {
+                this.localTrigger.set(selection);
             }
             this.openedInstant.set(instant || inInstantGroup);
             this.openedInstantType.set(inInstantGroup ? 'delay' : reason === 'trigger-focus' ? 'focus' : undefined);
@@ -496,19 +587,31 @@ export class RdxTooltip {
         };
         if (wasOpen) {
             commit();
+            if (changesTrigger) this.triggerIdChange.emit(selection.id);
         } else {
-            this.acceptOpenRequest(true, commit);
+            this.acceptOpenRequest(true, commit, changesTrigger ? selection.id : undefined);
         }
+    }
+
+    private requestedTriggerSelection(
+        trigger: HTMLElement | undefined,
+        payload: unknown
+    ): RdxTooltipTriggerSelection | undefined {
+        if (!trigger) return undefined;
+
+        const id = this.registeredId(trigger);
+        return id !== undefined ? { id } : { id: trigger.id || null, external: { element: trigger, payload } };
     }
 
     private applyClose(reason: RdxTooltipOpenChangeReason = 'none', event?: Event) {
         if (!this.openState()) {
             return;
         }
+        const trigger = this.trigger();
         const change = createCancelableChangeEventDetails(
             reason,
             event ?? new Event('tooltip.open-change'),
-            this.trigger()
+            trigger?.isConnected ? trigger : undefined
         );
         const { eventDetails } = change;
         this.onOpenChange.emit({ open: false, eventDetails });
@@ -528,13 +631,14 @@ export class RdxTooltip {
         });
     }
 
-    private acceptOpenRequest(open: boolean, commit: () => void): void {
+    private acceptOpenRequest(open: boolean, commit: () => void, requestedTriggerId?: string | null): void {
         if (this.openInput() === undefined) {
             this.uncontrolledOpen.set(open);
             commit();
         } else {
             this.pendingOpenChange = { open, commit };
         }
+        if (requestedTriggerId !== undefined) this.triggerIdChange.emit(requestedTriggerId);
         this.openChange.emit(open);
     }
 }
@@ -550,16 +654,16 @@ function contextFor(root: RdxTooltip): RdxTooltipContext {
         disabled: root.disabled,
         disableHoverablePopup: root.disableHoverablePopup,
         trackCursorAxis: root.trackCursorAxis,
-        trigger: root.trigger.asReadonly(),
-        triggers: root.triggers.asReadonly(),
-        payload: root.payload.asReadonly(),
+        trigger: root.trigger,
+        triggers: root.triggers,
+        payload: root.payload,
         openChangeReason: root.openChangeReason.asReadonly(),
-        open: (trigger?: HTMLElement, payload?: unknown, event?: Event) => root.show(trigger, payload, event),
+        open: (trigger, payload, event, reason) => root.show(trigger, payload, event, reason),
         close: (reason?: RdxTooltipOpenChangeReason, event?: Event) => root.close(reason, event),
         cancelPendingOpen: (trigger) => root.cancelPendingOpen(trigger),
         closeHoverOpen: (event) => root.closeHoverOpen(event),
         closeDelayed: (event) => root.scheduleClose(event),
-        registerTrigger: (trigger, options) => root.registerTrigger(trigger, options),
+        registerTrigger: (id, trigger, payload, options) => root.registerTrigger(id, trigger, payload, options),
         onTriggerEnter: (trigger, payload, event, delay) => root.onTriggerEnter(trigger, payload, event, delay),
         onTriggerLeave: (trigger, event) => root.onTriggerLeave(trigger, event),
         onTriggerBlur: (trigger, event) => root.onTriggerBlur(trigger, event),

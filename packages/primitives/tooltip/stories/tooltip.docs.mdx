@@ -82,6 +82,23 @@ Disabling the Root hides the popup and requests a close with reason `disabled` i
 true. Re-enabling shows the popup again if that state was retained. Disable only the Trigger to
 suppress hover and focus while keeping the popup available to `[open]`, as in the slider example.
 
+## Active trigger
+
+Assign an `id` to each trigger that shares a root. `defaultTriggerId` selects the initial trigger
+for `defaultOpen`. Use `[triggerId]` to choose the trigger while the tooltip is open. Setting it to
+`null` or `undefined` restores the local selection. An open tooltip with exactly one registered
+trigger can select it automatically. With several triggers, set an ID or open from a trigger
+interaction to establish the association.
+
+`(triggerIdChange)` emits uncanceled requests to switch triggers and supports `[(triggerId)]`.
+Changing the bound ID moves the anchor and updates the trigger description without emitting a
+request. Read `triggerId()`, `trigger()` and `payload()` on the root to get the effective selection
+and its current data. The same IDs work with detached triggers and `handle.open(id)`.
+
+When the active trigger is removed, the root requests a close once the render has settled. A
+replacement with the same ID keeps the tooltip open. A close veto retains the selection and its
+last payload until that ID registers again or the selection changes.
+
 ## Examples
 
 <a href="./?path=/docs/guides-styling--docs#copy-an-example-into-your-app" target="_top">Example setup</a>

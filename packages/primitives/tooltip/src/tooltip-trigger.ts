@@ -12,7 +12,6 @@ import {
 } from '@angular/core';
 import { BooleanInput, injectId, NumberInput, watch } from '@radix-ng/primitives/core';
 import { createRdxTriggerInteraction } from '@radix-ng/primitives/floating-focus-manager';
-import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { injectRdxTooltipContext } from './tooltip';
 import { RdxTooltipHandle } from './tooltip-handle';
 
@@ -56,7 +55,6 @@ function isMouseLikePointerType(pointerType: string | undefined): boolean {
 
 @Directive({
     selector: '[rdxTooltipTrigger]',
-    hostDirectives: [RdxPopperAnchor],
     host: {
         type: 'button',
         'data-grace-area-trigger': "''",
@@ -92,7 +90,7 @@ export class RdxTooltipTrigger {
     readonly payload = input<unknown>();
 
     /**
-     * ID used to identify this trigger when opening a detached tooltip imperatively.
+     * ID used by the root's trigger selection and by detached handles.
      */
     readonly id = input<string>();
 
@@ -128,7 +126,10 @@ export class RdxTooltipTrigger {
     );
 
     protected readonly triggerId = computed(() => this.id() ?? this.generatedId);
-    protected readonly rootContext = computed(() => this.handle()?.context() ?? this.parentRootContext);
+    protected readonly rootContext = computed(() => {
+        const handle = this.handle();
+        return handle ? handle.context() : this.parentRootContext;
+    });
 
     /** Disabled if either the root or this trigger is disabled. */
     protected readonly isDisabled = computed(() => (this.rootContext()?.disabled() ?? false) || this.disabled());
@@ -155,14 +156,11 @@ export class RdxTooltipTrigger {
         const options = { closeDelay: this.closeDelay, disabled: this.isDisabled };
         effect((onCleanup) => {
             const handle = this.handle();
+            const id = this.triggerId();
+            const payload = () => this.payload();
+            const owner = handle ?? this.parentRootContext;
 
-            if (handle) {
-                onCleanup(
-                    untracked(() => handle.registerTrigger(this.triggerId(), trigger, () => this.payload(), options))
-                );
-            } else if (this.parentRootContext) {
-                onCleanup(untracked(() => this.parentRootContext!.registerTrigger(trigger, options)));
-            }
+            if (owner) onCleanup(untracked(() => owner.registerTrigger(id, trigger, payload, options)));
         });
 
         watch([this.rootContext, this.isDisabled], ([root, disabled]) => {

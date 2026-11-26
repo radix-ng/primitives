@@ -9,6 +9,7 @@ import {
     RdxTooltipProvider,
     RdxTooltipTrigger
 } from '@radix-ng/primitives/tooltip';
+import { TooltipIdentityFixture } from './angular-identity';
 import {
     groupTimeout,
     hoverCloseDelay,
@@ -116,4 +117,6 @@ class TooltipFixture {
     }
 }
 
-void bootstrapApplication(TooltipFixture, { providers: [provideZonelessChangeDetection()] });
+void bootstrapApplication(initial.identity ? TooltipIdentityFixture : TooltipFixture, {
+    providers: [provideZonelessChangeDetection()]
+});

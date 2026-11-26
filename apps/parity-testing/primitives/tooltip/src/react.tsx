@@ -12,6 +12,7 @@ import {
     updatedHoverCloseDelay,
     updatedHoverDelay
 } from './contract';
+import { TooltipIdentityFixture } from './react-identity';
 
 const initial = installFixture();
 
@@ -130,4 +131,4 @@ function TooltipFixture() {
     );
 }
 
-createRoot(document.getElementById('root')!).render(<TooltipFixture />);
+createRoot(document.getElementById('root')!).render(initial.identity ? <TooltipIdentityFixture /> : <TooltipFixture />);

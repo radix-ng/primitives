@@ -1,49 +1,33 @@
-import { computed, signal } from '@angular/core';
+import { computed } from '@angular/core';
+import { createPopupHandleRegistry } from '@radix-ng/primitives/core';
 import type { RdxTooltipContext, RdxTooltipTriggerRegistration } from './tooltip';
 
-/**
- * Connects a tooltip root with trigger elements rendered elsewhere in the DOM.
- */
-interface RdxTooltipHandleTrigger<Payload> {
-    element: HTMLElement;
-    payload: () => Payload | undefined;
-    options?: RdxTooltipTriggerRegistration;
-}
-
+/** Connects a tooltip root with trigger elements rendered elsewhere in the DOM. */
 export class RdxTooltipHandle<Payload = unknown> {
-    private readonly rootContext = signal<RdxTooltipContext | undefined>(undefined);
-    private readonly triggers = new Map<string, RdxTooltipHandleTrigger<Payload>>();
-    private readonly rootTriggerCleanups = new Map<string, () => void>();
+    private readonly registry = createPopupHandleRegistry<RdxTooltipContext, Payload, RdxTooltipTriggerRegistration>(
+        (root, id, { element, payload, data }) => root.registerTrigger(id, element, payload, data)
+    );
 
-    readonly isOpen = computed(() => this.rootContext()?.isOpen() ?? false);
+    readonly isOpen = computed(() => this.registry.root()?.isOpen() ?? false);
 
     open(triggerId: string) {
-        const trigger = this.triggers.get(triggerId);
+        const root = this.registry.root();
+        if (!root) return;
 
+        const trigger = this.registry.trigger(triggerId);
         if (!trigger) {
             throw new Error(`No tooltip trigger registered with id "${triggerId}".`);
         }
 
-        this.rootContext()?.open(trigger.element, trigger.payload());
+        root.open(trigger.element, trigger.payload(), undefined, 'imperative-action');
     }
 
     close() {
-        this.rootContext()?.close();
+        this.registry.root()?.close('imperative-action');
     }
 
     registerRoot(rootContext: RdxTooltipContext) {
-        this.rootContext.set(rootContext);
-        this.triggers.forEach((trigger, id) => {
-            this.rootTriggerCleanups.set(id, rootContext.registerTrigger(trigger.element, trigger.options));
-        });
-
-        return () => {
-            if (this.rootContext() === rootContext) {
-                this.rootTriggerCleanups.forEach((cleanup) => cleanup());
-                this.rootTriggerCleanups.clear();
-                this.rootContext.set(undefined);
-            }
-        };
+        return this.registry.registerRoot(rootContext);
     }
 
     registerTrigger(
@@ -52,26 +36,11 @@ export class RdxTooltipHandle<Payload = unknown> {
         payload: () => Payload | undefined,
         options?: RdxTooltipTriggerRegistration
     ) {
-        this.rootTriggerCleanups.get(id)?.();
-        this.triggers.set(id, { element: trigger, payload, options });
-        const unregisterFromRoot = this.rootContext()?.registerTrigger(trigger, options);
-
-        if (unregisterFromRoot) {
-            this.rootTriggerCleanups.set(id, unregisterFromRoot);
-        }
-
-        return () => {
-            this.rootTriggerCleanups.get(id)?.();
-            this.rootTriggerCleanups.delete(id);
-
-            if (this.triggers.get(id)?.element === trigger) {
-                this.triggers.delete(id);
-            }
-        };
+        return this.registry.registerTrigger(id, trigger, payload, options);
     }
 
     context() {
-        return this.rootContext();
+        return this.registry.root();
     }
 }
 
