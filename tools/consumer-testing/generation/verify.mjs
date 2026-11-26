@@ -4,7 +4,7 @@ import { cpSync, existsSync, readFileSync, readdirSync, realpathSync, symlinkSyn
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
-import { sha, treeDigest } from '../environment.mjs';
+import { browserBuildInputs, sha, treeDigest } from '../environment.mjs';
 import { runLogged } from './commands.mjs';
 
 const directory = path.dirname(fileURLToPath(import.meta.url));
@@ -135,8 +135,7 @@ const build = await run('production-build', 'pnpm', ['build'], consumer, { ...pr
 await check('generated application production build', () => assert.equal(build.code, 0));
 if (build.code === 0)
     await check('production inputs do not resolve into the workspace', () => {
-        const stats = JSON.parse(readFileSync(path.join(consumer, 'dist/consumer/stats.json'), 'utf8'));
-        const inputs = Object.keys(stats.inputs);
+        const inputs = browserBuildInputs(consumer);
         for (const input of inputs) {
             const file = path.resolve(consumer, input);
             if (existsSync(file)) assert.ok(!realpathSync(file).startsWith(workspace + path.sep), input);

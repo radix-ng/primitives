@@ -8,7 +8,7 @@ import { suiteFromEnvironment } from './shared/suites.ts';
 
 const suite = suiteFromEnvironment();
 const prepared = prepareReference();
-writeReferencePaths(prepared);
+const paths = writeReferencePaths(prepared);
 
 export default defineConfig({
     root: suite.directory,
@@ -34,6 +34,10 @@ export default defineConfig({
     resolve: {
         tsconfigPaths: true,
         alias: [
+            // Fixture modules can import Radix NG outside the Angular compiler's tsconfig include list.
+            ...Object.entries(paths)
+                .filter(([name]) => name.startsWith('@radix-ng/primitives/'))
+                .map(([find, [replacement]]) => ({ find, replacement })),
             { find: /^@base-ui\/react\/(.*)/, replacement: `${prepared.directory}/packages/react/src/$1` },
             { find: /^@base-ui\/utils\/(.*)/, replacement: `${prepared.directory}/packages/utils/src/$1` }
         ],

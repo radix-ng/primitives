@@ -34,7 +34,7 @@ export const reference: ReferenceSpec = JSON.parse(readFileSync(join(appRoot, 'r
 const defaultCache = join(workspaceRoot, 'node_modules/.cache/radix-ng-parity');
 
 /** Keep TypeScript and Vite on the same archived sources, without duplicating the commit in paths. */
-export function writeReferencePaths(prepared: PreparedReference): void {
+export function writeReferencePaths(prepared: PreparedReference): Record<string, string[]> {
     const base = JSON.parse(readFileSync(join(workspaceRoot, 'tsconfig.base.json'), 'utf8')) as {
         compilerOptions: { paths: Record<string, string[]> };
     };
@@ -57,6 +57,7 @@ export function writeReferencePaths(prepared: PreparedReference): void {
             2
         )}\n`
     );
+    return paths;
 }
 
 export function sourceDigest(directory: string): string {

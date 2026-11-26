@@ -1,10 +1,19 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { readFileSync, readdirSync, realpathSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, realpathSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 const json = (file) => JSON.parse(readFileSync(file, 'utf8'));
 export const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
+
+export function browserBuildInputs(consumer) {
+    const output = path.join(consumer, 'dist/consumer');
+    const browserStats = path.join(output, 'browser-stats.json');
+    // Angular 22.3 split the stats by platform. Older experiment fixtures still emit stats.json.
+    const stats = json(existsSync(browserStats) ? browserStats : path.join(output, 'stats.json'));
+    return Object.keys(stats.inputs);
+}
+
 export function treeDigest(directory) {
     const files = readdirSync(directory, { recursive: true, withFileTypes: true })
         .filter((entry) => entry.isFile())

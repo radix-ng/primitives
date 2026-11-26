@@ -14,7 +14,7 @@ import {
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { installConsumerSkills, installPackedLibrary, treeDigest } from './environment.mjs';
+import { browserBuildInputs, installConsumerSkills, installPackedLibrary, treeDigest } from './environment.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const output = realpathSync(mkdtempSync(path.join(tmpdir(), 'radix-consumer-')));
@@ -92,7 +92,7 @@ async function main() {
         return { file, sha256: sha(readFileSync(path.join(skillRoot, file))) };
     });
     await pnpm('consumer-build', ['build'], consumer);
-    const inputs = Object.keys(json(path.join(consumer, 'dist/consumer/stats.json')).inputs);
+    const inputs = browserBuildInputs(consumer);
     for (const input of inputs) {
         const file = path.resolve(consumer, input);
         if (existsSync(file))
