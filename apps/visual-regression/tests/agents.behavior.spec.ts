@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { docsHeading } from './docs-heading';
 
 // Maintained reference fixtures for the public Agents tasks. These tests do not run a coding agent.
 const browserErrors = new WeakMap<Page, string[]>();
@@ -153,7 +154,7 @@ test('Agents pages and exported contracts are discoverable through Storybook and
         expect(contract).toEqual(JSON.parse(bundled(`radix-ng/references/${kind}/select.json`)));
     }
     await page.goto('/iframe.html?id=agents-getting-started--docs&viewMode=docs');
-    await expect(page.getByRole('heading', { name: 'Getting started', exact: true })).toBeVisible();
+    await expect(docsHeading(page, 'Getting started')).toBeVisible();
     await expect(page.getByRole('link', { name: 'Compose components', exact: true })).toHaveAttribute(
         'href',
         './?path=/docs/agents-compose-components--docs'
@@ -175,10 +176,10 @@ test('Agents sidebar opens each public guide', async ({ page }) => {
         ['reference', 'Reference']
     ]) {
         await page.locator(`a[href$="/docs/agents-${slug}--docs"]`).click();
-        await expect(preview.getByRole('heading', { name: title, exact: true })).toBeVisible();
+        await expect(docsHeading(preview, title)).toBeVisible();
     }
     await page.locator('a[href$="/docs/agents-getting-started--docs"]').click();
     await preview.getByRole('link', { name: 'Compose components', exact: true }).click();
     await expect(page).toHaveURL(/path=\/docs\/agents-compose-components--docs/);
-    await expect(preview.getByRole('heading', { name: 'Compose components', exact: true })).toBeVisible();
+    await expect(docsHeading(preview, 'Compose components')).toBeVisible();
 });

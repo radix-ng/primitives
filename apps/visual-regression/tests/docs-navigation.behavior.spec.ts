@@ -1,4 +1,5 @@
 import { expect, type Page, test } from '@playwright/test';
+import { docsHeading } from './docs-heading';
 
 async function selectDocs(page: Page) {
     await page.goto('/iframe.html?id=primitives-select--docs&viewMode=docs', { waitUntil: 'domcontentloaded' });
@@ -13,7 +14,7 @@ async function expectNoOverflow(page: Page) {
 
 test('Menu positioning ArgTypes show binding aliases and effective defaults', async ({ page }) => {
     await page.goto('/iframe.html?id=primitives-menu--docs&viewMode=docs', { waitUntil: 'domcontentloaded' });
-    const heading = page.getByRole('heading', { name: 'RdxMenuPositioner', exact: true });
+    const heading = docsHeading(page, 'RdxMenuPositioner');
     const table = heading.locator('xpath=following::table[1]');
     // The conditional owner table precedes ArgTypes; the latter owns the documented inputs.
     const args = heading.locator('xpath=following::table[2]');
@@ -38,7 +39,7 @@ test('Menu positioning ArgTypes show binding aliases and effective defaults', as
 
 test('Menu Portal ArgTypes publish shared destination inputs', async ({ page }) => {
     await page.goto('/iframe.html?id=primitives-menu--docs&viewMode=docs', { waitUntil: 'domcontentloaded' });
-    const heading = page.getByRole('heading', { name: 'RdxMenuPortal', exact: true });
+    const heading = docsHeading(page, 'RdxMenuPortal');
     const table = heading.locator('xpath=following::table[1]');
     for (const name of ['container', 'keepMounted'])
         await expect(
@@ -47,14 +48,10 @@ test('Menu Portal ArgTypes publish shared destination inputs', async ({ page }) 
                 .filter({ has: page.locator('td:first-child').filter({ hasText: new RegExp(`^${name}$`) }) })
         ).toHaveCount(1);
     await expect(table).toContainText('ShadowRoot');
-    const popupTable = page
-        .getByRole('heading', { name: 'RdxMenuPopup', exact: true })
-        .locator('xpath=following::table[1]');
+    const popupTable = docsHeading(page, 'RdxMenuPopup').locator('xpath=following::table[1]');
     await expect(popupTable.getByText('finalFocus', { exact: true })).toHaveCount(1);
     await expect(popupTable.getByText('returnFocus', { exact: true })).toHaveCount(0);
-    const labelTable = page
-        .getByRole('heading', { name: 'RdxMenuGroupLabel', exact: true })
-        .locator('xpath=following::table[1]');
+    const labelTable = docsHeading(page, 'RdxMenuGroupLabel').locator('xpath=following::table[1]');
     await expect(labelTable.getByText('id', { exact: true })).toHaveCount(1);
 });
 
@@ -73,21 +70,16 @@ test('desktop TOC preserves anchors and expands only the active section', async 
     const events = toc.getByRole('link', { name: 'Events', exact: true });
     await expect(events).toBeVisible();
     await expect(events).toHaveAttribute('href', '#change-details-and-interaction-state');
-    await expect(
-        page.getByRole('heading', { name: 'Change details and interaction state', exact: true })
-    ).toHaveAttribute('id', 'change-details-and-interaction-state');
+    await expect(docsHeading(page, 'Change details and interaction state')).toHaveAttribute(
+        'id',
+        'change-details-and-interaction-state'
+    );
     await expect(toc.getByRole('link', { name: 'Popper', exact: true })).toBeHidden();
 
     await expect
-        .poll(() =>
-            page
-                .getByRole('heading', { name: 'Examples', exact: true })
-                .evaluate((el) => el.getBoundingClientRect().top)
-        )
+        .poll(() => docsHeading(page, 'Examples').evaluate((el) => el.getBoundingClientRect().top))
         .toBeLessThan(66);
-    await page
-        .getByRole('heading', { name: 'Item-aligned with scroll', exact: true })
-        .evaluate((el) => el.scrollIntoView({ block: 'start' }));
+    await docsHeading(page, 'Item-aligned with scroll').evaluate((el) => el.scrollIntoView({ block: 'start' }));
     const lastExample = toc.getByRole('link', { name: 'Item alignment + scroll', exact: true });
     await expect(lastExample).toHaveClass(/is-active-link/);
     await expect(lastExample).toBeInViewport();
@@ -156,12 +148,12 @@ test('navigation fits beside the manager sidebar on a laptop', async ({ page }) 
 test('example setup opens the shared Styling guide from primitive docs', async ({ page }) => {
     await page.goto('/?path=/docs/primitives-select--docs', { waitUntil: 'domcontentloaded' });
     const preview = page.frameLocator('#storybook-preview-iframe');
-    await expect(preview.getByRole('heading', { name: './select-typed-control.ts', exact: true })).toBeVisible();
-    await expect(preview.getByRole('heading', { name: 'Setup and shared files', exact: true })).toHaveCount(0);
+    await expect(docsHeading(preview, './select-typed-control.ts')).toBeVisible();
+    await expect(docsHeading(preview, 'Setup and shared files')).toHaveCount(0);
 
     await preview.getByRole('link', { name: 'Example setup', exact: true }).click();
     await expect(page).toHaveURL(/path=\/docs\/guides-styling--docs#copy-an-example-into-your-app$/);
-    await expect(preview.getByRole('heading', { name: 'Copy an example into your app', exact: true })).toBeInViewport();
+    await expect(docsHeading(preview, 'Copy an example into your app')).toBeInViewport();
     const stylesheet = preview.locator('details', { hasText: 'demo-styles.css' });
     await stylesheet.locator('summary').click();
     await expect(stylesheet).toContainText('@theme');
