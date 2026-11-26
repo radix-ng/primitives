@@ -1,4 +1,13 @@
 {
+    "$schema": "https://openapi.vercel.sh/vercel.json",
+    "framework": null,
+    "buildCommand": "pnpm build-site",
+    "outputDirectory": "dist/radix-site",
+    "git": {
+        "deploymentEnabled": {
+            "main": false
+        }
+    },
     "redirects": [
         {
             "source": "/docs",
