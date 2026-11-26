@@ -102,6 +102,9 @@ A valid submit serializes the form's `FormData` into a plain values object. Comp
 such as [Radio in a portal](?path=/docs/primitives-radio-group--docs#radio-in-a-portal) can add values
 through their Field registration. Repeated names collapse into arrays.
 
+Use a named `<input type="hidden">` for values that only need serialization, as shown below. It does
+not participate in browser constraint validation or autofill.
+
 <Canvas of={FormStories.NativeControls} />
 
 ## Example files

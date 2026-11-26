@@ -25,8 +25,7 @@ const UTILS = new Set([
     'live-announcer',
     'popper',
     'portal',
-    'presence',
-    'visually-hidden'
+    'presence'
 ]);
 
 const newestMtime = (dir) =>

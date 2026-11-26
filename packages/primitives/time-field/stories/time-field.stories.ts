@@ -12,6 +12,8 @@ import { TimeFieldLocalizationExample } from './time-field-localization';
 import localizationSource from './time-field-localization?raw';
 import { TimeFieldReadonlyExample } from './time-field-readonly';
 import readonlySource from './time-field-readonly?raw';
+import { TimeFieldSignalFormsExample } from './time-field-signal-forms';
+import signalFormsSource from './time-field-signal-forms?raw';
 import { TimeFieldValidationExample } from './time-field-validation';
 import validationSource from './time-field-validation?raw';
 
@@ -30,7 +32,8 @@ export default {
                 TimeFieldDisabledExample,
                 TimeFieldReadonlyExample,
                 TimeFieldValidationExample,
-                TimeFieldLocalizationExample
+                TimeFieldLocalizationExample,
+                TimeFieldSignalFormsExample
             ]
         }),
         tailwindDemoDecorator()
@@ -98,6 +101,15 @@ export const Localization: Story = {
     render: () => ({
         template: html`
             <time-field-localization-example />
+        `
+    })
+};
+
+export const SignalForms: Story = {
+    parameters: source(signalFormsSource),
+    render: () => ({
+        template: html`
+            <time-field-signal-forms-example />
         `
     })
 };

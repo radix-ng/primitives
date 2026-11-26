@@ -2,12 +2,11 @@ import { ChangeDetectionStrategy, Component, input, model } from '@angular/core'
 import { DateValue } from '@internationalized/date';
 import { Granularity } from '@radix-ng/primitives/core';
 import { RdxDateFieldInputDirective, RdxDateFieldRootDirective } from '@radix-ng/primitives/date-field';
-import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-date-field',
-    imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective, RdxVisuallyHiddenInputDirective],
+    imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective],
     template: `
         <div
             class="border-input bg-background text-foreground data-[invalid]:border-destructive inline-flex items-center rounded-md border px-3 py-2 text-sm shadow-xs select-none"
@@ -32,7 +31,6 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
                     </div>
                 }
             }
-            <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
         </div>
     `
 })

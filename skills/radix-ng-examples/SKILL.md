@@ -43,7 +43,7 @@ and follow its links to the other Agents guides.
 addressed by the component slug and the kebab-cased example name. Cheaper than re-reading the whole
 component doc.
 
-Total: **328 examples** across **45 components**.
+Total: **330 examples** across **45 components**.
 
 ## Components
 
@@ -58,7 +58,7 @@ Total: **328 examples** across **45 components**.
 - **[Combobox](./references/components/combobox.md)** — A filterable select: a text input that filters a list of options, with the highlighted option tracked via `aria-activedescendant`. _(17 examples)_
 - **[Context Menu](./references/components/context-menu.md)** — A menu that appears at the pointer on right click (or touch long-press), built on the Menu primitive. _(6 examples)_
 - **[Cropper](./references/components/cropper.md)** — Headless component for interactive image cropping — inspired by the experience on [X](https://x.com/). _(3 examples)_
-- **[Date Field](./references/components/date-field.md)** — Enables users to input specific dates within a designated field. _(2 examples)_
+- **[Date Field](./references/components/date-field.md)** — Enables users to input specific dates within a designated field. _(3 examples)_
 - **[Dialog](./references/components/dialog.md)** — A window overlaid on the page, rendering the content underneath inert. _(16 examples)_
 - **[Drawer](./references/components/drawer.md)** — An edge-anchored sheet that opens over the page and dismisses with a swipe. _(12 examples)_
 - **[Editable](./references/components/editable.md)** — An inline text field that swaps a read-only preview for an editable input. _(3 examples)_
@@ -86,7 +86,7 @@ Total: **328 examples** across **45 components**.
 - **[Stepper](./references/components/stepper.md)** — A set of steps that are used to indicate progress through a multi-step process. _(2 examples)_
 - **[Switch](./references/components/switch.md)** — A control that allows the user to toggle between checked and not checked. _(6 examples)_
 - **[Tabs](./references/components/tabs.md)** — A set of layered sections of content—known as tab panels—that are displayed one at a time. _(9 examples)_
-- **[Time Field](./references/components/time-field.md)** — A segmented time input that lets users enter a time hour-by-hour with full keyboard control and localization. _(7 examples)_
+- **[Time Field](./references/components/time-field.md)** — A segmented time input that lets users enter a time hour-by-hour with full keyboard control and localization. _(8 examples)_
 - **[Toast](./references/components/toast.md)** — A succinct, low-priority message that appears temporarily, stacks, and can be swiped away. _(11 examples)_
 - **[Toggle](./references/components/toggle.md)** — A two-state button that can be either on or off. _(4 examples)_
 - **[Toggle Group](./references/components/toggle-group.md)** — A set of two-state buttons that can be toggled on or off. _(5 examples)_

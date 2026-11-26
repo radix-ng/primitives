@@ -25,20 +25,17 @@ A segmented time input that lets users enter a time hour-by-hour with full keybo
 
 ```ts
 import { RdxTimeFieldRootDirective, RdxTimeFieldInputDirective } from '@radix-ng/primitives/time-field';
-import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 ```
 
 ## Anatomy
 
-Assemble the field from the root, an input segment rendered per `segmentContents()` entry, and an
-optional visually-hidden input for native form participation.
+Assemble the field from the root and an input segment rendered per `segmentContents()` entry.
 
 ```html
-<div rdxTimeFieldRoot>
+<div #root="rdxTimeFieldRoot" rdxTimeFieldRoot>
   @for (item of root.segmentContents(); track $index) {
   <div rdxTimeFieldInput [part]="item.part">{{ item.value }}</div>
   }
-  <input rdxVisuallyHiddenInput feature="focusable" />
 </div>
 ```
 
@@ -51,6 +48,7 @@ optional visually-hidden input for native form participation.
 - [Readonly](../examples/time-field--readonly.md)
 - [Validation](../examples/time-field--validation.md)
 - [Localization](../examples/time-field--localization.md)
+- [Signal Forms](../examples/time-field--signal-forms.md)
 
 ## API & styling contract
 

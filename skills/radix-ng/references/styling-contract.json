@@ -889,7 +889,7 @@
       "description": "Enables users to input specific dates within a designated field.",
       "doc": "radix-ng-examples/references/components/date-field.md",
       "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-date-field--docs",
-      "anatomy": "<div rdxDateFieldRoot>\n  <div rdxDateFieldInput></div>\n  <input rdxVisuallyHiddenInput />\n</div>",
+      "anatomy": "<div rdxDateFieldRoot>\n  <div rdxDateFieldInput></div>\n</div>",
       "dataAttributes": [
         {
           "attribute": "data-disabled",
@@ -2770,7 +2770,7 @@
       "description": "A segmented time input that lets users enter a time hour-by-hour with full keyboard control and localization.",
       "doc": "radix-ng-examples/references/components/time-field.md",
       "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-time-field--docs",
-      "anatomy": "<div rdxTimeFieldRoot>\n  @for (item of root.segmentContents(); track $index) {\n  <div rdxTimeFieldInput [part]=\"item.part\">{{ item.value }}</div>\n  }\n  <input rdxVisuallyHiddenInput feature=\"focusable\" />\n</div>",
+      "anatomy": "<div #root=\"rdxTimeFieldRoot\" rdxTimeFieldRoot>\n  @for (item of root.segmentContents(); track $index) {\n  <div rdxTimeFieldInput [part]=\"item.part\">{{ item.value }}</div>\n  }\n</div>",
       "dataAttributes": [
         {
           "attribute": "data-disabled",
@@ -3219,22 +3219,6 @@
       "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-presence--docs",
       "anatomy": "",
       "dataAttributes": []
-    },
-    {
-      "name": "Visually Hidden",
-      "slug": "visually-hidden",
-      "section": "utils",
-      "description": "Hides content visually while keeping it available to assistive technology.",
-      "doc": "radix-ng-examples/references/utils/visually-hidden.md",
-      "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-visually-hidden--docs",
-      "anatomy": "<button>\n  <icon aria-hidden=\"true\" />\n  <span rdxVisuallyHidden>Add to favorites</span>\n</button>",
-      "dataAttributes": [
-        {
-          "attribute": "data-hidden",
-          "parts": "VisuallyHidden",
-          "values": "Present when fully-hidden"
-        }
-      ]
     }
   ]
 }

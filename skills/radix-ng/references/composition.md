@@ -93,5 +93,5 @@ primitives unless their documentation says so.
 ## Headless utilities
 
 When no primitive fits, the building blocks under `@radix-ng/primitives/{composite, focus-scope,
-dismissable-layer, presence, portal, popper, visually-hidden}` (plus `injectId` and
+dismissable-layer, presence, portal, popper}` (plus `injectId` and
 `live-announcer` from `core`) let you build new accessible behavior the same way the primitives do.

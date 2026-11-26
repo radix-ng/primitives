@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
-import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 interface LocaleExample {
     readonly id: string;
@@ -11,7 +10,7 @@ interface LocaleExample {
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-localization-example',
-    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
+    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective],
     template: `
         <div class="flex flex-col gap-4">
             @for (example of locales; track example.id) {
@@ -40,7 +39,6 @@ interface LocaleExample {
                                 </div>
                             }
                         }
-                        <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
                     </div>
                 </div>
             }

@@ -12990,12 +12990,11 @@ import { ChangeDetectionStrategy, Component, input, model } from '@angular/core'
 import { DateValue } from '@internationalized/date';
 import { Granularity } from '@radix-ng/primitives/core';
 import { RdxDateFieldInputDirective, RdxDateFieldRootDirective } from '@radix-ng/primitives/date-field';
-import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-date-field',
-    imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective, RdxVisuallyHiddenInputDirective],
+    imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective],
     template: `
         <div
             class="border-input bg-background text-foreground data-[invalid]:border-destructive inline-flex items-center rounded-md border px-3 py-2 text-sm shadow-xs select-none"
@@ -13020,7 +13019,6 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
                     </div>
                 }
             }
-            <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
         </div>
     `
 })
@@ -13075,7 +13073,6 @@ Import all parts and piece them together.
 ```html
 <div rdxDateFieldRoot>
   <div rdxDateFieldInput></div>
-  <input rdxVisuallyHiddenInput />
 </div>
 ```
 
@@ -13160,12 +13157,11 @@ and interaction state. See the [Signal Forms matrix](components/signal-forms.md#
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DateValue } from '@internationalized/date';
 import { RdxDateFieldInputDirective, RdxDateFieldRootDirective } from '@radix-ng/primitives/date-field';
-import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-date-field-invalid',
-    imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective, RdxVisuallyHiddenInputDirective],
+    imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective],
     template: `
         <div class="flex flex-col gap-2">
             <label class="text-foreground text-sm font-medium" for="date-field-invalid">
@@ -13194,7 +13190,6 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
                         </div>
                     }
                 }
-                <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
 
                 @if (root.isInvalid()) {
                     <span class="text-destructive pl-2">Invalid Day</span>
@@ -13207,6 +13202,58 @@ export class DateFieldInvalid {
     isDateUnavailable(date: DateValue): boolean {
         return date.day === 19;
     }
+}
+```
+
+### Signal Forms
+
+Bind `[formField]` directly to the root. Segment edits update the date model, and Reset restores its
+initial value. No extra input is needed for Signal Forms.
+
+```typescript
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { form, FormField } from '@angular/forms/signals';
+import { DateValue } from '@internationalized/date';
+import { RdxDateFieldInputDirective, RdxDateFieldRootDirective } from '@radix-ng/primitives/date-field';
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'date-field-signal-forms-example',
+    imports: [FormField, RdxDateFieldRootDirective, RdxDateFieldInputDirective],
+    template: `
+        <div class="flex flex-col items-start gap-3">
+            <span class="text-foreground text-sm font-medium" id="signal-date-label">Appointment date</span>
+            <div
+                class="border-input bg-background text-foreground inline-flex items-center rounded-md border px-3 py-2 text-sm shadow-xs select-none"
+                #root="rdxDateFieldRoot"
+                [formField]="dateForm.date"
+                aria-labelledby="signal-date-label"
+                locale="en-US"
+                rdxDateFieldRoot
+            >
+                @for (item of root.segmentContents(); track $index) {
+                    <span
+                        class="hover:bg-muted focus:bg-accent focus:text-accent-foreground data-[placeholder]:text-muted-foreground rounded px-1 tabular-nums focus:outline-none"
+                        [part]="item.part"
+                        rdxDateFieldInput
+                    >
+                        {{ item.value }}
+                    </span>
+                }
+            </div>
+            <output class="text-muted-foreground text-sm">
+                <span class="sr-only">Selected date:</span>
+                {{ model().date?.toString() ?? 'No date selected' }}
+            </output>
+            <button class="demo-button demo-button-outline" (click)="dateForm().reset({ date: null })" type="button">
+                Reset
+            </button>
+        </div>
+    `
+})
+export class DateFieldSignalFormsExample {
+    readonly model = signal<{ date: DateValue | null }>({ date: null });
+    readonly dateForm = form(this.model);
 }
 ```
 
@@ -18193,6 +18240,9 @@ A valid submit serializes the form's `FormData` into a plain values object. Comp
 such as [Radio in a portal](components/radio.md#radio-in-a-portal) can add values
 through their Field registration. Repeated names collapse into arrays.
 
+Use a named `<input type="hidden">` for values that only need serialization, as shown below. It does
+not participate in browser constraint validation or autofill.
+
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxFieldControl, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
@@ -18209,6 +18259,7 @@ import { formField, formInput, formLabel, formSubmit } from './form.shared';
     imports: [RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl],
     template: `
         <form class="flex w-80 flex-col gap-4" (onFormSubmit)="onSubmit($event)" rdxFormRoot>
+            <input type="hidden" name="hiddenInput" value="Hidden value" />
             <div [class]="field" name="name" rdxFieldRoot>
                 <label [class]="label" rdxFieldLabel>Name</label>
                 <input [class]="input" name="name" rdxFieldControl value="Ada" />
@@ -39105,12 +39156,11 @@ Adheres to the [Tabs WAI-ARIA design pattern](https://www.w3.org/WAI/ARIA/apg/pa
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
-import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-default-example',
-    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
+    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective],
     template: `
         <div class="flex flex-col gap-1.5">
             <label class="text-foreground text-sm font-medium" id="time-default-label">Time</label>
@@ -39135,7 +39185,6 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
                         </div>
                     }
                 }
-                <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
             </div>
         </div>
     `
@@ -39183,20 +39232,17 @@ npm install @radix-ng/primitives
 
 ```ts
 import { RdxTimeFieldRootDirective, RdxTimeFieldInputDirective } from '@radix-ng/primitives/time-field';
-import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 ```
 
 ## Anatomy
 
-Assemble the field from the root, an input segment rendered per `segmentContents()` entry, and an
-optional visually-hidden input for native form participation.
+Assemble the field from the root and an input segment rendered per `segmentContents()` entry.
 
 ```html
-<div rdxTimeFieldRoot>
+<div #root="rdxTimeFieldRoot" rdxTimeFieldRoot>
   @for (item of root.segmentContents(); track $index) {
   <div rdxTimeFieldInput [part]="item.part">{{ item.value }}</div>
   }
-  <input rdxVisuallyHiddenInput feature="focusable" />
 </div>
 ```
 
@@ -39223,12 +39269,11 @@ A basic field rendering hour and minute segments.
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
-import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-default-example',
-    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
+    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective],
     template: `
         <div class="flex flex-col gap-1.5">
             <label class="text-foreground text-sm font-medium" id="time-default-label">Time</label>
@@ -39253,7 +39298,6 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
                         </div>
                     }
                 }
-                <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
             </div>
         </div>
     `
@@ -39268,12 +39312,11 @@ export class TimeFieldDefaultExample {}
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
-import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-hour-cycle-example',
-    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
+    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective],
     template: `
         <div class="flex flex-col gap-4">
             <div class="flex flex-col gap-1.5">
@@ -39300,7 +39343,6 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
                             </div>
                         }
                     }
-                    <input [value]="h12.value()" rdxVisuallyHiddenInput feature="focusable" />
                 </div>
             </div>
 
@@ -39328,7 +39370,6 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
                             </div>
                         }
                     }
-                    <input [value]="h24.value()" rdxVisuallyHiddenInput feature="focusable" />
                 </div>
             </div>
         </div>
@@ -39345,12 +39386,11 @@ export class TimeFieldHourCycleExample {}
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Granularity } from '@radix-ng/primitives/core';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
-import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-granularity-example',
-    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
+    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective],
     template: `
         <div class="flex flex-col gap-4">
             @for (granularity of granularities; track granularity) {
@@ -39380,7 +39420,6 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
                                 </div>
                             }
                         }
-                        <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
                     </div>
                 </div>
             }
@@ -39400,12 +39439,11 @@ A disabled field is inert and exposes `data-disabled` for styling.
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Time } from '@internationalized/date';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
-import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-disabled-example',
-    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
+    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective],
     template: `
         <div class="flex flex-col gap-1.5">
             <label class="text-foreground text-sm font-medium" id="time-disabled-label">Time</label>
@@ -39432,7 +39470,6 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
                         </div>
                     }
                 }
-                <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
             </div>
         </div>
     `
@@ -39450,12 +39487,11 @@ A readonly field can be focused and navigated but not edited.
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Time } from '@internationalized/date';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
-import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-readonly-example',
-    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
+    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective],
     template: `
         <div class="flex flex-col gap-1.5">
             <label class="text-foreground text-sm font-medium" id="time-readonly-label">Time</label>
@@ -39483,7 +39519,6 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
                         </div>
                     }
                 }
-                <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
             </div>
         </div>
     `
@@ -39501,12 +39536,11 @@ export class TimeFieldReadonlyExample {
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Time } from '@internationalized/date';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
-import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-validation-example',
-    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
+    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective],
     template: `
         <div class="flex flex-col gap-1.5">
             <label class="text-foreground text-sm font-medium" id="time-validation-label">
@@ -39536,7 +39570,6 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
                         </div>
                     }
                 }
-                <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
             </div>
             @if (root.isInvalid()) {
                 <p class="text-destructive text-xs">Please pick a time between 09:00 and 17:00.</p>
@@ -39558,7 +39591,6 @@ export class TimeFieldValidationExample {
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
-import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 interface LocaleExample {
     readonly id: string;
@@ -39569,7 +39601,7 @@ interface LocaleExample {
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-localization-example',
-    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
+    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective],
     template: `
         <div class="flex flex-col gap-4">
             @for (example of locales; track example.id) {
@@ -39598,7 +39630,6 @@ interface LocaleExample {
                                 </div>
                             }
                         }
-                        <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
                     </div>
                 </div>
             }
@@ -39612,6 +39643,59 @@ export class TimeFieldLocalizationExample {
         { id: 'locale-fa', label: 'Persian (fa-IR)', locale: 'fa-IR' },
         { id: 'locale-zh', label: 'Taiwan (zh-TW)', locale: 'zh-TW' }
     ];
+}
+```
+
+### Signal Forms
+
+Bind `[formField]` directly to the root. Segment edits update the time model, and Reset restores its
+initial value. No extra input is needed for Signal Forms.
+
+```typescript
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { form, FormField } from '@angular/forms/signals';
+import { TimeValue } from '@radix-ng/primitives/core';
+import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'time-field-signal-forms-example',
+    imports: [FormField, RdxTimeFieldRootDirective, RdxTimeFieldInputDirective],
+    template: `
+        <div class="flex flex-col items-start gap-3">
+            <span class="text-foreground text-sm font-medium" id="signal-time-label">Appointment time</span>
+            <div
+                class="border-border bg-background text-foreground inline-flex items-center rounded-md border px-3 py-2 text-sm shadow-sm select-none"
+                #root="rdxTimeFieldRoot"
+                [formField]="timeForm.time"
+                [hourCycle]="24"
+                aria-labelledby="signal-time-label"
+                locale="en-US"
+                rdxTimeFieldRoot
+            >
+                @for (item of root.segmentContents(); track $index) {
+                    <span
+                        class="data-[placeholder]:text-muted-foreground hover:bg-muted focus:bg-primary focus:text-primary-foreground rounded px-0.5 tabular-nums outline-none"
+                        [part]="item.part"
+                        rdxTimeFieldInput
+                    >
+                        {{ item.value }}
+                    </span>
+                }
+            </div>
+            <output class="text-muted-foreground text-sm">
+                <span class="sr-only">Selected time:</span>
+                {{ model().time?.toString() ?? 'No time selected' }}
+            </output>
+            <button class="demo-button demo-button-outline" (click)="timeForm().reset({ time: null })" type="button">
+                Reset
+            </button>
+        </div>
+    `
+})
+export class TimeFieldSignalFormsExample {
+    readonly model = signal<{ time: TimeValue | null }>({ time: null });
+    readonly timeForm = form(this.model);
 }
 ```
 
@@ -43285,6 +43369,7 @@ an inert visual snapshot with the old `--popup-width` and `--popup-height` until
 ### Arrow
 
 `RdxTooltipArrow` reads its placement from context and points the popup at the anchor.
+Apply `[hidden]` directly to the arrow element when it should be fully hidden.
 
 **Data attributes**
 
@@ -46609,6 +46694,21 @@ and WCAG criteria, and documents its keyboard interactions.
   Verify the documented behavior with your content and any custom autofocus handlers.
 - **Style visible states.** Supply visible focus indicators and check contrast, disabled states,
   and error messages in the finished interface.
+
+## Visually hidden text
+
+Use Tailwind's `sr-only` for text that should remain available to assistive technology:
+
+```html
+<button type="button">
+  <svg aria-hidden="true"><!-- Icon --></svg>
+  <span class="sr-only">Add to favorites</span>
+</button>
+```
+
+Use Angular's `[hidden]` binding to hide an element visually and from the accessibility tree. For
+simple native form serialization, use a named `<input type="hidden">`; controls that need browser
+validation or autofill should use their primitive's native form integration.
 
 For runtime warnings, structural errors, and Angular DevTools, see
 [Guides/Debugging](guides/debugging.md).
@@ -51498,136 +51598,3 @@ render state and shares `waitForAnimations` with other animated parts. `useTrans
 Automatic subtree discovery has been removed. Add `rdxPresenceTarget` to animated descendants
 that are not already registered primitive parts. `animate.leave` remains appropriate when an
 application template owns removal; Presence retains the Angular view itself until exit completes.
-
----
-
-# Visually Hidden
-
-#### Hides content visually while keeping it available to assistive technology.
-
-```html
-<button
-    class="border-border bg-background text-foreground hover:bg-muted focus-visible:ring-ring inline-flex size-10 items-center justify-center rounded-md border outline-none focus-visible:ring-2"
->
-    <svg
-        class="size-4"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        aria-hidden="true"
-    >
-        <path
-            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"
-        />
-    </svg>
-    <span rdxVisuallyHidden>Add to favorites</span>
-</button>
-```
-
-## Features
-
-- ✅ Hides content from the screen while preserving it for screen readers.
-- ✅ `focusable` mode keeps the element in the tab order and accessibility tree.
-- ✅ `fully-hidden` mode removes it from layout, the tab order and the accessibility tree.
-- ✅ Companion directives mirror a value into a visually hidden `<input>` for form participation.
-
-## Import
-
-```typescript
-import {
-  RdxVisuallyHiddenDirective,
-  RdxVisuallyHiddenInputDirective,
-  RdxVisuallyHiddenInputBubbleDirective
-} from '@radix-ng/primitives/visually-hidden';
-```
-
-## Anatomy
-
-Most often you wrap a label that gives an icon-only control an accessible name:
-
-```html
-<button>
-  <icon aria-hidden="true" />
-  <span rdxVisuallyHidden>Add to favorites</span>
-</button>
-```
-
-## API Reference
-
-### VisuallyHidden
-
-`RdxVisuallyHiddenDirective` — selector `[rdxVisuallyHidden]`.
-
-Applies the visually-hidden style recipe to its host element.
-
-It also exposes a `setFeature(feature)` method to switch the mode imperatively at runtime.
-
-| Data Attribute | Value                          |
-| -------------- | ------------------------------ |
-| `[data-hidden]` | Present when `fully-hidden` |
-
-#### Feature modes
-
-- **`focusable`** (default) — the element stays in the accessibility tree and tab order; use it for screen-reader-only
-  content that must remain reachable.
-- **`fully-hidden`** — adds `aria-hidden`, `tabindex="-1"`, the `hidden` attribute and `display: none`, removing the
-  element from layout, the tab order and the accessibility tree.
-
-```html
-<visually-hidden-feature-demo />
-```
-
-### VisuallyHiddenInput
-
-`RdxVisuallyHiddenInputDirective` — selector `input[rdxVisuallyHiddenInput]`.
-
-Apply it to a real `<input>` to mirror a control's value into a form while the field stays hidden. It carries a single
-scalar value and re-dispatches `input`/`change` events so the value participates in form submission. Defaults the field
-to `fully-hidden`.
-
-```html
-<form class="flex flex-col gap-4" (submit)="$event.preventDefault()">
-    <div class="flex items-center gap-2">
-        <label class="text-foreground text-sm font-medium" for="visibleInput">Visible field</label>
-        <input
-            class="border-border bg-background text-foreground focus:ring-ring h-9 w-52 rounded-md border px-2.5 text-sm focus:ring-2 focus:outline-none"
-            id="visibleInput"
-            type="text"
-            name="visibleInput"
-            value="Visible value"
-        />
-    </div>
-
-    <input
-        rdxVisuallyHiddenInput
-        [feature]="'fully-hidden'"
-        [name]="'hiddenInput'"
-        [value]="'Hidden value'"
-        [required]="true"
-    />
-
-    <p class="text-muted-foreground text-sm">
-        The hidden input carries its value into the form while staying out of the visual and accessibility
-        tree.
-    </p>
-</form>
-```
-
-### VisuallyHiddenInputBubble
-
-`RdxVisuallyHiddenInputBubbleDirective` — selector `input[rdxVisuallyHiddenInputBubble]`.
-
-The low-level building block behind `VisuallyHiddenInput`. It owns the `name`/`value`/`checked` attributes and keeps the
-native input value in sync, re-emitting `input`/`change` events. Compose it via `hostDirectives` when building your own
-form-aware primitive.
-
-## Accessibility
-
-Use visually hidden content as an alternative to `aria-label`/`aria-labelledby` when you need rendered text (for
-example, an accessible name for an icon-only button) that should not be visible on screen. Keep the `focusable` default
-for anything that must stay in the accessibility tree; reserve `fully-hidden` for elements that should be entirely
-removed, such as form bubble inputs.

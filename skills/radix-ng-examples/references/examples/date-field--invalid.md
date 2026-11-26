@@ -8,12 +8,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { DateValue } from '@internationalized/date';
 import { RdxDateFieldInputDirective, RdxDateFieldRootDirective } from '@radix-ng/primitives/date-field';
-import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'app-date-field-invalid',
-    imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective, RdxVisuallyHiddenInputDirective],
+    imports: [RdxDateFieldRootDirective, RdxDateFieldInputDirective],
     template: `
         <div class="flex flex-col gap-2">
             <label class="text-foreground text-sm font-medium" for="date-field-invalid">
@@ -42,7 +41,6 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
                         </div>
                     }
                 }
-                <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
 
                 @if (root.isInvalid()) {
                     <span class="text-destructive pl-2">Invalid Day</span>

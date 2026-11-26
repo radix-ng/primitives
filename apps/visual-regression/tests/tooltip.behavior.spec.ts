@@ -20,6 +20,33 @@ test('tooltip teleports the positioner directly into <body> with no wrapper elem
     expect(parentTag).toBe('BODY');
 });
 
+test('the default arrow is visible and points at the trigger', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    await gotoStory(page, 'primitives-tooltip--default');
+
+    const trigger = page.locator('[rdxTooltipTrigger]').first();
+    const arrow = page.locator('[rdxTooltipArrow]');
+    const popup = page.locator('[rdxTooltipPopup]');
+    await trigger.hover();
+    await expect(popup).toBeVisible();
+    await expect(arrow).toBeVisible();
+    await expect(arrow).not.toHaveAttribute('hidden');
+    await expect(arrow).toHaveAttribute('data-side', 'top');
+
+    await expect
+        .poll(async () => {
+            const anchorBounds = (await trigger.boundingBox())!;
+            const arrowBounds = (await arrow.boundingBox())!;
+            return Math.abs(arrowBounds.x + arrowBounds.width / 2 - anchorBounds.x - anchorBounds.width / 2);
+        })
+        .toBeLessThan(2);
+    const arrowBounds = (await arrow.boundingBox())!;
+    const popupBounds = (await popup.boundingBox())!;
+    expect(arrowBounds.y).toBeGreaterThan(popupBounds.y + popupBounds.height / 2);
+    expect(errors).toEqual([]);
+});
+
 test('a controlled tooltip follows the slider thumb while dragging', async ({ page }) => {
     await gotoStory(page, 'primitives-tooltip--slider');
 

@@ -8,6 +8,9 @@ A valid submit serializes the form's `FormData` into a plain values object. Comp
 such as [Radio in a portal](../components/radio.md#radio-in-a-portal) can add values
 through their Field registration. Repeated names collapse into arrays.
 
+Use a named `<input type="hidden">` for values that only need serialization, as shown below. It does
+not participate in browser constraint validation or autofill.
+
 ```typescript
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RdxFieldControl, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
@@ -24,6 +27,7 @@ import { formField, formInput, formLabel, formSubmit } from './form.shared';
     imports: [RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl],
     template: `
         <form class="flex w-80 flex-col gap-4" (onFormSubmit)="onSubmit($event)" rdxFormRoot>
+            <input type="hidden" name="hiddenInput" value="Hidden value" />
             <div [class]="field" name="name" rdxFieldRoot>
                 <label [class]="label" rdxFieldLabel>Name</label>
                 <input [class]="input" name="name" rdxFieldControl value="Ada" />

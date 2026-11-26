@@ -6,7 +6,7 @@
   "description": "Enables users to input specific dates within a designated field.",
   "doc": "radix-ng-examples/references/components/date-field.md",
   "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-date-field--docs",
-  "anatomy": "<div rdxDateFieldRoot>\n  <div rdxDateFieldInput></div>\n  <input rdxVisuallyHiddenInput />\n</div>",
+  "anatomy": "<div rdxDateFieldRoot>\n  <div rdxDateFieldInput></div>\n</div>",
   "dataAttributes": [
     {
       "attribute": "data-disabled",

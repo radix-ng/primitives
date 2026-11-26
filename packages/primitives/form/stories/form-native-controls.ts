@@ -13,6 +13,7 @@ import { formField, formInput, formLabel, formSubmit } from './form.shared';
     imports: [RdxFormRoot, RdxFieldRoot, RdxFieldLabel, RdxFieldControl],
     template: `
         <form class="flex w-80 flex-col gap-4" (onFormSubmit)="onSubmit($event)" rdxFormRoot>
+            <input type="hidden" name="hiddenInput" value="Hidden value" />
             <div [class]="field" name="name" rdxFieldRoot>
                 <label [class]="label" rdxFieldLabel>Name</label>
                 <input [class]="input" name="name" rdxFieldControl value="Ada" />

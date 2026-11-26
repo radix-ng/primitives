@@ -1,11 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
-import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-hour-cycle-example',
-    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
+    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective],
     template: `
         <div class="flex flex-col gap-4">
             <div class="flex flex-col gap-1.5">
@@ -32,7 +31,6 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
                             </div>
                         }
                     }
-                    <input [value]="h12.value()" rdxVisuallyHiddenInput feature="focusable" />
                 </div>
             </div>
 
@@ -60,7 +58,6 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
                             </div>
                         }
                     }
-                    <input [value]="h24.value()" rdxVisuallyHiddenInput feature="focusable" />
                 </div>
             </div>
         </div>

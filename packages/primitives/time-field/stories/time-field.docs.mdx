@@ -51,20 +51,17 @@ npm install @radix-ng/primitives
 
 ```ts
 import { RdxTimeFieldRootDirective, RdxTimeFieldInputDirective } from '@radix-ng/primitives/time-field';
-import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 ```
 
 ## Anatomy
 
-Assemble the field from the root, an input segment rendered per `segmentContents()` entry, and an
-optional visually-hidden input for native form participation.
+Assemble the field from the root and an input segment rendered per `segmentContents()` entry.
 
 ```html
-<div rdxTimeFieldRoot>
+<div #root="rdxTimeFieldRoot" rdxTimeFieldRoot>
   @for (item of root.segmentContents(); track $index) {
   <div rdxTimeFieldInput [part]="item.part">{{ item.value }}</div>
   }
-  <input rdxVisuallyHiddenInput feature="focusable" />
 </div>
 ```
 
@@ -125,6 +122,13 @@ A readonly field can be focused and navigated but not edited.
 `locale` drives segment order, separators, and the numbering system.
 
 <Canvas of={Stories.Localization} />
+
+### Signal Forms
+
+Bind `[formField]` directly to the root. Segment edits update the time model, and Reset restores its
+initial value. No extra input is needed for Signal Forms.
+
+<Canvas of={Stories.SignalForms} />
 
 ## Accessibility
 

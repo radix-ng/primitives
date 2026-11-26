@@ -1,12 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Time } from '@internationalized/date';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
-import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-readonly-example',
-    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
+    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective],
     template: `
         <div class="flex flex-col gap-1.5">
             <label class="text-foreground text-sm font-medium" id="time-readonly-label">Time</label>
@@ -34,7 +33,6 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
                         </div>
                     }
                 }
-                <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
             </div>
         </div>
     `

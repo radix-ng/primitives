@@ -37,5 +37,20 @@ and WCAG criteria, and documents its keyboard interactions.
 - **Style visible states.** Supply visible focus indicators and check contrast, disabled states,
   and error messages in the finished interface.
 
+## Visually hidden text
+
+Use Tailwind's `sr-only` for text that should remain available to assistive technology:
+
+```html
+<button type="button">
+  <svg aria-hidden="true"><!-- Icon --></svg>
+  <span class="sr-only">Add to favorites</span>
+</button>
+```
+
+Use Angular's `[hidden]` binding to hide an element visually and from the accessibility tree. For
+simple native form serialization, use a named `<input type="hidden">`; controls that need browser
+validation or autofill should use their primitive's native form integration.
+
 For runtime warnings, structural errors, and Angular DevTools, see
 [Guides/Debugging](../guides/debugging.md).

@@ -10,12 +10,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Granularity } from '@radix-ng/primitives/core';
 import { RdxTimeFieldInputDirective, RdxTimeFieldRootDirective } from '@radix-ng/primitives/time-field';
-import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-hidden';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'time-field-granularity-example',
-    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective, RdxVisuallyHiddenInputDirective],
+    imports: [RdxTimeFieldRootDirective, RdxTimeFieldInputDirective],
     template: `
         <div class="flex flex-col gap-4">
             @for (granularity of granularities; track granularity) {
@@ -45,7 +44,6 @@ import { RdxVisuallyHiddenInputDirective } from '@radix-ng/primitives/visually-h
                                 </div>
                             }
                         }
-                        <input [value]="root.value()" rdxVisuallyHiddenInput feature="focusable" />
                     </div>
                 </div>
             }

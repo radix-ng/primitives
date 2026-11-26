@@ -24,7 +24,6 @@ Import all parts and piece them together.
 ```html
 <div rdxDateFieldRoot>
   <div rdxDateFieldInput></div>
-  <input rdxVisuallyHiddenInput />
 </div>
 ```
 
@@ -32,6 +31,7 @@ Import all parts and piece them together.
 
 - [With locale](../examples/date-field--with-locale.md)
 - [Invalid](../examples/date-field--invalid.md)
+- [Signal Forms](../examples/date-field--signal-forms.md)
 
 ## API & styling contract
 

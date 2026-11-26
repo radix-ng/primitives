@@ -1,5 +1,7 @@
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
+import { DateFieldSignalFormsExample } from './date-field-signal-forms';
+import signalFormsSource from './date-field-signal-forms?raw';
 import { DateFieldComponent } from './date-field.component';
 import { DateFieldInvalid } from './date-field.invalid';
 
@@ -23,7 +25,7 @@ export default {
     title: 'Primitives/Date Field',
     decorators: [
         moduleMetadata({
-            imports: [DateFieldComponent, DateFieldInvalid]
+            imports: [DateFieldComponent, DateFieldInvalid, DateFieldSignalFormsExample]
         }),
         tailwindDemoDecorator()
     ]
@@ -93,6 +95,15 @@ export const Invalid: Story = {
     render: () => ({
         template: html`
             <app-date-field-invalid />
+        `
+    })
+};
+
+export const SignalForms: Story = {
+    parameters: source(signalFormsSource),
+    render: () => ({
+        template: html`
+            <date-field-signal-forms-example />
         `
     })
 };

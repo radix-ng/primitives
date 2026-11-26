@@ -1,6 +1,6 @@
 # Parity matrix index
 
-All **58 secondary entry points** have a matrix. **22 families** have dedicated comparison suites
+All **57 secondary entry points** have a matrix. **22 families** have dedicated comparison suites
 against Base UI **1.9.0** at `cf696d6f6e08c699c5bda24d5a033430909f2285`. The suite READMEs and coverage map
 record the scenarios and reviewed differences. The other matrices start from an API inventory and
 identify the comparisons each family needs.
@@ -72,7 +72,6 @@ state, editable form values, readonly configuration and native or derived state 
 | `toggle-group`           | [PARITY.md](../../packages/primitives/toggle-group/PARITY.md)           | Public Base UI family                                  | [Paired suite](../../apps/parity-testing/primitives/toggle-group/README.md)                 |
 | `toolbar`                | [PARITY.md](../../packages/primitives/toolbar/PARITY.md)                | Public Base UI family                                  | Initial inventory                                                                           |
 | `tooltip`                | [PARITY.md](../../packages/primitives/tooltip/PARITY.md)                | Public Base UI family                                  | [Paired suite](../../apps/parity-testing/primitives/tooltip/README.md)                      |
-| `visually-hidden`        | [PARITY.md](../../packages/primitives/visually-hidden/PARITY.md)        | Related internals / Angular mechanism                  | Initial inventory                                                                           |
 
 ## State/defaults migration queue
 
