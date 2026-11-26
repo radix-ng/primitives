@@ -1,0 +1,114 @@
+name: Deploy documentation
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      release_version:
+        description: Version submitted to npm by the Publish workflow
+        required: true
+        type: string
+    secrets:
+      VERCEL_ORG_ID:
+        required: true
+      VERCEL_PROJECT_ID:
+        required: true
+      VERCEL_TOKEN:
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy production documentation
+    if: inputs.release_version != '' || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: docs-production
+      cancel-in-progress: false
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - name: Checkout deployment source
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup
+
+      - name: Check documentation version against npm latest
+        id: npm
+        timeout-minutes: 16
+        shell: bash
+        env:
+          RELEASE_VERSION: ${{ inputs.release_version }}
+        run: |
+          version="$(node -p "require('./packages/primitives/package.json').version")"
+          if [[ -n "$RELEASE_VERSION" && "$version" != "$RELEASE_VERSION" ]]; then
+            echo "::error::Deployment source version $version differs from release $RELEASE_VERSION."
+            exit 1
+          fi
+
+          deadline=$((SECONDS + 900))
+          while true; do
+            if latest="$(npm view @radix-ng/primitives@latest version --registry=https://registry.npmjs.org --prefer-online --fetch-retries=0 --fetch-timeout=10000)"; then
+              if [[ "$latest" == "$version" ]]; then
+                echo "version=$version" >> "$GITHUB_OUTPUT"
+                echo "deploy=true" >> "$GITHUB_OUTPUT"
+                break
+              fi
+
+              if [[ -z "$RELEASE_VERSION" ]]; then
+                echo "::error::main has package version $version, but npm latest is $latest."
+                exit 1
+              fi
+
+              newest="$(printf '%s\n' "$version" "$latest" | sort -V | tail -n 1)"
+              if [[ "$newest" == "$latest" ]]; then
+                echo "deploy=false" >> "$GITHUB_OUTPUT"
+                echo "::notice::Skipping documentation for $version because npm latest is already $latest."
+                echo "Documentation deployment skipped because npm latest is already $latest." >> "$GITHUB_STEP_SUMMARY"
+                break
+              fi
+              echo "Waiting for npm latest to reach $version. Current value is $latest."
+            elif [[ -z "$RELEASE_VERSION" ]]; then
+              echo "::error::Could not read npm latest for the manual documentation deployment."
+              exit 1
+            fi
+
+            if (( SECONDS >= deadline )); then
+              echo "::error::Timed out waiting for $version to become npm latest. Re-run the documentation job to try again."
+              exit 1
+            fi
+            sleep 30
+          done
+
+      - name: Install Vercel CLI
+        if: steps.npm.outputs.deploy == 'true'
+        run: npm install --global vercel@67.0.0
+
+      - name: Build Storybook and Playground
+        if: steps.npm.outputs.deploy == 'true'
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+          vercel build --prod --token="$VERCEL_TOKEN"
+
+      - name: Deploy production artifact
+        if: steps.npm.outputs.deploy == 'true'
+        shell: bash
+        env:
+          VERSION: ${{ steps.npm.outputs.version }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          latest="$(npm view @radix-ng/primitives@latest version --registry=https://registry.npmjs.org --prefer-online --fetch-retries=0 --fetch-timeout=10000)"
+          if [[ "$latest" != "$VERSION" ]]; then
+            echo "::notice::Skipping documentation for $VERSION because npm latest changed to $latest during the build."
+            echo "Documentation deployment skipped because npm latest changed to $latest during the build." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"

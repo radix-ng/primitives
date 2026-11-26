@@ -63,55 +63,12 @@ jobs:
         startsWith(github.ref, 'refs/tags/') &&
         github.event.release.prerelease != true
       }}
-    runs-on: ubuntu-latest
+    uses: ./.github/workflows/deploy-docs.yml
     permissions:
       contents: read
-    concurrency:
-      group: docs-production
-      cancel-in-progress: false
-    env:
+    with:
+      release_version: ${{ needs.publish.outputs.version }}
+    secrets:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-    steps:
-      - name: Checkout release commit
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
-        with:
-          ref: ${{ github.sha }}
-          fetch-depth: 0
-
-      - uses: ./.github/actions/setup
-
-      - name: Install Vercel CLI
-        run: npm install --global vercel@67.0.0
-
-      - name: Pull production configuration
-        run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build Storybook and Playground
-        # vercel.json runs pnpm build-site once and collects dist/radix-site.
-        run: vercel build --prod --token="$VERCEL_TOKEN"
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-
-      - name: Check current npm latest before deployment
-        id: latest
-        shell: bash
-        env:
-          RELEASE_VERSION: ${{ needs.publish.outputs.version }}
-        run: |
-          CURRENT_LATEST="$(npm view @radix-ng/primitives@latest version --registry=https://registry.npmjs.org --prefer-online)"
-          if [[ "$RELEASE_VERSION" != "$CURRENT_LATEST" ]]; then
-            echo "deploy=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Skipping documentation for $RELEASE_VERSION: npm latest is $CURRENT_LATEST."
-            echo "Documentation deployment skipped: release $RELEASE_VERSION is not npm latest ($CURRENT_LATEST)." >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo "deploy=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Deploy production artifact
-        if: steps.latest.outputs.deploy == 'true'
-        run: vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
