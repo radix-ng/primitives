@@ -24,6 +24,7 @@ An input where the user selects a value, or a range of values, from within a giv
 ```ts
 import {
     RdxSliderRoot,
+    RdxSliderLabel,
     RdxSliderControl,
     RdxSliderTrack,
     RdxSliderIndicator,
@@ -47,6 +48,7 @@ through the `orientation` input on the root.
 
 ```html
 <div rdxSliderRoot>
+    <div rdxSliderLabel>Volume</div>
     <output rdxSliderValue></output>
     <div rdxSliderControl>
         <div rdxSliderTrack>
@@ -62,6 +64,10 @@ through the `orientation` input on the root.
 Each thumb owns a nested `input[rdxSliderThumbInput]`. It is visually hidden but
 remains the focusable element that powers keyboard interaction, accessibility and
 form submission.
+
+Use `rdxSliderLabel` inside the root to name the group. In a single-thumb slider, clicking the label
+focuses the native input. In a range slider, give each input a distinct name with `aria-label` or
+`aria-labelledby`, such as “Minimum” and “Maximum”.
 
 ## Examples
 

@@ -6,6 +6,7 @@ import { By } from '@angular/platform-browser';
 import { vi } from 'vitest';
 import { RdxSliderControl } from '../src/slider-control';
 import { RdxSliderIndicator } from '../src/slider-indicator';
+import { RdxSliderLabel } from '../src/slider-label';
 import {
     RdxSliderRoot,
     RdxSliderThumbAlignment,
@@ -80,6 +81,7 @@ describe('slider utils', () => {
         RdxSliderControl,
         RdxSliderTrack,
         RdxSliderIndicator,
+        RdxSliderLabel,
         RdxSliderThumb,
         RdxSliderThumbInput,
         RdxSliderValue
@@ -88,12 +90,16 @@ describe('slider utils', () => {
         <form>
             <div
                 [(value)]="value"
+                [controlledValue]="controlledValue()"
+                [defaultValue]="defaultValue()"
+                [min]="min()"
                 [step]="step()"
                 [disabled]="disabled()"
                 [name]="name()"
                 (onValueChange)="onChange($event)"
                 rdxSliderRoot
             >
+                <div id="amount-label" rdxSliderLabel>Amount</div>
                 <output rdxSliderValue></output>
                 <div rdxSliderControl>
                     <div rdxSliderTrack>
@@ -110,7 +116,10 @@ describe('slider utils', () => {
     `
 })
 class TestComponent {
-    readonly value = signal<SliderValue>(40);
+    readonly value = signal<SliderValue | null | undefined>(40);
+    readonly controlledValue = signal<SliderValue | null>();
+    readonly defaultValue = signal<SliderValue>();
+    readonly min = signal(0);
     readonly thumbs = signal([0]);
     readonly step = signal(5);
     readonly disabled = signal(false);
@@ -365,12 +374,116 @@ describe('RdxSlider', () => {
         } as DOMRect);
 
         control.dispatchEvent(touchEvent('touchstart', 40));
+        document.dispatchEvent(touchEvent('touchend', 40, 0, 2));
         document.dispatchEvent(touchEvent('touchmove', 70));
         document.dispatchEvent(touchEvent('touchend', 70));
         fixture.detectChanges();
 
         expect(component.value()).toBe(70);
         expect(component.onChange).toHaveBeenLastCalledWith(expect.objectContaining({ value: 70 }));
+    });
+
+    it('restores the input immediately after a canceled native edit', () => {
+        component.name.set('amount');
+        component.onChange.mockImplementationOnce(({ eventDetails }) => eventDetails.cancel());
+        fixture.detectChanges();
+
+        inputs[0].value = '75';
+        inputs[0].dispatchEvent(new Event('input', { bubbles: true }));
+        inputs[0].dispatchEvent(new Event('change', { bubbles: true }));
+
+        expect(component.onChange).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ value: 75 }));
+        expect(component.value()).toBe(40);
+        expect(new FormData(inputs[0].form!).getAll('amount')).toEqual(['40']);
+    });
+
+    it('submits the authored off-grid value and restores the native step after an on-grid edit', () => {
+        component.name.set('amount');
+        component.value.set(42);
+        fixture.detectChanges();
+        expect(inputs[0].step).toBe('any');
+        expect(new FormData(inputs[0].form!).getAll('amount')).toEqual(['42']);
+
+        press(inputs[0], 'ArrowRight');
+        fixture.detectChanges();
+        expect(inputs[0].step).toBe('5');
+        expect(new FormData(inputs[0].form!).getAll('amount')).toEqual(['45']);
+    });
+
+    it('keeps controlled zero and null separate from the editable value and default', () => {
+        component.controlledValue.set(0);
+        component.defaultValue.set(60);
+        fixture.detectChanges();
+
+        press(inputs[0], 'ArrowRight');
+        fixture.detectChanges();
+        expect(component.onChange).toHaveBeenLastCalledWith(expect.objectContaining({ value: 5 }));
+        expect(component.value()).toBe(40);
+        expect(inputs[0].value).toBe('0');
+
+        component.min.set(10);
+        component.controlledValue.set(null);
+        fixture.detectChanges();
+        expect(inputs[0].value).toBe('10');
+
+        component.controlledValue.set(undefined);
+        fixture.detectChanges();
+        expect(inputs[0].value).toBe('40');
+    });
+
+    it('restores the initial editable array when reset leaves no inputs to find the form through', async () => {
+        const resetFixture = TestBed.createComponent(TestComponent);
+        const host = resetFixture.componentInstance;
+        const initial = [25];
+        host.value.set(initial);
+        host.name.set('amount');
+        resetFixture.detectChanges();
+
+        initial[0] = 90;
+        host.value.set([]);
+        resetFixture.detectChanges();
+        const formElement = resetFixture.nativeElement.querySelector('form') as HTMLFormElement;
+        expect(new FormData(formElement).getAll('amount')).toEqual([]);
+        host.thumbs.set([]);
+        resetFixture.detectChanges();
+        formElement.reset();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+        resetFixture.detectChanges();
+
+        expect(host.value()).toEqual([25]);
+        expect(host.onChange).not.toHaveBeenCalled();
+    });
+
+    it('marks touched when focus leaves the slider group', () => {
+        component.value.set([20, 60]);
+        component.thumbs.set([0, 1]);
+        fixture.detectChanges();
+        refresh();
+
+        inputs[0].focus();
+        inputs[1].focus();
+        fixture.detectChanges();
+        expect(root.hasAttribute('data-touched')).toBe(false);
+
+        inputs[1].blur();
+        fixture.detectChanges();
+        expect(root.hasAttribute('data-touched')).toBe(true);
+    });
+
+    it('keeps the group label and per-input accessible name separate', () => {
+        const label = root.querySelector<HTMLElement>('[rdxSliderLabel]')!;
+        expect(root.getAttribute('aria-labelledby')).toBe('amount-label');
+        expect(inputs[0].getAttribute('aria-label')).toBe('value');
+        expect(inputs[0].hasAttribute('aria-labelledby')).toBe(false);
+        label.click();
+        expect(document.activeElement).toBe(inputs[0]);
+
+        component.value.set([20, 60]);
+        component.thumbs.set([0, 1]);
+        fixture.detectChanges();
+        inputs[0].blur();
+        label.click();
+        expect(document.activeElement).not.toBe(inputs[0]);
     });
 
     it('supports multiple thumbs and keeps them sorted', () => {

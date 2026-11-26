@@ -18,7 +18,7 @@ import {
         <div class="grid w-80 gap-4">
             <div
                 class="relative w-full select-none"
-                [value]="value()"
+                [controlledValue]="value()"
                 [step]="5"
                 (onValueChange)="onValueChange($event)"
                 (onValueCommitted)="onValueCommitted($event)"

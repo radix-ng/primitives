@@ -7,7 +7,8 @@ sources. These are regression checks with reviewed differences, not full parity 
 [Menubar](primitives/menubar/README.md), [Tabs](primitives/tabs/README.md),
 [Button](primitives/button/README.md), [Autocomplete](primitives/autocomplete/README.md),
 [Dialog](primitives/dialog/README.md), [Radio](primitives/radio/README.md),
-[Checkbox](primitives/checkbox/README.md), [Separator](primitives/separator/README.md), and
+[Checkbox](primitives/checkbox/README.md), [Separator](primitives/separator/README.md),
+[Slider](primitives/slider/README.md), and
 [Tooltip](primitives/tooltip/README.md) have independent suites.
 The [coverage matrix](COVERAGE.md) distinguishes pinned comparisons from Angular regression checks.
 
@@ -64,6 +65,7 @@ pnpm test-parity dialog          # open ownership, focus, trigger identity and P
 pnpm test-parity radio           # initial selection, late defaults and native serialization
 pnpm test-parity checkbox        # checked and group ownership, native activation and select-all
 pnpm test-parity separator       # accessibility, orientation updates and Toolbar composition
+pnpm test-parity slider          # value ownership, native forms, range interaction and geometry
 pnpm test-parity tooltip         # open ownership, defaults, hover, focus and cancellation
 pnpm test-parity:select          # convenience alias
 pnpm test-parity select --project=webkit # one engine

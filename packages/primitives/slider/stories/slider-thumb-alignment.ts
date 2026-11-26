@@ -16,7 +16,7 @@ import {
         <div class="grid w-72 gap-6">
             <div class="grid gap-2">
                 <span class="text-foreground text-sm font-medium">Center</span>
-                <div class="relative px-2 select-none" [value]="50" thumbAlignment="center" rdxSliderRoot>
+                <div class="relative px-2 select-none" [defaultValue]="50" thumbAlignment="center" rdxSliderRoot>
                     <div class="flex h-6 w-full touch-none items-center" rdxSliderControl>
                         <div class="relative h-1 w-full bg-neutral-200 dark:bg-neutral-800" rdxSliderTrack>
                             <div class="bg-primary h-full" rdxSliderIndicator></div>
@@ -33,7 +33,7 @@ import {
 
             <div class="grid gap-2">
                 <span class="text-foreground text-sm font-medium">Edge</span>
-                <div class="relative px-2 select-none" [value]="50" thumbAlignment="edge" rdxSliderRoot>
+                <div class="relative px-2 select-none" [defaultValue]="50" thumbAlignment="edge" rdxSliderRoot>
                     <div class="flex h-6 w-full touch-none items-center" rdxSliderControl>
                         <div class="relative h-1 w-full bg-neutral-200 dark:bg-neutral-800" rdxSliderTrack>
                             <div class="bg-primary h-full" rdxSliderIndicator></div>
@@ -50,7 +50,12 @@ import {
 
             <div class="grid gap-2">
                 <span class="text-foreground text-sm font-medium">Edge client only</span>
-                <div class="relative px-2 select-none" [value]="50" thumbAlignment="edge-client-only" rdxSliderRoot>
+                <div
+                    class="relative px-2 select-none"
+                    [defaultValue]="50"
+                    thumbAlignment="edge-client-only"
+                    rdxSliderRoot
+                >
                     <div class="flex h-6 w-full touch-none items-center" rdxSliderControl>
                         <div class="relative h-1 w-full bg-neutral-200 dark:bg-neutral-800" rdxSliderTrack>
                             <div class="bg-primary h-full" rdxSliderIndicator></div>

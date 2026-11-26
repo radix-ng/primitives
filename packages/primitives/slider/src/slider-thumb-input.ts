@@ -1,4 +1,4 @@
-import { computed, DestroyRef, Directive, effect, ElementRef, inject, input } from '@angular/core';
+import { afterRenderEffect, computed, DestroyRef, Directive, effect, ElementRef, inject, input } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
 import { injectSliderRootContext } from './slider-context';
 import { RdxSliderThumb } from './slider-thumb';
@@ -21,9 +21,9 @@ import { ALL_KEYS, COMPOSITE_KEYS, getDefaultAriaValueText, getNewValue, roundVa
         '[style.writing-mode]': 'writingMode()',
         '[attr.min]': 'root.min()',
         '[attr.max]': 'root.max()',
-        '[attr.step]': 'root.step()',
-        '[value]': 'thumb.value() ?? ""',
-        '[disabled]': 'thumb.disabled()',
+        '[attr.step]': 'nativeStep()',
+        '[attr.value]': 'thumb.value()',
+        '[disabled]': 'thumb.disabled() || thumb.value() === undefined',
         '[attr.name]': 'root.name()',
         '[attr.form]': 'root.form()',
         '[attr.aria-orientation]': 'root.orientation()',
@@ -32,6 +32,7 @@ import { ALL_KEYS, COMPOSITE_KEYS, getDefaultAriaValueText, getNewValue, roundVa
         '[attr.aria-label]': 'ariaLabel()',
         '[attr.aria-labelledby]': 'ariaLabelledBy()',
         '(keydown)': 'onKeyDown($event)',
+        '(input)': 'onChange($event)',
         '(change)': 'onChange($event)',
         '(focus)': 'onFocus()',
         '(blur)': 'onBlur()'
@@ -44,15 +45,23 @@ export class RdxSliderThumbInput {
 
     readonly id = input<string>(injectId('rdx-slider-thumb-input-'));
     readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
+    readonly ariaLabelledByInput = input<string | undefined>(undefined, { alias: 'aria-labelledby' });
     readonly ariaValueTextInput = input<string | undefined>(undefined, { alias: 'aria-valuetext' });
 
     protected readonly writingMode = computed(() =>
         this.root.orientation() === 'vertical' ? (this.root.dir() === 'rtl' ? 'vertical-rl' : 'vertical-lr') : undefined
     );
 
-    protected readonly ariaLabelledBy = computed(() =>
-        this.ariaLabel() == null ? this.root.ariaLabelledBy() : undefined
+    protected readonly ariaLabelledBy = computed(
+        () => this.ariaLabelledByInput() ?? (this.ariaLabel() == null ? this.root.labelledBy() : undefined)
     );
+
+    protected readonly nativeStep = computed(() => {
+        const value = this.thumb.value();
+        const step = this.root.step();
+        // An externally supplied value can be off the step grid. Keep it in the native input and FormData.
+        return value === undefined || roundValueToStep(value, step, this.root.min()) === value ? step : 'any';
+    });
 
     protected readonly valueText = computed(
         () =>
@@ -63,6 +72,15 @@ export class RdxSliderThumbInput {
     constructor() {
         // Host element exists in the constructor; the id may be user-provided and can update.
         effect(() => this.thumb.setInputElement(this.element, this.id()));
+        afterRenderEffect({
+            write: () => {
+                // The browser sanitizes range values against the current bounds.
+                this.root.min();
+                this.root.max();
+                this.nativeStep();
+                this.syncNativeValue();
+            }
+        });
 
         inject(DestroyRef).onDestroy(() => {
             this.thumb.clearInputElement(this.element);
@@ -71,8 +89,16 @@ export class RdxSliderThumbInput {
 
     protected onChange(event: Event): void {
         const value = (event.target as HTMLInputElement).valueAsNumber;
-        if (!Number.isNaN(value)) {
+        if (!Number.isNaN(value) && value !== this.thumb.value()) {
             this.root.handleInputChange(value, this.thumb.index(), 'input-change', event);
+        }
+        this.syncNativeValue();
+    }
+
+    private syncNativeValue(): void {
+        const value = this.thumb.value();
+        if (value !== undefined && this.element.valueAsNumber !== value) {
+            this.element.value = String(value);
         }
     }
 
@@ -82,7 +108,6 @@ export class RdxSliderThumbInput {
 
     protected onBlur(): void {
         this.root.setActive(-1);
-        this.root.markAsTouched();
     }
 
     protected onKeyDown(event: KeyboardEvent): void {

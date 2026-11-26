@@ -8034,20 +8034,37 @@
           "outputs": []
         },
         {
+          "directive": "RdxSliderLabel",
+          "selector": "div[rdxSliderLabel]",
+          "exportAs": "rdxSliderLabel",
+          "description": "Names the slider group. Clicking the label of a single-thumb slider focuses its native input.",
+          "inputs": [
+            {
+              "name": "id",
+              "type": "string",
+              "default": "injectId('rdx-slider-label-')"
+            }
+          ],
+          "outputs": []
+        },
+        {
           "directive": "RdxSliderRoot",
           "selector": "div[rdxSliderRoot]",
           "exportAs": "rdxSliderRoot",
           "description": "Groups all parts of the slider and owns its state, value-change logic and\nthumb registration. A single directive drives both orientations — there are no\nseparate horizontal/vertical components.\n\nSee https://base-ui.com/react/components/slider",
           "hostDirectives": [
-            "RdxCompositeList",
-            "RdxFormUiStateHost",
-            "RdxControlValueAccessor"
+            "RdxFormUiStateHost"
           ],
           "inputs": [
             {
               "name": "aria-labelledby",
               "type": "string | undefined",
               "default": "undefined"
+            },
+            {
+              "name": "controlledValue",
+              "type": "SliderValue | null",
+              "description": "Parent-owned value. Edit requests leave it in place until the parent supplies a new value."
             },
             {
               "name": "defaultValue",
@@ -8141,8 +8158,8 @@
             },
             {
               "name": "value",
-              "type": "SliderValue",
-              "description": "The controlled value of the slider. Use with `(onValueChange)` or two-way `[(value)]`."
+              "type": "SliderValue | null",
+              "description": "Editable model for Angular Forms and `[(value)]`. Null displays the minimum."
             },
             {
               "name": "dirty",
@@ -8209,6 +8226,11 @@
               "default": "undefined"
             },
             {
+              "name": "aria-labelledby",
+              "type": "string | undefined",
+              "default": "undefined"
+            },
+            {
               "name": "aria-valuetext",
               "type": "string | undefined",
               "default": "undefined"
@@ -8226,9 +8248,6 @@
           "selector": "div[rdxSliderThumb]",
           "exportAs": "rdxSliderThumb",
           "description": "A draggable handle. Render one per value; place an `input[rdxSliderThumbInput]`\ninside it for keyboard, accessibility and form submission.\n\nSee https://base-ui.com/react/components/slider",
-          "hostDirectives": [
-            "RdxCompositeListItem"
-          ],
           "inputs": [
             {
               "name": "index",

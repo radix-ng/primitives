@@ -13,7 +13,7 @@ import {
     selector: 'slider-default-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
-        <div class="relative w-56 select-none" [value]="45" [step]="5" rdxSliderRoot>
+        <div class="relative w-56 select-none" [defaultValue]="45" [step]="5" rdxSliderRoot>
             <div class="flex w-full touch-none items-center py-3" rdxSliderControl>
                 <div class="relative h-1 w-full bg-neutral-200 dark:bg-neutral-800" rdxSliderTrack>
                     <div class="bg-primary h-full" rdxSliderIndicator></div>

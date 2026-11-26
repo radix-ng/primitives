@@ -104,6 +104,14 @@ distinguishes an omitted orientation from explicit `undefined`, and that clearin
 node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=eager-separator
 ```
 
+The `eager-slider` case checks the server-rendered values and labels for both inset alignments.
+After hydration it verifies node reuse, stable IDs, measured thumb and indicator geometry,
+keyboard edits, and native form reset.
+
+```bash
+node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=eager-slider
+```
+
 The `eager-tooltip` and `detached-tooltip` cases check that an initially open tooltip preserves its
 server popup and description ID when its portal relocates. The detached trigger hydrates on a
 native click and reconnects to the original popup. Both cases verify one popup, precedence

@@ -5,7 +5,6 @@ import {
     computed,
     DestroyRef,
     Directive,
-    effect,
     ElementRef,
     inject,
     input,
@@ -13,10 +12,9 @@ import {
     signal,
     untracked
 } from '@angular/core';
-import { RdxCompositeListItem } from '@radix-ng/primitives/composite';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
 import { injectSliderRootContext } from './slider-context';
-import { RdxSliderThumbMetadata, RdxSliderThumbRef } from './slider-root';
+import type { RdxSliderThumbRef } from './slider-root';
 import { getInsetThumbPositionPercent, valueToPercent } from './slider.utils';
 
 /**
@@ -28,24 +26,22 @@ import { getInsetThumbPositionPercent, valueToPercent } from './slider.utils';
 @Directive({
     selector: 'div[rdxSliderThumb]',
     exportAs: 'rdxSliderThumb',
-    hostDirectives: [RdxCompositeListItem],
     host: {
         '[style]': 'thumbStyle()',
         '[attr.data-index]': 'index()',
         '[attr.data-orientation]': 'root.orientation()',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
-        '[attr.data-dragging]': 'root.dragging() ? "" : undefined',
-        '(pointerdown)': 'onPointerDown($event)'
+        '[attr.data-dragging]': 'root.dragging() ? "" : undefined'
     }
 })
 export class RdxSliderThumb implements RdxSliderThumbRef {
     protected readonly root = injectSliderRootContext();
-    private readonly listItem = inject(RdxCompositeListItem, { self: true });
     readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
     /** The nested range input, set by `[rdxSliderThumbInput]`. */
     inputElement: HTMLInputElement | null = null;
-    private readonly inputId = signal<string | undefined>(undefined);
+    private readonly registeredInputId = signal<string | undefined>(undefined);
+    readonly inputId = this.registeredInputId.asReadonly();
 
     /** Explicit index for this thumb (required for SSR range sliders). */
     readonly indexInput = input<number | undefined, NumberInput>(undefined, {
@@ -67,8 +63,7 @@ export class RdxSliderThumb implements RdxSliderThumbRef {
             return explicitIndex;
         }
 
-        const compositeIndex = this.listItem.index();
-        return compositeIndex === -1 ? this.root.thumbIndexOf(this) : compositeIndex;
+        return this.root.thumbIndexOf(this);
     });
 
     /** Whether this thumb is disabled (own state OR root disabled). */
@@ -124,17 +119,8 @@ export class RdxSliderThumb implements RdxSliderThumbRef {
     });
 
     constructor() {
-        effect(() => {
-            this.listItem.setMetadata({
-                inputId: this.inputId()
-            } satisfies RdxSliderThumbMetadata);
-        });
-
-        // Registration is DOM-order sorted on the root and reads no inputs, so the constructor
-        // (where the host element already exists) is the right place; cleanup goes via DestroyRef.
-        this.root.registerThumb(this);
         const destroyRef = inject(DestroyRef);
-        destroyRef.onDestroy(() => this.root.unregisterThumb(this));
+        destroyRef.onDestroy(this.root.registerThumb(this));
 
         afterNextRender(() => {
             const win = this.root.getOwnerWindow();
@@ -156,6 +142,7 @@ export class RdxSliderThumb implements RdxSliderThumbRef {
 
         afterRenderEffect(() => {
             this.root.inset();
+            this.root.orientation();
             this.percent();
             this.index();
             this.root.values();
@@ -184,28 +171,10 @@ export class RdxSliderThumb implements RdxSliderThumbRef {
         this.root.setIndicatorPosition(this.index(), position);
     }
 
-    protected onPointerDown(event: PointerEvent): void {
-        if (this.disabled()) {
-            return;
-        }
-        const index = this.index();
-        this.root.pressedThumbIndex = index;
-
-        const axis = this.root.orientation() === 'horizontal' ? 'x' : 'y';
-        const rect = this.element.getBoundingClientRect();
-        const midpoint = axis === 'x' ? (rect.left + rect.right) / 2 : (rect.top + rect.bottom) / 2;
-        const pointer = axis === 'x' ? event.clientX : event.clientY;
-        this.root.pressedThumbCenterOffset = pointer - midpoint;
-
-        if (this.inputElement) {
-            this.root.pressedInput = this.inputElement;
-        }
-    }
-
     /** @ignore */
     setInputElement(input: HTMLInputElement, id: string): void {
         this.inputElement = input;
-        this.inputId.set(id);
+        this.registeredInputId.set(id);
     }
 
     /** @ignore */
@@ -215,6 +184,6 @@ export class RdxSliderThumb implements RdxSliderThumbRef {
         }
 
         this.inputElement = null;
-        this.inputId.set(undefined);
+        this.registeredInputId.set(undefined);
     }
 }

@@ -55,6 +55,7 @@ export class RdxSliderIndicator {
         const vertical = this.root.orientation() === 'vertical';
         const range = this.root.range();
         const values = this.root.values();
+        if (values.length === 0) return { visibility: 'hidden' };
         const min = this.root.min();
         const max = this.root.max();
         const inset = this.root.inset();

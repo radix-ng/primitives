@@ -108,6 +108,29 @@ async function snapshot(page: Page) {
                     ];
                 })
             ),
+            slider: [...document.querySelectorAll<HTMLElement>('audit-slider-view [role="group"]')].map((root) => {
+                const label = root.querySelector<HTMLElement>('[rdxsliderlabel]')!;
+                const input = root.querySelector<HTMLInputElement>('input')!;
+                const thumb = input.parentElement!;
+                const indicator = root.querySelector<HTMLElement>('[rdxsliderindicator]')!;
+                const control = root.querySelector<HTMLElement>('[rdxslidercontrol]')!;
+                const parts = [root, label, thumb, indicator, input];
+                return {
+                    ids: [root.id, label.id, input.id],
+                    reused: parts.every(
+                        (part, index) => window.auditServerNodes?.[`slider:${input.name}:${index}`] === part
+                    ),
+                    named:
+                        root.getAttribute('aria-labelledby') === label.id &&
+                        input.getAttribute('aria-labelledby') === label.id,
+                    insetHidden:
+                        getComputedStyle(thumb).visibility === 'hidden' &&
+                        getComputedStyle(indicator).visibility === 'hidden',
+                    start: Math.round(thumb.getBoundingClientRect().left - control.getBoundingClientRect().left),
+                    fill: Math.round(indicator.getBoundingClientRect().width),
+                    value: input.valueAsNumber
+                };
+            }),
             label: labelPage
                 ? {
                       nodes: Object.fromEntries(
@@ -567,6 +590,66 @@ async function checkSeparatorHydration(
     const cleared = (await record('clearing orientation updates the original rule')).separators;
     checks.clearsOrientationOnOriginalNodes =
         matches(cleared, 'horizontal') && parts.every(([name]) => cleared[name]?.reused === true);
+}
+
+async function checkSliderHydration(
+    page: Page,
+    observation: Observation,
+    record: (label: string) => Promise<Snapshot>,
+    release: () => void
+) {
+    const fixture = page.locator('audit-slider-view');
+    await fixture.evaluate((view) => {
+        for (const root of view.querySelectorAll('[role="group"]')) {
+            const input = root.querySelector('input')!;
+            const parts = [
+                root,
+                root.querySelector('[rdxsliderlabel]')!,
+                input.parentElement!,
+                root.querySelector('[rdxsliderindicator]')!,
+                input
+            ];
+            parts.forEach((part, index) => {
+                window.auditServerNodes![`slider:${input.name}:${index}`] = part;
+            });
+        }
+    });
+    const before = (await record('server slider values before measurement')).slider;
+    observation.checks.serverValuesAndNames =
+        before.length === 2 && before.every((part) => part.named && part.insetHidden && part.value === 0);
+
+    release();
+    await page.waitForFunction(() => window.portalHydrationAudit?.ready, undefined, { timeout: 5000 });
+    const after = (await record('reused sliders measured at the start edge')).slider;
+    observation.checks.hydratedGeometryAndIdentity =
+        after.length === 2 &&
+        after.every(
+            (part, index) =>
+                part.reused &&
+                part.named &&
+                !part.insetHidden &&
+                part.start === 0 &&
+                part.fill === 10 &&
+                part.value === 0 &&
+                part.ids.every((id, idIndex) => id && id === before[index].ids[idIndex])
+        );
+
+    const inputs = fixture.getByRole('slider');
+    for (const input of await inputs.all()) await input.press('End');
+    const edited = (await record('keyboard edit moves both original thumbs')).slider;
+    observation.checks.editedGeometry = edited.every(
+        (part) => part.reused && part.start === 180 && part.fill === 190 && part.value === 100
+    );
+    await fixture.getByRole('button', { name: 'Reset volume' }).click();
+    await page.waitForFunction(() =>
+        [...document.querySelectorAll<HTMLInputElement>('audit-slider-view input')].every(
+            (input) => input.valueAsNumber === 0
+        )
+    );
+    const reset = (await record('form reset restores the initial values')).slider;
+    observation.checks.resetGeometry = reset.every(
+        (part) => part.reused && part.start === 0 && part.fill === 10 && part.value === 0
+    );
 }
 
 async function checkLabelHydration(
@@ -1127,6 +1210,10 @@ try {
             }
             if (settings.kind === 'separator') {
                 await checkSeparatorHydration(page, observation, record, release);
+                continue;
+            }
+            if (settings.kind === 'slider') {
+                await checkSliderHydration(page, observation, record, release);
                 continue;
             }
             if (settings.kind === 'tooltip') {

@@ -1,85 +1,53 @@
 # Slider — parity matrix
 
-Initial inventory: 2026-11-17. Reference pin: **Base UI 1.9.0**,
-`cf696d6f6e08c699c5bda24d5a033430909f2285` ([reference manifest](../../../apps/parity-testing/reference.json)).
+Reference pin **Base UI 1.9.0**, `cf696d6f6e08c699c5bda24d5a033430909f2285`.
+See the [reference manifest](../../../apps/parity-testing/reference.json) and
+[pinned Slider implementation](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/slider).
 
-Primary counterpart: [slider](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/slider).
-Pinned exported parts/functions: `Root`, `Label`, `Value`, `Control`, `Track`, `Thumb`, `Indicator`.
+## Anatomy
 
-**Scope: initial source inventory and comparison backlog.** Exported local declarations and evidence
-locations were inventoried; complete per-handler, per-attribute and browser equivalence has not been
-established. A source observation below is not a newly passing runtime or differential result.
+| Pinned part | Angular selector                                                  |
+| ----------- | ----------------------------------------------------------------- |
+| Root        | `div[rdxSliderRoot]`                                              |
+| Label       | `div[rdxSliderLabel]`                                             |
+| Value       | `output[rdxSliderValue]`                                          |
+| Control     | `div[rdxSliderControl]`                                           |
+| Track       | `div[rdxSliderTrack]`                                             |
+| Thumb       | `div[rdxSliderThumb]`, with authored `input[rdxSliderThumbInput]` |
+| Indicator   | `div[rdxSliderIndicator]`                                         |
 
-**Breaking changes are permitted; backward compatibility does not constrain the target.** Apply the
-[state ownership/defaults contract](../../../docs/engineering/state-ownership.md) per field. Inputs,
-models, outputs, defaults and part boundaries may change; do not retain compatibility mirrors or
-aliases solely for the old API. Review earlier ADR decisions explicitly when replacing them.
+The [entry point](index.ts) exports the directives. The [component docs](stories/slider.docs.mdx)
+describe the public inputs, events, data attributes and accessible names. Angular authors the
+native input explicitly and accepts per-thumb accessible names on that input.
 
-## Public surface inventory
+## Completed increments
 
-Source of truth: [entry barrel](index.ts). These are directly exported decorated classes, not a
-claim that inherited/host-directive APIs or every upstream prop have already been compared. Exported
-composition bases, guards and internal helpers are not thereby promoted to stable public widget parts.
+| Priority | Area                          | Behavior and evidence                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| -------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P1       | Value ownership               | `controlledValue` owns strict parent-controlled state. The change request and final proposal reach the parent even if it leaves its value in place. The editable `value` model drives `[(value)]`, Reactive Forms, template-driven forms and Signal Forms. Native edits reconcile the input and form submission on cancellation. Paired controlled, canceled and native edit cases exercise these paths in all three engines.                   |
+| P1       | Defaults, bounds and reset    | The initial `defaultValue` or initial `min` supplies the uncontrolled seed. Zero, null and empty arrays have explicit behavior. Live bounds constrain the rendered value. Accepted native reset restores the initial uncontrolled value and respects the Angular form control's reset baseline. Paired browser tests cover late defaults, live bounds and external form resets. Units cover nullable and empty values and the Angular adapters. |
+| P2       | Interaction, focus and layout | Paired scenarios cover push, swap, none, range focus order, keyboard steps, RTL, vertical orientation, touch, disabling mid-drag, native input changes, and label focus. The two inset alignments have paired browser geometry checks. The Angular SSR and hydration checks verify initial values, stable label and input IDs, node reuse and measured geometry.                                                                                |
 
-| Angular declaration                                | Selector / role              | Direct input/model/output declarations                                                                                                                                                                                                                                                        |
-| -------------------------------------------------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`RdxSliderControl`](src/slider-control.ts)        | `div[rdxSliderControl]`      | No direct signal input/model/output declaration.                                                                                                                                                                                                                                              |
-| [`RdxSliderIndicator`](src/slider-indicator.ts)    | `div[rdxSliderIndicator]`    | No direct signal input/model/output declaration.                                                                                                                                                                                                                                              |
-| [`RdxSliderRoot`](src/slider-root.ts)              | `div[rdxSliderRoot]`         | `id`, `min`, `max`, `step`, `largeStep`, `minStepsBetweenValues`, `orientation`, `dir`, `thumbCollisionBehavior`, `thumbAlignment`, `format`, `locale`, `name`, `form`, `disabled`, `defaultValue`, `value` (model), `aria-labelledby`, `onValueChange` (output), `onValueCommitted` (output) |
-| [`RdxSliderThumb`](src/slider-thumb.ts)            | `div[rdxSliderThumb]`        | `index`, `disabled`                                                                                                                                                                                                                                                                           |
-| [`RdxSliderThumbInput`](src/slider-thumb-input.ts) | `input[rdxSliderThumbInput]` | `id`, `aria-label`, `aria-valuetext`                                                                                                                                                                                                                                                          |
-| [`RdxSliderTrack`](src/slider-track.ts)            | `div[rdxSliderTrack]`        | No direct signal input/model/output declaration.                                                                                                                                                                                                                                              |
-| [`RdxSliderValue`](src/slider-value.ts)            | `output[rdxSliderValue]`     | `separator`                                                                                                                                                                                                                                                                                   |
+## Angular contracts and reference differences
 
-Inherited classes and composed directives may add state/API. Follow those sources when completing
-the comparison; similar part names or selector counts do not prove the same contract.
+- Angular allows `controlledValue` to be added or cleared during a component instance. When cleared,
+  the editable model or initial fallback resumes. The pinned hook fixes controlled mode at mount.
+  Angular Forms can supply `null`, which displays the live minimum, or an empty array, which supplies
+  no thumb values. Base UI does not type its value as nullable.
+- Angular resets the standalone range to its initial values on an accepted external form reset.
+  The pinned fixture keeps the edited values. Angular also preserves an authored off-grid value
+  in the native input and `FormData`. The pinned native range rounds it to the configured step.
+- Angular clears the active drag and its styling marker on disable. Both implementations stop
+  applying movement. See the paired [difference records](../../../apps/parity-testing/primitives/slider/expected-differences.json).
+- Both Angular inset modes wait for browser measurement. Base UI has a prehydration script for
+  `edge`. The Angular geometry checks cover measured placement and hydration node reuse.
+- The pin exposes disabled behavior and does not provide a Slider read-only mode. Angular uses
+  disabled behavior as well. Real assistive technology, physical devices and the full per-part
+  callback and styling surface remain outside these checks.
 
-## State ownership and defaults
+## Verification
 
-Ownership class for this entry: **Editable form value and auxiliary state**. The [shared contract](../../../docs/engineering/state-ownership.md)
-distinguishes controlled UI requests, editable form models, readonly configuration, native DOM state
-and derived/render state. Local writes to required form models are legitimate Angular behavior.
-For strict controlled UI state, a request must not mutate the effective value before parent acceptance.
-
-| State field / source                        | Current declaration             | Ownership review                                                                                               |
-| ------------------------------------------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| [`RdxSliderRoot.value`](src/slider-root.ts) | `model<SliderValue>(undefined)` | Editable form model where the actual Angular control contract requires it; coordinate CVA/native/Signal Forms. |
-
-| Declared default / source                          | Declaration                     | Required comparison                                                                                                                                         |
-| -------------------------------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`RdxSliderRoot.defaultValue`](src/slider-root.ts) | `input<SliderValue>(undefined)` | Initial supplied/falsy/empty/form priority, initial-only snapshot, late changes and reset baseline. Distinguish state defaults from reactive configuration. |
-
-Always include allowed `false`, `0`, `''`, `[]` and `null` cases; initial parent/CVA/Signal Forms
-writes; default changes after initialization; ignored/delayed/replaced controlled requests; cancellation
-and native/form reset. Not every case applies to readonly or infrastructure entries: mark those
-boundaries explicitly instead of converting all models to readonly inputs.
-
-## Family-specific comparison matrix
-
-“Source” identifies a local implementation fact. “Compare/verify/audit” is pending work. Priorities
-describe the target work, not a certificate or a reproduced defect count.
-
-| Area                     | Current observation / required target comparison                                                                                                                                                           | Priority |
-| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| Value/form ownership     | Source: value is a model while currentRaw derives from CVA, then defaultValue, then min. Audit that precedence together with model synchronization rather than treating each channel as independent state. | P1       |
-| Default/min/reset policy | Compare initially bound value, zero/null, late defaults and min changes, native reset and uncontrolled fallback. Keep form models and document automatic clamp behavior separately from user requests.     | P1       |
-| Range interaction        | Compare scalar/range values, thumb crossing/collision, precision/step, disabled/readonly, pointer/keyboard/RTL, native hidden inputs and labels. Map the pinned Label part explicitly.                     | P2       |
-
-Also compare the actual emitted per-part attributes/CSS variables with both the pinned declaration
-files and runtime state mapping. Check native hosts, event reasons/details/default prevention,
-accessibility relationships, keyboard/RTL and cleanup where applicable. Angular framework adapters
-are permitted; changed observable behavior needs evidence or an explicitly reviewed deviation.
-
-## Evidence inventory and next checks
-
-- [Local unit files](__tests__): **1 file discovered**; not a passing-test count.
-- No same-family named browser behavior file was found. Cross-family consumer or shared-mechanism checks may exist; locate them before claiming absence or coverage.
-- No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
-- [SSR consumer page](../../../apps/radix-ssr-testing/src/app/components/slider/page.ts) exists. Its presence does not prove initial-state, lifecycle or hydration equivalence; inspect actual assertions.
-
-No runtime suite was executed for this initial matrix sweep. Complete focused state/DI units,
-native/layout browser cases and SSR/hydration checks before promoting rows; add a paired pinned
-fixture before certifying equivalent observable behavior. See the
-[verification skill](../../../.agents/skills/radix-testing/SKILL.md),
-[matrix index](../../../docs/engineering/parity-matrices.md) and
-[upstream preparation guide](../../../docs/engineering/upstream-reference.md).
+- [Paired browser suite](../../../apps/parity-testing/primitives/slider/README.md)
+- [Unit tests](__tests__/slider.spec.ts)
+- [SSR assertions](../../../apps/radix-ssr-testing/src/ssr-rendering.spec.ts)
+- [Angular hydration regression](../../../apps/radix-ssr-testing/hydration-audit/README.md)

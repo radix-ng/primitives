@@ -66,6 +66,7 @@ import { ProgressAuditView } from './progress-view';
 import { RadioAuditView } from './radio-view';
 import { SeparatorAuditView } from './separator-view';
 import { AuditProbe, Settings } from './settings';
+import { SliderAuditView } from './slider-view';
 import { TooltipAuditView } from './tooltip-view';
 
 export const SETTINGS = new InjectionToken<Settings>('Portal hydration audit settings');
@@ -170,6 +171,7 @@ export class HydrationProbe {
         ProgressAuditView,
         MeterAuditView,
         SeparatorAuditView,
+        SliderAuditView,
         TooltipAuditView,
         RdxPopoverRoot,
         RdxPopoverTrigger,
@@ -196,6 +198,9 @@ export class HydrationProbe {
             }
             @case ('separator') {
                 <audit-separator-view />
+            }
+            @case ('slider') {
+                <audit-slider-view />
             }
             @case ('tooltip') {
                 <audit-tooltip-view [late]="state.settings.name === 'detached-tooltip'" />

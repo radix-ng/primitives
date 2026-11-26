@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
+    RdxSliderLabel,
     RdxSliderRoot,
     RdxSliderThumb,
     RdxSliderThumbInput,
@@ -17,14 +18,15 @@ import {
         RdxSliderControl,
         RdxSliderTrack,
         RdxSliderIndicator,
+        RdxSliderLabel,
         RdxSliderThumb,
         RdxSliderThumbInput,
         RdxSliderValue
     ],
     template: `
-        <div class="relative w-56 select-none" [value]="42" [format]="format" rdxSliderRoot>
+        <div class="relative w-56 select-none" [defaultValue]="42" [format]="format" rdxSliderRoot>
             <div class="text-foreground mb-2 flex items-center justify-between text-sm">
-                <span id="slider-value-label">Budget</span>
+                <div rdxSliderLabel>Budget</div>
                 <output class="text-muted-foreground tabular-nums" rdxSliderValue></output>
             </div>
             <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>
@@ -34,7 +36,7 @@ import {
                         class="border-border bg-background focus-within:ring-ring block size-5 border focus-within:ring-2"
                         rdxSliderThumb
                     >
-                        <input rdxSliderThumbInput aria-labelledby="slider-value-label" />
+                        <input rdxSliderThumbInput />
                     </div>
                 </div>
             </div>

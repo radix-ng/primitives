@@ -1,6 +1,8 @@
 import { DOCUMENT } from '@angular/common';
 import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
+import { watch } from '@radix-ng/primitives/core';
 import { injectSliderRootContext } from './slider-context';
+import type { SliderValue } from './slider-root';
 import {
     clamp,
     getControlOffset,
@@ -38,15 +40,30 @@ export class RdxSliderControl {
 
     private styles: CSSStyleDeclaration | null = null;
     private moveCount = 0;
-    private currentInteractionValue: number | number[] | null = null;
+    private currentInteraction: { value: SliderValue; reason: 'track-press' | 'drag'; ownerValues: number[] } | null =
+        null;
+    private pointerId: number | null = null;
+    private awaitingTouchStart = false;
     private touchId: number | null = null;
     private insetThumbOffset = 0;
+    private pressedThumbIndex = -1;
+    private pressedThumbCenterOffset: number | null = null;
+    private pressedValues: number[] | null = null;
 
     private readonly onTouchStart = (event: TouchEvent) => this.handleTouchStart(event);
     private readonly onMove = (event: PointerEvent) => this.handleMove(event);
     private readonly onUp = (event: PointerEvent) => this.handleUp(event);
-    private readonly onCancel = (event: PointerEvent) => this.handleUp(event);
-    private readonly onTouchMove = (event: TouchEvent) => this.handleMove(event);
+    private readonly onCancel = (event: PointerEvent) => {
+        if (event.pointerId !== this.pointerId) return;
+        if (this.touchId === null) {
+            this.handleUp(event);
+        } else {
+            this.pointerId = null;
+        }
+    };
+    private readonly onTouchMove = (event: TouchEvent) => {
+        if (this.pointerId === null) this.handleMove(event);
+    };
     private readonly onTouchEnd = (event: TouchEvent) => this.handleUp(event);
 
     constructor() {
@@ -54,14 +71,28 @@ export class RdxSliderControl {
         this.root.controlRef.set(control);
         control.style.setProperty('touch-action', 'none');
         control.addEventListener('touchstart', this.onTouchStart, { passive: true });
+        watch(
+            [
+                () => this.root.isDisabled(),
+                () => this.root.thumbList().map((thumb) => thumb.disabled()),
+                () => this.root.values().length
+            ],
+            ([disabled, thumbs, count]) => {
+                const index = this.pressedThumbIndex;
+                if (index >= 0 && (disabled || index >= count || thumbs[index] !== false)) {
+                    this.finishInteraction();
+                }
+            }
+        );
         inject(DestroyRef).onDestroy(() => {
             control.removeEventListener('touchstart', this.onTouchStart);
-            this.stopListening();
+            this.finishInteraction();
         });
     }
 
     protected onPointerDown(event: PointerEvent): void {
         const control = this.elementRef.nativeElement;
+        if (this.pointerId !== null || this.touchId !== null) return;
         if (this.root.isDisabled() || event.defaultPrevented || event.button !== 0) {
             return;
         }
@@ -69,10 +100,8 @@ export class RdxSliderControl {
         if (!target) {
             return;
         }
-        if (this.isTargetDisabledThumb(target)) {
-            this.root.resetPressedThumb();
-            return;
-        }
+        const thumbIndex = this.getTargetThumbIndex(target);
+        if (this.root.thumbList()[thumbIndex]?.disabled()) return;
 
         // Suppress the nested range input's native click-to-set and drag so the
         // control fully owns pointer interaction (otherwise releasing on a thumb
@@ -80,68 +109,67 @@ export class RdxSliderControl {
         // the thumb-sized input). Focus is restored manually via focusThumb.
         event.preventDefault();
 
-        this.touchId = null;
         this.styles = this.document.defaultView?.getComputedStyle(control) ?? null;
-        this.startPressing({ x: event.clientX, y: event.clientY });
+        this.startPressing({ x: event.clientX, y: event.clientY }, thumbIndex);
         const finger = this.getFingerState({ x: event.clientX, y: event.clientY });
         if (finger == null) {
+            this.finishInteraction();
             return;
         }
 
+        this.pointerId = event.pointerId;
+        this.awaitingTouchStart = event.pointerType === 'touch' || event.pointerType === 'pen';
         this.root.setDragging(true);
 
         // Pressing directly on a thumb sets a center offset; only a rail press changes value on down.
-        if (this.root.pressedThumbCenterOffset == null) {
+        if (this.pressedThumbCenterOffset === null) {
             this.setValueFromPointer(finger, 'track-press', event);
         }
 
         this.root.focusThumb(finger.thumbIndex);
 
-        control.setPointerCapture(event.pointerId);
+        if (event.isTrusted && event.pointerId) control.setPointerCapture(event.pointerId);
         this.moveCount = 0;
         this.document.addEventListener('pointermove', this.onMove);
-        this.document.addEventListener('pointerup', this.onUp, { once: true });
-        this.document.addEventListener('pointercancel', this.onCancel, { once: true });
+        this.document.addEventListener('pointerup', this.onUp);
+        this.document.addEventListener('pointercancel', this.onCancel);
     }
 
     private handleTouchStart(event: TouchEvent): void {
-        if (this.root.isDisabled()) {
+        if (this.root.isDisabled() || event.defaultPrevented || this.touchId !== null) {
             return;
         }
 
+        const startedByPointer = this.awaitingTouchStart;
+        this.awaitingTouchStart = false;
+        if (!startedByPointer && this.pointerId !== null) return;
         const touch = event.changedTouches[0];
         if (!touch) {
             return;
         }
-        if (this.isTargetDisabledThumb(event.target)) {
-            this.root.resetPressedThumb();
-            return;
-        }
+        const thumbIndex = this.getTargetThumbIndex(event.target);
+        if (this.root.thumbList()[thumbIndex]?.disabled()) return;
 
         this.touchId = touch.identifier;
-        this.styles = this.document.defaultView?.getComputedStyle(this.elementRef.nativeElement) ?? null;
-
-        const fingerCoords = this.getFingerCoords(event);
-        if (fingerCoords == null) {
-            return;
-        }
-
-        this.startPressing(fingerCoords);
-        const finger = this.getFingerState(fingerCoords);
-        if (finger == null) {
-            return;
-        }
-
-        this.root.focusThumb(finger.thumbIndex);
-        const applied = this.setValueFromPointer(finger, 'track-press', event);
-        if (applied && finger.didSwap) {
+        if (!startedByPointer) {
+            const coords = { x: touch.clientX, y: touch.clientY };
+            this.styles = this.document.defaultView?.getComputedStyle(this.elementRef.nativeElement) ?? null;
+            this.startPressing(coords, thumbIndex);
+            const finger = this.getFingerState(coords);
+            if (finger === null) {
+                this.finishInteraction();
+                return;
+            }
             this.root.focusThumb(finger.thumbIndex);
+            if (this.pressedThumbCenterOffset === null) {
+                this.setValueFromPointer(finger, 'track-press', event);
+            }
+            this.moveCount = 0;
         }
 
-        this.moveCount = 0;
         this.document.addEventListener('touchmove', this.onTouchMove, { passive: true });
-        this.document.addEventListener('touchend', this.onTouchEnd, { passive: true, once: true });
-        this.document.addEventListener('touchcancel', this.onTouchEnd, { passive: true, once: true });
+        this.document.addEventListener('touchend', this.onTouchEnd, { passive: true });
+        this.document.addEventListener('touchcancel', this.onTouchEnd, { passive: true });
     }
 
     private handleMove(event: PointerEvent | TouchEvent): void {
@@ -172,25 +200,36 @@ export class RdxSliderControl {
     }
 
     private handleUp(event: PointerEvent | TouchEvent): void {
+        if (this.getFingerCoords(event) === null) return;
+        this.finishInteraction(event);
+    }
+
+    private finishInteraction(event?: Event): void {
+        const interaction = this.currentInteraction;
+        const pointerId = this.pointerId;
+        this.pointerId = null;
+        this.touchId = null;
+        this.awaitingTouchStart = false;
+        this.currentInteraction = null;
+        this.stopListening();
         this.root.setActive(-1);
         this.root.setDragging(false);
-        this.root.pressedThumbCenterOffset = null;
-        this.root.pressedInput = null;
-
-        if (this.currentInteractionValue != null) {
-            this.root.commitValue(event);
-        }
+        this.pressedThumbIndex = -1;
+        this.pressedThumbCenterOffset = null;
+        this.pressedValues = null;
 
         const control = this.elementRef.nativeElement;
-        if ('pointerId' in event && control.hasPointerCapture?.(event.pointerId)) {
-            control.releasePointerCapture(event.pointerId);
+        if (pointerId !== null && control.hasPointerCapture?.(pointerId)) {
+            control.releasePointerCapture(pointerId);
         }
 
-        this.root.resetPressedThumb();
-        this.touchId = null;
-        this.root.pressedValues = null;
-        this.currentInteractionValue = null;
-        this.stopListening();
+        if (event && interaction && !this.root.isDisabled()) {
+            const values = this.root.values();
+            const value = interaction.value;
+            if (Array.isArray(value) ? this.root.range() && value.length === values.length : !this.root.range()) {
+                this.root.commitValue(value, event, interaction.reason);
+            }
+        }
     }
 
     private stopListening(): void {
@@ -218,43 +257,42 @@ export class RdxSliderControl {
             return null;
         }
 
-        return { x: event.clientX, y: event.clientY };
+        return this.pointerId === event.pointerId ? { x: event.clientX, y: event.clientY } : null;
     }
 
-    private isTargetDisabledThumb(target: EventTarget | null): boolean {
+    private getTargetThumbIndex(target: EventTarget | null): number {
         const NodeCtor = this.elementRef.nativeElement.ownerDocument.defaultView?.Node;
         if (!NodeCtor || !(target instanceof NodeCtor)) {
-            return false;
+            return -1;
         }
-
-        return this.root.thumbList().some((thumb) => thumb.disabled() && thumb.element.contains(target));
+        return this.root.thumbList().findIndex((thumb) => thumb.element.contains(target));
     }
 
-    private startPressing(finger: { x: number; y: number }): void {
+    private startPressing(finger: PointerCoords, pressedThumbIndex: number): void {
         const values = this.root.values();
         const range = this.root.range();
-        this.root.pressedValues = range ? values.slice() : null;
-        this.currentInteractionValue = null;
+        this.pressedValues = range ? values.slice() : null;
 
-        const pressedThumbIndex = this.root.pressedThumbIndex;
         let closestThumbIndex = pressedThumbIndex;
+        const axis = this.root.orientation() === 'horizontal' ? 'x' : 'y';
+        const thumbs = this.root.thumbList();
 
         if (pressedThumbIndex > -1 && pressedThumbIndex < values.length) {
+            const thumb = thumbs[pressedThumbIndex];
+            this.pressedThumbCenterOffset = finger[axis] - getMidpoint(thumb.element)[axis];
             // Pressed directly on a thumb sitting on max — walk left over stacked max thumbs.
             if (values[pressedThumbIndex] === this.root.max()) {
                 let c = pressedThumbIndex;
-                while (c > 0 && values[c - 1] === this.root.max()) {
+                while (c > 0 && values[c - 1] === this.root.max() && !thumbs[c - 1]?.disabled()) {
                     c -= 1;
                 }
                 closestThumbIndex = c;
             }
         } else {
             // Pressed on the rail — find the nearest enabled thumb by midpoint distance.
-            const axis = this.root.orientation() === 'horizontal' ? 'x' : 'y';
-            const thumbs = this.root.thumbList();
             let minDistance: number | undefined;
             closestThumbIndex = -1;
-            for (let i = 0; i < thumbs.length; i += 1) {
+            for (let i = 0; i < Math.min(thumbs.length, values.length); i += 1) {
                 const thumb = thumbs[i];
                 if (thumb.disabled()) {
                     continue;
@@ -268,11 +306,7 @@ export class RdxSliderControl {
             }
         }
 
-        if (closestThumbIndex > -1 && closestThumbIndex !== pressedThumbIndex) {
-            this.root.pressedThumbIndex = closestThumbIndex;
-            this.root.pressedInput = this.root.thumbList()[closestThumbIndex]?.inputElement ?? null;
-        }
-
+        this.pressedThumbIndex = closestThumbIndex;
         this.insetThumbOffset = 0;
         if (this.root.inset()) {
             const thumb = this.root.thumbList()[closestThumbIndex]?.element;
@@ -288,13 +322,13 @@ export class RdxSliderControl {
         reason: 'track-press' | 'drag',
         event?: Event
     ): boolean {
+        const ownerValues = this.root.values();
         const nextValues = Array.isArray(finger.value) ? finger.value : [finger.value];
         const applied = this.root.setValue(nextValues, reason, event, finger.thumbIndex);
         if (applied) {
-            this.currentInteractionValue = finger.value;
+            this.currentInteraction = { value: finger.value, reason, ownerValues };
             if (finger.didSwap) {
-                this.root.pressedThumbIndex = finger.thumbIndex;
-                this.root.pressedInput = this.root.thumbList()[finger.thumbIndex]?.inputElement ?? null;
+                this.pressedThumbIndex = finger.thumbIndex;
             }
         }
         return applied;
@@ -305,14 +339,19 @@ export class RdxSliderControl {
         const control = this.root.controlRef();
         const values = this.root.values();
         const range = this.root.range();
-        const thumbIndex = this.root.pressedThumbIndex;
+        const thumbIndex = this.pressedThumbIndex;
         const vertical = this.root.orientation() === 'vertical';
         const rtl = this.root.dir() === 'rtl';
         const min = this.root.min();
         const max = this.root.max();
         const step = this.root.step();
 
-        if (!control || (!range && (thumbIndex < 0 || thumbIndex >= values.length))) {
+        if (
+            !control ||
+            thumbIndex < 0 ||
+            thumbIndex >= values.length ||
+            this.root.thumbList()[thumbIndex]?.disabled()
+        ) {
             return null;
         }
 
@@ -326,7 +365,7 @@ export class RdxSliderControl {
             return null;
         }
 
-        const thumbCenterOffset = this.root.pressedThumbCenterOffset ?? 0;
+        const thumbCenterOffset = this.pressedThumbCenterOffset ?? 0;
         const fingerX = finger.x - thumbCenterOffset;
         const fingerY = finger.y - thumbCenterOffset;
 
@@ -340,18 +379,17 @@ export class RdxSliderControl {
         newValue = roundValueToStep(newValue, step, min);
         newValue = clamp(newValue, min, max);
 
-        if (!range) {
-            return { value: newValue, thumbIndex, didSwap: false };
+        if (values.length === 1) {
+            return { value: range ? [newValue] : newValue, thumbIndex, didSwap: false };
         }
-        if (thumbIndex < 0) {
-            return null;
-        }
-
+        const interaction = this.currentInteraction;
+        const currentValues =
+            interaction?.ownerValues === values && Array.isArray(interaction.value) ? interaction.value : values;
         return resolveThumbCollision({
             behavior: this.root.thumbCollisionBehavior(),
             values,
-            currentValues: values,
-            initialValues: this.root.pressedValues,
+            currentValues,
+            initialValues: this.pressedValues,
             pressedIndex: thumbIndex,
             nextValue: newValue,
             min,

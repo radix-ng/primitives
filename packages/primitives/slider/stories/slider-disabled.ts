@@ -13,7 +13,7 @@ import {
     selector: 'slider-disabled-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
-        <div class="relative w-56 select-none data-[disabled]:opacity-50" [value]="45" rdxSliderRoot disabled>
+        <div class="relative w-56 select-none data-[disabled]:opacity-50" [defaultValue]="45" rdxSliderRoot disabled>
             <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>
                 <div class="relative h-1 w-full bg-neutral-200 dark:bg-neutral-800" rdxSliderTrack>
                     <div class="bg-primary h-full" rdxSliderIndicator></div>

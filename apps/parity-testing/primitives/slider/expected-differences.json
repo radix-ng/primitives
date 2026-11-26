@@ -1,0 +1,50 @@
+[
+    {
+        "scenario": "disable-drag",
+        "checkpoint": "drag marker after disable",
+        "field": "dragging",
+        "angular": false,
+        "react": true,
+        "category": "disabled-drag-marker"
+    },
+    {
+        "scenario": "off-grid",
+        "checkpoint": "off-grid authored value",
+        "field": "native",
+        "angular": [42],
+        "react": [40],
+        "category": "native-off-grid-value"
+    },
+    {
+        "scenario": "off-grid",
+        "checkpoint": "off-grid authored value",
+        "field": "submitted",
+        "angular": ["42"],
+        "react": ["40"],
+        "category": "native-off-grid-value"
+    },
+    {
+        "scenario": "reset",
+        "checkpoint": "accepted reset",
+        "field": "values",
+        "angular": [20, 60],
+        "react": [21, 60],
+        "category": "native-reset-baseline"
+    },
+    {
+        "scenario": "reset",
+        "checkpoint": "accepted reset",
+        "field": "native",
+        "angular": [20, 60],
+        "react": [21, 60],
+        "category": "native-reset-baseline"
+    },
+    {
+        "scenario": "reset",
+        "checkpoint": "accepted reset",
+        "field": "submitted",
+        "angular": ["20", "60"],
+        "react": ["21", "60"],
+        "category": "native-reset-baseline"
+    }
+]

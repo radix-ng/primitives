@@ -3,6 +3,7 @@ import {
     computed,
     Directive,
     effect,
+    ElementRef,
     inject,
     InjectionToken,
     input,
@@ -242,18 +243,26 @@ export function provideFormUiState(state: () => RdxFormUiState): Provider {
         '[attr.data-valid]': 'displayValid() === true ? "" : undefined',
         '[attr.data-touched]': 'formUi.touchedState() ? "" : undefined',
         '[attr.data-dirty]': 'formUi.dirtyState() ? "" : undefined',
-        '(focusout)': 'formUi.markAsTouched()'
+        '(focusout)': 'onFocusOut($event)'
     }
 })
 export class RdxFormUiStateHost {
     /** @ignore The injected state the host bindings read. */
     protected readonly formUi = inject(RDX_FORM_UI_STATE);
+    private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
     private readonly fieldValidity = inject(RDX_FIELD_VALIDITY, { optional: true });
 
     /** @ignore Tri-state display validity (enclosing Field's gated state, else own invalidity). */
     protected readonly displayValid = computed(() =>
         this.fieldValidity ? this.fieldValidity() : this.formUi.validState()
     );
+
+    protected onFocusOut(event: FocusEvent): void {
+        const next = event.relatedTarget;
+        if (!next || !('nodeType' in next) || !this.host.contains(next as Node)) {
+            this.formUi.markAsTouched();
+        }
+    }
 }
 
 /**

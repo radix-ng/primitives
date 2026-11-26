@@ -37070,7 +37070,7 @@ import {
     selector: 'slider-default-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
-        <div class="relative w-56 select-none" [value]="45" [step]="5" rdxSliderRoot>
+        <div class="relative w-56 select-none" [defaultValue]="45" [step]="5" rdxSliderRoot>
             <div class="flex w-full touch-none items-center py-3" rdxSliderControl>
                 <div class="relative h-1 w-full bg-neutral-200 dark:bg-neutral-800" rdxSliderTrack>
                     <div class="bg-primary h-full" rdxSliderIndicator></div>
@@ -37106,6 +37106,7 @@ export class SliderDefaultExample {}
 ```ts
 import {
     RdxSliderRoot,
+    RdxSliderLabel,
     RdxSliderControl,
     RdxSliderTrack,
     RdxSliderIndicator,
@@ -37129,6 +37130,7 @@ through the `orientation` input on the root.
 
 ```html
 <div rdxSliderRoot>
+    <div rdxSliderLabel>Volume</div>
     <output rdxSliderValue></output>
     <div rdxSliderControl>
         <div rdxSliderTrack>
@@ -37145,6 +37147,25 @@ Each thumb owns a nested `input[rdxSliderThumbInput]`. It is visually hidden but
 remains the focusable element that powers keyboard interaction, accessibility and
 form submission.
 
+Use `rdxSliderLabel` inside the root to name the group. In a single-thumb slider, clicking the label
+focuses the native input. In a range slider, give each input a distinct name with `aria-label` or
+`aria-labelledby`, such as “Minimum” and “Maximum”.
+
+## Value and reset
+
+Use `defaultValue` to seed an uncontrolled slider. The initial `min` seeds the value when no default
+is provided. Later bounds constrain the rendered and submitted values without emitting change
+events. An accepted native form reset restores the initial uncontrolled value or delegates to the
+bound Reactive Forms control.
+
+Values supplied between steps are preserved in the native input and in form submissions. The next
+keyboard or pointer edit uses the configured step grid.
+
+Use `[(value)]` for an editable Angular model and `[formField]` for Signal Forms. To accept, ignore,
+or delay each proposal from a parent component, bind `[controlledValue]` and update it from
+`onValueChange`. The parent-owned value stays in effect across native resets. An explicit `0` is a
+value, `null` displays the current minimum, and an empty array has no thumb values to submit.
+
 ## Change events
 
 `onValueChange` emits `{ value, eventDetails }`, where `value` is a number for a single slider or a
@@ -37156,9 +37177,11 @@ the candidate slider value and root `name`.
 `onValueCommitted` emits `{ value, eventDetails }` when an interaction commits. Its details include
 the commit `reason`, originating event, and trigger. This is a generic event like Base UI, so it is
 not cancelable and does not include `activeThumbIndex`.
+Controlled sliders report the last uncanceled proposal on commit. Disabling the pressed thumb or
+the whole slider during a drag ends the gesture without committing.
 
 ```html
-<div [value]="value()" (onValueChange)="setValue($event)" rdxSliderRoot>
+<div [controlledValue]="value()" (onValueChange)="setValue($event)" rdxSliderRoot>
     ...
 </div>
 ```
@@ -37195,7 +37218,7 @@ import {
         <div class="grid w-80 gap-4">
             <div
                 class="relative w-full select-none"
-                [value]="value()"
+                [controlledValue]="value()"
                 [step]="5"
                 (onValueChange)="onValueChange($event)"
                 (onValueCommitted)="onValueCommitted($event)"
@@ -37289,8 +37312,8 @@ export class SliderEventsExample {
 `thumbAlignment="edge"` and `thumbAlignment="edge-client-only"` inset thumbs so the thumb edge,
 not its center, reaches the control edge. In edge modes the pointer math accounts for the inset thumb
 radius, and the indicator uses measured thumb positions so the filled range lines up with the thumb
-centers. Both edge modes currently share the same Angular runtime positioning path; the
-`edge-client-only` value is accepted for Base UI API parity.
+centers. Angular measures both edge modes in the browser after rendering. The server markup has
+their values, and the thumbs and indicator become visible after measurement.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
@@ -37311,7 +37334,7 @@ import {
         <div class="grid w-72 gap-6">
             <div class="grid gap-2">
                 <span class="text-foreground text-sm font-medium">Center</span>
-                <div class="relative px-2 select-none" [value]="50" thumbAlignment="center" rdxSliderRoot>
+                <div class="relative px-2 select-none" [defaultValue]="50" thumbAlignment="center" rdxSliderRoot>
                     <div class="flex h-6 w-full touch-none items-center" rdxSliderControl>
                         <div class="relative h-1 w-full bg-neutral-200 dark:bg-neutral-800" rdxSliderTrack>
                             <div class="bg-primary h-full" rdxSliderIndicator></div>
@@ -37328,7 +37351,7 @@ import {
 
             <div class="grid gap-2">
                 <span class="text-foreground text-sm font-medium">Edge</span>
-                <div class="relative px-2 select-none" [value]="50" thumbAlignment="edge" rdxSliderRoot>
+                <div class="relative px-2 select-none" [defaultValue]="50" thumbAlignment="edge" rdxSliderRoot>
                     <div class="flex h-6 w-full touch-none items-center" rdxSliderControl>
                         <div class="relative h-1 w-full bg-neutral-200 dark:bg-neutral-800" rdxSliderTrack>
                             <div class="bg-primary h-full" rdxSliderIndicator></div>
@@ -37345,7 +37368,12 @@ import {
 
             <div class="grid gap-2">
                 <span class="text-foreground text-sm font-medium">Edge client only</span>
-                <div class="relative px-2 select-none" [value]="50" thumbAlignment="edge-client-only" rdxSliderRoot>
+                <div
+                    class="relative px-2 select-none"
+                    [defaultValue]="50"
+                    thumbAlignment="edge-client-only"
+                    rdxSliderRoot
+                >
                     <div class="flex h-6 w-full touch-none items-center" rdxSliderControl>
                         <div class="relative h-1 w-full bg-neutral-200 dark:bg-neutral-800" rdxSliderTrack>
                             <div class="bg-primary h-full" rdxSliderIndicator></div>
@@ -37387,7 +37415,7 @@ import {
     selector: 'slider-default-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
-        <div class="relative w-56 select-none" [value]="45" [step]="5" rdxSliderRoot>
+        <div class="relative w-56 select-none" [defaultValue]="45" [step]="5" rdxSliderRoot>
             <div class="flex w-full touch-none items-center py-3" rdxSliderControl>
                 <div class="relative h-1 w-full bg-neutral-200 dark:bg-neutral-800" rdxSliderTrack>
                     <div class="bg-primary h-full" rdxSliderIndicator></div>
@@ -37427,7 +37455,7 @@ import {
     selector: 'slider-range-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
-        <div class="relative w-56 select-none" [value]="[25, 75]" [minStepsBetweenValues]="1" rdxSliderRoot>
+        <div class="relative w-56 select-none" [defaultValue]="[25, 75]" [minStepsBetweenValues]="1" rdxSliderRoot>
             <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>
                 <div class="relative h-1 w-full bg-neutral-200 dark:bg-neutral-800" rdxSliderTrack>
                     <div class="bg-primary h-full" rdxSliderIndicator></div>
@@ -37474,7 +37502,7 @@ import {
     selector: 'slider-vertical-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
-        <div class="relative h-56 w-5 select-none" [value]="45" [step]="5" rdxSliderRoot orientation="vertical">
+        <div class="relative h-56 w-5 select-none" [defaultValue]="45" [step]="5" rdxSliderRoot orientation="vertical">
             <div class="flex h-full w-5 touch-none justify-center" rdxSliderControl>
                 <div class="relative h-full w-1 bg-neutral-200 dark:bg-neutral-800" rdxSliderTrack>
                     <div class="bg-primary w-full" rdxSliderIndicator></div>
@@ -37503,6 +37531,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
+    RdxSliderLabel,
     RdxSliderRoot,
     RdxSliderThumb,
     RdxSliderThumbInput,
@@ -37518,14 +37547,15 @@ import {
         RdxSliderControl,
         RdxSliderTrack,
         RdxSliderIndicator,
+        RdxSliderLabel,
         RdxSliderThumb,
         RdxSliderThumbInput,
         RdxSliderValue
     ],
     template: `
-        <div class="relative w-56 select-none" [value]="42" [format]="format" rdxSliderRoot>
+        <div class="relative w-56 select-none" [defaultValue]="42" [format]="format" rdxSliderRoot>
             <div class="text-foreground mb-2 flex items-center justify-between text-sm">
-                <span id="slider-value-label">Budget</span>
+                <div rdxSliderLabel>Budget</div>
                 <output class="text-muted-foreground tabular-nums" rdxSliderValue></output>
             </div>
             <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>
@@ -37535,7 +37565,7 @@ import {
                         class="border-border bg-background focus-within:ring-ring block size-5 border focus-within:ring-2"
                         rdxSliderThumb
                     >
-                        <input rdxSliderThumbInput aria-labelledby="slider-value-label" />
+                        <input rdxSliderThumbInput />
                     </div>
                 </div>
             </div>
@@ -37565,7 +37595,7 @@ import {
     selector: 'slider-disabled-example',
     imports: [RdxSliderRoot, RdxSliderControl, RdxSliderTrack, RdxSliderIndicator, RdxSliderThumb, RdxSliderThumbInput],
     template: `
-        <div class="relative w-56 select-none data-[disabled]:opacity-50" [value]="45" rdxSliderRoot disabled>
+        <div class="relative w-56 select-none data-[disabled]:opacity-50" [defaultValue]="45" rdxSliderRoot disabled>
             <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>
                 <div class="relative h-1 w-full bg-neutral-200 dark:bg-neutral-800" rdxSliderTrack>
                     <div class="bg-primary h-full" rdxSliderIndicator></div>
@@ -37582,7 +37612,7 @@ export class SliderDisabledExample {}
 
 ### Reactive forms
 
-The root composes a `ControlValueAccessor`, so it binds directly to
+The root implements `ControlValueAccessor`, so it binds directly to
 `formControl` / `formControlName` and `[(ngModel)]`.
 
 ```typescript
@@ -37654,6 +37684,17 @@ export class SliderFormsExample {
 | -------------------- | ------------------------------ |
 | `[data-orientation]` | `"horizontal" \| "vertical"`   |
 | `[data-disabled]`    | Present when disabled.         |
+| `[data-dragging]`    | Present while a thumb is dragged. |
+
+### Label
+
+`RdxSliderLabel` goes on a `div` inside the root and supplies its accessible name. Clicking it
+focuses the range input when the slider has a single value.
+
+| Data attribute      | Value                           |
+| ------------------- | ------------------------------- |
+| `[data-orientation]` | `"horizontal" \| "vertical"`    |
+| `[data-disabled]`    | Present when disabled.          |
 | `[data-dragging]`    | Present while a thumb is dragged. |
 
 ### Track

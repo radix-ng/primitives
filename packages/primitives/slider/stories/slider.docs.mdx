@@ -1,5 +1,6 @@
 import { ArgTypes, Canvas, Meta } from '@storybook/addon-docs/blocks';
 import * as SliderStories from './slider.stories';
+import { RdxSliderLabel } from '../src/slider-label';
 import { RdxSliderRoot } from '../src/slider-root';
 import { RdxSliderThumb } from '../src/slider-thumb';
 import { RdxSliderThumbInput } from '../src/slider-thumb-input';
@@ -31,6 +32,7 @@ import { RdxSliderValue } from '../src/slider-value';
 ```ts
 import {
     RdxSliderRoot,
+    RdxSliderLabel,
     RdxSliderControl,
     RdxSliderTrack,
     RdxSliderIndicator,
@@ -54,6 +56,7 @@ through the `orientation` input on the root.
 
 ```html
 <div rdxSliderRoot>
+    <div rdxSliderLabel>Volume</div>
     <output rdxSliderValue></output>
     <div rdxSliderControl>
         <div rdxSliderTrack>
@@ -70,6 +73,25 @@ Each thumb owns a nested `input[rdxSliderThumbInput]`. It is visually hidden but
 remains the focusable element that powers keyboard interaction, accessibility and
 form submission.
 
+Use `rdxSliderLabel` inside the root to name the group. In a single-thumb slider, clicking the label
+focuses the native input. In a range slider, give each input a distinct name with `aria-label` or
+`aria-labelledby`, such as “Minimum” and “Maximum”.
+
+## Value and reset
+
+Use `defaultValue` to seed an uncontrolled slider. The initial `min` seeds the value when no default
+is provided. Later bounds constrain the rendered and submitted values without emitting change
+events. An accepted native form reset restores the initial uncontrolled value or delegates to the
+bound Reactive Forms control.
+
+Values supplied between steps are preserved in the native input and in form submissions. The next
+keyboard or pointer edit uses the configured step grid.
+
+Use `[(value)]` for an editable Angular model and `[formField]` for Signal Forms. To accept, ignore,
+or delay each proposal from a parent component, bind `[controlledValue]` and update it from
+`onValueChange`. The parent-owned value stays in effect across native resets. An explicit `0` is a
+value, `null` displays the current minimum, and an empty array has no thumb values to submit.
+
 ## Change events
 
 `onValueChange` emits `{ value, eventDetails }`, where `value` is a number for a single slider or a
@@ -81,9 +103,11 @@ the candidate slider value and root `name`.
 `onValueCommitted` emits `{ value, eventDetails }` when an interaction commits. Its details include
 the commit `reason`, originating event, and trigger. This is a generic event like Base UI, so it is
 not cancelable and does not include `activeThumbIndex`.
+Controlled sliders report the last uncanceled proposal on commit. Disabling the pressed thumb or
+the whole slider during a drag ends the gesture without committing.
 
 ```html
-<div [value]="value()" (onValueChange)="setValue($event)" rdxSliderRoot>
+<div [controlledValue]="value()" (onValueChange)="setValue($event)" rdxSliderRoot>
     ...
 </div>
 ```
@@ -107,8 +131,8 @@ setValue(change: RdxSliderValueChangeEvent) {
 `thumbAlignment="edge"` and `thumbAlignment="edge-client-only"` inset thumbs so the thumb edge,
 not its center, reaches the control edge. In edge modes the pointer math accounts for the inset thumb
 radius, and the indicator uses measured thumb positions so the filled range lines up with the thumb
-centers. Both edge modes currently share the same Angular runtime positioning path; the
-`edge-client-only` value is accepted for Base UI API parity.
+centers. Angular measures both edge modes in the browser after rendering. The server markup has
+their values, and the thumbs and indicator become visible after measurement.
 
 <Canvas of={SliderStories.ThumbAlignment} />
 
@@ -149,7 +173,7 @@ sets its `for` attribute to the registered thumb input ids, in DOM order.
 
 ### Reactive forms
 
-The root composes a `ControlValueAccessor`, so it binds directly to
+The root implements `ControlValueAccessor`, so it binds directly to
 `formControl` / `formControlName` and `[(ngModel)]`.
 
 <Canvas of={SliderStories.ReactiveForms} />
@@ -176,6 +200,19 @@ The root composes a `ControlValueAccessor`, so it binds directly to
 | -------------------- | ------------------------------ |
 | `[data-orientation]` | `"horizontal" \| "vertical"`   |
 | `[data-disabled]`    | Present when disabled.         |
+| `[data-dragging]`    | Present while a thumb is dragged. |
+
+### Label
+
+`RdxSliderLabel` goes on a `div` inside the root and supplies its accessible name. Clicking it
+focuses the range input when the slider has a single value.
+
+<ArgTypes of={RdxSliderLabel} />
+
+| Data attribute      | Value                           |
+| ------------------- | ------------------------------- |
+| `[data-orientation]` | `"horizontal" \| "vertical"`    |
+| `[data-disabled]`    | Present when disabled.          |
 | `[data-dragging]`    | Present while a thumb is dragged. |
 
 ### Track

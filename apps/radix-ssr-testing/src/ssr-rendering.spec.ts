@@ -40,6 +40,16 @@ import {
     RdxRadioItemInputDirective
 } from '@radix-ng/primitives/radio';
 import { _importsSelect, RdxSelectLabel, RdxSelectRoot, RdxSelectTrigger } from '@radix-ng/primitives/select';
+import {
+    RdxSliderControl,
+    RdxSliderIndicator,
+    RdxSliderLabel,
+    RdxSliderRoot,
+    RdxSliderThumb,
+    RdxSliderThumbInput,
+    RdxSliderTrack,
+    type RdxSliderThumbAlignment
+} from '@radix-ng/primitives/slider';
 import { RdxSwitchInput, RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 import { RdxToggle } from '@radix-ng/primitives/toggle';
@@ -624,7 +634,65 @@ class AccordionPresencePage {
     ];
 }
 
+@Component({
+    selector: 'app-slider-alignments',
+    imports: [
+        RdxSliderControl,
+        RdxSliderIndicator,
+        RdxSliderLabel,
+        RdxSliderRoot,
+        RdxSliderThumb,
+        RdxSliderThumbInput,
+        RdxSliderTrack
+    ],
+    template: `
+        @for (alignment of alignments; track alignment) {
+            <div
+                [id]="alignment"
+                [defaultValue]="55"
+                [controlledValue]="0"
+                [thumbAlignment]="alignment"
+                name="amount"
+                rdxSliderRoot
+            >
+                <div [id]="alignment + '-label'" rdxSliderLabel>Volume</div>
+                <div rdxSliderControl>
+                    <div rdxSliderTrack>
+                        <div [attr.data-testid]="alignment + '-indicator'" rdxSliderIndicator></div>
+                        <div [attr.data-testid]="alignment + '-thumb'" rdxSliderThumb>
+                            <input [id]="alignment + '-input'" rdxSliderThumbInput />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    `
+})
+class SliderAlignmentsPage {
+    readonly alignments: RdxSliderThumbAlignment[] = ['center', 'edge', 'edge-client-only'];
+}
+
 describe('SSR rendering', () => {
+    it('renders Slider value and label relationships before measuring inset thumbs', async () => {
+        const html = await renderToString('app-slider-alignments', SliderAlignmentsPage);
+        const tag = (attr: string, value: string) => html.match(new RegExp(`<[^>]+ ${attr}="${value}"[^>]*>`))![0];
+        for (const alignment of ['center', 'edge', 'edge-client-only']) {
+            expect(tag('id', alignment)).toContain(`aria-labelledby="${alignment}-label"`);
+            expect(tag('id', `${alignment}-label`)).toContain('rdxsliderlabel');
+            const input = tag('id', `${alignment}-input`);
+            expect(input).toContain('type="range"');
+            expect(input).toContain('name="amount"');
+            expect(input).toContain('value="0"');
+            expect(input).toContain('aria-valuenow="0"');
+            expect(input).toContain(`aria-labelledby="${alignment}-label"`);
+            for (const part of ['thumb', 'indicator']) {
+                expect(tag('data-testid', `${alignment}-${part}`).includes('visibility: hidden')).toBe(
+                    alignment !== 'center'
+                );
+            }
+        }
+    });
+
     it('renders complete Accordion Panel views only when open, retained or findable on the server', async () => {
         const html = await renderToString('app-accordion-presence', AccordionPresencePage);
         const panel = (key: string) => html.match(new RegExp(`<div[^>]*data-testid="${key}-panel"[^>]*>`))?.[0];

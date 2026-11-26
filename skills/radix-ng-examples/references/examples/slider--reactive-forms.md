@@ -4,7 +4,7 @@
 
 > Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
 
-The root composes a `ControlValueAccessor`, so it binds directly to
+The root implements `ControlValueAccessor`, so it binds directly to
 `formControl` / `formControlName` and `[(ngModel)]`.
 
 ```typescript
