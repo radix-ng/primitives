@@ -103,7 +103,11 @@ const cases: readonly SsrCase[] = [
     // Select's overlay is portal + presence gated, so on the server (closed) only the trigger renders —
     // assert the placeholder the value shows when nothing is selected.
     { selector: 'app-select', component: SelectPage, expects: ['Pick a fruit'] },
-    { selector: 'app-separator', component: SeparatorPage, expects: ['***'] },
+    {
+        selector: 'app-separator',
+        component: SeparatorPage,
+        expects: ['***', 'role="separator"', 'aria-orientation="horizontal"', 'data-orientation="horizontal"']
+    },
     { selector: 'app-slider', component: SliderPage, expects: ['Minimum', 'Maximum'] },
     { selector: 'app-switch', component: SwitchPage, expects: ['Switch'] },
     { selector: 'app-tabs', component: TabsPage, expects: ['Tab 1', 'Tab 3'] },

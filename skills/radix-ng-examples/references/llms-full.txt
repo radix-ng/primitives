@@ -42551,8 +42551,9 @@ Install `@lucide/angular` when an example imports it.
 
 ### ToolbarSeparator
 
-`RdxToolbarSeparator` — composes the Separator primitive; defaults to the opposite of the toolbar
-orientation and accepts `orientation` to override it.
+`RdxToolbarSeparator` composes the Separator primitive. Omit `orientation` to use the opposite of
+the toolbar’s orientation. Bind `"horizontal"` or `"vertical"` to override it. Binding `undefined`
+uses the standalone Separator’s horizontal default.
 
 ## Accessibility
 

@@ -149,7 +149,7 @@
           "name": "orientation",
           "type": "Orientation | undefined",
           "default": "undefined",
-          "description": "The separator orientation. Defaults to the opposite of the toolbar orientation."
+          "description": "Omit the input to follow the opposite of the toolbar orientation. Binding `undefined`\nuses the standalone Separator default of `horizontal`."
         }
       ],
       "outputs": []

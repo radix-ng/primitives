@@ -58,11 +58,11 @@ boundaries explicitly instead of converting all models to readonly inputs.
 “Source” identifies a local implementation fact. “Compare/verify/audit” is pending work. Priorities
 describe the target work, not a certificate or a reproduced defect count.
 
-| Area                      | Current observation / required target comparison                                                                                                                                                        | Priority |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| Owner boundaries          | Root/Group coordinate composite focus and disabled metadata; Input owns native text and grouped Toggle owns its form value. Do not unify these under one Toolbar value model.                           | P1       |
-| Input defaults            | Source: ToolbarInput seeds a native value from the first supplied defaultValue. Compare a late default after user typing and initial native/form values; specify reset behavior.                        | P1       |
-| Native/composite behavior | Compare Button/Link/Input/Separator, caret-edge arrow handoff, authored roles/tabindex, disabled/focusable items and Toggle composition. Existing Button comparisons certify only their Toolbar subset. | P2       |
+| Area                      | Current observation / required target comparison                                                                                                                                             | Priority |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| Owner boundaries          | Root/Group coordinate composite focus and disabled metadata; Input owns native text and grouped Toggle owns its form value. Do not unify these under one Toolbar value model.                | P1       |
+| Input defaults            | Source: ToolbarInput seeds a native value from the first supplied defaultValue. Compare a late default after user typing and initial native/form values; specify reset behavior.             | P1       |
+| Native/composite behavior | Compare Button/Link/Input, caret-edge arrow handoff, authored roles/tabindex, disabled/focusable items and Toggle composition. Button and Separator comparisons cover their Toolbar subsets. | P2       |
 
 Also compare the actual emitted per-part attributes/CSS variables with both the pinned declaration
 files and runtime state mapping. Check native hosts, event reasons/details/default prevention,
@@ -72,13 +72,14 @@ are permitted; changed observable behavior needs evidence or an explicitly revie
 ## Evidence inventory and next checks
 
 - [Local unit files](__tests__): **4 files discovered**; not a passing-test count.
+- The [Separator suite](../../../apps/parity-testing/primitives/separator/README.md) compares the
+  Toolbar separator’s reactive cross-axis default, explicit orientation, and explicit `undefined`
+  fallback in Chromium, Firefox, and WebKit.
 - No same-family named browser behavior file was found. Cross-family consumer or shared-mechanism checks may exist; locate them before claiming absence or coverage.
-- No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
 - No conventional same-family SSR page was found; inspect shared SSR/hydration fixtures for applicable cases. No SSR/hydration result is claimed here.
 
-No runtime suite was executed for this initial matrix sweep. Complete focused state/DI units,
-native/layout browser cases and SSR/hydration checks before promoting rows; add a paired pinned
-fixture before certifying equivalent observable behavior. See the
+Use focused state and DI units, native browser cases, and SSR or hydration checks for the remaining
+rows. Add paired pinned cases for claims of equivalent behavior. See the
 [verification skill](../../../.agents/skills/radix-testing/SKILL.md),
 [matrix index](../../../docs/engineering/parity-matrices.md) and
 [upstream preparation guide](../../../docs/engineering/upstream-reference.md).

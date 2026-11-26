@@ -17,9 +17,12 @@ export class RdxToolbarSeparator {
     private readonly separator = inject(RdxSeparatorRootDirective, { self: true });
 
     /**
-     * The separator orientation. Defaults to the opposite of the toolbar orientation.
+     * Omit the input to follow the opposite of the toolbar orientation. Binding `undefined`
+     * uses the standalone Separator default of `horizontal`.
      */
-    readonly orientation = input<Orientation | undefined>(undefined);
+    readonly orientation = input<Orientation | undefined, Orientation | undefined>(undefined, {
+        transform: (orientation) => orientation ?? 'horizontal'
+    });
 
     constructor() {
         effect(() => {
