@@ -58,7 +58,13 @@ export function TooltipIdentityFixture() {
                 {({ payload }) => (
                     <Tooltip.Portal>
                         <Tooltip.Positioner side="bottom" data-identity-positioner>
-                            <Tooltip.Popup data-identity-popup>{payload}</Tooltip.Popup>
+                            <Tooltip.Popup data-identity-popup>
+                                {initial.viewport ? (
+                                    <Tooltip.Viewport data-identity-viewport>{payload}</Tooltip.Viewport>
+                                ) : (
+                                    payload
+                                )}
+                            </Tooltip.Popup>
                         </Tooltip.Positioner>
                     </Tooltip.Portal>
                 )}

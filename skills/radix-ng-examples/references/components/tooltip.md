@@ -28,7 +28,8 @@ import {
     RdxTooltipPortal,
     RdxTooltipPositioner,
     RdxTooltipProvider,
-    RdxTooltipTrigger
+    RdxTooltipTrigger,
+    RdxTooltipViewport
 } from '@radix-ng/primitives/tooltip';
 ```
 
@@ -67,6 +68,7 @@ exit keyframes on its root element finish. Use the `*` microsyntax on the positi
 - [Disabled trigger](../examples/tooltip--disabled-trigger.md)
 - [Tracking the cursor](../examples/tooltip--tracking-the-cursor.md)
 - [Moving anchors](../examples/tooltip--moving-anchors.md)
+- [Viewport](../examples/tooltip--viewport.md)
 
 ## API & styling contract
 

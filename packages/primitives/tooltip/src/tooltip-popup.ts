@@ -13,6 +13,8 @@ import { injectRdxTooltipContext } from './tooltip';
         '[id]': 'rootContext.contentId',
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
+        '[attr.data-starting-style]': 'rootContext.renderLifecycle.status() === "starting" ? "" : undefined',
+        '[attr.data-ending-style]': 'rootContext.renderLifecycle.status() === "ending" ? "" : undefined',
         '[attr.data-instant]': 'rootContext.instantType()',
         '[attr.data-side]': 'side()',
         '[attr.data-align]': 'align()'
@@ -20,12 +22,12 @@ import { injectRdxTooltipContext } from './tooltip';
 })
 export class RdxTooltipPopup {
     protected readonly rootContext = injectRdxTooltipContext();
+    /** @internal Target for measuring the viewport's live content. */
+    readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
     private readonly wrapper = inject(RdxPopperContentWrapper, { optional: true });
 
     constructor() {
-        const unregister = this.rootContext.renderLifecycle.registerElement(
-            inject<ElementRef<HTMLElement>>(ElementRef).nativeElement
-        );
+        const unregister = this.rootContext.renderLifecycle.registerElement(this.element);
         inject(DestroyRef).onDestroy(unregister);
     }
 

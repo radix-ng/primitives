@@ -13,6 +13,8 @@ import { RdxTooltipSliderComponent } from './tooltip-slider';
 import sliderSource from './tooltip-slider?raw';
 import { RdxTooltipTrackCursorComponent } from './tooltip-track-cursor';
 import trackCursorSource from './tooltip-track-cursor?raw';
+import { RdxTooltipViewportExampleComponent } from './tooltip-viewport';
+import viewportSource from './tooltip-viewport?raw';
 
 const html = String.raw;
 
@@ -35,7 +37,8 @@ export default {
                 RdxTooltipDelayComponent,
                 RdxTooltipDisabledComponent,
                 RdxTooltipTrackCursorComponent,
-                RdxTooltipSliderComponent
+                RdxTooltipSliderComponent,
+                RdxTooltipViewportExampleComponent
             ]
         }),
         tailwindDemoDecorator()
@@ -94,6 +97,16 @@ export const Slider: Story = {
     render: () => ({
         template: html`
             <rdx-tooltip-slider />
+        `
+    })
+};
+
+export const Viewport: Story = {
+    tags: ['!visual'],
+    parameters: source(viewportSource),
+    render: () => ({
+        template: html`
+            <rdx-tooltip-viewport-example />
         `
     })
 };

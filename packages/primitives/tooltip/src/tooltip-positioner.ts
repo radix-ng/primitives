@@ -42,7 +42,8 @@ import { injectRdxTooltipContext } from './tooltip';
     hostDirectives: [RdxFloatingNodeRegistration],
     host: {
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
-        '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""'
+        '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
+        '[attr.data-instant]': 'rootContext.instantType()'
         // `data-side`/`data-align`/`data-anchor-hidden` and the unified vars come from the inherited
         // wrapper (ADR 0012); tooltip exposes no legacy `--radix-*` aliases.
     }

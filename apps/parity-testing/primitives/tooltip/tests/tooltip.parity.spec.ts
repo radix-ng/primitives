@@ -526,6 +526,99 @@ const scenarios = [
             await driver.set('Hide Paste');
             await driver.recordIdentity('lone trigger becomes the anchor', copyActive);
         }
+    },
+    {
+        name: 'identity-viewport',
+        async run(driver: TooltipDriver) {
+            const { page } = driver;
+            await page.addStyleTag({
+                content: `
+                    @keyframes viewport-handoff { from { opacity: 0.9; } to { opacity: 1; } }
+                    [data-identity-positioner] { width: var(--positioner-width, max-content); }
+                    [data-identity-popup] {
+                        box-sizing: border-box;
+                        position: relative;
+                        width: var(--popup-width, auto);
+                        height: var(--popup-height, auto);
+                        padding: 4px 8px;
+                        font: 16px monospace;
+                    }
+                    [data-identity-viewport] { position: relative; }
+                    [data-identity-viewport][data-transitioning] > [data-current],
+                    [data-identity-viewport] > [data-previous][data-ending-style] {
+                        animation: viewport-handoff 10s linear paused;
+                    }
+                `
+            });
+            const viewport = page.locator('[data-identity-viewport]');
+            const popup = page.locator('[data-identity-popup]');
+            const record = async (name: string, expected: object) => {
+                const read = () =>
+                    viewport.evaluate((element) => {
+                        const current = element.querySelector(':scope > [data-current]');
+                        const previous = element.querySelector<HTMLElement>(':scope > [data-previous]');
+                        return {
+                            current: current?.textContent?.trim(),
+                            previous: previous?.textContent?.trim() ?? null,
+                            transitioning: element.hasAttribute('data-transitioning'),
+                            direction: element.getAttribute('data-activation-direction')?.trim() ?? null,
+                            previousInert: previous?.hasAttribute('inert') ?? false,
+                            previousEnding: previous?.hasAttribute('data-ending-style') ?? false,
+                            previousSized: Boolean(
+                                previous &&
+                                parseFloat(previous.style.getPropertyValue('--popup-width')) > 0 &&
+                                parseFloat(previous.style.getPropertyValue('--popup-height')) > 0
+                            )
+                        };
+                    });
+                await expect.poll(read, name).toMatchObject(expected);
+                driver.checkpoints.push({ name, state: await read() });
+            };
+
+            await driver.trigger.focus();
+            await expect(viewport).toHaveAttribute('data-instant', 'focus');
+            await record('initial content has one current wrapper', {
+                current: 'Copy payload',
+                previous: null,
+                transitioning: false
+            });
+            const initialWidth = await popup.evaluate((element: HTMLElement) => element.offsetWidth);
+            await driver.set('Update Paste payload');
+            await driver.set('Use Paste trigger');
+            const transitioning = {
+                transitioning: true,
+                previousInert: true,
+                previousEnding: true,
+                previousSized: true
+            };
+            await record('switch to Paste freezes outgoing Copy content and size', {
+                ...transitioning,
+                current: 'Updated Paste payload',
+                previous: 'Copy payload',
+                direction: 'right'
+            });
+            await expect
+                .poll(() => popup.evaluate((element: HTMLElement) => element.offsetWidth))
+                .toBeGreaterThan(initialWidth);
+
+            await driver.set('Use Copy trigger');
+            await record('rapid switch snapshots the latest visible content', {
+                ...transitioning,
+                current: 'Copy payload',
+                previous: 'Updated Paste payload',
+                direction: 'left'
+            });
+            await page.evaluate(async () => {
+                const animations = document.getAnimations();
+                for (const animation of animations) animation.finish();
+                await Promise.allSettled(animations.map((animation) => animation.finished));
+            });
+            await record('completed motion leaves the current content only', {
+                current: 'Copy payload',
+                previous: null,
+                transitioning: false
+            });
+        }
     }
 ];
 

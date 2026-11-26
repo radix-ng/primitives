@@ -43,7 +43,7 @@ and follow its links to the other Agents guides.
 addressed by the component slug and the kebab-cased example name. Cheaper than re-reading the whole
 component doc.
 
-Total: **327 examples** across **45 components**.
+Total: **328 examples** across **45 components**.
 
 ## Components
 
@@ -91,4 +91,4 @@ Total: **327 examples** across **45 components**.
 - **[Toggle](./references/components/toggle.md)** — A two-state button that can be either on or off. _(4 examples)_
 - **[Toggle Group](./references/components/toggle-group.md)** — A set of two-state buttons that can be toggled on or off. _(5 examples)_
 - **[Toolbar](./references/components/toolbar.md)** — A container for grouping a set of controls, such as buttons, toggle groups or menus. _(6 examples)_
-- **[Tooltip](./references/components/tooltip.md)** — Displays contextual information when a trigger is hovered or focused. _(6 examples)_
+- **[Tooltip](./references/components/tooltip.md)** — Displays contextual information when a trigger is hovered or focused. _(7 examples)_

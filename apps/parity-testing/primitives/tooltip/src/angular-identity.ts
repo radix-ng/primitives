@@ -6,7 +6,8 @@ import {
     RdxTooltipPopup,
     RdxTooltipPortal,
     RdxTooltipPositioner,
-    RdxTooltipTrigger
+    RdxTooltipTrigger,
+    RdxTooltipViewport
 } from '@radix-ng/primitives/tooltip';
 import { copyId, identityInitialState, type IdentityRequest, pasteId } from './identity';
 
@@ -14,7 +15,14 @@ const initial = identityInitialState();
 
 @Component({
     selector: 'parity-tooltip',
-    imports: [RdxTooltip, RdxTooltipTrigger, RdxTooltipPortal, RdxTooltipPositioner, RdxTooltipPopup],
+    imports: [
+        RdxTooltip,
+        RdxTooltipTrigger,
+        RdxTooltipPortal,
+        RdxTooltipPositioner,
+        RdxTooltipPopup,
+        RdxTooltipViewport
+    ],
     template: `
         <div style="display: flex; gap: 160px; margin: 48px">
             <button [id]="copyId" [handle]="handle" rdxTooltipTrigger payload="Copy payload" type="button">Copy</button>
@@ -37,7 +45,15 @@ const initial = identityInitialState();
             rdxTooltip
         >
             <div *rdxTooltipPortal rdxTooltipPositioner side="bottom" data-identity-positioner>
-                <div rdxTooltipPopup data-identity-popup>{{ root.payload() }}</div>
+                <div rdxTooltipPopup data-identity-popup>
+                    @if (viewport) {
+                        <div rdxTooltipViewport data-identity-viewport>
+                            <div>{{ root.payload() }}</div>
+                        </div>
+                    } @else {
+                        {{ root.payload() }}
+                    }
+                </div>
             </div>
         </ng-container>
 
@@ -58,6 +74,7 @@ const initial = identityInitialState();
 })
 export class TooltipIdentityFixture {
     protected readonly copyId = copyId;
+    protected readonly viewport = initial.viewport;
     protected readonly pasteId = pasteId;
     protected readonly open = initial.open;
     protected readonly defaultOpen = initial.defaultOpen;

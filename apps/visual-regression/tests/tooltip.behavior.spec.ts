@@ -42,6 +42,69 @@ test('a controlled tooltip follows the slider thumb while dragging', async ({ pa
     await expect(popup).toHaveCount(0);
 });
 
+test('the viewport animates the popup size as hover moves to a new trigger', async ({ page }) => {
+    await gotoStory(page, 'primitives-tooltip--viewport');
+    const popup = page.getByRole('tooltip');
+    const viewport = page.locator('[rdxTooltipViewport]');
+    const previous = viewport.locator(':scope > [data-previous]');
+    await page.getByRole('button', { name: 'Set a timer' }).hover();
+    await expect(popup).toBeVisible();
+    const initialWidth = (await popup.boundingBox())!.width;
+    await page.getByRole('button', { name: 'Delete' }).hover();
+    await expect(previous).toHaveText('Set a timer');
+    await expect(viewport).toHaveAttribute('data-activation-direction', 'right');
+    await expect
+        .poll(() =>
+            popup.evaluate((element) =>
+                element
+                    .getAnimations()
+                    .some((animation) => 'transitionProperty' in animation && animation.transitionProperty === 'width')
+            )
+        )
+        .toBe(true);
+    await expect(previous).toHaveCount(0);
+    await expect(popup).toHaveText('Delete: This action cannot be undone');
+    await expect.poll(async () => (await popup.boundingBox())?.width ?? 0).toBeGreaterThan(initialWidth);
+});
+
+test('the viewport settles on the new content with reduced motion', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await gotoStory(page, 'primitives-tooltip--viewport');
+    const viewport = page.locator('[rdxTooltipViewport]');
+    await page.getByRole('button', { name: 'Preview audio' }).hover();
+    await expect(viewport).toHaveText('Listen to audio preview');
+    await page.getByRole('button', { name: 'Set a timer' }).hover();
+    await expect(viewport).toHaveText('Set a timer');
+    await expect(viewport.locator('[data-previous]')).toHaveCount(0);
+    await expect(viewport).not.toHaveAttribute('data-transitioning');
+});
+
+test('reopening during tooltip exit reuses the popup and replaces its content', async ({ page }) => {
+    await gotoStory(page, 'primitives-tooltip--viewport');
+    await page.addStyleTag({
+        content: `
+            @keyframes hold-tooltip-exit { from { opacity: 1; } to { opacity: 0; } }
+            [rdxTooltipPopup][data-ending-style] { animation: hold-tooltip-exit 10s linear paused !important; }
+        `
+    });
+    const popup = page.locator('[rdxTooltipPopup]');
+    const preview = page.getByRole('button', { name: 'Preview audio' });
+    const timer = page.getByRole('button', { name: 'Set a timer' });
+    await preview.hover();
+    await expect(popup).toBeVisible();
+    await popup.evaluate((element) => element.setAttribute('data-test-original-popup', ''));
+    await page.keyboard.press('Escape');
+    await expect(popup).toHaveAttribute('data-ending-style', '');
+    await expect(popup).toHaveAttribute('data-instant', 'dismiss');
+
+    await timer.focus();
+    await expect(popup).toHaveAttribute('data-open', '');
+    await expect(popup).toHaveAttribute('data-test-original-popup', '');
+    await expect(popup).toHaveText('Set a timer');
+    await expect(popup.locator('[data-previous]')).toHaveCount(0);
+    await expect(timer).toHaveAttribute('aria-describedby', (await popup.getAttribute('id'))!);
+});
+
 /**
  * ADR 0015 migration of Tooltip onto the new floating dismissal engine (dismissal-only — no focus
  * manager). Browser-only: real keyboard / pointer dismissal needs a real browser.

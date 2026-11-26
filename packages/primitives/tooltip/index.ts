@@ -5,6 +5,7 @@ import { RdxTooltipPortal, RdxTooltipPortalMisuseGuard } from './src/tooltip-por
 import { RdxTooltipPositioner } from './src/tooltip-positioner';
 import { RdxTooltipProvider } from './src/tooltip-provider';
 import { RdxTooltipTrigger } from './src/tooltip-trigger';
+import { RdxTooltipViewport } from './src/tooltip-viewport';
 
 export * from './src/tooltip';
 export * from './src/tooltip-arrow';
@@ -14,6 +15,7 @@ export * from './src/tooltip-portal';
 export * from './src/tooltip-positioner';
 export * from './src/tooltip-provider';
 export * from './src/tooltip-trigger';
+export * from './src/tooltip-viewport';
 export * from './src/tooltip.config';
 
 export const tooltipImports = [
@@ -24,5 +26,6 @@ export const tooltipImports = [
     RdxTooltipPortalMisuseGuard,
     RdxTooltipPositioner,
     RdxTooltipProvider,
-    RdxTooltipTrigger
+    RdxTooltipTrigger,
+    RdxTooltipViewport
 ];

@@ -44,6 +44,11 @@
       "values": "The anchor is clipped/off-screen and the popup is hidden."
     },
     {
+      "attribute": "data-instant",
+      "parts": "Positioner",
+      "values": "Placement changes can skip motion for this interaction."
+    },
+    {
       "attribute": "data-open",
       "parts": "Popup",
       "values": "The tooltip is open."
@@ -52,6 +57,16 @@
       "attribute": "data-closed",
       "parts": "Popup",
       "values": "The tooltip is closed."
+    },
+    {
+      "attribute": "data-starting-style",
+      "parts": "Popup",
+      "values": "The popup is in its initial entrance style."
+    },
+    {
+      "attribute": "data-ending-style",
+      "parts": "Popup",
+      "values": "The popup is in its exit style."
     },
     {
       "attribute": "data-side",
@@ -67,6 +82,41 @@
       "attribute": "data-instant",
       "parts": "Popup",
       "values": "The open/close was instant — delay / dismiss / focus / tracking-cursor."
+    },
+    {
+      "attribute": "data-activation-direction",
+      "parts": "Viewport",
+      "values": "On the viewport, a space-separated combination of left, right, up and down."
+    },
+    {
+      "attribute": "data-transitioning",
+      "parts": "Viewport",
+      "values": "On the viewport while both content layers are present."
+    },
+    {
+      "attribute": "data-instant",
+      "parts": "Viewport",
+      "values": "On the viewport for the root's instant interaction reason."
+    },
+    {
+      "attribute": "data-current",
+      "parts": "Viewport",
+      "values": "On the live content wrapper."
+    },
+    {
+      "attribute": "data-previous",
+      "parts": "Viewport",
+      "values": "On the outgoing snapshot."
+    },
+    {
+      "attribute": "data-starting-style",
+      "parts": "Viewport",
+      "values": "On the current wrapper before its entry transition."
+    },
+    {
+      "attribute": "data-ending-style",
+      "parts": "Viewport",
+      "values": "On the previous wrapper during its exit transition."
     },
     {
       "attribute": "data-open",

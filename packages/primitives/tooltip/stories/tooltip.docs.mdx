@@ -36,7 +36,8 @@ import {
     RdxTooltipPortal,
     RdxTooltipPositioner,
     RdxTooltipProvider,
-    RdxTooltipTrigger
+    RdxTooltipTrigger,
+    RdxTooltipViewport
 } from '@radix-ng/primitives/tooltip';
 ```
 
@@ -147,6 +148,12 @@ when the trigger moves continuously, such as a slider thumb being dragged.
 
 <Canvas of={Stories.Slider} />
 
+### Viewport
+
+Share a tooltip across several triggers and animate the popup as its content and size change.
+
+<Canvas of={Stories.Viewport} />
+
 ## Example files
 
 Install `@lucide/angular` when an example imports it.
@@ -202,6 +209,7 @@ optional `anchor` input overrides the trigger only for positioning.
 | `data-side`          | Resolved side after collision handling — `top` / `right` / `bottom` / `left`. |
 | `data-align`         | Resolved alignment — `start` / `center` / `end`.                          |
 | `data-anchor-hidden` | The anchor is clipped/off-screen and the popup is hidden.                 |
+| `data-instant`       | Placement changes can skip motion for this interaction.                    |
 
 **CSS variables**
 
@@ -210,6 +218,7 @@ optional `anchor` input overrides the trigger only for positioning.
 | `--anchor-width` / `--anchor-height`       | Size of the anchor (trigger).                         |
 | `--available-width` / `--available-height` | Space available before the collision boundary.        |
 | `--transform-origin`                       | Origin to scale/zoom the popup from, based on side/align. |
+| `--positioner-width` / `--positioner-height` | Target popup dimensions when a viewport measures the content. |
 
 ### Popup
 
@@ -221,9 +230,35 @@ optional `anchor` input overrides the trigger only for positioning.
 | -------------- | -------------------------------------------------------------------------- |
 | `data-open`    | The tooltip is open.                                                        |
 | `data-closed`  | The tooltip is closed.                                                      |
+| `data-starting-style` | The popup is in its initial entrance style.                           |
+| `data-ending-style` | The popup is in its exit style.                                         |
 | `data-side`    | Resolved side — `top` / `right` / `bottom` / `left`.                        |
 | `data-align`   | Resolved alignment — `start` / `center` / `end`.                            |
 | `data-instant` | The open/close was instant — `delay` / `dismiss` / `focus` / `tracking-cursor`. |
+
+**CSS variables**
+
+| Variable | Description |
+| -------- | ----------- |
+| `--popup-width` / `--popup-height` | Measured dimensions published when a viewport is present. |
+
+### Viewport
+
+Apply `rdxTooltipViewport` inside `rdxTooltipPopup` and give it one direct content wrapper.
+The wrapper remains the live Angular view. When the active trigger changes, the viewport retains
+an inert visual snapshot with the old `--popup-width` and `--popup-height` until its motion finishes.
+
+**Data attributes**
+
+| Attribute | Present when / value |
+| --------- | -------------------- |
+| `data-activation-direction` | On the viewport, a space-separated combination of `left`, `right`, `up` and `down`. |
+| `data-transitioning` | On the viewport while both content layers are present. |
+| `data-instant` | On the viewport for the root's instant interaction reason. |
+| `data-current` | On the live content wrapper. |
+| `data-previous` | On the outgoing snapshot. |
+| `data-starting-style` | On the current wrapper before its entry transition. |
+| `data-ending-style` | On the previous wrapper during its exit transition. |
 
 ### Arrow
 

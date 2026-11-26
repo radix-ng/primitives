@@ -11,6 +11,10 @@ Trigger-selection scenarios observe the popup's anchor geometry, live payload, a
 They cover controlled and default IDs, implicit selection, late registration, same-ID replacement,
 canceled removal, and imperative handoff through a detached handle.
 
+The viewport comparison checks directional content changes, frozen outgoing dimensions, live
+resizing, and replacement of the previous snapshot during a rapid switch. It holds the content
+animations to verify which nodes survive before and after completion.
+
 Angular keeps `role="tooltip"` on its open popup and links it to the trigger via `aria-describedby`.
 The pinned Base UI popup renders without that role and description in these fixtures. When `open`
 becomes undefined, Angular resumes its local state and pinned Base UI retains the last controlled

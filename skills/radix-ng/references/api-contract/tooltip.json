@@ -248,6 +248,13 @@
       "outputs": []
     },
     {
+      "directive": "RdxTooltipViewport",
+      "selector": "[rdxTooltipViewport]",
+      "description": "Animates content between active triggers. Render one direct content wrapper inside the viewport.",
+      "inputs": [],
+      "outputs": []
+    },
+    {
       "directive": "RdxTooltip",
       "selector": "[rdxTooltip]",
       "exportAs": "rdxTooltip",

@@ -272,7 +272,11 @@ export class RdxTooltip {
     /** @internal Shared with structural Portal. */
     readonly renderLifecycle = useRenderLifecycle(
         (open) => {
-            if (!open && !this.openState() && !this.preventUnmountOnClose()) {
+            if (open) return;
+
+            this.openedInstant.set(false);
+            this.openedInstantType.set(undefined);
+            if (!this.openState() && !this.preventUnmountOnClose()) {
                 this.localTrigger.set({ id: null });
                 this.detachedPayload.set(undefined);
             }
@@ -346,6 +350,8 @@ export class RdxTooltip {
                 pending.commit();
             } else if (supplied !== undefined) {
                 this.openChangeReason.set('none');
+                this.openedInstant.set(false);
+                this.openedInstantType.set(undefined);
             }
         });
 
@@ -369,8 +375,6 @@ export class RdxTooltip {
                 this.provider?.onOpen(this.closeForSibling);
             } else {
                 this.provider?.onClose(this.closeForSibling);
-                this.openedInstant.set(false);
-                this.openedInstantType.set(undefined);
             }
         });
 
@@ -575,7 +579,7 @@ export class RdxTooltip {
             }
         }
 
-        const inInstantGroup = this.provider?.isInstant() ?? false;
+        const inInstantGroup = !wasOpen && (this.provider?.isInstant() ?? false);
         const commit = () => {
             if (selection && (!selection.external || selection.external.element.isConnected)) {
                 this.localTrigger.set(selection);
@@ -619,14 +623,17 @@ export class RdxTooltip {
         if (eventDetails.isCanceled()) {
             return;
         }
-        const isInstant = this.provider?.isInstant() ?? false;
+        const instantType =
+            reason === 'escape-key' || reason === 'trigger-press'
+                ? 'dismiss'
+                : reason === 'none' && this.provider?.isInstant()
+                  ? 'delay'
+                  : undefined;
         const retain = change.shouldPreventUnmountOnClose();
         this.acceptOpenRequest(false, () => {
             this.preventUnmountOnClose.set(retain);
-            this.openedInstant.set(isInstant);
-            this.openedInstantType.set(
-                reason === 'escape-key' || reason === 'outside-press' ? 'dismiss' : isInstant ? 'delay' : undefined
-            );
+            this.openedInstant.set(instantType !== undefined);
+            this.openedInstantType.set(instantType);
             this.openChangeReason.set(reason);
         });
     }
