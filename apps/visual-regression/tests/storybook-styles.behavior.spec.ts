@@ -37,6 +37,28 @@ const motionCases = [
     }
 ] as const;
 
+test('Native checkbox labels activate the button in standalone and grouped stories', async ({ page }) => {
+    await story(page, 'checkbox--default', 'light');
+    const terms = page.getByRole('checkbox', { name: 'Accept terms and conditions.' });
+    await expect(terms).toBeChecked();
+    await page.locator('label').filter({ hasText: 'Accept terms and conditions.' }).click();
+    await expect(terms).not.toBeChecked();
+
+    await story(page, 'checkbox--group', 'light');
+    const bananas = page.getByRole('checkbox', { name: 'Bananas', exact: true });
+    await expect(bananas).not.toBeChecked();
+    await page.getByText('Bananas', { exact: true }).click();
+    await expect(bananas).toBeChecked();
+});
+
+test('A wrapping native label selects its radio option', async ({ page }) => {
+    await story(page, 'radio-group--default', 'light');
+    const comfortable = page.getByRole('radio', { name: 'Comfortable', exact: true });
+    await expect(comfortable).not.toBeChecked();
+    await page.getByText('Comfortable', { exact: true }).click();
+    await expect(comfortable).toBeChecked();
+});
+
 for (const theme of ['light', 'dark']) {
     test(`Switch hero toggles with the keyboard and shows focus in ${theme}`, async ({ page, browserName }) => {
         await story(page, 'switch--default', theme);

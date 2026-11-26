@@ -1,15 +1,14 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'switch-reactive-forms',
-    imports: [ReactiveFormsModule, RdxLabelDirective, RdxSwitchRoot, RdxSwitchThumb],
+    imports: [ReactiveFormsModule, RdxSwitchRoot, RdxSwitchThumb],
     template: `
         <form class="space-y-3" [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-            <label class="text-foreground flex items-center gap-2 text-sm" rdxLabel htmlFor="airplane-mode-form">
+            <label class="text-foreground flex items-center gap-2 text-sm" for="airplane-mode-form">
                 Airplane mode
                 <button
                     class="demo-switch h-5 w-9 p-0.5"

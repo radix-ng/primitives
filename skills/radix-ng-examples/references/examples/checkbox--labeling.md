@@ -4,7 +4,7 @@
 
 > Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
 
-Always associate a checkbox with a label. Link a sibling `rdxLabel` to the button with `htmlFor` / `id`:
+Associate a standalone checkbox with a native `<label>`. Set its `for` attribute to the checkbox button’s `id`.
 
 ```html
 <div rdxCheckboxRoot>
@@ -12,7 +12,7 @@ Always associate a checkbox with a label. Link a sibling `rdxLabel` to the butto
     <svg *rdxCheckboxIndicatorPresence rdxCheckboxIndicator lucideCheck />
   </button>
 </div>
-<label rdxLabel htmlFor="terms">Accept terms and conditions</label>
+<label for="terms">Accept terms and conditions</label>
 ```
 
 Inside `rdxFieldRoot`, use `rdxFieldLabel` and `rdxFieldDescription`. The label associates with the

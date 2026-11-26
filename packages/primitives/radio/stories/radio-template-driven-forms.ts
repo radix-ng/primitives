@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import {
     RdxRadioGroupDirective,
     RdxRadioIndicatorDirective,
@@ -22,7 +21,7 @@ import {
                 aria-label="Hotel room"
             >
                 @for (room of rooms; track room) {
-                    <label class="flex items-center gap-3" rdxLabel>
+                    <label class="flex items-center gap-3">
                         <span
                             class="demo-radio-item demo-focus flex size-6 items-center justify-center disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
                             [value]="room"
@@ -55,7 +54,7 @@ import {
     `,
     imports: [
         FormsModule,
-        RdxLabelDirective,
+
         RdxRadioItemDirective,
         RdxRadioItemInputDirective,
         RdxRadioIndicatorDirective,

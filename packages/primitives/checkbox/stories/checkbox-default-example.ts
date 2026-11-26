@@ -6,7 +6,6 @@ import {
     RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 @Component({
     host: { class: 'contents' },
@@ -14,7 +13,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
     selector: 'rdx-checkbox-default-example',
     imports: [
         LucideCheck,
-        RdxLabelDirective,
+
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
         RdxCheckboxIndicatorPresenceDirective,
@@ -33,7 +32,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                     />
                 </button>
             </div>
-            <label class="text-foreground flex items-center text-sm" rdxLabel htmlFor="checkbox-1">
+            <label class="text-foreground flex items-center text-sm" for="checkbox-1">
                 Accept terms and conditions.
             </label>
         </div>

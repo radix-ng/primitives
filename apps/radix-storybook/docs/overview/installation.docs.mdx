@@ -65,14 +65,14 @@ from `@radix-ng/primitives/<name>`:
 ```typescript
 import { Component } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
+import { RdxInputDirective } from '@radix-ng/primitives/input';
 
 @Component({
     selector: 'app-root',
-    imports: [RdxLabelDirective],
+    imports: [RdxInputDirective],
     template: `
-        <label rdxLabel htmlFor="firstName">First Name</label>
-        <input id="firstName" type="text" />
+        <label for="firstName">First name</label>
+        <input id="firstName" type="text" rdxInput />
     `
 })
 export class App {}

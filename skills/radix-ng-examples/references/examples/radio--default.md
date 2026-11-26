@@ -9,7 +9,6 @@ A radio group with labels, hidden native inputs and an animated indicator.
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import {
     RdxRadioGroupDirective,
     RdxRadioIndicatorDirective,
@@ -31,7 +30,7 @@ import {
             >
                 <div class="text-foreground text-sm font-bold" [id]="labelId + 'heading'">View density</div>
                 @for (option of options; track option.value) {
-                    <label class="flex items-center gap-2" rdxLabel>
+                    <label class="flex items-center gap-2">
                         <span
                             class="demo-choice size-4 rounded-full"
                             [value]="option.value"
@@ -54,7 +53,6 @@ import {
         </form>
     `,
     imports: [
-        RdxLabelDirective,
         RdxRadioItemDirective,
         RdxRadioItemInputDirective,
         RdxRadioIndicatorDirective,

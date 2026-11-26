@@ -2,8 +2,7 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { form, FormField } from '@angular/forms/signals';
-import { RdxFieldRoot } from '@radix-ng/primitives/field';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
+import { RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { _importsCombobox } from '../index';
 
@@ -107,10 +106,10 @@ class ComboboxPopupNativeFormHost {
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [_importsCombobox, RdxFieldRoot, RdxLabelDirective],
+    imports: [_importsCombobox, RdxFieldRoot, RdxFieldLabel],
     template: `
         <div [invalid]="invalid()" [required]="required()" validationMode="always" rdxFieldRoot>
-            <label rdxLabel>Fruit</label>
+            <label rdxFieldLabel>Fruit</label>
             <div rdxComboboxRoot>
                 <input rdxComboboxInput />
             </div>

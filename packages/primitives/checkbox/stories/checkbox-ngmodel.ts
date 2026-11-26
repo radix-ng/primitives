@@ -8,7 +8,6 @@ import {
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 /**
  * Template-driven forms: two-way bind the root with `[(ngModel)]`.
@@ -18,7 +17,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
     selector: 'checkbox-ngmodel-example',
     imports: [
         FormsModule,
-        RdxLabelDirective,
+
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
@@ -44,9 +43,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                 </button>
                 <input rdxCheckboxInput />
             </div>
-            <label class="text-foreground text-sm font-medium" rdxLabel htmlFor="sub">
-                Subscribe to the newsletter
-            </label>
+            <label class="text-foreground text-sm font-medium" for="sub">Subscribe to the newsletter</label>
         </div>
 
         <p class="text-muted-foreground mt-3 text-sm">subscribed: {{ subscribed }}</p>

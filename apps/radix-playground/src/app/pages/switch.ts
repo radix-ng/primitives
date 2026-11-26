@@ -1,15 +1,14 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 import { DemoPage } from '../shared/demo-page';
 
 @Component({
     selector: 'app-switch',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [DemoPage, RdxSwitchRoot, RdxSwitchThumb, RdxLabelDirective],
+    imports: [DemoPage, RdxSwitchRoot, RdxSwitchThumb],
     template: `
         <demo-page title="Switch" description="A control that toggles between an on and off state.">
-            <label class="text-foreground flex items-center gap-3 text-sm font-medium" rdxLabel htmlFor="airplane-mode">
+            <label class="text-foreground flex items-center gap-3 text-sm font-medium" for="airplane-mode">
                 Airplane mode
                 <button
                     class="bg-muted focus-visible:ring-ring data-[checked]:bg-primary relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-0 p-0 shadow-sm transition-colors outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"

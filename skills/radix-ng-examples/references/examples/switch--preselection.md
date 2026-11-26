@@ -10,15 +10,14 @@ native reset baseline intact.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'switch-preselection-example',
-    imports: [RdxLabelDirective, RdxSwitchRoot, RdxSwitchThumb],
+    imports: [RdxSwitchRoot, RdxSwitchThumb],
     template: `
-        <label class="text-foreground flex items-center gap-2 text-sm" rdxLabel htmlFor="airplane-mode-model">
+        <label class="text-foreground flex items-center gap-2 text-sm" for="airplane-mode-model">
             Airplane mode
             <button class="demo-switch h-5 w-9 p-0.5" id="airplane-mode-model" defaultChecked rdxSwitchRoot>
                 <span

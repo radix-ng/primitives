@@ -9,7 +9,6 @@ import {
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -33,7 +32,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                     </button>
                     <input rdxCheckboxInput />
                 </div>
-                <label class="text-foreground flex items-center text-sm font-medium" rdxLabel htmlFor="r1">Fun</label>
+                <label class="text-foreground flex items-center text-sm font-medium" for="r1">Fun</label>
             </div>
 
             <div class="flex items-center gap-3 pb-3">
@@ -53,9 +52,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                     </button>
                     <input rdxCheckboxInput />
                 </div>
-                <label class="text-foreground flex items-center text-sm font-medium" rdxLabel htmlFor="r2">
-                    Serious
-                </label>
+                <label class="text-foreground flex items-center text-sm font-medium" for="r2">Serious</label>
             </div>
 
             <div class="flex items-center gap-3 pb-3">
@@ -75,7 +72,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                     </button>
                     <input rdxCheckboxInput />
                 </div>
-                <label class="text-foreground flex items-center text-sm font-medium" rdxLabel htmlFor="r3">Smart</label>
+                <label class="text-foreground flex items-center text-sm font-medium" for="r3">Smart</label>
             </div>
         </section>
 
@@ -92,7 +89,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
         FormsModule,
         ReactiveFormsModule,
         JsonPipe,
-        RdxLabelDirective,
+
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,

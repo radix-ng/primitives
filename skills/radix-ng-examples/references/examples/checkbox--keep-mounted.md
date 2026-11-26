@@ -20,13 +20,11 @@ import {
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-keep-mounted-example',
     imports: [
-        RdxLabelDirective,
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
@@ -53,9 +51,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                 </button>
                 <input rdxCheckboxInput />
             </div>
-            <label class="text-foreground flex items-center text-sm font-medium" rdxLabel htmlFor="r1">
-                I'm a checkbox
-            </label>
+            <label class="text-foreground flex items-center text-sm font-medium" for="r1">I'm a checkbox</label>
         </div>
 
         <section class="text-muted-foreground mt-3 text-sm">

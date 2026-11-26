@@ -7,7 +7,6 @@ import {
     RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 /**
  * `rdxCheckboxGroup` holds the array of checked values. Each child participates by its `value`, and
@@ -21,7 +20,6 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-group-example',
     imports: [
-        RdxLabelDirective,
         RdxCheckboxGroupDirective,
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
@@ -51,7 +49,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                         />
                     </button>
                 </div>
-                <label class="text-foreground text-sm" rdxLabel htmlFor="all">Select all</label>
+                <label class="text-foreground text-sm" for="all">Select all</label>
             </div>
 
             <div class="ms-4 flex flex-col items-start gap-1">
@@ -68,7 +66,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                                 />
                             </button>
                         </div>
-                        <label class="text-foreground text-sm" [htmlFor]="item.value" rdxLabel>
+                        <label class="text-foreground text-sm" [attr.for]="item.value">
                             {{ item.label }}
                         </label>
                     </div>

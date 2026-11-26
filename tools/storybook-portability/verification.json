@@ -259,42 +259,42 @@
         },
         {
             "path": "packages/primitives/checkbox/stories/checkbox-default-example.ts",
-            "sha256": "432a588a9a618cd7904e5fe1fc9b3ef10801773e361da0e19eda3792aa4063f1",
+            "sha256": "009d49f1241aa68600c96ad2f75ca6c721534c06d50c55a3674fc2d52706a2a7",
             "kind": "example"
         },
         {
             "path": "packages/primitives/checkbox/stories/checkbox-forms.ts",
-            "sha256": "87ce3303605538e174f4922625e4e620bc5c1c637ad6c6f653a4b1d4b7790b7d",
+            "sha256": "f2232425503297e9e8ca2b24bb2ac3c6a0445741805fcad861557de57aa31b1a",
             "kind": "example"
         },
         {
             "path": "packages/primitives/checkbox/stories/checkbox-group.ts",
-            "sha256": "a6fb2eb934f440e825e42338c86ddb61df31c28d46f8d6d93a64f13f1278b0a7",
+            "sha256": "f8a8d011c1a1578c812f996910e21b60a719b7e4e919c1cc19cfd3dc1aa9ae80",
             "kind": "example"
         },
         {
             "path": "packages/primitives/checkbox/stories/checkbox-indeterminate.ts",
-            "sha256": "2e5cfdb636e2bc18d6dcab7a80f73893abb589f4e00c046c565e77e22fe841a3",
+            "sha256": "1752e6ab51a949b5a2bc7c408cd8863b9a6407267c4bca630383b1c050c629ba",
             "kind": "example"
         },
         {
             "path": "packages/primitives/checkbox/stories/checkbox-ngmodel.ts",
-            "sha256": "e370b1bb9ab08c87b6338aa89f228b81516ec11136e839efcf9e58de4ed50a2c",
+            "sha256": "1bcf2d460f2a9a901828b90ee0c80cb5e1d9b48291faac503991f33fd86854bf",
             "kind": "example"
         },
         {
             "path": "packages/primitives/checkbox/stories/checkbox-presence.ts",
-            "sha256": "f9728f4a9b6f12feabbc627a556cf75a9d1e56de6c77e36c6f063d7801364ff6",
+            "sha256": "c666d180f09acbd125e2cad7844ea7164d6c66727b9ff33750b4d796f64f5ea4",
             "kind": "example"
         },
         {
             "path": "packages/primitives/checkbox/stories/checkbox-select-all.ts",
-            "sha256": "85f5fd0581e19d26ef6f1261ea8eb364509dbd0fe763ee1297ff192e9c94ebbe",
+            "sha256": "acd7b0703580b3ae652b832afd06531f68c2de258d6da853569eea26c0545f32",
             "kind": "example"
         },
         {
             "path": "packages/primitives/checkbox/stories/checkbox-validation.ts",
-            "sha256": "67a55e033feac8ec1335d2e0b33204dccfd32718f805ded33e868521cdd9d71d",
+            "sha256": "d019587fc1062f08dab17ddf4ce2016f5dec9ddf0634c22fdd2f0316b5441447",
             "kind": "example"
         },
         {
@@ -1139,17 +1139,17 @@
         },
         {
             "path": "packages/primitives/radio/stories/radio-default.ts",
-            "sha256": "ab9606ce29d46847fdc069823b8371e24b0fce7702c93d9b5966add6491dfa51",
+            "sha256": "30befd8f03ef940cf6b7df88662e6dc57d9ace539092a2c03149c5f9b4ccf4c9",
             "kind": "example"
         },
         {
             "path": "packages/primitives/radio/stories/radio-disabled.ts",
-            "sha256": "e982343fd0f4763a263693a8a589a1ee93facf042f40379fe535661ffd9766d5",
+            "sha256": "9f8e668e2d4b5ca40303eae2c86fd3a5ce71ab08d4822507319d78bcb2f65e79",
             "kind": "example"
         },
         {
             "path": "packages/primitives/radio/stories/radio-template-driven-forms.ts",
-            "sha256": "6fb44596990c1783228654759aee5f04d39b8ecf3f6f34f95b8ff97662ce214e",
+            "sha256": "7c2721f1584f21eb50a28f03500d8b72f761973153d640aaadb30e2f88919a17",
             "kind": "example"
         },
         {
@@ -1399,27 +1399,27 @@
         },
         {
             "path": "packages/primitives/switch/stories/switch-default.ts",
-            "sha256": "3df6f4e301ae95b8b5e63e1deb20757bcbc339bc18bbdea720c3573b358605fe",
+            "sha256": "cb16b66ed91db2b2c6fa8d5d2e4069050c00687bf4d9067a4ed0d5fb07aaab10",
             "kind": "example"
         },
         {
             "path": "packages/primitives/switch/stories/switch-disabled.ts",
-            "sha256": "30075d51b8a22821e2944a35c58764ede90c9a6a182a7fc30b67c9ae40f1df9e",
+            "sha256": "9cbb3833544636ed964d3229d9688c43d1c18f9b249d6e49f03dbf2ee9c1dd7e",
             "kind": "example"
         },
         {
             "path": "packages/primitives/switch/stories/switch-preselection.ts",
-            "sha256": "5b5740a503424d3a27b1c6abe7d6d488f77f50dfaccddd1ebd15899c9932f6f9",
+            "sha256": "57693780ae26f6eb9bb41755310d8f3998c140925c1f06596a27098b6270f73a",
             "kind": "example"
         },
         {
             "path": "packages/primitives/switch/stories/switch-reactive-forms.ts",
-            "sha256": "ea2ed3b4981e43a87ab9a472c707be23bfac6ecbfc9c5ce7b94000167123acbd",
+            "sha256": "23ee6d7f8a7143b799e078ee565f3db7b5311838fb8aaea4c4753454b96c9e68",
             "kind": "example"
         },
         {
             "path": "packages/primitives/switch/stories/switch-readonly.ts",
-            "sha256": "24ffec56bd3bab10ecceda9e8378b538b3f980b1e3099de45af20acbb50fa18d",
+            "sha256": "a63b74922022202dc45157e1d670dc74c9dfdb1426db9fc05b77f2676b8ef2cb",
             "kind": "example"
         },
         {

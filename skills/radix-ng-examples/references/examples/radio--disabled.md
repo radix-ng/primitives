@@ -8,7 +8,6 @@ A disabled radio group ignores user interaction and exposes disabled state attri
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import {
     RdxRadioGroupDirective,
     RdxRadioIndicatorDirective,
@@ -28,7 +27,7 @@ import {
             disabled
             aria-label="View density"
         >
-            <label class="flex items-center gap-3" rdxLabel>
+            <label class="flex items-center gap-3">
                 <span
                     class="demo-radio-item demo-focus flex size-6 items-center justify-center disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
                     rdxRadioItem
@@ -42,7 +41,7 @@ import {
                 </span>
                 <span class="demo-label">Default</span>
             </label>
-            <label class="flex items-center gap-3" rdxLabel>
+            <label class="flex items-center gap-3">
                 <span
                     class="demo-radio-item demo-focus flex size-6 items-center justify-center disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
                     rdxRadioItem
@@ -56,7 +55,7 @@ import {
                 </span>
                 <span class="demo-label">Comfortable</span>
             </label>
-            <label class="flex items-center gap-3" rdxLabel>
+            <label class="flex items-center gap-3">
                 <span
                     class="demo-radio-item demo-focus flex size-6 items-center justify-center disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
                     rdxRadioItem
@@ -72,13 +71,7 @@ import {
             </label>
         </div>
     `,
-    imports: [
-        RdxLabelDirective,
-        RdxRadioItemDirective,
-        RdxRadioItemInputDirective,
-        RdxRadioIndicatorDirective,
-        RdxRadioGroupDirective
-    ]
+    imports: [RdxRadioItemDirective, RdxRadioItemInputDirective, RdxRadioIndicatorDirective, RdxRadioGroupDirective]
 })
 export class RadioDisabledComponent {}
 ```

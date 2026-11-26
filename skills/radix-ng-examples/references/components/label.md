@@ -1,22 +1,22 @@
 # Label
 
-Renders an accessible label associated with controls.
+An optional directive for a native label.
 
 > Index — full source of each example is one click away in `../examples/label--*.md`; the whole-doc dump is in `../llms-full.txt`.
 
 > Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
 
-## Features
-
-- ✅ Text selection is prevented when double-clicking label.
-
 ## Import
 
-Get started with importing the directive:
+Import the directive when using `rdxLabel`.
 
 ```typescript
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 ```
+
+## Examples
+
+- [Using the directive](../examples/label--using-the-directive.md)
 
 ## API & styling contract
 

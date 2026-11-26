@@ -8,7 +8,6 @@ import {
 } from '@radix-ng/primitives/checkbox';
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { expect } from 'storybook/test';
-import { RdxLabelDirective } from '../../label';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
 import { CheckboxDefaultStory } from './checkbox-default-example';
 import defaultPortableSource from './checkbox-default-example?raw';
@@ -48,7 +47,7 @@ export default {
         moduleMetadata({
             imports: [
                 CheckboxDefaultStory,
-                RdxLabelDirective,
+
                 RdxCheckboxRootDirective,
                 RdxCheckboxButtonDirective,
                 RdxCheckboxIndicatorDirective,

@@ -54,7 +54,7 @@ Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs
 - [Fieldset](https://radix-ng.com/docs/components/fieldset.md): Groups related form controls with a legend and shared disabled state.
 - [Form](https://radix-ng.com/docs/components/form.md): The top of the forms layer cake: aggregates fields, maps server errors by name, and intercepts submit and reset.
 - [Input](https://radix-ng.com/docs/components/input.md): A native text input with headless state attributes and Field integration.
-- [Label](https://radix-ng.com/docs/components/label.md): Renders an accessible label associated with controls.
+- [Label](https://radix-ng.com/docs/components/label.md): An optional directive for a native label.
 - [Menu](https://radix-ng.com/docs/components/menu.md): A headless dropdown menu anchored to a trigger button.
 - [Menubar](https://radix-ng.com/docs/components/menubar.md): A visually persistent menu common in desktop applications that provides quick access to a consistent set of commands.
 - [Meter](https://radix-ng.com/docs/components/meter.md): A graphical display of a numeric value within a range.

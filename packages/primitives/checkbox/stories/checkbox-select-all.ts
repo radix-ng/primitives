@@ -8,7 +8,6 @@ import {
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 interface Item {
     id: string;
@@ -24,7 +23,6 @@ interface Item {
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-select-all-example',
     imports: [
-        RdxLabelDirective,
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
@@ -57,7 +55,7 @@ interface Item {
                     </button>
                     <input rdxCheckboxInput />
                 </div>
-                <label class="text-foreground text-sm font-medium" rdxLabel htmlFor="all">Select all</label>
+                <label class="text-foreground text-sm font-medium" for="all">Select all</label>
             </div>
 
             <div class="ml-6 flex flex-col gap-3">
@@ -79,7 +77,7 @@ interface Item {
                             </button>
                             <input rdxCheckboxInput />
                         </div>
-                        <label class="text-foreground text-sm font-medium" [htmlFor]="item.id" rdxLabel>
+                        <label class="text-foreground text-sm font-medium" [attr.for]="item.id">
                             {{ item.label }}
                         </label>
                     </div>

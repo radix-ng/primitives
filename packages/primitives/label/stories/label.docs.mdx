@@ -6,23 +6,29 @@ import * as LabelDirectiveStories from './label.stories';
 
 # Label
 
-#### Renders an accessible label associated with controls.
+#### An optional directive for a native label.
 
 <Canvas sourceState="hidden" of={LabelDirectiveStories.Default} />
 
-## Features
+## Choosing a label
 
-- ✅ Text selection is prevented when double-clicking label.
+Use a native `<label>` with a matching `for` and control `id`, or wrap the control in its label.
+Inside `rdxFieldRoot`, use `rdxFieldLabel` to associate the label with the registered control automatically.
+
+Apply `rdxLabel` to a native `<label>` when you want a generated label ID, its `htmlFor` input, or
+double-click text selection protection. The directive supports native label association and activation.
 
 ## Import
 
-Get started with importing the directive:
+Import the directive when using `rdxLabel`.
 
 ```typescript
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 ```
 
 ## Examples
+
+### Using the directive
 
 ```html
 <label rdxLabel htmlFor="uniqId">First name</label>
@@ -35,6 +41,5 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 ## Accessibility
 
-This component is based on the native `label` element, it will automatically apply the correct labelling
-when wrapping controls or using the `for` attribute. For your own custom controls
-to work correctly, ensure they use native elements such as `button` or `input` as a base.
+The browser provides the accessible name and click activation through the native label association.
+Use a labelable element, such as a native `button` or `input`, as the associated control.

@@ -7229,7 +7229,6 @@ import {
     RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 @Component({
     host: { class: 'contents' },
@@ -7237,7 +7236,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
     selector: 'rdx-checkbox-default-example',
     imports: [
         LucideCheck,
-        RdxLabelDirective,
+
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
         RdxCheckboxIndicatorPresenceDirective,
@@ -7256,7 +7255,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                     />
                 </button>
             </div>
-            <label class="text-foreground flex items-center text-sm" rdxLabel htmlFor="checkbox-1">
+            <label class="text-foreground flex items-center text-sm" for="checkbox-1">
                 Accept terms and conditions.
             </label>
         </div>
@@ -7322,7 +7321,6 @@ import {
     RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 @Component({
     host: { class: 'contents' },
@@ -7330,7 +7328,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
     selector: 'rdx-checkbox-default-example',
     imports: [
         LucideCheck,
-        RdxLabelDirective,
+
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
         RdxCheckboxIndicatorPresenceDirective,
@@ -7349,7 +7347,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                     />
                 </button>
             </div>
-            <label class="text-foreground flex items-center text-sm" rdxLabel htmlFor="checkbox-1">
+            <label class="text-foreground flex items-center text-sm" for="checkbox-1">
                 Accept terms and conditions.
             </label>
         </div>
@@ -7363,7 +7361,7 @@ export class CheckboxDefaultStory {
 
 ### Labeling
 
-Always associate a checkbox with a label. Link a sibling `rdxLabel` to the button with `htmlFor` / `id`:
+Associate a standalone checkbox with a native `<label>`. Set its `for` attribute to the checkbox button’s `id`.
 
 ```html
 <div rdxCheckboxRoot>
@@ -7371,7 +7369,7 @@ Always associate a checkbox with a label. Link a sibling `rdxLabel` to the butto
     <svg *rdxCheckboxIndicatorPresence rdxCheckboxIndicator lucideCheck />
   </button>
 </div>
-<label rdxLabel htmlFor="terms">Accept terms and conditions</label>
+<label for="terms">Accept terms and conditions</label>
 ```
 
 Inside `rdxFieldRoot`, use `rdxFieldLabel` and `rdxFieldDescription`. The label associates with the
@@ -7426,13 +7424,11 @@ import {
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-indeterminate-example',
     imports: [
-        RdxLabelDirective,
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
@@ -7464,9 +7460,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                 </button>
                 <input rdxCheckboxInput />
             </div>
-            <label class="text-foreground flex items-center text-sm font-medium" rdxLabel htmlFor="r1">
-                I'm a checkbox
-            </label>
+            <label class="text-foreground flex items-center text-sm font-medium" for="r1">I'm a checkbox</label>
         </div>
 
         <section class="text-muted-foreground mt-3 text-sm">
@@ -7510,13 +7504,11 @@ import {
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-keep-mounted-example',
     imports: [
-        RdxLabelDirective,
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
@@ -7543,9 +7535,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                 </button>
                 <input rdxCheckboxInput />
             </div>
-            <label class="text-foreground flex items-center text-sm font-medium" rdxLabel htmlFor="r1">
-                I'm a checkbox
-            </label>
+            <label class="text-foreground flex items-center text-sm font-medium" for="r1">I'm a checkbox</label>
         </div>
 
         <section class="text-muted-foreground mt-3 text-sm">
@@ -7574,7 +7564,6 @@ import {
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 /**
  * Template-driven forms: two-way bind the root with `[(ngModel)]`.
@@ -7584,7 +7573,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
     selector: 'checkbox-ngmodel-example',
     imports: [
         FormsModule,
-        RdxLabelDirective,
+
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
@@ -7610,9 +7599,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                 </button>
                 <input rdxCheckboxInput />
             </div>
-            <label class="text-foreground text-sm font-medium" rdxLabel htmlFor="sub">
-                Subscribe to the newsletter
-            </label>
+            <label class="text-foreground text-sm font-medium" for="sub">Subscribe to the newsletter</label>
         </div>
 
         <p class="text-muted-foreground mt-3 text-sm">subscribed: {{ subscribed }}</p>
@@ -7639,7 +7626,6 @@ import {
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -7663,7 +7649,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                     </button>
                     <input rdxCheckboxInput />
                 </div>
-                <label class="text-foreground flex items-center text-sm font-medium" rdxLabel htmlFor="r1">Fun</label>
+                <label class="text-foreground flex items-center text-sm font-medium" for="r1">Fun</label>
             </div>
 
             <div class="flex items-center gap-3 pb-3">
@@ -7683,9 +7669,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                     </button>
                     <input rdxCheckboxInput />
                 </div>
-                <label class="text-foreground flex items-center text-sm font-medium" rdxLabel htmlFor="r2">
-                    Serious
-                </label>
+                <label class="text-foreground flex items-center text-sm font-medium" for="r2">Serious</label>
             </div>
 
             <div class="flex items-center gap-3 pb-3">
@@ -7705,7 +7689,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                     </button>
                     <input rdxCheckboxInput />
                 </div>
-                <label class="text-foreground flex items-center text-sm font-medium" rdxLabel htmlFor="r3">Smart</label>
+                <label class="text-foreground flex items-center text-sm font-medium" for="r3">Smart</label>
             </div>
         </section>
 
@@ -7722,7 +7706,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
         FormsModule,
         ReactiveFormsModule,
         JsonPipe,
-        RdxLabelDirective,
+
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
@@ -7764,7 +7748,6 @@ import {
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 /**
  * Reactive forms with validation: `Validators.requiredTrue` forces the box to be
@@ -7775,7 +7758,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
     selector: 'checkbox-validation-example',
     imports: [
         ReactiveFormsModule,
-        RdxLabelDirective,
+
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
@@ -7802,9 +7785,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                     </button>
                     <input rdxCheckboxInput />
                 </div>
-                <label class="text-foreground text-sm font-medium" rdxLabel htmlFor="terms">
-                    I accept the terms and conditions
-                </label>
+                <label class="text-foreground text-sm font-medium" for="terms">I accept the terms and conditions</label>
             </div>
 
             @if (form.controls.terms.invalid && form.controls.terms.touched) {
@@ -7868,7 +7849,6 @@ import {
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 interface Item {
     id: string;
@@ -7884,7 +7864,6 @@ interface Item {
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-select-all-example',
     imports: [
-        RdxLabelDirective,
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
@@ -7917,7 +7896,7 @@ interface Item {
                     </button>
                     <input rdxCheckboxInput />
                 </div>
-                <label class="text-foreground text-sm font-medium" rdxLabel htmlFor="all">Select all</label>
+                <label class="text-foreground text-sm font-medium" for="all">Select all</label>
             </div>
 
             <div class="ml-6 flex flex-col gap-3">
@@ -7939,7 +7918,7 @@ interface Item {
                             </button>
                             <input rdxCheckboxInput />
                         </div>
-                        <label class="text-foreground text-sm font-medium" [htmlFor]="item.id" rdxLabel>
+                        <label class="text-foreground text-sm font-medium" [attr.for]="item.id">
                             {{ item.label }}
                         </label>
                     </div>
@@ -8011,7 +7990,6 @@ import {
     RdxCheckboxIndicatorPresenceDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 /**
  * `rdxCheckboxGroup` holds the array of checked values. Each child participates by its `value`, and
@@ -8025,7 +8003,6 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'checkbox-group-example',
     imports: [
-        RdxLabelDirective,
         RdxCheckboxGroupDirective,
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
@@ -8055,7 +8032,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                         />
                     </button>
                 </div>
-                <label class="text-foreground text-sm" rdxLabel htmlFor="all">Select all</label>
+                <label class="text-foreground text-sm" for="all">Select all</label>
             </div>
 
             <div class="ms-4 flex flex-col items-start gap-1">
@@ -8072,7 +8049,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                                 />
                             </button>
                         </div>
-                        <label class="text-foreground text-sm" [htmlFor]="item.value" rdxLabel>
+                        <label class="text-foreground text-sm" [attr.for]="item.value">
                             {{ item.label }}
                         </label>
                     </div>
@@ -18669,7 +18646,7 @@ not need `rdxFieldControl` on the same element.
 
 # Label
 
-#### Renders an accessible label associated with controls.
+#### An optional directive for a native label.
 
 ```html
 <div class="flex items-center gap-3">
@@ -18682,19 +18659,25 @@ not need `rdxFieldControl` on the same element.
 </div>
 ```
 
-## Features
+## Choosing a label
 
-- ✅ Text selection is prevented when double-clicking label.
+Use a native `<label>` with a matching `for` and control `id`, or wrap the control in its label.
+Inside `rdxFieldRoot`, use `rdxFieldLabel` to associate the label with the registered control automatically.
+
+Apply `rdxLabel` to a native `<label>` when you want a generated label ID, its `htmlFor` input, or
+double-click text selection protection. The directive supports native label association and activation.
 
 ## Import
 
-Get started with importing the directive:
+Import the directive when using `rdxLabel`.
 
 ```typescript
 import { RdxLabelDirective } from '@radix-ng/primitives/label';
 ```
 
 ## Examples
+
+### Using the directive
 
 ```html
 <label rdxLabel htmlFor="uniqId">First name</label>
@@ -18705,9 +18688,8 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 ## Accessibility
 
-This component is based on the native `label` element, it will automatically apply the correct labelling
-when wrapping controls or using the `for` attribute. For your own custom controls
-to work correctly, ensure they use native elements such as `button` or `input` as a base.
+The browser provides the accessible name and click activation through the native label association.
+Use a labelable element, such as a native `button` or `input`, as the associated control.
 
 ---
 
@@ -30705,7 +30687,6 @@ The value is conveyed through `aria-valuenow` and `aria-valuetext`, so
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import {
     RdxRadioGroupDirective,
     RdxRadioIndicatorDirective,
@@ -30727,7 +30708,7 @@ import {
             >
                 <div class="text-foreground text-sm font-bold" [id]="labelId + 'heading'">View density</div>
                 @for (option of options; track option.value) {
-                    <label class="flex items-center gap-2" rdxLabel>
+                    <label class="flex items-center gap-2">
                         <span
                             class="demo-choice size-4 rounded-full"
                             [value]="option.value"
@@ -30750,7 +30731,6 @@ import {
         </form>
     `,
     imports: [
-        RdxLabelDirective,
         RdxRadioItemDirective,
         RdxRadioItemInputDirective,
         RdxRadioIndicatorDirective,
@@ -31039,7 +31019,6 @@ A radio group with labels, hidden native inputs and an animated indicator.
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import {
     RdxRadioGroupDirective,
     RdxRadioIndicatorDirective,
@@ -31061,7 +31040,7 @@ import {
             >
                 <div class="text-foreground text-sm font-bold" [id]="labelId + 'heading'">View density</div>
                 @for (option of options; track option.value) {
-                    <label class="flex items-center gap-2" rdxLabel>
+                    <label class="flex items-center gap-2">
                         <span
                             class="demo-choice size-4 rounded-full"
                             [value]="option.value"
@@ -31084,7 +31063,6 @@ import {
         </form>
     `,
     imports: [
-        RdxLabelDirective,
         RdxRadioItemDirective,
         RdxRadioItemInputDirective,
         RdxRadioIndicatorDirective,
@@ -31108,7 +31086,6 @@ A disabled radio group ignores user interaction and exposes disabled state attri
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import {
     RdxRadioGroupDirective,
     RdxRadioIndicatorDirective,
@@ -31128,7 +31105,7 @@ import {
             disabled
             aria-label="View density"
         >
-            <label class="flex items-center gap-3" rdxLabel>
+            <label class="flex items-center gap-3">
                 <span
                     class="demo-radio-item demo-focus flex size-6 items-center justify-center disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
                     rdxRadioItem
@@ -31142,7 +31119,7 @@ import {
                 </span>
                 <span class="demo-label">Default</span>
             </label>
-            <label class="flex items-center gap-3" rdxLabel>
+            <label class="flex items-center gap-3">
                 <span
                     class="demo-radio-item demo-focus flex size-6 items-center justify-center disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
                     rdxRadioItem
@@ -31156,7 +31133,7 @@ import {
                 </span>
                 <span class="demo-label">Comfortable</span>
             </label>
-            <label class="flex items-center gap-3" rdxLabel>
+            <label class="flex items-center gap-3">
                 <span
                     class="demo-radio-item demo-focus flex size-6 items-center justify-center disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
                     rdxRadioItem
@@ -31172,13 +31149,7 @@ import {
             </label>
         </div>
     `,
-    imports: [
-        RdxLabelDirective,
-        RdxRadioItemDirective,
-        RdxRadioItemInputDirective,
-        RdxRadioIndicatorDirective,
-        RdxRadioGroupDirective
-    ]
+    imports: [RdxRadioItemDirective, RdxRadioItemInputDirective, RdxRadioIndicatorDirective, RdxRadioGroupDirective]
 })
 export class RadioDisabledComponent {}
 ```
@@ -31191,7 +31162,6 @@ Radio group works with `ngModel`, native form submission, and a submit button. T
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import {
     RdxRadioGroupDirective,
     RdxRadioIndicatorDirective,
@@ -31213,7 +31183,7 @@ import {
                 aria-label="Hotel room"
             >
                 @for (room of rooms; track room) {
-                    <label class="flex items-center gap-3" rdxLabel>
+                    <label class="flex items-center gap-3">
                         <span
                             class="demo-radio-item demo-focus flex size-6 items-center justify-center disabled:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50"
                             [value]="room"
@@ -31246,7 +31216,7 @@ import {
     `,
     imports: [
         FormsModule,
-        RdxLabelDirective,
+
         RdxRadioItemDirective,
         RdxRadioItemInputDirective,
         RdxRadioIndicatorDirective,
@@ -37873,15 +37843,14 @@ Stepper orientation by default. Supply `orientation` to override it for this sep
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'switch-default-example',
-    imports: [RdxLabelDirective, RdxSwitchRoot, RdxSwitchThumb],
+    imports: [RdxSwitchRoot, RdxSwitchThumb],
     template: `
-        <label class="text-foreground flex items-center gap-2 text-sm font-normal" rdxLabel htmlFor="notifications">
+        <label class="text-foreground flex items-center gap-2 text-sm font-normal" for="notifications">
             <button class="demo-switch h-5 w-9 p-0.5" id="notifications" type="button" defaultChecked rdxSwitchRoot>
                 <span
                     class="demo-switch-thumb size-3.5 data-checked:translate-x-4 rtl:data-checked:-translate-x-4"
@@ -37932,15 +37901,14 @@ native `required` validation and bubbling `input` and `change` events. Set `name
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'switch-default-example',
-    imports: [RdxLabelDirective, RdxSwitchRoot, RdxSwitchThumb],
+    imports: [RdxSwitchRoot, RdxSwitchThumb],
     template: `
-        <label class="text-foreground flex items-center gap-2 text-sm font-normal" rdxLabel htmlFor="notifications">
+        <label class="text-foreground flex items-center gap-2 text-sm font-normal" for="notifications">
             <button class="demo-switch h-5 w-9 p-0.5" id="notifications" type="button" defaultChecked rdxSwitchRoot>
                 <span
                     class="demo-switch-thumb size-3.5 data-checked:translate-x-4 rtl:data-checked:-translate-x-4"
@@ -37962,15 +37930,14 @@ native reset baseline intact.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'switch-preselection-example',
-    imports: [RdxLabelDirective, RdxSwitchRoot, RdxSwitchThumb],
+    imports: [RdxSwitchRoot, RdxSwitchThumb],
     template: `
-        <label class="text-foreground flex items-center gap-2 text-sm" rdxLabel htmlFor="airplane-mode-model">
+        <label class="text-foreground flex items-center gap-2 text-sm" for="airplane-mode-model">
             Airplane mode
             <button class="demo-switch h-5 w-9 p-0.5" id="airplane-mode-model" defaultChecked rdxSwitchRoot>
                 <span
@@ -37990,15 +37957,14 @@ When `disabled` is present the switch cannot be focused or toggled.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'switch-disabled-example',
-    imports: [RdxLabelDirective, RdxSwitchRoot, RdxSwitchThumb],
+    imports: [RdxSwitchRoot, RdxSwitchThumb],
     template: `
-        <label class="text-foreground flex items-center gap-2 text-sm" rdxLabel htmlFor="airplane-mode-disabled">
+        <label class="text-foreground flex items-center gap-2 text-sm" for="airplane-mode-disabled">
             Airplane mode
             <button class="demo-switch h-5 w-9 p-0.5" id="airplane-mode-disabled" rdxSwitchRoot disabled>
                 <span
@@ -38018,15 +37984,14 @@ A `readonly` switch is focusable and announced, but cannot be toggled.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'switch-readonly-example',
-    imports: [RdxLabelDirective, RdxSwitchRoot, RdxSwitchThumb],
+    imports: [RdxSwitchRoot, RdxSwitchThumb],
     template: `
-        <label class="text-foreground flex items-center gap-2 text-sm" rdxLabel htmlFor="airplane-mode-readonly">
+        <label class="text-foreground flex items-center gap-2 text-sm" for="airplane-mode-readonly">
             Airplane mode
             <button class="demo-switch h-5 w-9 p-0.5" id="airplane-mode-readonly" rdxSwitchRoot readonly defaultChecked>
                 <span
@@ -38047,16 +38012,15 @@ Bind the switch to a form control via `formControlName`.
 ```typescript
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'switch-reactive-forms',
-    imports: [ReactiveFormsModule, RdxLabelDirective, RdxSwitchRoot, RdxSwitchThumb],
+    imports: [ReactiveFormsModule, RdxSwitchRoot, RdxSwitchThumb],
     template: `
         <form class="space-y-3" [formGroup]="formGroup" (ngSubmit)="onSubmit()">
-            <label class="text-foreground flex items-center gap-2 text-sm" rdxLabel htmlFor="airplane-mode-form">
+            <label class="text-foreground flex items-center gap-2 text-sm" for="airplane-mode-form">
                 Airplane mode
                 <button
                     class="demo-switch h-5 w-9 p-0.5"
@@ -46328,15 +46292,14 @@ swap on the root and the thumb every time you click:
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 import { RdxSwitchRoot, RdxSwitchThumb } from '@radix-ng/primitives/switch';
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'switch-default-example',
-    imports: [RdxLabelDirective, RdxSwitchRoot, RdxSwitchThumb],
+    imports: [RdxSwitchRoot, RdxSwitchThumb],
     template: `
-        <label class="text-foreground flex items-center gap-2 text-sm font-normal" rdxLabel htmlFor="notifications">
+        <label class="text-foreground flex items-center gap-2 text-sm font-normal" for="notifications">
             <button class="demo-switch h-5 w-9 p-0.5" id="notifications" type="button" defaultChecked rdxSwitchRoot>
                 <span
                     class="demo-switch-thumb size-3.5 data-checked:translate-x-4 rtl:data-checked:-translate-x-4"
@@ -46626,14 +46589,14 @@ from `@radix-ng/primitives/<name>`:
 ```typescript
 import { Component } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
+import { RdxInputDirective } from '@radix-ng/primitives/input';
 
 @Component({
     selector: 'app-root',
-    imports: [RdxLabelDirective],
+    imports: [RdxInputDirective],
     template: `
-        <label rdxLabel htmlFor="firstName">First Name</label>
-        <input id="firstName" type="text" />
+        <label for="firstName">First name</label>
+        <input id="firstName" type="text" rdxInput />
     `
 })
 export class App {}

@@ -8,7 +8,6 @@ import {
     RdxCheckboxInputDirective,
     RdxCheckboxRootDirective
 } from '@radix-ng/primitives/checkbox';
-import { RdxLabelDirective } from '@radix-ng/primitives/label';
 
 /**
  * Reactive forms with validation: `Validators.requiredTrue` forces the box to be
@@ -19,7 +18,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
     selector: 'checkbox-validation-example',
     imports: [
         ReactiveFormsModule,
-        RdxLabelDirective,
+
         RdxCheckboxRootDirective,
         RdxCheckboxButtonDirective,
         RdxCheckboxIndicatorDirective,
@@ -46,9 +45,7 @@ import { RdxLabelDirective } from '@radix-ng/primitives/label';
                     </button>
                     <input rdxCheckboxInput />
                 </div>
-                <label class="text-foreground text-sm font-medium" rdxLabel htmlFor="terms">
-                    I accept the terms and conditions
-                </label>
+                <label class="text-foreground text-sm font-medium" for="terms">I accept the terms and conditions</label>
             </div>
 
             @if (form.controls.terms.invalid && form.controls.terms.touched) {
