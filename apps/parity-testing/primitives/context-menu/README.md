@@ -11,9 +11,8 @@ the actual native button context area, original coordinates and default modal be
 
 The suite shares only native observations and actual Menu item markup with Menu/Menubar. Its cases
 and actions are independent; no adapter forces focus, open state or completion. Reports retain
-native events, trusted coordinates, press/release timestamps and source commit/digest. Two exact
-Linux WebKit focus/highlight pairs record the pin dropping real travel with zero movement deltas.
-Menu's existing coordinate guard is retained; stale or changed exceptions fail.
+native events, trusted coordinates, press/release timestamps and source commit/digest. Right-button
+release focus and highlight match on Playwright 1.65.1's Linux WebKit.
 
 Nine additional input cases cover native keyboard opening, tap/long-press, drift/slop, cancel,
 two fingers and disabling. Touch tap supports Chromium/WebKit; hold/move/cancel uses Chromium CDP.
@@ -22,9 +21,8 @@ with 18 capability skips; Linux executes 166 with 17 skips. Native input events 
 
 Sixteen additional composition cases cover sibling/nested areas sharing one Root, point anchors,
 focus return, retained view reuse and right-press switching with veto/retry. Submenus exercise native
-keyboard/hover paths in LTR/RTL, child cancellation and parent selection cancellation. Four exact WebKit
-focus/highlight pairs retain the shared coordinate guard when the pin drops trusted zero-delta travel;
-the previous two Linux right-release pairs remain. Cancellation, callback order and return focus match.
+keyboard/hover paths in LTR/RTL, child cancellation and parent selection cancellation. Hover
+focus and highlight, cancellation, callback order and return focus match.
 
 Native switching pauses the shared Playwright clock, without replacing native events or state.
 The shared lifecycle also waits for a native frame before automatic close completion: rendering a

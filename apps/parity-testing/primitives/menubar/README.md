@@ -45,8 +45,8 @@ external sibling open. No state-case exceptions are needed.
 Five retained cases prove view identity across reopen, root/child closing, switching and canceled
 closing. Native Tab skips settled hidden views. Four nested pointer cases cancel hover opening,
 parent-item hover closing and child/parent selection closes, then retry. Entry and rest intents use
-real timers. The retry records trusted pointer coordinates; two exact WebKit focus/highlight pairs
-retain the shared coordinate guard's existing limitation in the pin.
+real timers. The retry records trusted pointer coordinates and compares focus and highlight in all
+three engines.
 
 Sixteen orientation cases cover horizontal root popups, both mixed parent/child directions and
 horizontal lists at both levels, under horizontal/vertical bars in LTR/RTL. Original key ownership,

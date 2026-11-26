@@ -22,15 +22,10 @@ export const highlightScenarios = highlightCases.map((name) => ({
         if (pointer) {
             const target = name === 'highlight-disabled-hover' ? 'blocked' : 'bravo';
             await d.hoverItem(target);
-            // The pin drops WebKit's trusted coordinate travel with zero movement deltas.
-            // Observe that existing limitation rather than synthesizing mouse movement.
-            const dropsTravel =
-                d.framework === 'react' && d.page.context().browser()?.browserType().name() === 'webkit';
-            if (dropsTravel) await expect(d.item(target)).not.toHaveAttribute('data-highlighted');
-            else await reported(d, target, 'pointer');
+            await reported(d, target, 'pointer');
             await d.checkpoint('hovered');
             await d.page.mouse.move(790, 590, { steps: 3 });
-            if (!dropsTravel) await reported(d, null, 'pointer');
+            await reported(d, null, 'pointer');
             await d.checkpoint('pointer left');
             return;
         }

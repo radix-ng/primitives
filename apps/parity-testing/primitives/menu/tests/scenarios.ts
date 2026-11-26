@@ -129,9 +129,7 @@ export const scenarios = [
             }
             if (name === 'pointer-highlight') {
                 await d.hoverItem('bravo');
-                if (d.framework === 'angular' || d.page.context().browser()?.browserType().name() !== 'webkit') {
-                    await expect(d.item('bravo')).toBeFocused();
-                }
+                await expect(d.item('bravo')).toBeFocused();
                 await d.checkpoint('pointer highlighted', { selected: [] });
             }
             if (name === 'stay-open') {

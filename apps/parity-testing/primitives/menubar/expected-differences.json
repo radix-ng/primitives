@@ -312,24 +312,6 @@
         "category": "nested-exit-completion"
     },
     {
-        "scenario": "nested-pointer-cancel-hover-close",
-        "checkpoint": "hover child closing allowed",
-        "field": "focus",
-        "angular": "file-alpha",
-        "react": "file-more",
-        "browser": "webkit",
-        "category": "zero-delta-pointer-travel"
-    },
-    {
-        "scenario": "nested-pointer-cancel-hover-close",
-        "checkpoint": "hover child closing allowed",
-        "field": "highlighted",
-        "angular": ["file-alpha"],
-        "react": ["file-more"],
-        "browser": "webkit",
-        "category": "zero-delta-pointer-travel"
-    },
-    {
         "scenario": "orientation-horizontal",
         "checkpoint": "root reopened after return",
         "field": "itemTabStops",

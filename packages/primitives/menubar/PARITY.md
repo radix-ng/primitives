@@ -48,11 +48,6 @@ close/reopen and leaves focus on the trigger, matching the pin in LTR/RTL.
   callback in the pin. Six exact completion-array pairs retain Angular's actual completion, as in
   [Menu's matrix](../menu/PARITY.md). Open requests, callback order and native focus agree.
 
-- `zero-delta-pointer-travel`: WebKit's trusted retry moves to different viewport coordinates while
-  reporting zero movement deltas. The pin drops parent-item highlight and returns to the submenu
-  trigger; Angular's shared coordinate guard keeps the actual target. Two exact WebKit focus/highlight
-  pairs cover the allowed hover-close retry on macOS and Linux, as in [Menu's matrix](../menu/PARITY.md).
-
 - `stale-tab-stop-after-return`: after synchronous navigation close/reopen, the pin restores
   tabindex=0 on the previous Bravo item while Alpha is already highlighted and tabindex=0. Angular
   retains one Tab stop. Two exact item-array pairs record the DOM difference in LTR/RTL. The native

@@ -22,12 +22,9 @@ This is incremental evidence, not complete API or accessibility certification.
 | Real devices and assistive technology                          | Not established                          | Pending                                              |
 
 The [runner](../../../apps/parity-testing/primitives/context-menu/README.md) defines 61 scenarios. There are 183 planned comparisons; native input capabilities
-currently allow 165 on macOS and 166 on Linux with the pinned Playwright/browser versions. Six exact WebKit focus/highlight pairs record the same
-`zero-delta-pointer-travel` pin limitation documented in [Menu's matrix](../menu/PARITY.md): a trusted
-right-button drag or child hover changes viewport coordinates while WebKit emits zero movement deltas.
-Four pairs cover child hover in LTR/RTL on both platforms; two cover Linux right release. On Linux
-the release leaves the menu open, so the highlight difference remains observable; macOS selects
-and closes. The coordinate guard is retained, and stale or changed exceptions fail.
+currently allow 165 on macOS and 166 on Linux with the pinned Playwright/browser versions.
+Child hover in LTR/RTL and right-button drag focus and highlight agree with the pin after the
+Playwright 1.65.1 upgrade. On Linux the release leaves the menu open. macOS selects and closes.
 
 Nine native input cases cover keyboard context-menu keys, short tap, 500ms long-press, per-axis
 10px slop, drift/cancel, two fingers and root disabling. Short taps run in Chromium/WebKit; trusted

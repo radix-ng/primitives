@@ -67,11 +67,8 @@ export const itemPopoverScenarios = itemPopoverCases.map((name) => ({
             }
             if (name.startsWith('item-popover-stay-hover')) {
                 await d.hoverItem('omega');
-                await d.checkpoint('hover returns focus to the menu', { open: true });
-                // The pin rejects WebKit's zero movement deltas despite a trusted coordinate path.
-                // Preserve that observation; it cannot establish parent-focused Escape in the pin.
-                if (d.page.context().browser()?.browserType().name() === 'webkit') return;
                 await expect(d.item('omega')).toBeFocused();
+                await d.checkpoint('hover returns focus to the menu', { open: true });
                 await d.page.keyboard.press('Escape');
                 await d.closed();
                 if (settings.retained) {

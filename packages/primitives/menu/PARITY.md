@@ -17,10 +17,10 @@ and records the remaining defects, capability gaps and validation limits.
 | Keyboard submenu entry, back/Escape, RTL and whole-chain selection                                     | Pinned suite                                                           | Covered                                                                           |
 | Generated/custom ARIA identities and changes between opens                                             | Pinned suite                                                           | Covered                                                                           |
 | Native ID changes while open                                                                           | Angular unit and Storybook regression                                  | Additional Angular behavior; pin keys trigger identity by id                      |
-| Programmatic focus-out and WebKit pointer travel                                                       | Pinned suite                                                           | Exact known differences below                                                     |
+| Programmatic focus-out                                                                                 | Pinned suite                                                           | Exact known differences below                                                     |
 | Deferred/retained exits, CSS completion, cancellation, late holds and reopening                        | Pinned suite                                                           | Covered                                                                           |
 | Nested CSS exits and child completion                                                                  | Pinned suite                                                           | Covered with exact nested-exit-completion difference                              |
-| Hover grace areas and pointer drag/release                                                             | Pinned suite, three engines                                            | Covered; exact WebKit coordinate-travel limits below                              |
+| Hover grace areas and pointer drag/release                                                             | Pinned suite, three engines                                            | Covered                                                                           |
 | Context Menu and Menubar composition                                                                   | Independent pinned suites                                              | Initial scope covered; see each family matrix                                     |
 | Dynamic insertion/removal/reordering, disabled state and labels                                        | Pinned suite                                                           | Covered with removed-item-focus limits                                            |
 | Empty/refilled lists and removal/replacement of an open submenu owner                                  | Pinned suite                                                           | Four collection cases covered                                                     |
@@ -109,13 +109,6 @@ require Linux CI. Existing scenario counts above describe suite scope, not an al
   that marker and returns. Do not port this React portal workaround into Angular. Ten exact field
   pairs record this single policy difference at the `outside focused` checkpoint, including DOM,
   highlight and completion consequences. Native Tab/Shift+Tab have separate matching scenarios.
-- **zero-delta-pointer-travel:** WebKit reports zero movement deltas for a trusted path whose viewport
-  coordinates change. The pin's stateless guard drops that travel, while Angular highlights/focuses
-  the target. Menu reuses core `createPointerMoveGuard`, already used by Select, with document capture
-  per open menu. Actual stationary scroll events remain ignored. Exact pairs preserve the measured
-  focus/highlight consequences through hover travel, press promotion and guarded releases, with
-  raw pointer evidence in reports. Linux and macOS have separately reviewed scopes.
-
 - **removed-item-focus:** in Firefox/WebKit the pin can leave focus on body after the focused
   option is removed without a native focusout. Angular observes actual DOM removal and restores the
   current tabbable item, so the next arrow still works. Exact focus/highlight consequences are scoped
@@ -181,8 +174,10 @@ React interaction store is added.
 
 The suite crosses root gaps and diagonal submenu grace polygons in LTR/RTL, checks canceled hover
 and re-entry, then uses real down/move/up events for enabled, disabled, stay-open, checkbox and radio
-commands. The 200ms release guard is observed without fake clocks. WebKit reports zero deltas while
-trusted viewport coordinates change; exact focus/highlight pairs retain our coordinate guard. Native click-focus is normalized by explicit tabindex on button triggers (ADR 0059).
+commands. The 200ms release guard is observed without fake clocks. Playwright 1.65.1's WebKit reports
+movement deltas during trusted travel, so focus and highlight match the pin for these paths.
+Menu's coordinate guard still ignores stationary events. Native click-focus is normalized by
+explicit tabindex on button triggers (ADR 0059).
 An Angular browser regression also repeats RTL diagonal travel with fractional popup sizes measured
 in a Linux CI failure. The safe polygon uses a one CSS-pixel buffer so integer MouseEvent coordinates
 do not fall through the fractional entry edge before native hit testing reaches the child.
@@ -387,8 +382,7 @@ spelling recorded per checkpoint. The held CSS comparison finishes actual animat
 Native button triggers receive an explicit tabindex=0 only when the consumer supplied none; a
 Composite coordinator still owns roving tabindex. Safari can then focus the pressed trigger and
 continue keyboard navigation. Fourteen previously recorded native-button-focus pairs disappeared
-and were removed after review. One remaining hover focus consequence is classified with the
-existing zero-delta pointer-travel policy rather than native-button focus.
+and were removed after review.
 
 Programmatic return focus prefers a surviving pre-open control and falls back to the connected owner
 reference when that control was body/removed. The existing Focus Scope queue owns timing; Menubar's
@@ -417,8 +411,8 @@ generic Event; the implementation-specific fallback event type is recorded in th
 
 One new exact **stale-highlight-text-label** difference records the pin retaining an old fallback
 text label after the item's text changes. Angular reads the current text on the next highlight;
-explicit label updates agree. Existing **zero-delta-pointer-travel** and **removed-item-focus**
-policies also apply to these cases. Their exact browser/platform scopes remain fail-on-change.
+explicit label updates agree. The existing **removed-item-focus** policy also applies to these
+cases. Its exact browser/platform scopes remain fail-on-change.
 See [ADR 0060](../../../docs/adr/0060-menu-highlight-notifications.md).
 
 ## Interrupted exits and trigger sessions
@@ -535,11 +529,9 @@ press-drag-release, controlled opening, detached trigger composition, retained p
 completion and vetoes. Independent editors use a surviving Menu trigger as their custom anchor.
 Nested editors keep their item available through closeOnClick=false; non-modal, modal and trap-focus
 variants compare focus, isolation, native Tab wrapping, hover return to Menu and outside presses.
-WebKit compares hover observations but the pin cannot reach parent-focused Escape through its
-zero-delta hover policy; Chromium/Firefox compare that phase and Angular browser checks cover it
-in every engine. Both implementations must position against the actual live anchor; raw geometry and isolation
-locations accompany the callback/focus/ARIA snapshots. Four exact WebKit hover fields extend the
-existing zero-delta-pointer-travel category; no new deviation category is introduced.
+The pinned comparisons cover hover return to Menu and the subsequent parent-focused Escape in
+all three engines. Both implementations must position against the actual live anchor. Raw geometry
+and isolation locations accompany the callback, focus and ARIA snapshots.
 
 The shared focus manager now limits transient press protection to its own trigger, keeping outside
 focus-out eligible. Isolation preserves declared previous/next focus targets while the marker pass

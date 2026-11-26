@@ -165,7 +165,7 @@ Shared focus recovery observes DOM updates rather than copying a React store.
 ## Reviewed limitations
 
 `expected-differences.json` contains ten exact consequences of the pin suppressing programmatic
-focus-out and exact WebKit pointer-travel pairs. Native trigger click-focus pairs were removed after the ADR 0059 audit.
+focus-out. Native trigger click-focus pairs were removed after the ADR 0059 audit.
 Two exact completion pairs record the pin dropping the submenu close callback during nested CSS
 disposal and fresh whole-chain Tab departure; Angular lets the actual child exit finish before deleting its owning view.
 The intended Angular focus-out and coordinate-based hover behavior are retained. See the
@@ -408,14 +408,12 @@ Enter/Space/pointer, submenu and trusted drag-release activation; CSS/deferred c
 modal/trap-focus editors; hover focus and outside presses retain their native effects. Geometry is
 asserted against the live anchor in each framework and attached as raw measurements. F3 completes
 a manual hold; native WAAPI finishes authored CSS. Popup isolation observations are shared with
-item-to-Dialog cases; state and actions remain owned by each primitive. Four exact WebKit hover
-fields extend the existing zero-delta-pointer-travel category. See
+item-to-Dialog cases; state and actions remain owned by each primitive. See
 [ADR 0066](../../../../docs/adr/0066-menu-item-popover-focus-boundaries.md).
 
-The pin's WebKit hover ignores zero movement deltas despite changing trusted coordinates. That
-engine records the exact focus/highlight difference and stops before parent-focused Escape, which
-it cannot reach through this gesture. Chromium/Firefox compare Escape; Angular browser regressions
-cover it in all three engines.
+Playwright 1.65.1's WebKit reports movement deltas for trusted pointer travel. Menu, Context Menu
+and Menubar compare the resulting focus and highlight against the pin in all three engines.
+The hover-to-Menu cases also compare the subsequent Escape and retained Popover lifetime in WebKit.
 
 A retained Menu portal also retains its Popover Root: closing Menu after hover leaves that editor
 open in both frameworks. The retained hover case observes this lifetime without resetting state.

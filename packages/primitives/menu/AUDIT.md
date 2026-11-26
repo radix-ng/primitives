@@ -315,23 +315,23 @@ all auto-highlight modes, IME, Escape/reset, clear, empty/refilled results and s
 
 ## Exact exception review
 
-Current expected-differences.json has 155 exact field entries in 11 categories across 31 scenarios.
-The original audit reviewed 143 fields in ten categories across 29 scenarios; none of those entries
-was changed. ADR 0072 subsequently added twelve measured live-retarget fields.
+Current expected-differences.json has 75 exact field entries in ten categories across 18 scenarios.
+The original audit reviewed 143 fields in ten categories across 29 scenarios. ADR 0072 added
+twelve measured live-retarget fields. The Playwright 1.65.1 upgrade resolved all 80 WebKit
+pointer-travel fields in Menu.
 
-| Category                               | Fields | Disposition / decision                                                                                                          |
-| -------------------------------------- | -----: | ------------------------------------------------------------------------------------------------------------------------------- |
-| programmatic-focus-out                 |     10 | Intentional native Angular focus-out instead of React capture suppression; ADR 0034.                                            |
-| zero-delta-pointer-travel              |     80 | Pin ignores actual WebKit coordinate travel; keep coordinate-based behavior and exact browser/platform scopes. ADR 0036 / 0066. |
-| removed-item-focus                     |     16 | Native DOM-removal recovery instead of leaving body focused; ADR 0037 / 0060.                                                   |
-| nested-exit-completion                 |      2 | Angular completes accepted child close before owner disposal; pin aborts it. ADR 0035 / 0053.                                   |
-| native-hover-events                    |     10 | Original Pointer/Mouse event records remain unmodified; ADR 0050 / 0051.                                                        |
-| empty-submenu-keyboard-focus           |     12 | Pin's unchanged-index keyboard entry leaves focus on the trigger; ADR 0048.                                                     |
-| parent-close-interaction-type          |     10 | Angular preserves original mouse type; pin's child callback receives empty type. ADR 0058.                                      |
-| closed-retained-child-tabindex-restore |      1 | Hidden child remains -1 in Angular rather than restoring 0. Actual visible Tab stops match; ADR 0057.                           |
-| controlled-retained-label              |      1 | Closed hidden Popup loses its active association in Angular; pin retains a controlled id. ADR 0061.                             |
-| stale-highlight-text-label             |      1 | Angular reads current label text; pin retains registration text. ADR 0060.                                                      |
-| portal-view-relocation                 |     12 | Angular preserves the existing view/item; the pin remounts and repeats open completion. ADR 0072.                               |
+| Category                               | Fields | Disposition / decision                                                                                |
+| -------------------------------------- | -----: | ----------------------------------------------------------------------------------------------------- |
+| programmatic-focus-out                 |     10 | Intentional native Angular focus-out instead of React capture suppression; ADR 0034.                  |
+| removed-item-focus                     |     16 | Native DOM-removal recovery instead of leaving body focused; ADR 0037 / 0060.                         |
+| nested-exit-completion                 |      2 | Angular completes accepted child close before owner disposal; pin aborts it. ADR 0035 / 0053.         |
+| native-hover-events                    |     10 | Original Pointer/Mouse event records remain unmodified; ADR 0050 / 0051.                              |
+| empty-submenu-keyboard-focus           |     12 | Pin's unchanged-index keyboard entry leaves focus on the trigger; ADR 0048.                           |
+| parent-close-interaction-type          |     10 | Angular preserves original mouse type; pin's child callback receives empty type. ADR 0058.            |
+| closed-retained-child-tabindex-restore |      1 | Hidden child remains -1 in Angular rather than restoring 0. Actual visible Tab stops match; ADR 0057. |
+| controlled-retained-label              |      1 | Closed hidden Popup loses its active association in Angular; pin retains a controlled id. ADR 0061.   |
+| stale-highlight-text-label             |      1 | Angular reads current label text; pin retains registration text. ADR 0060.                            |
+| portal-view-relocation                 |     12 | Angular preserves the existing view/item; the pin remounts and repeats open completion. ADR 0072.     |
 
 The original targeted three-engine run selected its 29 scenarios: 82 passed, four capability skips and one
 failure in the React assertion for hybrid-hover-touch-promote on WebKit. The pin closed on a native
