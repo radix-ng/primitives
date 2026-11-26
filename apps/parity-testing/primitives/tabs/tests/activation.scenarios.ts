@@ -169,8 +169,11 @@ async function gestureActivation(d: TabsDriver, p: ActivationSettings) {
             await session.detach();
         }
     }
+    const selected = p.disabled ? 'tab-0' : 'tab-1';
     const state = await d.activationCheckpoint('native pointer tap preserves selection and event metadata', {
-        selected: [p.disabled ? 'tab-0' : 'tab-1'],
+        selected: [selected],
+        focus: selected,
+        tabStops: p.disabled ? [0, -1] : [-1, 0],
         callbacks: p.disabled
             ? []
             : [
@@ -183,20 +186,26 @@ async function gestureActivation(d: TabsDriver, p: ActivationSettings) {
                       trusted: true
                   })
               ],
-        clicks:
-            p.disabled && p.gesture === 'touch-tap' && d.page.context().browser()!.browserType().name() === 'webkit'
-                ? 0
-                : 1,
+        clicks: 1,
         hash: '',
         scrolled: false
     });
     expect(state.timeline).toEqual(
         expect.arrayContaining([
             expect.objectContaining({
-                phase: 'capture',
+                phase: 'bubble',
                 type: 'pointerdown',
+                target: 'tab-1',
                 trusted: true,
+                prevented: !!p.disabled,
                 pointerType: p.gesture === 'touch-tap' ? 'touch' : 'pen'
+            }),
+            expect.objectContaining({
+                phase: 'bubble',
+                type: 'click',
+                target: 'tab-1',
+                trusted: true,
+                prevented: !!p.disabled
             })
         ])
     );

@@ -351,9 +351,10 @@ Firefox/WebKit have no corresponding public input API. A trusted `pointercancel`
 and a subsequent native activation must work. These checks do not certify physical devices.
 
 Like the pin, disabled links block selection and primary navigation but retain native middle-click
-navigation. Both sides' actual new page and destination are observed. WebKit suppresses the click
-following a prevented disabled touch press; Chromium delivers a prevented click. Each engine's
-native events remain literal and compare without exceptions. The four CSR reviewed fields are
+navigation. Both sides' actual new page and destination are observed. In Playwright 1.65.1, WebKit
+and Chromium deliver a click after a disabled touch press. Both implementations prevent the press
+and click and preserve selection, focus and tab stops. Each engine's native events remain literal
+and compare without exceptions. The four CSR reviewed fields are
 unchanged. Native OS context menus, touch scrolling/long presses, pen auxiliary buttons, browser
 shortcuts and physical-device/AT behavior remain follow-ups.
 

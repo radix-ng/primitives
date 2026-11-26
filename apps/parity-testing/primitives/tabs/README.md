@@ -509,6 +509,10 @@ and permit later native activation. No DOM event is dispatched by the driver. Ch
 input and touch cancellation reuse the browser input layer; touch cancellation uses the owned
 `tools/playwright/touch.ts` helper.
 
+With Playwright 1.65.1, WebKit and Chromium deliver a trusted click after a disabled touch press.
+Both implementations prevent the press and click and preserve selection, focus and tab stops.
+The comparison retains the original capture and bubble events.
+
 | Added scope                               | Chromium | Firefox                    | WebKit              |
 | ----------------------------------------- | -------- | -------------------------- | ------------------- |
 | Forms, auxiliary links, removal mid-press | 34       | 34                         | 34                  |
