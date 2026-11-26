@@ -102,7 +102,7 @@ When creating or rewriting primitive stories, follow this format by default:
   };
   ```
 
-- `*.ts?raw` is wired by the `rawTsPlugin` in `.storybook/main.ts` (the AnalogJS Angular plugin shadows Vite's built-in `?raw`); types come from `packages/primitives/storybook/raw.d.ts`. Copyable inline examples should be extracted into standalone components with their own raw source.
+- Vite loads `?raw` imports as text. [`raw.d.ts`](../../../../packages/primitives/storybook/raw.d.ts) declares their TypeScript module types.
 - Each story export gets `parameters: source(itsOwnRawFile)` — never point two story exports at one combined source file.
 - For portable examples with shared CSS, use public imports and follow [copyable source contract](../../../../docs/engineering/ux-guidelines.md#copyable-public-source).
 
