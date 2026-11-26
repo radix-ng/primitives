@@ -8052,10 +8052,12 @@
           "selector": "div[rdxSliderRoot]",
           "exportAs": "rdxSliderRoot",
           "description": "Groups all parts of the slider and owns its state, value-change logic and\nthumb registration. A single directive drives both orientations — there are no\nseparate horizontal/vertical components.\n\nSee https://base-ui.com/react/components/slider",
-          "hostDirectives": [
-            "RdxFormUiStateHost"
-          ],
           "inputs": [
+            {
+              "name": "aria-describedby",
+              "type": "string",
+              "default": "undefined"
+            },
             {
               "name": "aria-labelledby",
               "type": "string | undefined",
@@ -8220,6 +8222,11 @@
           "exportAs": "rdxSliderThumbInput",
           "description": "The native `input[type=range]` nested inside a thumb. It is visually hidden but\nremains the focusable element that drives keyboard interaction, accessibility\nand form submission.\n\nSee https://base-ui.com/react/components/slider",
           "inputs": [
+            {
+              "name": "aria-describedby",
+              "type": "string",
+              "default": "undefined"
+            },
             {
               "name": "aria-label",
               "type": "string | undefined",

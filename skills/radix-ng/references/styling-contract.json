@@ -2454,6 +2454,36 @@
           "values": "Present while a thumb is dragged."
         },
         {
+          "attribute": "data-valid",
+          "parts": "Root",
+          "values": "Present when the slider displays a valid state."
+        },
+        {
+          "attribute": "data-invalid",
+          "parts": "Root",
+          "values": "Present when the slider displays an invalid state."
+        },
+        {
+          "attribute": "data-touched",
+          "parts": "Root",
+          "values": "Present when the slider or its Field has been touched."
+        },
+        {
+          "attribute": "data-dirty",
+          "parts": "Root",
+          "values": "Present when the slider or its Field is dirty."
+        },
+        {
+          "attribute": "data-focused",
+          "parts": "Root",
+          "values": "Present when the enclosing Field is focused."
+        },
+        {
+          "attribute": "data-filled",
+          "parts": "Root",
+          "values": "Present when the enclosing Field contains a value."
+        },
+        {
           "attribute": "data-orientation",
           "parts": "Control",
           "values": "\"horizontal\" | \"vertical\""

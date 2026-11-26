@@ -131,8 +131,9 @@ setValue(change: RdxSliderValueChangeEvent) {
 `thumbAlignment="edge"` and `thumbAlignment="edge-client-only"` inset thumbs so the thumb edge,
 not its center, reaches the control edge. In edge modes the pointer math accounts for the inset thumb
 radius, and the indicator uses measured thumb positions so the filled range lines up with the thumb
-centers. Angular measures both edge modes in the browser after rendering. The server markup has
-their values, and the thumbs and indicator become visible after measurement.
+centers. For server-rendered `edge`, an inline script measures and positions the parts before
+hydration. The script uses Angular's `CSP_NONCE` when provided. In `edge-client-only`, the parts
+become visible after client measurement.
 
 <Canvas of={SliderStories.ThumbAlignment} />
 
@@ -176,6 +177,12 @@ sets its `for` attribute to the registered thumb input ids, in DOM order.
 The root implements `ControlValueAccessor`, so it binds directly to
 `formControl` / `formControlName` and `[(ngModel)]`.
 
+Inside a Field, Slider inherits the Field's `name` and disabled state, including disabled Fieldsets.
+Field labels name the group, and Field descriptions and visible errors describe the native thumbs.
+Give each thumb its own accessible name in a range. Use `rdxNgControlField` to display Reactive
+Forms validation through the Field. Focus can move between thumbs without triggering blur
+validation. The field is marked touched when focus leaves the slider.
+
 <Canvas of={SliderStories.ReactiveForms} />
 
 ## API Reference
@@ -191,6 +198,12 @@ The root implements `ControlValueAccessor`, so it binds directly to
 | `[data-orientation]` | `"horizontal" \| "vertical"`   |
 | `[data-disabled]`    | Present when disabled.         |
 | `[data-dragging]`    | Present while a thumb is dragged. |
+| `[data-valid]`       | Present when the slider displays a valid state. |
+| `[data-invalid]`     | Present when the slider displays an invalid state. |
+| `[data-touched]`     | Present when the slider or its Field has been touched. |
+| `[data-dirty]`       | Present when the slider or its Field is dirty. |
+| `[data-focused]`     | Present when the enclosing Field is focused. |
+| `[data-filled]`      | Present when the enclosing Field contains a value. |
 
 ### Control
 

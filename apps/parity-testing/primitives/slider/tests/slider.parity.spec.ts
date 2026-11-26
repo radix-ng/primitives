@@ -94,6 +94,68 @@ class SliderDriver {
 
 const scenarios: { name: string; run(driver: SliderDriver): Promise<void> }[] = [
     {
+        name: 'field',
+        async run(driver) {
+            const minimum = driver.inputs.first();
+            const maximum = driver.inputs.last();
+            const field = driver.page.getByTestId('field');
+            const error = driver.page.getByText('Volume is out of range.');
+            await expect(minimum).toHaveAccessibleDescription('Set the playback volume.');
+            await expect(error).toBeHidden();
+            await minimum.focus();
+            await expect(field).toHaveAttribute('data-focused', '');
+            await minimum.press('ArrowRight');
+            await expect(field).toHaveAttribute('data-dirty', '');
+            await expect(error).toBeHidden();
+            await maximum.focus();
+            await expect(field).toHaveAttribute('data-focused', '');
+            await expect(error).toBeHidden();
+            await driver.button('Before').focus();
+            await expect(field).not.toHaveAttribute('data-focused');
+            await expect(field).toHaveAttribute('data-touched', '');
+            await expect(error).toBeVisible();
+            await expect(maximum).toHaveAccessibleDescription('Set the playback volume. Volume is out of range.');
+            const submitted = await driver.page
+                .locator('#values')
+                .evaluate((form: HTMLFormElement) => Array.from(new FormData(form).entries()));
+            const { changes } = await driver.page.evaluate(() => window.sliderParity);
+            expect(submitted).toEqual([
+                ['level', '21'],
+                ['level', '60']
+            ]);
+            expect(changes).toEqual([
+                { ...change([21, 60], 'keyboard', 'keydown'), target: { name: 'level', value: [21, 60] } }
+            ]);
+            driver.checkpoints.push({ name: 'blurred invalid range', state: { submitted, changes } });
+        }
+    },
+    {
+        name: 'fieldset-disabled',
+        async run(driver) {
+            const input = driver.inputs.first();
+            const field = driver.page.getByTestId('field');
+            await expect(input).toHaveAccessibleName('Volume');
+            await driver.button('Toggle disabled').click();
+            await expect(field).toHaveAttribute('data-disabled', '');
+            await expect(driver.root).toHaveAttribute('data-disabled', '');
+            await expect(input).toBeDisabled();
+            const point = await driver.position(0.8);
+            await driver.page.mouse.click(point.x, point.y);
+            await expect(input).toHaveValue('20');
+            const submitted = await driver.page
+                .locator('#values')
+                .evaluate((form: HTMLFormElement) => Array.from(new FormData(form).entries()));
+            const { changes } = await driver.page.evaluate(() => window.sliderParity);
+            expect(submitted).toEqual([]);
+            expect(changes).toEqual([]);
+            driver.checkpoints.push({ name: 'disabled fieldset', state: { submitted, changes } });
+            await driver.button('Toggle disabled').click();
+            await expect(input).toBeEnabled();
+            await input.press('ArrowRight');
+            await expect(input).toHaveValue('21');
+        }
+    },
+    {
         name: 'controlled',
         async run(driver) {
             const changes = [change(1, 'keyboard', 'keydown')];

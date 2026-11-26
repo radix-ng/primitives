@@ -1,8 +1,11 @@
 import {
+    afterNextRender,
     afterRenderEffect,
     booleanAttribute,
     computed,
+    DestroyRef,
     Directive,
+    effect,
     ElementRef,
     inject,
     input,
@@ -22,18 +25,19 @@ import {
     injectDocument,
     injectId,
     NumberInput,
-    provideFormUiState,
     provideValueAccessor,
     RdxCancelableChangeEventDetails,
     RdxFormUiControlBase,
-    RdxFormUiStateHost,
     RdxFormUiTouchTarget,
     useElementRegistry,
     useNativeFormReset,
     watch
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
+import { fieldDescribedBy, injectFieldRootContext } from '@radix-ng/primitives/field';
+import { injectFieldsetRootContext } from '@radix-ng/primitives/fieldset';
 import { provideSliderRootContext } from './slider-context';
+import { SliderPrehydration } from './slider-prehydration';
 import {
     areValuesEqual,
     asc,
@@ -76,6 +80,7 @@ export interface RdxSliderThumbRef {
     /** The nested `input[type=range]`, registered once it is initialised. */
     inputElement: HTMLInputElement | null;
     readonly inputId: Signal<string | undefined>;
+    readonly value: Signal<number | undefined>;
     /** Whether this thumb is disabled (own state OR root disabled). */
     readonly disabled: Signal<boolean>;
 }
@@ -107,20 +112,25 @@ function cloneChangeEventWithTarget(event: Event, value: SliderValue, name: stri
 @Directive({
     selector: 'div[rdxSliderRoot]',
     exportAs: 'rdxSliderRoot',
-    providers: [
-        provideSliderRootContext(() => inject(RdxSliderRoot)),
-        provideFormUiState(() => inject(RdxSliderRoot).formUi),
-        provideValueAccessor(RdxSliderRoot)
-    ],
-    hostDirectives: [RdxFormUiStateHost],
+    providers: [provideSliderRootContext(() => inject(RdxSliderRoot)), provideValueAccessor(RdxSliderRoot)],
     host: {
         role: 'group',
         '[id]': 'id()',
         '[attr.aria-labelledby]': 'labelledBy()',
+        '[attr.aria-describedby]': 'describedBy()',
+        '[attr.aria-invalid]': 'displayValid() === false ? "true" : undefined',
         '[attr.dir]': 'dir()',
         '[attr.data-orientation]': 'orientation()',
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
-        '[attr.data-dragging]': 'dragging() ? "" : undefined'
+        '[attr.data-dragging]': 'dragging() ? "" : undefined',
+        '[attr.data-rdx-slider-prehydration]': 'prehydratingEdge() ? values().length : undefined',
+        '[attr.data-invalid]': 'displayValid() === false ? "" : undefined',
+        '[attr.data-valid]': 'displayValid() === true ? "" : undefined',
+        '[attr.data-touched]': 'formUi.touchedState() || field?.touchedState() ? "" : undefined',
+        '[attr.data-dirty]': 'formUi.dirtyState() || field?.dirtyState() ? "" : undefined',
+        '[attr.data-filled]': 'field?.filledState() ? "" : undefined',
+        '[attr.data-focused]': 'field?.focusedState() ? "" : undefined',
+        '(focusout)': 'onFocusOut($event)'
     }
 })
 // NOTE: does not `implements RdxFormValueControl` — the slider value is a `number | number[]` union,
@@ -129,6 +139,9 @@ function cloneChangeEventWithTarget(event: Event, value: SliderValue, name: stri
 export class RdxSliderRoot extends RdxFormUiControlBase implements ControlValueAccessor {
     private readonly document = injectDocument();
     private readonly element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+    /** @ignore */
+    readonly field = injectFieldRootContext(true);
+    private readonly fieldset = injectFieldsetRootContext(true);
 
     readonly id = input<string>(injectId('rdx-slider-'));
 
@@ -197,6 +210,8 @@ export class RdxSliderRoot extends RdxFormUiControlBase implements ControlValueA
 
     /** Name of the native range input rendered by each thumb, for form submission. */
     readonly name = input<string>();
+    /** @ignore */
+    readonly effectiveName = computed(() => this.field?.name() ?? this.name());
 
     /** Id of the form the slider belongs to. */
     readonly form = input<string>();
@@ -217,10 +232,15 @@ export class RdxSliderRoot extends RdxFormUiControlBase implements ControlValueA
     readonly controlledValue = input<SliderValue | null>();
 
     readonly ariaLabelledBy = input<string | undefined>(undefined, { alias: 'aria-labelledby' });
+    readonly ariaDescribedBy = input<string>(undefined, { alias: 'aria-describedby' });
     /** @ignore */
     readonly labelRegistry = createLabelRegistry();
     /** @ignore */
-    readonly labelledBy = computed(() => this.ariaLabelledBy() ?? this.labelRegistry.labelId());
+    readonly labelledBy = computed(
+        () => this.ariaLabelledBy() ?? this.field?.labelId() ?? this.labelRegistry.labelId() ?? this.fieldset?.labelId()
+    );
+    /** @ignore */
+    readonly describedBy = computed(() => fieldDescribedBy(this.ariaDescribedBy(), this.field));
 
     /** Emitted when the value changes (during interaction). */
     readonly onValueChange = output<RdxSliderValueChangeEvent>();
@@ -241,14 +261,22 @@ export class RdxSliderRoot extends RdxFormUiControlBase implements ControlValueA
     readonly indicatorPosition = signal<[number | undefined, number | undefined]>([undefined, undefined]);
 
     /** @ignore */
-    readonly isDisabled = computed(() => this.disabled() || this.formDisabled());
+    readonly isDisabled = computed(
+        () =>
+            this.disabled() || this.formDisabled() || !!this.field?.disabledState() || !!this.fieldset?.disabledState()
+    );
     private readonly formDisabled = signal(false);
     private readonly initialDefault = signal<SliderValue | undefined>(undefined);
     private initialEditableValue: SliderValue | null | undefined;
+    private fieldInitialValues?: number[];
+    private fieldLastValues?: number[];
     private onChange?: (value: SliderValue | null) => void;
     private onTouched?: () => void;
     /** @ignore */
     readonly inset = computed(() => this.thumbAlignment() !== 'center');
+    private readonly prehydrationPending = signal(true);
+    /** @ignore */
+    readonly prehydratingEdge = computed(() => this.prehydrationPending() && this.thumbAlignment() === 'edge');
 
     private readonly currentRaw = computed<SliderValue>(() => {
         const controlled = this.controlledValue();
@@ -279,9 +307,16 @@ export class RdxSliderRoot extends RdxFormUiControlBase implements ControlValueA
             .map((thumb) => thumb.inputId())
             .filter((inputId): inputId is string => typeof inputId === 'string' && inputId.length > 0)
     );
+    private readonly firstEnabledThumb = computed(() =>
+        this.thumbList().find(
+            (thumb) => !thumb.disabled() && thumb.value() !== undefined && thumb.inputId() !== undefined
+        )
+    );
 
     constructor() {
         super();
+        inject(SliderPrehydration);
+        afterNextRender(() => this.prehydrationPending.set(false));
 
         watch([], () => {
             const fallback = this.defaultValue() ?? this.min();
@@ -308,13 +343,44 @@ export class RdxSliderRoot extends RdxFormUiControlBase implements ControlValueA
         );
 
         afterRenderEffect(() => {
-            if (!this.isDisabled()) return;
             const focused = getActiveElement(this.document);
-            if (focused && this.thumbList().some(({ inputElement }) => inputElement === focused)) {
+            const hasFocus = !!focused && this.thumbList().some(({ inputElement }) => inputElement === focused);
+            const disabled = this.isDisabled();
+            this.field?.setFocused(hasFocus && !disabled, this.element);
+            if (!disabled) return;
+            if (hasFocus) {
                 (focused as HTMLElement).blur();
             }
             this.setActive(-1);
         });
+
+        const field = this.field;
+        if (field) {
+            effect((onCleanup) => {
+                const id = this.firstEnabledThumb()?.inputId();
+                if (id !== undefined) onCleanup(untracked(() => field.registerControlId(id)));
+            });
+            const unregister = field.registerControlState({
+                filled: () => this.values().length > 0,
+                blurred: this.formUi.touchedState,
+                changed: this.formUi.dirtyState,
+                ownsNativeEdit: (target) => this.thumbList().some(({ inputElement }) => inputElement === target),
+                invalidFocusTarget: () => this.firstEnabledThumb()?.inputElement ?? null
+            });
+            watch([this.values], ([values]) => {
+                const previous = this.fieldLastValues;
+                this.fieldLastValues = values;
+                this.fieldInitialValues ??= values;
+                if (previous && !areValuesEqual(previous, values)) {
+                    field.setDirty(!areValuesEqual(this.fieldInitialValues, values));
+                    field.notifyEdited();
+                }
+            });
+            inject(DestroyRef).onDestroy(() => {
+                field.setFocused(false, this.element);
+                unregister();
+            });
+        }
     }
 
     /** @ignore */
@@ -338,6 +404,22 @@ export class RdxSliderRoot extends RdxFormUiControlBase implements ControlValueA
     /** @ignore */
     focusThumb(index: number): void {
         this.thumbList()[index]?.inputElement?.focus({ preventScroll: true });
+    }
+
+    /** @ignore */
+    onThumbFocus(index: number): void {
+        this.setActive(index);
+        if (!this.isDisabled()) this.field?.setFocused(true, this.element);
+    }
+
+    protected onFocusOut(event: FocusEvent): void {
+        const next = event.relatedTarget;
+        if (next && 'nodeType' in next && this.element.contains(next as Node)) return;
+        this.field?.setFocused(false, this.element);
+        if (!this.isDisabled()) {
+            this.field?.setTouched(true);
+            this.formUi.markAsTouched();
+        }
     }
 
     /** @ignore */
@@ -377,7 +459,11 @@ export class RdxSliderRoot extends RdxFormUiControlBase implements ControlValueA
         }
 
         const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
-        const changeEvent = cloneChangeEventWithTarget(event ?? new Event('slider.value-change'), next, this.name());
+        const changeEvent = cloneChangeEventWithTarget(
+            event ?? new Event('slider.value-change'),
+            next,
+            this.effectiveName()
+        );
         const { eventDetails: baseEventDetails } = createCancelableChangeEventDetails(reason, changeEvent, trigger);
         const eventDetails = Object.assign(baseEventDetails, { activeThumbIndex }) as RdxSliderValueChangeEventDetails;
         this.onValueChange.emit({ value: next, eventDetails });
@@ -414,7 +500,6 @@ export class RdxSliderRoot extends RdxFormUiControlBase implements ControlValueA
         }
         const arr = Array.isArray(result) ? result : [result];
         const applied = this.setValue(arr, reason, event, index);
-        this.markAsTouched();
         if (applied) {
             this.commitValue(result, event, reason);
         }
@@ -459,9 +544,13 @@ export class RdxSliderRoot extends RdxFormUiControlBase implements ControlValueA
         this.formDisabled.set(disabled);
     }
 
-    /** @ignore Mark touched: CVA (Reactive/template) + `touched` model + `touch` (Signal Forms). */
-    markAsTouched(): void {
-        this.formUi.markAsTouched();
+    override reset(): void {
+        super.reset();
+        if (this.field) {
+            this.fieldInitialValues = this.fieldLastValues = this.values();
+            this.field.setDirty(false);
+            this.field.setTouched(false);
+        }
     }
 
     /** @ignore */

@@ -37312,8 +37312,9 @@ export class SliderEventsExample {
 `thumbAlignment="edge"` and `thumbAlignment="edge-client-only"` inset thumbs so the thumb edge,
 not its center, reaches the control edge. In edge modes the pointer math accounts for the inset thumb
 radius, and the indicator uses measured thumb positions so the filled range lines up with the thumb
-centers. Angular measures both edge modes in the browser after rendering. The server markup has
-their values, and the thumbs and indicator become visible after measurement.
+centers. For server-rendered `edge`, an inline script measures and positions the parts before
+hydration. The script uses Angular's `CSP_NONCE` when provided. In `edge-client-only`, the parts
+become visible after client measurement.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
@@ -37615,9 +37616,22 @@ export class SliderDisabledExample {}
 The root implements `ControlValueAccessor`, so it binds directly to
 `formControl` / `formControlName` and `[(ngModel)]`.
 
+Inside a Field, Slider inherits the Field's `name` and disabled state, including disabled Fieldsets.
+Field labels name the group, and Field descriptions and visible errors describe the native thumbs.
+Give each thumb its own accessible name in a range. Use `rdxNgControlField` to display Reactive
+Forms validation through the Field. Focus can move between thumbs without triggering blur
+validation. The field is marked touched when focus leaves the slider.
+
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+    RdxFieldDescription,
+    RdxFieldError,
+    RdxFieldLabel,
+    RdxFieldRoot,
+    RdxNgControlField
+} from '@radix-ng/primitives/field';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
@@ -37632,6 +37646,11 @@ import {
     selector: 'slider-forms-example',
     imports: [
         ReactiveFormsModule,
+        RdxFieldRoot,
+        RdxFieldLabel,
+        RdxFieldDescription,
+        RdxFieldError,
+        RdxNgControlField,
         RdxSliderRoot,
         RdxSliderControl,
         RdxSliderTrack,
@@ -37640,9 +37659,9 @@ import {
         RdxSliderThumbInput
     ],
     template: `
-        <div class="flex flex-col gap-3">
-            <label class="text-foreground text-sm" id="volume-label">Volume</label>
-            <div class="relative w-56 select-none" [formControl]="volume" [step]="5" rdxSliderRoot>
+        <div class="flex flex-col gap-3" rdxFieldRoot name="volume">
+            <div class="text-foreground text-sm" rdxFieldLabel>Volume</div>
+            <div class="relative w-56 select-none" [formControl]="volume" [step]="5" rdxNgControlField rdxSliderRoot>
                 <div class="flex h-5 w-full touch-none items-center" rdxSliderControl>
                     <div class="relative h-1 w-full bg-neutral-200 dark:bg-neutral-800" rdxSliderTrack>
                         <div class="bg-primary h-full" rdxSliderIndicator></div>
@@ -37650,17 +37669,20 @@ import {
                             class="border-border bg-background focus-within:ring-ring block size-5 border focus-within:ring-2"
                             rdxSliderThumb
                         >
-                            <input rdxSliderThumbInput aria-labelledby="volume-label" />
+                            <input rdxSliderThumbInput />
                         </div>
                     </div>
                 </div>
             </div>
-            <p class="text-muted-foreground text-sm tabular-nums">Value: {{ volume.value }}</p>
+            <p class="text-muted-foreground text-sm tabular-nums" rdxFieldDescription>
+                Value {{ volume.value }}. Choose 20 or higher.
+            </p>
+            <p class="text-destructive text-sm" rdxFieldError match="min">Volume must be at least 20.</p>
         </div>
     `
 })
 export class SliderFormsExample {
-    readonly volume = new FormControl<number>(30);
+    readonly volume = new FormControl(30, { nonNullable: true, validators: Validators.min(20) });
 }
 ```
 
@@ -37675,6 +37697,12 @@ export class SliderFormsExample {
 | `[data-orientation]` | `"horizontal" \| "vertical"`   |
 | `[data-disabled]`    | Present when disabled.         |
 | `[data-dragging]`    | Present while a thumb is dragged. |
+| `[data-valid]`       | Present when the slider displays a valid state. |
+| `[data-invalid]`     | Present when the slider displays an invalid state. |
+| `[data-touched]`     | Present when the slider or its Field has been touched. |
+| `[data-dirty]`       | Present when the slider or its Field is dirty. |
+| `[data-focused]`     | Present when the enclosing Field is focused. |
+| `[data-filled]`      | Present when the enclosing Field contains a value. |
 
 ### Control
 

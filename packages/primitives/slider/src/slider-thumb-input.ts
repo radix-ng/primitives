@@ -1,5 +1,6 @@
 import { afterRenderEffect, computed, DestroyRef, Directive, effect, ElementRef, inject, input } from '@angular/core';
 import { injectId } from '@radix-ng/primitives/core';
+import { fieldDescribedBy } from '@radix-ng/primitives/field';
 import { injectSliderRootContext } from './slider-context';
 import { RdxSliderThumb } from './slider-thumb';
 import { ALL_KEYS, COMPOSITE_KEYS, getDefaultAriaValueText, getNewValue, roundValueToStep } from './slider.utils';
@@ -24,13 +25,15 @@ import { ALL_KEYS, COMPOSITE_KEYS, getDefaultAriaValueText, getNewValue, roundVa
         '[attr.step]': 'nativeStep()',
         '[attr.value]': 'thumb.value()',
         '[disabled]': 'thumb.disabled() || thumb.value() === undefined',
-        '[attr.name]': 'root.name()',
+        '[attr.name]': 'root.effectiveName()',
         '[attr.form]': 'root.form()',
         '[attr.aria-orientation]': 'root.orientation()',
         '[attr.aria-valuenow]': 'thumb.value()',
         '[attr.aria-valuetext]': 'valueText()',
         '[attr.aria-label]': 'ariaLabel()',
         '[attr.aria-labelledby]': 'ariaLabelledBy()',
+        '[attr.aria-describedby]': 'describedBy()',
+        '[attr.aria-invalid]': 'root.displayValid() === false ? "true" : undefined',
         '(keydown)': 'onKeyDown($event)',
         '(input)': 'onChange($event)',
         '(change)': 'onChange($event)',
@@ -46,6 +49,7 @@ export class RdxSliderThumbInput {
     readonly id = input<string>(injectId('rdx-slider-thumb-input-'));
     readonly ariaLabel = input<string | undefined>(undefined, { alias: 'aria-label' });
     readonly ariaLabelledByInput = input<string | undefined>(undefined, { alias: 'aria-labelledby' });
+    readonly ariaDescribedBy = input<string>(undefined, { alias: 'aria-describedby' });
     readonly ariaValueTextInput = input<string | undefined>(undefined, { alias: 'aria-valuetext' });
 
     protected readonly writingMode = computed(() =>
@@ -54,6 +58,9 @@ export class RdxSliderThumbInput {
 
     protected readonly ariaLabelledBy = computed(
         () => this.ariaLabelledByInput() ?? (this.ariaLabel() == null ? this.root.labelledBy() : undefined)
+    );
+    protected readonly describedBy = computed(() =>
+        fieldDescribedBy(this.ariaDescribedBy() ?? this.root.ariaDescribedBy(), this.root.field)
     );
 
     protected readonly nativeStep = computed(() => {
@@ -103,7 +110,7 @@ export class RdxSliderThumbInput {
     }
 
     protected onFocus(): void {
-        this.root.setActive(this.thumb.index());
+        this.root.onThumbFocus(this.thumb.index());
     }
 
     protected onBlur(): void {

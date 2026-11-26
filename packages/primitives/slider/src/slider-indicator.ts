@@ -6,7 +6,8 @@ function getInsetStyles(
     vertical: boolean,
     range: boolean,
     start: number | undefined,
-    end: number | undefined
+    end: number | undefined,
+    serverEdge: boolean
 ): Record<string, string | number> {
     const startEdge = vertical ? 'bottom' : 'inset-inline-start';
     const mainSide = vertical ? 'height' : 'width';
@@ -18,6 +19,14 @@ function getInsetStyles(
     };
 
     if (start === undefined || (range && end === undefined)) {
+        if (serverEdge) {
+            return {
+                ...styles,
+                [startEdge]: 'var(--rdx-slider-ssr-position, 0%)',
+                [mainSide]: 'var(--rdx-slider-ssr-size, 0%)',
+                visibility: 'var(--rdx-slider-ssr-visibility, hidden)'
+            };
+        }
         styles['visibility'] = 'hidden';
     }
 
@@ -45,7 +54,8 @@ function getInsetStyles(
         '[style]': 'indicatorStyle()',
         '[attr.data-orientation]': 'root.orientation()',
         '[attr.data-disabled]': 'root.isDisabled() ? "" : undefined',
-        '[attr.data-dragging]': 'root.dragging() ? "" : undefined'
+        '[attr.data-dragging]': 'root.dragging() ? "" : undefined',
+        '[attr.data-rdx-slider-indicator]': 'root.prehydratingEdge() ? "" : undefined'
     }
 })
 export class RdxSliderIndicator {
@@ -53,8 +63,8 @@ export class RdxSliderIndicator {
 
     protected readonly indicatorStyle = computed<Record<string, string | number>>(() => {
         const vertical = this.root.orientation() === 'vertical';
-        const range = this.root.range();
         const values = this.root.values();
+        const range = values.length > 1;
         if (values.length === 0) return { visibility: 'hidden' };
         const min = this.root.min();
         const max = this.root.max();
@@ -69,7 +79,7 @@ export class RdxSliderIndicator {
 
         if (inset) {
             const [startPosition, endPosition] = this.root.indicatorPosition();
-            return getInsetStyles(vertical, range, startPosition, endPosition);
+            return getInsetStyles(vertical, range, startPosition, endPosition, this.root.thumbAlignment() === 'edge');
         }
 
         const styles: Record<string, string | number> = {

@@ -1,7 +1,7 @@
 // `@angular/platform-server` ships partially-compiled code; load the compiler so JIT is available
 // as a fallback in the test environment (otherwise PlatformLocation fails to compile).
 import '@angular/compiler';
-import { Component, provideZonelessChangeDetection, Type } from '@angular/core';
+import { Component, CSP_NONCE, provideZonelessChangeDetection, Type, type Provider } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { bootstrapApplication, BootstrapContext, provideClientHydration } from '@angular/platform-browser';
 import { provideServerRendering, renderApplication } from '@angular/platform-server';
@@ -43,7 +43,6 @@ import { _importsSelect, RdxSelectLabel, RdxSelectRoot, RdxSelectTrigger } from 
 import {
     RdxSliderControl,
     RdxSliderIndicator,
-    RdxSliderLabel,
     RdxSliderRoot,
     RdxSliderThumb,
     RdxSliderThumbInput,
@@ -525,13 +524,18 @@ class ArbitrarySelectPage {
         typeof value === 'symbol' ? (value.description ?? '') : JSON.stringify(value);
 }
 
-function renderToString(selector: string, component: Type<unknown>): Promise<string> {
+function renderToString(selector: string, component: Type<unknown>, providers: Provider[] = []): Promise<string> {
     return renderApplication(
         (context: BootstrapContext) =>
             bootstrapApplication(
                 component,
                 {
-                    providers: [provideZonelessChangeDetection(), provideClientHydration(), provideServerRendering()]
+                    providers: [
+                        provideZonelessChangeDetection(),
+                        provideClientHydration(),
+                        provideServerRendering(),
+                        ...providers
+                    ]
                 },
                 context
             ),
@@ -637,9 +641,11 @@ class AccordionPresencePage {
 @Component({
     selector: 'app-slider-alignments',
     imports: [
+        RdxFieldRoot,
+        RdxFieldLabel,
+        RdxFieldDescription,
         RdxSliderControl,
         RdxSliderIndicator,
-        RdxSliderLabel,
         RdxSliderRoot,
         RdxSliderThumb,
         RdxSliderThumbInput,
@@ -647,20 +653,22 @@ class AccordionPresencePage {
     ],
     template: `
         @for (alignment of alignments; track alignment) {
-            <div
-                [id]="alignment"
-                [defaultValue]="55"
-                [controlledValue]="0"
-                [thumbAlignment]="alignment"
-                name="amount"
-                rdxSliderRoot
-            >
-                <div [id]="alignment + '-label'" rdxSliderLabel>Volume</div>
-                <div rdxSliderControl>
-                    <div rdxSliderTrack>
-                        <div [attr.data-testid]="alignment + '-indicator'" rdxSliderIndicator></div>
-                        <div [attr.data-testid]="alignment + '-thumb'" rdxSliderThumb>
-                            <input [id]="alignment + '-input'" rdxSliderThumbInput />
+            <div rdxFieldRoot name="amount">
+                <label [id]="alignment + '-label'" rdxFieldLabel>Volume</label>
+                <p [id]="alignment + '-hint'" rdxFieldDescription>Adjust the volume.</p>
+                <div
+                    [id]="alignment"
+                    [defaultValue]="55"
+                    [controlledValue]="0"
+                    [thumbAlignment]="alignment"
+                    rdxSliderRoot
+                >
+                    <div rdxSliderControl>
+                        <div rdxSliderTrack>
+                            <div [attr.data-testid]="alignment + '-indicator'" rdxSliderIndicator></div>
+                            <div [attr.data-testid]="alignment + '-thumb'" rdxSliderThumb>
+                                <input [id]="alignment + '-input'" rdxSliderThumbInput />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -674,23 +682,30 @@ class SliderAlignmentsPage {
 
 describe('SSR rendering', () => {
     it('renders Slider value and label relationships before measuring inset thumbs', async () => {
-        const html = await renderToString('app-slider-alignments', SliderAlignmentsPage);
+        const html = await renderToString('app-slider-alignments', SliderAlignmentsPage, [
+            { provide: CSP_NONCE, useValue: 'slider-audit-nonce' }
+        ]);
         const tag = (attr: string, value: string) => html.match(new RegExp(`<[^>]+ ${attr}="${value}"[^>]*>`))![0];
         for (const alignment of ['center', 'edge', 'edge-client-only']) {
             expect(tag('id', alignment)).toContain(`aria-labelledby="${alignment}-label"`);
-            expect(tag('id', `${alignment}-label`)).toContain('rdxsliderlabel');
+            expect(tag('id', `${alignment}-label`)).toContain(`for="${alignment}-input"`);
             const input = tag('id', `${alignment}-input`);
             expect(input).toContain('type="range"');
             expect(input).toContain('name="amount"');
             expect(input).toContain('value="0"');
             expect(input).toContain('aria-valuenow="0"');
             expect(input).toContain(`aria-labelledby="${alignment}-label"`);
+            expect(input).toContain(`aria-describedby="${alignment}-hint"`);
             for (const part of ['thumb', 'indicator']) {
-                expect(tag('data-testid', `${alignment}-${part}`).includes('visibility: hidden')).toBe(
-                    alignment !== 'center'
-                );
+                const element = tag('data-testid', `${alignment}-${part}`);
+                expect(element.includes('visibility: hidden')).toBe(alignment === 'edge-client-only');
+                expect(element.includes('var(--rdx-slider-ssr-visibility, hidden)')).toBe(alignment === 'edge');
             }
         }
+        const appEnd = html.indexOf('</app-slider-alignments>');
+        const script = '<script nonce="slider-audit-nonce">(function positionSlidersBeforeHydration()';
+        expect(html.indexOf(script)).toBeGreaterThan(appEnd);
+        expect(html.match(/function positionSlidersBeforeHydration/g)).toHaveLength(1);
     });
 
     it('renders complete Accordion Panel views only when open, retained or findable on the server', async () => {

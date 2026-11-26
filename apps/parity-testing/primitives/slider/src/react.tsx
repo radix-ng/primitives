@@ -1,4 +1,6 @@
 import { DirectionProvider } from '@base-ui/react/direction-provider';
+import { Field } from '@base-ui/react/field';
+import { Fieldset } from '@base-ui/react/fieldset';
 import { Slider } from '@base-ui/react/slider';
 import { useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -8,6 +10,7 @@ import {
     collision,
     direction,
     externalForm,
+    field,
     initialControlled,
     initialDefault,
     initialMin,
@@ -35,7 +38,7 @@ function SliderFixture() {
             <Slider.Root
                 value={controlled}
                 defaultValue={defaults}
-                disabled={disabled}
+                disabled={!field && disabled}
                 form={externalForm}
                 min={min}
                 max={max}
@@ -52,7 +55,7 @@ function SliderFixture() {
                 name="volume"
                 dir={direction}
             >
-                <Slider.Label>Volume</Slider.Label>
+                {!field && <Slider.Label>Volume</Slider.Label>}
                 <Slider.Value data-testid="value" />
                 <Slider.Control className="control" data-testid="control">
                     <Slider.Track className="track">
@@ -78,7 +81,26 @@ function SliderFixture() {
                 Before
             </button>
             <form id="values">
-                {!externalForm && slider}
+                {!externalForm &&
+                    (field ? (
+                        <Fieldset.Root disabled={disabled}>
+                            <Field.Root
+                                name="level"
+                                validationMode="onBlur"
+                                validate={() => 'Volume is out of range.'}
+                                data-testid="field"
+                            >
+                                <Field.Label nativeLabel={false} render={<div />}>
+                                    Volume
+                                </Field.Label>
+                                <Field.Description>Set the playback volume.</Field.Description>
+                                <Field.Error />
+                                {slider}
+                            </Field.Root>
+                        </Fieldset.Root>
+                    ) : (
+                        slider
+                    ))}
                 <button type="reset">Reset</button>
             </form>
             {externalForm && slider}

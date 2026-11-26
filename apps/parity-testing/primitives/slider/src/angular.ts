@@ -1,6 +1,8 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, provideZonelessChangeDetection, signal } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
+import { RdxFieldDescription, RdxFieldError, RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
+import { RdxFieldsetRoot } from '@radix-ng/primitives/fieldset';
 import {
     RdxSliderControl,
     RdxSliderIndicator,
@@ -19,6 +21,7 @@ import {
     collision,
     direction,
     externalForm,
+    field,
     initialControlled,
     initialDefault,
     initialMin,
@@ -39,6 +42,11 @@ installProbe();
     selector: 'parity-slider',
     imports: [
         NgTemplateOutlet,
+        RdxFieldDescription,
+        RdxFieldError,
+        RdxFieldLabel,
+        RdxFieldRoot,
+        RdxFieldsetRoot,
         RdxSliderControl,
         RdxSliderIndicator,
         RdxSliderLabel,
@@ -65,10 +73,24 @@ installProbe();
         <button (click)="controlled.set(35)" type="button">Replace value</button>
         <button (click)="disabled.set(!disabled())" type="button">Toggle disabled</button>
         <ng-template #slider>
+            @if (fieldCase) {
+                <fieldset [disabled]="disabled()" rdxFieldsetRoot>
+                    <div [invalid]="true" rdxFieldRoot name="level" validationMode="onBlur" data-testid="field">
+                        <div rdxFieldLabel>Volume</div>
+                        <div rdxFieldDescription>Set the playback volume.</div>
+                        <div rdxFieldError>Volume is out of range.</div>
+                        <ng-container [ngTemplateOutlet]="parts" ngTemplateOutletInjector="outlet" />
+                    </div>
+                </fieldset>
+            } @else {
+                <ng-container [ngTemplateOutlet]="parts" />
+            }
+        </ng-template>
+        <ng-template #parts>
             <div
                 [controlledValue]="controlled()"
                 [defaultValue]="defaults()"
-                [disabled]="disabled()"
+                [disabled]="!fieldCase && disabled()"
                 [dir]="direction"
                 [form]="formId"
                 [min]="min()"
@@ -83,7 +105,9 @@ installProbe();
                 name="volume"
                 rdxSliderRoot
             >
-                <div rdxSliderLabel>Volume</div>
+                @if (!fieldCase) {
+                    <div rdxSliderLabel>Volume</div>
+                }
                 <output rdxSliderValue data-testid="value"></output>
                 <div class="control" rdxSliderControl data-testid="control">
                     <div class="track" rdxSliderTrack>
@@ -100,6 +124,7 @@ installProbe();
     `
 })
 class SliderFixture {
+    protected readonly fieldCase = field;
     protected readonly alignment = alignment;
     protected readonly collision = collision;
     protected readonly direction = direction;

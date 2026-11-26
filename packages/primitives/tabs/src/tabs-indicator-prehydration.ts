@@ -1,16 +1,5 @@
-import { isPlatformBrowser } from '@angular/common';
-import {
-    afterNextRender,
-    CSP_NONCE,
-    DOCUMENT,
-    ElementRef,
-    inject,
-    Injectable,
-    makeStateKey,
-    PLATFORM_ID,
-    RendererFactory2,
-    TransferState
-} from '@angular/core';
+import { ElementRef, inject, Injectable, makeStateKey, TransferState } from '@angular/core';
+import { registerPrehydrationScript } from '@radix-ng/primitives/core';
 import type { TabGeometry } from './tabs-indicator-geometry';
 
 // Emitted verbatim so application minification cannot introduce captured helpers into the script.
@@ -108,22 +97,7 @@ const PREHYDRATION = makeStateKey<boolean>('rdx-tabs-indicator-prehydration');
 @Injectable({ providedIn: 'root' })
 export class TabsIndicatorPrehydration {
     constructor() {
-        const state = inject(TransferState);
-        if (isPlatformBrowser(inject(PLATFORM_ID))) {
-            afterNextRender(() => state.remove(PREHYDRATION));
-            return;
-        }
-        const document = inject(DOCUMENT);
-        const renderer = inject(RendererFactory2).createRenderer(null, null);
-        const nonce = inject(CSP_NONCE, { optional: true });
-        state.onSerialize(PREHYDRATION, () => {
-            if (!document.querySelector('[data-rdx-tabs-prehydration]')) return false;
-            const script = renderer.createElement('script');
-            renderer.setProperty(script, 'textContent', PREHYDRATION_SCRIPT);
-            if (nonce) renderer.setAttribute(script, 'nonce', nonce);
-            renderer.appendChild(document.body, script);
-            return true;
-        });
+        registerPrehydrationScript(PREHYDRATION, '[data-rdx-tabs-prehydration]', PREHYDRATION_SCRIPT);
     }
 }
 

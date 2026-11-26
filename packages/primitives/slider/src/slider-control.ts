@@ -30,6 +30,7 @@ type PointerCoords = { x: number; y: number };
         '[attr.data-orientation]': 'root.orientation()',
         '[attr.data-disabled]': 'root.isDisabled() ? "" : undefined',
         '[attr.data-dragging]': 'root.dragging() ? "" : undefined',
+        '[attr.data-rdx-slider-control]': 'root.prehydratingEdge() ? "" : undefined',
         '(pointerdown)': 'onPointerDown($event)'
     }
 })

@@ -110,25 +110,36 @@ async function snapshot(page: Page) {
             ),
             slider: [...document.querySelectorAll<HTMLElement>('audit-slider-view [role="group"]')].map((root) => {
                 const label = root.querySelector<HTMLElement>('[rdxsliderlabel]')!;
-                const input = root.querySelector<HTMLInputElement>('input')!;
-                const thumb = input.parentElement!;
+                const inputs = [...root.querySelectorAll<HTMLInputElement>('input')];
+                const thumbs = inputs.map((input) => input.parentElement!);
                 const indicator = root.querySelector<HTMLElement>('[rdxsliderindicator]')!;
                 const control = root.querySelector<HTMLElement>('[rdxslidercontrol]')!;
-                const parts = [root, label, thumb, indicator, input];
+                const parts = [root, label, indicator, ...thumbs, ...inputs];
+                const vertical = root.dataset.orientation === 'vertical';
+                const rtl = root.dir === 'rtl';
+                const controlRect = control.getBoundingClientRect();
                 return {
-                    ids: [root.id, label.id, input.id],
+                    name: inputs[0].name,
+                    ids: [root.id, label.id, ...inputs.map((input) => input.id)],
                     reused: parts.every(
-                        (part, index) => window.auditServerNodes?.[`slider:${input.name}:${index}`] === part
+                        (part, index) => window.auditServerNodes?.[`slider:${inputs[0].name}:${index}`] === part
                     ),
                     named:
                         root.getAttribute('aria-labelledby') === label.id &&
-                        input.getAttribute('aria-labelledby') === label.id,
-                    insetHidden:
-                        getComputedStyle(thumb).visibility === 'hidden' &&
-                        getComputedStyle(indicator).visibility === 'hidden',
-                    start: Math.round(thumb.getBoundingClientRect().left - control.getBoundingClientRect().left),
-                    fill: Math.round(indicator.getBoundingClientRect().width),
-                    value: input.valueAsNumber
+                        inputs.every((input) => input.getAttribute('aria-labelledby') === label.id),
+                    visibility: [...thumbs, indicator].map((part) => getComputedStyle(part).visibility),
+                    start: [...thumbs, indicator].map((part) => {
+                        const rect = part.getBoundingClientRect();
+                        return Math.round(
+                            vertical
+                                ? controlRect.bottom - rect.bottom
+                                : rtl
+                                  ? controlRect.right - rect.right
+                                  : rect.left - controlRect.left
+                        );
+                    }),
+                    fill: Math.round(indicator.getBoundingClientRect()[vertical ? 'height' : 'width']),
+                    values: inputs.map((input) => input.valueAsNumber)
                 };
             }),
             label: labelPage
@@ -601,54 +612,102 @@ async function checkSliderHydration(
     const fixture = page.locator('audit-slider-view');
     await fixture.evaluate((view) => {
         for (const root of view.querySelectorAll('[role="group"]')) {
-            const input = root.querySelector('input')!;
+            const inputs = [...root.querySelectorAll('input')];
             const parts = [
                 root,
                 root.querySelector('[rdxsliderlabel]')!,
-                input.parentElement!,
                 root.querySelector('[rdxsliderindicator]')!,
-                input
+                ...inputs.map((input) => input.parentElement!),
+                ...inputs
             ];
             parts.forEach((part, index) => {
-                window.auditServerNodes![`slider:${input.name}:${index}`] = part;
+                window.auditServerNodes![`slider:${inputs[0].name}:${index}`] = part;
             });
         }
     });
-    const before = (await record('server slider values before measurement')).slider;
+    const initialGeometry = [
+        { name: 'edge', start: [0, 0], fill: 10, values: [0] },
+        { name: 'edge-client-only', start: [0, 0], fill: 10, values: [0] },
+        { name: 'edge-rtl-range', start: [45, 120, 55], fill: 85, values: [25, 75] },
+        { name: 'edge-vertical', start: [144, 0], fill: 154, values: [80] }
+    ];
+    const matchesGeometry = (part: Snapshot['slider'][number], expected: (typeof initialGeometry)[number]) =>
+        part.name === expected.name &&
+        part.fill === expected.fill &&
+        part.start.join() === expected.start.join() &&
+        part.values.join() === expected.values.join() &&
+        part.visibility.every((visibility) => visibility === 'visible');
+    const before = (await record('server slider first paint with Angular blocked')).slider;
     observation.checks.serverValuesAndNames =
-        before.length === 2 && before.every((part) => part.named && part.insetHidden && part.value === 0);
-
+        before.length === initialGeometry.length &&
+        before.every((part, index) => part.named && part.values.join() === initialGeometry[index].values.join());
+    observation.checks.serverEdgeGeometry =
+        before.filter((part) => part.name !== 'edge-client-only').length === 3 &&
+        before.every(
+            (part, index) => part.name === 'edge-client-only' || matchesGeometry(part, initialGeometry[index])
+        );
+    observation.checks.clientOnlyInitiallyHidden =
+        before
+            .find((part) => part.name === 'edge-client-only')
+            ?.visibility.every((visibility) => visibility === 'hidden') === true;
+    const monitor = await fixture.evaluateHandle((view) => {
+        const parts = [...view.querySelectorAll('[data-rdx-slider-percent], [data-rdx-slider-indicator]')];
+        let hiddenFrames = 0;
+        let frame: number;
+        function sample() {
+            if (parts.some((part) => !part.isConnected || getComputedStyle(part).visibility !== 'visible')) {
+                hiddenFrames++;
+            }
+            frame = requestAnimationFrame(sample);
+        }
+        sample();
+        return {
+            stop() {
+                cancelAnimationFrame(frame);
+                return parts.length > 0 && hiddenFrames === 0;
+            }
+        };
+    });
     release();
     await page.waitForFunction(() => window.portalHydrationAudit?.ready, undefined, { timeout: 5000 });
     const after = (await record('reused sliders measured at the start edge')).slider;
+    observation.checks.noHiddenFrameDuringHydration = await monitor.evaluate((probe) => probe.stop());
+    await monitor.dispose();
     observation.checks.hydratedGeometryAndIdentity =
-        after.length === 2 &&
+        after.length === initialGeometry.length &&
         after.every(
             (part, index) =>
                 part.reused &&
                 part.named &&
-                !part.insetHidden &&
-                part.start === 0 &&
-                part.fill === 10 &&
-                part.value === 0 &&
+                matchesGeometry(part, initialGeometry[index]) &&
                 part.ids.every((id, idIndex) => id && id === before[index].ids[idIndex])
         );
 
-    const inputs = fixture.getByRole('slider');
-    for (const input of await inputs.all()) await input.press('End');
-    const edited = (await record('keyboard edit moves both original thumbs')).slider;
+    for (const { name } of initialGeometry.slice(0, 2)) {
+        await fixture.getByRole('slider', { name: 'Volume ' + name, exact: true }).press('End');
+    }
+    const edited = (await record('keyboard edit moves the original thumbs')).slider;
     observation.checks.editedGeometry = edited.every(
-        (part) => part.reused && part.start === 180 && part.fill === 190 && part.value === 100
+        (part, index) =>
+            part.reused &&
+            matchesGeometry(
+                part,
+                index < 2
+                    ? { ...initialGeometry[index], start: [180, 0], fill: 190, values: [100] }
+                    : initialGeometry[index]
+            )
     );
     await fixture.getByRole('button', { name: 'Reset volume' }).click();
     await page.waitForFunction(() =>
-        [...document.querySelectorAll<HTMLInputElement>('audit-slider-view input')].every(
-            (input) => input.valueAsNumber === 0
-        )
+        [
+            ...document.querySelectorAll<HTMLInputElement>(
+                'audit-slider-view input[name="edge"], audit-slider-view input[name="edge-client-only"]'
+            )
+        ].every((input) => input.valueAsNumber === 0)
     );
     const reset = (await record('form reset restores the initial values')).slider;
     observation.checks.resetGeometry = reset.every(
-        (part) => part.reused && part.start === 0 && part.fill === 10 && part.value === 0
+        (part, index) => part.reused && matchesGeometry(part, initialGeometry[index])
     );
 }
 

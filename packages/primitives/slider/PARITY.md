@@ -39,11 +39,21 @@ native input explicitly and accepts per-thumb accessible names on that input.
   in the native input and `FormData`. The pinned native range rounds it to the configured step.
 - Angular clears the active drag and its styling marker on disable. Both implementations stop
   applying movement. See the paired [difference records](../../../apps/parity-testing/primitives/slider/expected-differences.json).
-- Both Angular inset modes wait for browser measurement. Base UI has a prehydration script for
-  `edge`. The Angular geometry checks cover measured placement and hydration node reuse.
 - The pin exposes disabled behavior and does not provide a Slider read-only mode. Angular uses
   disabled behavior as well. Real assistive technology, physical devices and the full per-part
   callback and styling surface remain outside these checks.
+
+## Field composition and SSR geometry
+
+- Slider registers its native input as the Field's focus target, inherits the Field name and
+  Fieldset disabled state, and links its native thumbs to Field descriptions and visible errors.
+  Paired cases cover focus between thumbs, blur validation, submission, and disabling the Fieldset.
+  Angular unit tests also cover Reactive Forms `updateOn: 'blur'` and focusing the first enabled
+  thumb on invalid submit.
+- `edge` positions the thumbs and indicator before Angular's client bundle runs. It uses the same
+  CSP-aware serialization helper as Tabs. `edge-client-only` waits for client measurement.
+  The hydration audit checks horizontal, vertical and RTL range geometry with the Angular bundle
+  blocked, then checks server node reuse, keyboard edits and native reset.
 
 ## Verification
 

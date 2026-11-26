@@ -10,6 +10,9 @@ names and Tab traversal for a range, thumb collisions with `push`, `swap` and `n
 navigation in RTL and vertical layouts, fractional steps, a touch tap, disabling during a drag,
 and start/end geometry for both inset alignments.
 
+Field scenarios check inherited names in `FormData` and change events, Field descriptions and
+visible errors, validation on leaving the slider group, and disabled Fieldsets.
+
 The [exact difference records](expected-differences.json) capture the external form reset
 baseline, off-grid form value and drag marker after disable. Angular restores an uncontrolled
 range to its initial values, submits authored off-grid values, and clears the drag marker on

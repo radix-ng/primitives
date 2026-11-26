@@ -10,6 +10,7 @@ import {
     input,
     numberAttribute,
     signal,
+    type Signal,
     untracked
 } from '@angular/core';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
@@ -29,6 +30,7 @@ import { getInsetThumbPositionPercent, valueToPercent } from './slider.utils';
     host: {
         '[style]': 'thumbStyle()',
         '[attr.data-index]': 'index()',
+        '[attr.data-rdx-slider-percent]': 'prehydrationPercent()',
         '[attr.data-orientation]': 'root.orientation()',
         '[attr.data-disabled]': 'disabled() ? "" : undefined',
         '[attr.data-dragging]': 'root.dragging() ? "" : undefined'
@@ -53,7 +55,7 @@ export class RdxSliderThumb implements RdxSliderThumbRef {
     readonly thumbDisabled = input<boolean, BooleanInput>(false, { alias: 'disabled', transform: booleanAttribute });
 
     /** The position of this thumb among its siblings. */
-    readonly index = computed(() => {
+    readonly index: Signal<number> = computed(() => {
         if (!this.root.range()) {
             return 0;
         }
@@ -70,13 +72,17 @@ export class RdxSliderThumb implements RdxSliderThumbRef {
     readonly disabled = computed(() => this.thumbDisabled() || this.root.isDisabled());
 
     /** The value represented by this thumb. */
-    readonly value = computed<number | undefined>(() => this.root.values()[this.index()]);
+    readonly value: Signal<number | undefined> = computed(() => this.root.values()[this.index()]);
 
     private readonly percent = computed(() => {
         const value = this.value();
         return value === undefined ? NaN : valueToPercent(value, this.root.min(), this.root.max());
     });
     private readonly insetPosition = signal<number | undefined>(undefined);
+    protected readonly prehydrationPercent = computed(() => {
+        const percent = this.percent();
+        return this.root.prehydratingEdge() && Number.isFinite(percent) ? percent : undefined;
+    });
 
     protected readonly thumbStyle = computed<Record<string, string | number>>(() => {
         const vertical = this.root.orientation() === 'vertical';
@@ -86,6 +92,7 @@ export class RdxSliderThumb implements RdxSliderThumbRef {
         const percent = this.percent();
         const inset = this.root.inset();
         const position = this.insetPosition();
+        const serverEdge = this.root.thumbAlignment() === 'edge';
 
         if (!Number.isFinite(percent)) {
             return { position: 'absolute', visibility: 'hidden' };
@@ -105,12 +112,16 @@ export class RdxSliderThumb implements RdxSliderThumbRef {
 
         const style: Record<string, string | number> = {
             position: 'absolute',
-            [startEdge]: inset ? `${position ?? 0}%` : `${percent}%`,
+            [startEdge]: inset
+                ? position === undefined && serverEdge
+                    ? 'var(--rdx-slider-ssr-position, 0%)'
+                    : `${position ?? 0}%`
+                : `${percent}%`,
             [crossOffset]: '50%',
             translate: `${(vertical || !rtl ? -1 : 1) * 50}% ${(vertical ? 1 : -1) * 50}%`
         };
         if (inset && position === undefined) {
-            style['visibility'] = 'hidden';
+            style['visibility'] = serverEdge ? 'var(--rdx-slider-ssr-visibility, hidden)' : 'hidden';
         }
         if (zIndex !== undefined) {
             style['z-index'] = zIndex;

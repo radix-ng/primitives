@@ -3,6 +3,14 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { form, FormField } from '@angular/forms/signals';
 import { By } from '@angular/platform-browser';
+import {
+    RdxFieldDescription,
+    RdxFieldError,
+    RdxFieldLabel,
+    RdxFieldRoot,
+    RdxNgControlField
+} from '@radix-ng/primitives/field';
+import { RdxFormRoot } from '@radix-ng/primitives/form';
 import { vi } from 'vitest';
 import { RdxSliderControl } from '../src/slider-control';
 import { RdxSliderIndicator } from '../src/slider-indicator';
@@ -204,6 +212,97 @@ class SingleExplicitIndexComponent {
 class SliderNativeReactiveFormHost {
     readonly control = new FormControl<SliderValue>(40, { nonNullable: true });
 }
+
+@Component({
+    imports: [
+        ReactiveFormsModule,
+        RdxFormRoot,
+        RdxFieldRoot,
+        RdxFieldLabel,
+        RdxFieldDescription,
+        RdxFieldError,
+        RdxNgControlField,
+        RdxSliderRoot,
+        RdxSliderControl,
+        RdxSliderTrack,
+        RdxSliderThumb,
+        RdxSliderThumbInput
+    ],
+    template: `
+        <form rdxFormRoot>
+            <div rdxFieldRoot name="range">
+                <div rdxFieldLabel>Range</div>
+                <p id="hint" rdxFieldDescription>Choose an interval.</p>
+                <p id="error" rdxFieldError>Invalid interval.</p>
+                <div [formControl]="control" rdxNgControlField rdxSliderRoot>
+                    <div rdxSliderControl>
+                        <div rdxSliderTrack>
+                            <div [disabled]="disableFirst()" [index]="0" rdxSliderThumb>
+                                <input rdxSliderThumbInput aria-label="Lower" />
+                            </div>
+                            <div [index]="1" rdxSliderThumb>
+                                <input rdxSliderThumbInput aria-label="Upper" aria-describedby="hint consumer-hint" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <span id="consumer-hint">Additional help.</span>
+            </div>
+            <button type="submit">Save</button>
+        </form>
+    `
+})
+class SliderFieldHost {
+    readonly disableFirst = signal(false);
+    readonly control = new FormControl<SliderValue>([20, 60], {
+        nonNullable: true,
+        updateOn: 'blur',
+        validators: () => ({ interval: true })
+    });
+}
+
+describe('RdxSlider with Field and Reactive Forms', () => {
+    function setup() {
+        const fixture = TestBed.createComponent(SliderFieldHost);
+        fixture.detectChanges();
+        const [lower, upper] = fixture.nativeElement.querySelectorAll('input') as NodeListOf<HTMLInputElement>;
+        const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
+        const field = fixture.nativeElement.querySelector('[rdxFieldRoot]') as HTMLElement;
+        return { fixture, lower, upper, button, field };
+    }
+
+    it('keeps updateOn blur and its error deferred while focus moves between thumbs', async () => {
+        const { fixture, lower, upper, button, field } = setup();
+        await fixture.whenStable();
+        lower.focus();
+        press(lower, 'ArrowRight');
+        upper.focus();
+        await fixture.whenStable();
+
+        const { control } = fixture.componentInstance;
+        expect(control.value).toEqual([20, 60]);
+        expect(control.touched).toBe(false);
+        expect(field.hasAttribute('data-invalid')).toBe(false);
+        expect(upper.getAttribute('aria-describedby')).toBe('hint consumer-hint');
+
+        button.focus();
+        await fixture.whenStable();
+        expect(control.value).toEqual([21, 60]);
+        expect(control.touched).toBe(true);
+        expect(upper.getAttribute('aria-describedby')).toBe('hint consumer-hint error');
+        expect(upper.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('[APG Slider] focuses the first enabled thumb when its Field blocks form submission', async () => {
+        const { fixture, button, upper } = setup();
+        fixture.componentInstance.disableFirst.set(true);
+        await fixture.whenStable();
+        button.click();
+        await fixture.whenStable();
+        expect(document.activeElement).toBe(upper);
+        expect(upper.getAttribute('aria-invalid')).toBe('true');
+    });
+});
 
 function press(el: HTMLElement, key: string, shiftKey = false): void {
     el.dispatchEvent(new KeyboardEvent('keydown', { key, shiftKey, bubbles: true, cancelable: true }));
