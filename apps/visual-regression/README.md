@@ -48,7 +48,7 @@ Committed under `tests/*-snapshots/`. Playwright suffixes each file with project
 set inside the official Playwright Docker image so local and CI renders match:
 
 ```bash
-docker run --rm -v "$(pwd)":/work -w /work mcr.microsoft.com/playwright:v1.60.0-noble \
+docker run --rm -v "$(pwd)":/work -w /work mcr.microsoft.com/playwright:v1.65.1-noble \
   sh -c "pnpm install && pnpm test-visual:update"
 ```
 
