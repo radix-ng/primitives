@@ -126,8 +126,15 @@ test('Agents pages and exported contracts are discoverable through Storybook and
     expect(full).toContain('](demo-styles.css)');
     const example = await request.get('/examples/popover--default.md');
     expect(example.ok()).toBe(true);
-    expect(await example.text()).toContain('](../demo-styles.css)');
-    const stylesheet = await request.get('/demo-styles.css');
+    const setupLink = '../guides/styling.md#copy-an-example-into-your-app';
+    expect(await example.text()).toContain(`[Example setup](${setupLink})`);
+    const guide = await request.get(new URL(setupLink, example.url()).href);
+    expect(guide.ok()).toBe(true);
+    const guideSource = await guide.text();
+    expect(guideSource).toContain('## Copy an example into your app');
+    const stylesheetLink = '../demo-styles.css';
+    expect(guideSource).toContain(`[Download demo-styles.css](${stylesheetLink})`);
+    const stylesheet = await request.get(new URL(stylesheetLink, guide.url()).href);
     expect(stylesheet.ok()).toBe(true);
     expect(await stylesheet.text()).toBe(bundled('radix-ng-examples/references/demo-styles.css'));
     for (const slug of pages) {

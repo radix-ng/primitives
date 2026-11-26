@@ -368,7 +368,8 @@ export class RdxFieldRoot {
         const control = this.controlState();
         return isValidationRevealed(this.effectiveValidationMode(), {
             touched: this.resolveTouched(() => this.touchedValue() || (control?.blurred() ?? false)),
-            dirty: this.resolveDirty(() => this.dirtyValue() || (control?.changed() ?? false)),
+            // A committed value change can reveal validity while the form provider stays pristine.
+            dirty: this.dirtyState() || (control?.changed() ?? false),
             submitAttempted: this.formSubmitAttempted()
         });
     });
