@@ -79,8 +79,6 @@ export class RdxTooltipPositioner extends RdxPopperContentWrapper {
         });
 
         this.graceArea.onPointerExit(() => {
-            // Disabled roots skip hover interaction. A consumer can still drive `open`, for example
-            // to show a slider thumb's value while dragging.
             if (this.rootContext.disabled() || this.rootContext.disableHoverablePopup()) return;
             this.rootContext.closeDelayed();
         });

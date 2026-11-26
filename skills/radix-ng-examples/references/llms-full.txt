@@ -42697,6 +42697,10 @@ In a controlled tooltip, the popup and trigger description update when the paren
 Parent writes emit neither output. `RdxTooltip.open()` reads the effective state. To set state from
 TypeScript in a controlled tooltip, update the value bound to `[open]`.
 
+Disabling the Root hides the popup and requests a close with reason `disabled` if its open state is
+true. Re-enabling shows the popup again if that state was retained. Disable only the Trigger to
+suppress hover and focus while keeping the popup available to `[open]`, as in the slider example.
+
 ## Examples
 
 <a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>
@@ -42759,8 +42763,10 @@ export class RdxTooltipDefaultComponent {}
 ### Provider
 
 Wrap a group of tooltips with `rdxTooltipProvider` to share the open `delay`, `closeDelay`, and the
-instant-open `timeout` window — once one tooltip opens, adjacent ones open instantly until `timeout`
-ms after the last one closes.
+instant-open `timeout` window. Opening a sibling requests that the previous tooltip close. The
+next hover skips its delay while the provider is active and until `timeout` ms after the last close.
+`closeDelay` applies to hover. When focus leaves the trigger and popup, the close request uses reason
+`trigger-focus`.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
@@ -43000,14 +43006,14 @@ import {
                 <div class="bg-muted relative h-1 w-full" rdxSliderTrack>
                     <div class="bg-primary h-full" rdxSliderIndicator></div>
 
-                    <ng-container [open]="showTooltipState()" rdxTooltip disabled>
+                    <ng-container [open]="showTooltipState()" rdxTooltip>
                         <div
                             class="border-border bg-background focus-within:ring-ring focus-within:ring-offset-background block size-5 border focus-within:ring-2 focus-within:ring-offset-2"
-                            [rdxOnPointerDown]="handlePointerDown"
                             rdxSliderThumb
-                            rdxTooltipTrigger
                         >
-                            <input rdxSliderThumbInput aria-label="Volume" />
+                            <div class="size-full" [rdxOnPointerDown]="handlePointerDown" rdxTooltipTrigger disabled>
+                                <input rdxSliderThumbInput aria-label="Volume" />
+                            </div>
                         </div>
 
                         <div

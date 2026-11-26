@@ -47,14 +47,14 @@ import {
                 <div class="bg-muted relative h-1 w-full" rdxSliderTrack>
                     <div class="bg-primary h-full" rdxSliderIndicator></div>
 
-                    <ng-container [open]="showTooltipState()" rdxTooltip disabled>
+                    <ng-container [open]="showTooltipState()" rdxTooltip>
                         <div
                             class="border-border bg-background focus-within:ring-ring focus-within:ring-offset-background block size-5 border focus-within:ring-2 focus-within:ring-offset-2"
-                            [rdxOnPointerDown]="handlePointerDown"
                             rdxSliderThumb
-                            rdxTooltipTrigger
                         >
-                            <input rdxSliderThumbInput aria-label="Volume" />
+                            <div class="size-full" [rdxOnPointerDown]="handlePointerDown" rdxTooltipTrigger disabled>
+                                <input rdxSliderThumbInput aria-label="Volume" />
+                            </div>
                         </div>
 
                         <div

@@ -5,8 +5,10 @@
 > Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
 
 Wrap a group of tooltips with `rdxTooltipProvider` to share the open `delay`, `closeDelay`, and the
-instant-open `timeout` window — once one tooltip opens, adjacent ones open instantly until `timeout`
-ms after the last one closes.
+instant-open `timeout` window. Opening a sibling requests that the previous tooltip close. The
+next hover skips its delay while the provider is active and until `timeout` ms after the last close.
+`closeDelay` applies to hover. When focus leaves the trigger and popup, the close request uses reason
+`trigger-focus`.
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';

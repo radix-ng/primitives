@@ -112,5 +112,261 @@
             "description": "absent"
         },
         "category": "tooltip-description"
+    },
+    {
+        "scenario": "disable-pending-hover",
+        "checkpoint": "pending hover never displays the disabled tooltip",
+        "field": "requests",
+        "angular": [],
+        "react": [
+            {
+                "open": true,
+                "reason": "trigger-hover",
+                "canceled": false
+            },
+            {
+                "open": false,
+                "reason": "disabled",
+                "canceled": false
+            }
+        ],
+        "category": "disabled-pending-hover-notifications"
+    },
+    {
+        "scenario": "disable-pending-hover",
+        "checkpoint": "re-enabling leaves the tooltip closed",
+        "field": "requests",
+        "angular": [],
+        "react": [
+            {
+                "open": true,
+                "reason": "trigger-hover",
+                "canceled": false
+            },
+            {
+                "open": false,
+                "reason": "disabled",
+                "canceled": false
+            }
+        ],
+        "category": "disabled-pending-hover-notifications"
+    },
+    {
+        "scenario": "focus-loss-and-reentry",
+        "checkpoint": "focus opens despite the provider hover delay",
+        "field": "accessibility",
+        "angular": {
+            "role": "tooltip",
+            "description": "linked"
+        },
+        "react": {
+            "role": null,
+            "description": "absent"
+        },
+        "category": "tooltip-description"
+    },
+    {
+        "scenario": "focus-loss-and-reentry",
+        "checkpoint": "returning focus reopens the tooltip",
+        "field": "accessibility",
+        "angular": {
+            "role": "tooltip",
+            "description": "linked"
+        },
+        "react": {
+            "role": null,
+            "description": "absent"
+        },
+        "category": "tooltip-description"
+    },
+    {
+        "scenario": "provider-live-delays",
+        "checkpoint": "updated provider open delay elapsed",
+        "field": "accessibility",
+        "angular": {
+            "role": "tooltip",
+            "description": "linked"
+        },
+        "react": {
+            "role": null,
+            "description": "absent"
+        },
+        "category": "tooltip-description"
+    },
+    {
+        "scenario": "provider-live-delays",
+        "checkpoint": "updated provider close delay is still pending",
+        "field": "accessibility",
+        "angular": {
+            "role": "tooltip",
+            "description": "linked"
+        },
+        "react": {
+            "role": null,
+            "description": "absent"
+        },
+        "category": "tooltip-description"
+    },
+    {
+        "scenario": "provider-live-delays",
+        "checkpoint": "trigger open delay overrides provider",
+        "field": "accessibility",
+        "angular": {
+            "role": "tooltip",
+            "description": "linked"
+        },
+        "react": {
+            "role": null,
+            "description": "absent"
+        },
+        "category": "tooltip-description"
+    },
+    {
+        "scenario": "provider-live-delays",
+        "checkpoint": "tooltip reopens after provider delay",
+        "field": "accessibility",
+        "angular": {
+            "role": "tooltip",
+            "description": "linked"
+        },
+        "react": {
+            "role": null,
+            "description": "absent"
+        },
+        "category": "tooltip-description"
+    },
+    {
+        "scenario": "provider-live-delays",
+        "checkpoint": "live trigger close delay is still pending",
+        "field": "accessibility",
+        "angular": {
+            "role": "tooltip",
+            "description": "linked"
+        },
+        "react": {
+            "role": null,
+            "description": "absent"
+        },
+        "category": "tooltip-description"
+    },
+    {
+        "scenario": "provider-sibling-handoff",
+        "checkpoint": "first tooltip opens after the group delay",
+        "field": "accessibility",
+        "angular": {
+            "role": "tooltip",
+            "description": "linked"
+        },
+        "react": {
+            "role": null,
+            "description": "absent"
+        },
+        "category": "tooltip-description"
+    },
+    {
+        "scenario": "provider-sibling-handoff",
+        "checkpoint": "first tooltip is still open during its close delay",
+        "field": "accessibility",
+        "angular": {
+            "role": "tooltip",
+            "description": "linked"
+        },
+        "react": {
+            "role": null,
+            "description": "absent"
+        },
+        "category": "tooltip-description"
+    },
+    {
+        "scenario": "provider-sibling-handoff",
+        "checkpoint": "second tooltip opens during the close delay",
+        "field": "accessibility",
+        "angular": {
+            "role": "tooltip",
+            "description": "linked"
+        },
+        "react": {
+            "role": null,
+            "description": "absent"
+        },
+        "category": "tooltip-description"
+    },
+    {
+        "scenario": "provider-sibling-handoff",
+        "checkpoint": "second tooltip keeps ownership while open",
+        "field": "accessibility",
+        "angular": {
+            "role": "tooltip",
+            "description": "linked"
+        },
+        "react": {
+            "role": null,
+            "description": "absent"
+        },
+        "category": "tooltip-description"
+    },
+    {
+        "scenario": "provider-sibling-handoff",
+        "checkpoint": "first tooltip reopens within the instant window",
+        "field": "accessibility",
+        "angular": {
+            "role": "tooltip",
+            "description": "linked"
+        },
+        "react": {
+            "role": null,
+            "description": "absent"
+        },
+        "category": "tooltip-description"
+    },
+    {
+        "scenario": "provider-sibling-handoff",
+        "checkpoint": "first tooltip opens after the restored delay",
+        "field": "accessibility",
+        "angular": {
+            "role": "tooltip",
+            "description": "linked"
+        },
+        "react": {
+            "role": null,
+            "description": "absent"
+        },
+        "category": "tooltip-description"
+    },
+    {
+        "scenario": "reactive-disabled",
+        "checkpoint": "an enabled tooltip opens on hover again",
+        "field": "accessibility",
+        "angular": {
+            "role": "tooltip",
+            "description": "linked"
+        },
+        "react": {
+            "role": null,
+            "description": "absent"
+        },
+        "category": "tooltip-description"
+    },
+    {
+        "scenario": "reactive-disabled",
+        "checkpoint": "re-enabling restores the retained open state",
+        "field": "accessibility",
+        "angular": {
+            "role": "tooltip",
+            "description": "linked"
+        },
+        "react": {
+            "role": null,
+            "description": "absent"
+        },
+        "category": "tooltip-description"
+    },
+    {
+        "scenario": "reactive-disabled",
+        "checkpoint": "disabling hides after a canceled close",
+        "field": "triggerOpen",
+        "angular": false,
+        "react": true,
+        "category": "disabled-trigger-open-marker"
     }
 ]

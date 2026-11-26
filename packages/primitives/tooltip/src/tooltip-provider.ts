@@ -11,9 +11,9 @@ export interface RdxTooltipProviderContext {
     /** Whether sibling tooltips should currently open instantly. */
     isInstant: Signal<boolean>;
     /** Notifies the group that a tooltip has opened. */
-    onOpen: () => void;
+    onOpen: (closeForSibling: () => void) => void;
     /** Notifies the group that a tooltip has closed. */
-    onClose: () => void;
+    onClose: (closeForSibling: () => void) => void;
 }
 
 export const [injectRdxTooltipProviderContext, provideRdxTooltipProviderContext] =
@@ -28,8 +28,8 @@ const providerContext = (): RdxTooltipProviderContext => {
         delay: provider.delay,
         closeDelay: provider.closeDelay,
         isInstant: provider.instant.isInstant,
-        onOpen: () => provider.instant.onOpen(),
-        onClose: () => provider.instant.onClose()
+        onOpen: provider.instant.onOpen,
+        onClose: provider.instant.onClose
     };
 };
 
@@ -63,5 +63,5 @@ export class RdxTooltipProvider {
      */
     readonly timeout = input<number, NumberInput>(this.defaultConfig.timeout, { transform: numberAttribute });
 
-    readonly instant = createTooltipInstantController(() => this.timeout(), this.destroyRef);
+    readonly instant = createTooltipInstantController(this.timeout, this.destroyRef);
 }

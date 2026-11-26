@@ -10,7 +10,7 @@ import {
     signal,
     untracked
 } from '@angular/core';
-import { BooleanInput, injectId, NumberInput } from '@radix-ng/primitives/core';
+import { BooleanInput, injectId, NumberInput, watch } from '@radix-ng/primitives/core';
 import { createRdxTriggerInteraction } from '@radix-ng/primitives/floating-focus-manager';
 import { RdxPopperAnchor } from '@radix-ng/primitives/popper';
 import { injectRdxTooltipContext } from './tooltip';
@@ -67,7 +67,7 @@ function isMouseLikePointerType(pointerType: string | undefined): boolean {
         '[attr.data-rdx-tooltip-trigger]': 'isDisabled() ? undefined : ""',
         '(pointerenter)': 'handlePointerEnter($event)',
         '(pointermove)': 'handlePointerMove($event)',
-        '(pointerleave)': 'handlePointerLeave()',
+        '(pointerleave)': 'handlePointerLeave($event)',
         '(mouseover)': 'handleMouseOver($event)',
         '(mouseleave)': 'handleMouseLeave()',
         '(pointerdown)': 'handlePointerDown($event)',
@@ -151,18 +151,22 @@ export class RdxTooltipTrigger {
     private pointerType: string | undefined;
 
     constructor() {
+        const trigger = this.elementRef.nativeElement;
+        const options = { closeDelay: this.closeDelay, disabled: this.isDisabled };
         effect((onCleanup) => {
             const handle = this.handle();
 
             if (handle) {
                 onCleanup(
-                    untracked(() =>
-                        handle.registerTrigger(this.triggerId(), this.elementRef.nativeElement, () => this.payload())
-                    )
+                    untracked(() => handle.registerTrigger(this.triggerId(), trigger, () => this.payload(), options))
                 );
             } else if (this.parentRootContext) {
-                onCleanup(untracked(() => this.parentRootContext!.registerTrigger(this.elementRef.nativeElement)));
+                onCleanup(untracked(() => this.parentRootContext!.registerTrigger(trigger, options)));
             }
+        });
+
+        watch([this.rootContext, this.isDisabled], ([root, disabled]) => {
+            if (disabled) root?.cancelPendingOpen(trigger);
         });
     }
 
@@ -173,15 +177,18 @@ export class RdxTooltipTrigger {
             return;
         }
 
-        rootContext.setDelays(this.delay(), this.closeDelay());
+        if (event.relatedTarget && !this.elementRef.nativeElement.matches(':focus-visible')) return;
+
         rootContext.open(this.elementRef.nativeElement, this.payload(), event);
     }
 
     protected handleBlur(event: FocusEvent) {
-        this.rootContext()?.closeDelayed(event);
+        if (!this.isDisabled()) this.rootContext()?.onTriggerBlur(this.elementRef.nativeElement, event);
     }
 
     protected handleClick(event: MouseEvent) {
+        if (this.isDisabled()) return;
+
         const rootContext = this.rootContext();
 
         if (rootContext?.isOpen() && this.closeOnClick()) {
@@ -219,14 +226,13 @@ export class RdxTooltipTrigger {
         }
 
         if (!this.hasPointerMoveOpened()) {
-            rootContext.setDelays(this.delay(), this.closeDelay());
-            rootContext.onTriggerEnter(this.elementRef.nativeElement, this.payload(), event);
+            rootContext.onTriggerEnter(this.elementRef.nativeElement, this.payload(), event, this.delay());
             this.hasPointerMoveOpened.set(true);
         }
     }
 
-    protected handlePointerLeave() {
-        this.rootContext()?.onTriggerLeave();
+    protected handlePointerLeave(event: PointerEvent) {
+        this.rootContext()?.onTriggerLeave(this.elementRef.nativeElement, event);
         this.hasPointerMoveOpened.set(false);
     }
 
@@ -255,8 +261,7 @@ export class RdxTooltipTrigger {
             !rootContext.isOpen() &&
             isMouseLikePointerType(this.pointerType)
         ) {
-            rootContext.setDelays(this.delay(), this.closeDelay());
-            rootContext.onTriggerEnter(trigger, this.payload(), event);
+            rootContext.onTriggerEnter(trigger, this.payload(), event, this.delay());
             this.hasPointerMoveOpened.set(true);
         }
     }

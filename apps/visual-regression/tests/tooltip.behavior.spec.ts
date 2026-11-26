@@ -20,6 +20,28 @@ test('tooltip teleports the positioner directly into <body> with no wrapper elem
     expect(parentTag).toBe('BODY');
 });
 
+test('a controlled tooltip follows the slider thumb while dragging', async ({ page }) => {
+    await gotoStory(page, 'primitives-tooltip--slider');
+
+    const thumb = page.locator('[rdxSliderThumb]');
+    const popup = page.getByRole('tooltip');
+    const slider = page.getByRole('slider', { name: 'Volume' });
+    const bounds = (await thumb.boundingBox())!;
+    const x = bounds.x + bounds.width / 2;
+    const y = bounds.y + bounds.height / 2;
+
+    await expect(slider).toHaveValue('45');
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    await expect(popup).toBeVisible();
+    const initialPopupX = (await popup.boundingBox())!.x;
+    await page.mouse.move(x + 40, y, { steps: 4 });
+    await expect(slider).not.toHaveValue('45');
+    await expect.poll(async () => (await popup.boundingBox())?.x ?? initialPopupX).toBeGreaterThan(initialPopupX + 20);
+    await page.mouse.up();
+    await expect(popup).toHaveCount(0);
+});
+
 /**
  * ADR 0015 migration of Tooltip onto the new floating dismissal engine (dismissal-only — no focus
  * manager). Browser-only: real keyboard / pointer dismissal needs a real browser.

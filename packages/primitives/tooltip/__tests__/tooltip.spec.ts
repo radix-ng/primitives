@@ -30,13 +30,14 @@ import { defaultTooltipConfig, injectRdxTooltipConfig, provideRdxTooltipConfig }
             (onOpenChange)="handleOpenChange($event)"
             rdxTooltip
         >
-            <button [closeOnClick]="closeOnClick" rdxTooltipTrigger>Trigger</button>
+            <button [closeOnClick]="closeOnClick" [disabled]="triggerDisabled" rdxTooltipTrigger>Trigger</button>
         </ng-container>
     `
 })
 class TestHostComponent {
     open = false;
     disabled = false;
+    triggerDisabled = false;
     delay = 600;
     closeDelay = 0;
     disableHoverablePopup = false;
@@ -332,18 +333,7 @@ describe('Tooltip', () => {
         expect(host.open).toBe(true);
     });
 
-    it('closes on blur after the close delay', () => {
-        trigger.dispatchEvent(new Event('focus'));
-        fixture.detectChanges();
-
-        trigger.dispatchEvent(new Event('blur'));
-        vi.advanceTimersByTime(0);
-        fixture.detectChanges();
-
-        expect(root.open()).toBe(false);
-    });
-
-    it('respects a custom close delay', () => {
+    it('closes on blur without applying the hover close delay', () => {
         host.closeDelay = 200;
         fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
@@ -352,6 +342,24 @@ describe('Tooltip', () => {
         fixture.detectChanges();
 
         trigger.dispatchEvent(new Event('blur'));
+        vi.advanceTimersByTime(0);
+        fixture.detectChanges();
+
+        expect(root.open()).toBe(false);
+        expect(host.changes.at(-1)?.eventDetails.reason).toBe('trigger-focus');
+    });
+
+    it('respects a custom close delay on pointer leave', () => {
+        host.delay = 0;
+        host.closeDelay = 200;
+        host.disableHoverablePopup = true;
+        fixture.changeDetectorRef.markForCheck();
+        fixture.detectChanges();
+
+        trigger.dispatchEvent(new Event('pointermove'));
+        fixture.detectChanges();
+
+        trigger.dispatchEvent(new Event('pointerleave'));
         vi.advanceTimersByTime(199);
         fixture.detectChanges();
         expect(root.open()).toBe(true);
@@ -359,6 +367,7 @@ describe('Tooltip', () => {
         vi.advanceTimersByTime(1);
         fixture.detectChanges();
         expect(root.open()).toBe(false);
+        expect(host.changes.at(-1)?.eventDetails.reason).toBe('trigger-hover');
     });
 
     it('closes when the trigger is clicked while open', () => {
@@ -404,6 +413,27 @@ describe('Tooltip', () => {
         expect(root.instant()).toBe(false);
     });
 
+    it('uses the full hover delay when reopening without a provider', () => {
+        trigger.dispatchEvent(new Event('pointermove'));
+        vi.advanceTimersByTime(600);
+        fixture.detectChanges();
+        expect(root.open()).toBe(true);
+
+        trigger.dispatchEvent(new Event('pointerleave'));
+        trigger.click();
+        fixture.detectChanges();
+        expect(root.open()).toBe(false);
+
+        trigger.dispatchEvent(new Event('pointermove'));
+        vi.advanceTimersByTime(599);
+        fixture.detectChanges();
+        expect(root.open()).toBe(false);
+
+        vi.advanceTimersByTime(1);
+        fixture.detectChanges();
+        expect(root.open()).toBe(true);
+    });
+
     it('cancels the delayed open when the pointer leaves before it fires', () => {
         trigger.dispatchEvent(new Event('pointermove'));
         fixture.detectChanges();
@@ -447,8 +477,8 @@ describe('Tooltip', () => {
         expect(trigger.getAttribute('data-trigger-disabled')).toBe('');
     });
 
-    it('still opens from the controlled input while disabled', () => {
-        host.disabled = true;
+    it('still opens from the controlled input when only the trigger is disabled', () => {
+        host.triggerDisabled = true;
         host.open = true;
         fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();

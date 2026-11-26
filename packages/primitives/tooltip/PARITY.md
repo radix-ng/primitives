@@ -6,9 +6,9 @@ Initial inventory: 2026-11-17. Reference pin: **Base UI 1.9.0**,
 Primary counterpart: [tooltip](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/tooltip).
 Pinned exported parts/functions: `Root`, `Trigger`, `Portal`, `Positioner`, `Popup`, `Arrow`, `Provider`, `Viewport`, `createHandle`, `Handle`.
 
-**Scope: open ownership, initial defaults, and source inventory.** The paired suite verifies the
-Root behavior listed below. Provider timing, trigger identity inputs, other part contracts, and
-hydration remain open for comparison.
+**Scope: open ownership, initial defaults, provider timing, disabling, and focus.** The paired suite
+verifies the scenarios below. Trigger identity inputs, full motion and part contracts, and hydration
+remain open for comparison.
 
 **Breaking changes are permitted; backward compatibility does not constrain the target.** Apply the
 [state ownership/defaults contract](../../../docs/engineering/state-ownership.md) per field. Inputs,
@@ -60,7 +60,7 @@ describe the target work, not a certificate or a reproduced defect count.
 | Area                   | Current observation / required target comparison                                                                                                                     | Priority |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
 | Open/default ownership | The paired suite covers controlled precedence and release, initial/late defaults, delayed hover, keyboard focus, and canceled, ignored, and later accepted requests. | Verified |
-| Provider versus state  | Compare timer overrides and updates, transitions between provider siblings, disabled state changes, and focus loss/re-entry.                                         | P1       |
+| Provider versus state  | The suite covers live delay overrides and timeout, sibling handoff, disabled requests and veto, and focus loss and re-entry.                                         | Verified |
 | Tooltip behavior       | Compare multiple triggers/handles, trigger identity inputs, pointer grace, viewport/arrow, animation completion, and SSR/hydration.                                  | P2       |
 
 Also compare the actual emitted per-part attributes/CSS variables with both the pinned declaration
@@ -72,7 +72,7 @@ are permitted; changed observable behavior needs evidence or an explicitly revie
 
 - [Tooltip units](__tests__/tooltip.spec.ts) cover directives, handle/provider behavior, and deferred commit of the active trigger and payload.
 - [Angular browser regressions](../../../apps/visual-regression/tests/tooltip.behavior.spec.ts) exercise Tooltip in Storybook.
-- [Pinned comparisons](../../../apps/parity-testing/primitives/tooltip/README.md) cover open ownership in six scenarios across Chromium, Firefox, and WebKit. The [reviewed differences](../../../apps/parity-testing/primitives/tooltip/expected-differences.json) cover Angular's popup role and description link, and its return to local state when a controlled binding becomes undefined.
+- [Pinned comparisons](../../../apps/parity-testing/primitives/tooltip/README.md) cover open ownership and interaction in eleven scenarios across Chromium, Firefox, and WebKit. The [reviewed differences](../../../apps/parity-testing/primitives/tooltip/expected-differences.json) cover Angular's popup role and description link, its return to local state when a controlled binding becomes undefined, and its handling of pending hover and trigger markers on disable.
 - Tooltip SSR/hydration comparison is pending.
 
 See the [verification skill](../../../.agents/skills/radix-testing/SKILL.md),

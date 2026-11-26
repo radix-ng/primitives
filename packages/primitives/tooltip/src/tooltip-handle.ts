@@ -1,5 +1,5 @@
 import { computed, signal } from '@angular/core';
-import type { RdxTooltipContext } from './tooltip';
+import type { RdxTooltipContext, RdxTooltipTriggerRegistration } from './tooltip';
 
 /**
  * Connects a tooltip root with trigger elements rendered elsewhere in the DOM.
@@ -7,6 +7,7 @@ import type { RdxTooltipContext } from './tooltip';
 interface RdxTooltipHandleTrigger<Payload> {
     element: HTMLElement;
     payload: () => Payload | undefined;
+    options?: RdxTooltipTriggerRegistration;
 }
 
 export class RdxTooltipHandle<Payload = unknown> {
@@ -33,7 +34,7 @@ export class RdxTooltipHandle<Payload = unknown> {
     registerRoot(rootContext: RdxTooltipContext) {
         this.rootContext.set(rootContext);
         this.triggers.forEach((trigger, id) => {
-            this.rootTriggerCleanups.set(id, rootContext.registerTrigger(trigger.element));
+            this.rootTriggerCleanups.set(id, rootContext.registerTrigger(trigger.element, trigger.options));
         });
 
         return () => {
@@ -45,10 +46,15 @@ export class RdxTooltipHandle<Payload = unknown> {
         };
     }
 
-    registerTrigger(id: string, trigger: HTMLElement, payload: () => Payload | undefined) {
+    registerTrigger(
+        id: string,
+        trigger: HTMLElement,
+        payload: () => Payload | undefined,
+        options?: RdxTooltipTriggerRegistration
+    ) {
         this.rootTriggerCleanups.get(id)?.();
-        this.triggers.set(id, { element: trigger, payload });
-        const unregisterFromRoot = this.rootContext()?.registerTrigger(trigger);
+        this.triggers.set(id, { element: trigger, payload, options });
+        const unregisterFromRoot = this.rootContext()?.registerTrigger(trigger, options);
 
         if (unregisterFromRoot) {
             this.rootTriggerCleanups.set(id, unregisterFromRoot);

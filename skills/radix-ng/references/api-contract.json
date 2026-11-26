@@ -9793,7 +9793,7 @@
               "name": "disabled",
               "type": "boolean",
               "default": "false",
-              "description": "When `true`, the tooltip will not open."
+              "description": "Hides the tooltip and requests closure if it was open."
             },
             {
               "name": "disableHoverablePopup",
