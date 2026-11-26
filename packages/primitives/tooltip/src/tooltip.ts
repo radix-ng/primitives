@@ -7,7 +7,6 @@ import {
     ElementRef,
     inject,
     input,
-    model,
     numberAttribute,
     output,
     Signal,
@@ -114,7 +113,9 @@ export class RdxTooltip {
     private readonly provider = injectRdxTooltipProviderContext(true);
     private readonly popper = inject(RdxPopper);
     private readonly destroyRef = inject(DestroyRef);
-    private hasAppliedDefaultOpen = false;
+    private readonly uncontrolledOpen = signal(false);
+    // Commit trigger and lifecycle metadata when the controlled input changes.
+    private pendingOpenChange?: { open: boolean; commit: () => void };
 
     /**
      * Per-popup floating root context (ADR 0015) — the shared store the positioner's dismissal
@@ -127,9 +128,16 @@ export class RdxTooltip {
     });
 
     /**
-     * Whether the tooltip is currently open.
+     * Controls whether the tooltip is open. When omitted, the root manages its own state.
      */
-    readonly open = model(false);
+    readonly openInput = input<boolean | undefined, BooleanInput>(undefined, {
+        alias: 'open',
+        transform: (value) => (value === undefined ? undefined : booleanAttribute(value))
+    });
+    readonly open = computed(() => this.openInput() ?? this.uncontrolledOpen());
+
+    /** Emitted for open/close requests that were not canceled. Supports `[(open)]`. */
+    readonly openChange = output<boolean>();
 
     /**
      * Whether the tooltip is initially open. Uncontrolled.
@@ -175,7 +183,7 @@ export class RdxTooltip {
     readonly handle = input<RdxTooltipHandle<unknown>>();
 
     /**
-     * Event handler called when the open state changes.
+     * A cancellable request to change the open state.
      */
     readonly onOpenChange = output<RdxTooltipOpenChangeEvent>();
 
@@ -189,7 +197,6 @@ export class RdxTooltip {
 
     private readonly openedInstant = signal(false);
     private readonly openedInstantType = signal<RdxTooltipInstantType | undefined>(undefined);
-    private suppressNextOpenChangeEmit = false;
 
     /** Local instant window used when this tooltip is not inside a provider. */
     private readonly localInstant: TooltipInstantController = createTooltipInstantController(
@@ -257,8 +264,9 @@ export class RdxTooltip {
         };
     });
 
+    private pendingHoverOpen?: () => void;
     private readonly openTimer = useTimeoutFn(
-        () => this.applyOpen(false, this.trigger(), this.payload(), 'trigger-hover'),
+        () => this.pendingHoverOpen?.(),
         () => this.resolvedDelay(),
         { immediate: false },
         this.destroyRef
@@ -272,20 +280,32 @@ export class RdxTooltip {
     );
 
     constructor() {
-        let previousOpen = false;
-        effect(() => {
-            const open = this.open();
-            if (open !== previousOpen) {
-                previousOpen = open;
-                untracked(() => this.renderLifecycle.start(open));
-            }
+        watch([], () => {
+            this.uncontrolledOpen.set(this.defaultOpen());
         });
-        effect(() => {
-            const defaultOpen = this.defaultOpen();
 
-            if (!this.hasAppliedDefaultOpen && defaultOpen) {
-                this.hasAppliedDefaultOpen = true;
-                this.open.set(defaultOpen);
+        let previousOpen = false;
+        watch([this.open, this.openInput], ([open, supplied]) => {
+            if (supplied === undefined) this.pendingOpenChange = undefined;
+            if (open === previousOpen) return;
+
+            previousOpen = open;
+            const pending = this.pendingOpenChange;
+            this.pendingOpenChange = undefined;
+            if (pending?.open === open) {
+                pending.commit();
+            } else if (supplied !== undefined) {
+                this.openChangeReason.set('none');
+            }
+
+            this.renderLifecycle.start(open);
+            if (open) {
+                this.preventUnmountOnClose.set(false);
+                this.instantGroup.onOpen();
+            } else {
+                this.instantGroup.onClose();
+                this.openedInstant.set(false);
+                this.openedInstantType.set(undefined);
             }
         });
 
@@ -303,32 +323,6 @@ export class RdxTooltip {
         // Sync the dismissal reference (the active trigger) so an outside-press on the trigger counts
         // as "inside" and never dismisses (ADR 0015).
         effect(() => this.floatingContext.setReferenceElement(this.trigger() ?? null));
-
-        watch(
-            [this.open],
-            ([isOpen]) => {
-                if (this.suppressNextOpenChangeEmit) {
-                    this.suppressNextOpenChangeEmit = false;
-                } else {
-                    const { eventDetails } = createCancelableChangeEventDetails(
-                        this.openChangeReason(),
-                        new Event('tooltip.open-change'),
-                        this.trigger()
-                    );
-                    this.onOpenChange.emit({ open: isOpen, eventDetails });
-                }
-
-                if (isOpen) {
-                    this.preventUnmountOnClose.set(false);
-                    this.instantGroup.onOpen();
-                } else {
-                    this.instantGroup.onClose();
-                    this.openedInstant.set(false);
-                    this.openedInstantType.set(undefined);
-                }
-            },
-            { defer: true }
-        );
     }
 
     /** Opens immediately, optionally switching the active trigger/payload. */
@@ -337,17 +331,18 @@ export class RdxTooltip {
     }
 
     close(reason: RdxTooltipOpenChangeReason = 'none', event?: Event) {
-        this.openTimer.stop();
+        this.cancelPendingOpen();
         this.closeTimer.stop();
         this.applyClose(reason, event);
     }
 
     cancelPendingOpen(): void {
+        this.pendingHoverOpen = undefined;
         this.openTimer.stop();
     }
 
     closeHoverOpen(event?: Event): void {
-        this.openTimer.stop();
+        this.cancelPendingOpen();
         this.closeTimer.stop();
         if (this.open() && this.openChangeReason() === 'trigger-hover') {
             this.applyClose('trigger-hover', event);
@@ -356,7 +351,7 @@ export class RdxTooltip {
 
     /** Closes after the resolved close delay, e.g. when the pointer or focus leaves. */
     scheduleClose(event?: Event) {
-        this.openTimer.stop();
+        this.cancelPendingOpen();
 
         if (this.resolvedCloseDelay() <= 0) {
             this.applyClose('trigger-hover', event);
@@ -371,22 +366,18 @@ export class RdxTooltip {
             return;
         }
 
-        if (trigger) {
-            this.trigger.set(trigger);
-        }
-
-        this.payload.set(payload);
         this.closeTimer.stop();
 
         if (this.instantGroup.isInstant() || this.resolvedDelay() <= 0) {
             this.applyOpen(true, trigger, payload, 'trigger-hover', event);
         } else {
+            this.pendingHoverOpen = () => this.applyOpen(false, trigger, payload, 'trigger-hover', event);
             this.openTimer.start();
         }
     }
 
     onTriggerLeave() {
-        this.openTimer.stop();
+        this.cancelPendingOpen();
 
         if (this.disableHoverablePopup()) {
             this.scheduleClose();
@@ -434,12 +425,12 @@ export class RdxTooltip {
         reason: RdxTooltipOpenChangeReason = 'none',
         event?: Event
     ) {
-        if (this.disabled()) {
+        this.cancelPendingOpen();
+        if (this.disabled() || (trigger && !trigger.isConnected)) {
             return;
         }
         const wasOpen = this.open();
 
-        this.openTimer.stop();
         this.closeTimer.stop();
 
         if (!wasOpen) {
@@ -453,25 +444,26 @@ export class RdxTooltip {
             if (eventDetails.isCanceled()) {
                 return;
             }
-            this.suppressNextOpenChangeEmit = true;
-        }
-
-        if (trigger) {
-            this.trigger.set(trigger);
-        }
-
-        if (payload !== undefined) {
-            this.payload.set(payload);
         }
 
         const isInstant = instant || this.instantGroup.isInstant();
-        this.openedInstant.set(isInstant);
-        // `'focus'` for a focus/imperative open; `'delay'` for a hover open within the skip-delay
-        // instant window. A normal delayed open is animated, so no instant type.
-        this.openedInstantType.set(isInstant ? (reason === 'trigger-focus' ? 'focus' : 'delay') : undefined);
-        this.preventUnmountOnClose.set(false);
-        this.openChangeReason.set(reason);
-        this.open.set(true);
+        const commit = () => {
+            if (trigger?.isConnected) {
+                this.trigger.set(trigger);
+                this.payload.set(payload);
+            } else {
+                this.payload.set(undefined);
+            }
+            this.openedInstant.set(isInstant);
+            this.openedInstantType.set(isInstant ? (reason === 'trigger-focus' ? 'focus' : 'delay') : undefined);
+            this.preventUnmountOnClose.set(false);
+            this.openChangeReason.set(reason);
+        };
+        if (wasOpen) {
+            commit();
+        } else {
+            this.acceptOpenRequest(true, commit);
+        }
     }
 
     private applyClose(reason: RdxTooltipOpenChangeReason = 'none', event?: Event) {
@@ -489,17 +481,26 @@ export class RdxTooltip {
         if (eventDetails.isCanceled()) {
             return;
         }
-        this.suppressNextOpenChangeEmit = true;
-        this.preventUnmountOnClose.set(change.shouldPreventUnmountOnClose());
         const isInstant = this.instantGroup.isInstant();
-        this.openedInstant.set(isInstant);
-        // Escape / outside-press close instantly as `'dismiss'`; a close within the instant window is
-        // `'delay'`; an ordinary close is animated.
-        this.openedInstantType.set(
-            reason === 'escape-key' || reason === 'outside-press' ? 'dismiss' : isInstant ? 'delay' : undefined
-        );
-        this.openChangeReason.set(reason);
-        this.open.set(false);
+        const retain = change.shouldPreventUnmountOnClose();
+        this.acceptOpenRequest(false, () => {
+            this.preventUnmountOnClose.set(retain);
+            this.openedInstant.set(isInstant);
+            this.openedInstantType.set(
+                reason === 'escape-key' || reason === 'outside-press' ? 'dismiss' : isInstant ? 'delay' : undefined
+            );
+            this.openChangeReason.set(reason);
+        });
+    }
+
+    private acceptOpenRequest(open: boolean, commit: () => void): void {
+        if (this.openInput() === undefined) {
+            this.uncontrolledOpen.set(open);
+            commit();
+        } else {
+            this.pendingOpenChange = { open, commit };
+        }
+        this.openChange.emit(open);
     }
 }
 

@@ -79,10 +79,8 @@ export class RdxTooltipPositioner extends RdxPopperContentWrapper {
         });
 
         this.graceArea.onPointerExit(() => {
-            // A disabled root is fully controlled by the consumer (e.g. the slider thumb drives
-            // `open` while dragging). Hover never opens it, so the hover grace area must not close
-            // it either — otherwise a drag that leaves the grace polygon would dismiss it and the
-            // one-way `open` binding could not bring it back.
+            // Disabled roots skip hover interaction. A consumer can still drive `open`, for example
+            // to show a slider thumb's value while dragging.
             if (this.rootContext.disabled() || this.rootContext.disableHoverablePopup()) return;
             this.rootContext.closeDelayed();
         });

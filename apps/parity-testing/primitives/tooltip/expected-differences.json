@@ -1,0 +1,116 @@
+[
+    {
+        "scenario": "controlled-overrides-default",
+        "checkpoint": "parent opens without a request",
+        "field": "accessibility",
+        "angular": {
+            "role": "tooltip",
+            "description": "linked"
+        },
+        "react": {
+            "role": null,
+            "description": "absent"
+        },
+        "category": "tooltip-description"
+    },
+    {
+        "scenario": "controlled-overrides-default",
+        "checkpoint": "release controlled binding",
+        "field": "accessibility",
+        "angular": {
+            "role": "tooltip",
+            "description": "linked"
+        },
+        "react": {
+            "role": null,
+            "description": "absent"
+        },
+        "category": "tooltip-description"
+    },
+    {
+        "scenario": "controlled-overrides-default",
+        "checkpoint": "release controlled binding",
+        "field": "triggerOpen",
+        "angular": true,
+        "react": false,
+        "category": "release-controlled-binding"
+    },
+    {
+        "scenario": "controlled-overrides-default",
+        "checkpoint": "release controlled binding",
+        "field": "popup",
+        "angular": "open",
+        "react": "unmounted",
+        "category": "release-controlled-binding"
+    },
+    {
+        "scenario": "initial-default",
+        "checkpoint": "an uncontrolled tooltip starts open",
+        "field": "accessibility",
+        "angular": {
+            "role": "tooltip",
+            "description": "linked"
+        },
+        "react": {
+            "role": null,
+            "description": "absent"
+        },
+        "category": "tooltip-description"
+    },
+    {
+        "scenario": "delayed-controlled-hover",
+        "checkpoint": "parent accepts the hover request later",
+        "field": "accessibility",
+        "angular": {
+            "role": "tooltip",
+            "description": "linked"
+        },
+        "react": {
+            "role": null,
+            "description": "absent"
+        },
+        "category": "tooltip-description"
+    },
+    {
+        "scenario": "controlled-focus-and-dismissal",
+        "checkpoint": "parent accepts the focus request",
+        "field": "accessibility",
+        "angular": {
+            "role": "tooltip",
+            "description": "linked"
+        },
+        "react": {
+            "role": null,
+            "description": "absent"
+        },
+        "category": "tooltip-description"
+    },
+    {
+        "scenario": "controlled-focus-and-dismissal",
+        "checkpoint": "canceled Escape leaves the popup open",
+        "field": "accessibility",
+        "angular": {
+            "role": "tooltip",
+            "description": "linked"
+        },
+        "react": {
+            "role": null,
+            "description": "absent"
+        },
+        "category": "tooltip-description"
+    },
+    {
+        "scenario": "controlled-focus-and-dismissal",
+        "checkpoint": "ignored Escape request leaves the popup open",
+        "field": "accessibility",
+        "angular": {
+            "role": "tooltip",
+            "description": "linked"
+        },
+        "react": {
+            "role": null,
+            "description": "absent"
+        },
+        "category": "tooltip-description"
+    }
+]

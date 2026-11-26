@@ -42686,6 +42686,17 @@ exit keyframes on its root element finish. Use the `*` microsyntax on the positi
 `rdxTooltipPositioner` owns positioning and exposes `data-side` / `data-align` plus the `--anchor-*`,
 `--available-*`, and `--transform-origin` CSS variables. `rdxTooltipPopup` carries `role="tooltip"`.
 
+## Open state
+
+`defaultOpen` sets the initial uncontrolled state once. A supplied `[open]` value controls the popup,
+including when it is `false`. Set `[open]` to `undefined` to return control to the root.
+
+`(onOpenChange)` receives `{ open, eventDetails }` for a request. Call `eventDetails.cancel()` to veto
+it. `(openChange)` emits the requested Boolean after an uncanceled request and supports `[(open)]`.
+In a controlled tooltip, the popup and trigger description update when the parent changes `[open]`.
+Parent writes emit neither output. `RdxTooltip.open()` reads the effective state. To set state from
+TypeScript in a controlled tooltip, update the value bound to `[open]`.
+
 ## Examples
 
 <a href="guides/styling.md#copy-an-example-into-your-app" target="_top">Example setup</a>

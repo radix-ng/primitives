@@ -295,8 +295,9 @@
         },
         {
           "name": "open",
-          "default": "false",
-          "description": "Whether the tooltip is currently open."
+          "type": "boolean | undefined",
+          "default": "undefined",
+          "description": "Controls whether the tooltip is open. When omitted, the root manages its own state."
         },
         {
           "name": "trackCursorAxis",
@@ -309,7 +310,12 @@
         {
           "name": "onOpenChange",
           "type": "RdxTooltipOpenChangeEvent",
-          "description": "Event handler called when the open state changes."
+          "description": "A cancellable request to change the open state."
+        },
+        {
+          "name": "openChange",
+          "type": "boolean",
+          "description": "Emitted for open/close requests that were not canceled. Supports `[(open)]`."
         }
       ],
       "twoWay": [

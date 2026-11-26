@@ -87,13 +87,16 @@ class ProviderHostComponent {}
     changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RdxTooltip, RdxTooltipTrigger],
     template: `
-        <div [delay]="0" rdxTooltip>
+        <div [open]="open()" [delay]="0" (openChange)="requests.push($event)" rdxTooltip>
             <button id="trigger-a" rdxTooltipTrigger>A</button>
-            <button id="trigger-b" rdxTooltipTrigger>B</button>
+            <button id="trigger-b" rdxTooltipTrigger payload="B">B</button>
         </div>
     `
 })
-class MultipleTriggersHostComponent {}
+class MultipleTriggersHostComponent {
+    readonly open = signal<boolean | undefined>(undefined);
+    readonly requests: boolean[] = [];
+}
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
@@ -265,7 +268,7 @@ describe('Tooltip', () => {
         expect(trigger.hasAttribute('aria-describedby')).toBe(false);
     });
 
-    it('links and marks the trigger when open via the model', () => {
+    it('links and marks the trigger when opened by the controlled input', () => {
         host.open = true;
         fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
@@ -274,7 +277,7 @@ describe('Tooltip', () => {
         expect(trigger.getAttribute('aria-describedby')).toMatch(/^rdx-tooltip-content-/);
     });
 
-    it('emits onOpenChange only on changes', () => {
+    it('does not request a change when the controlled input changes', () => {
         host.open = true;
         fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
@@ -284,8 +287,7 @@ describe('Tooltip', () => {
         vi.advanceTimersByTime(0);
         fixture.detectChanges();
 
-        expect(host.changes.map((event) => event.open)).toEqual([true, false]);
-        expect(host.changes.map((event) => event.eventDetails.reason)).toEqual(['none', 'none']);
+        expect(host.changes).toEqual([]);
     });
 
     it('emits Base UI-like open-change details and allows canceling opens', () => {
@@ -480,6 +482,35 @@ describe('Tooltip multiple triggers', () => {
         expect(root.trigger()).toBe(b);
         expect(b.getAttribute('data-popup-open')).toBe('');
         expect(a.hasAttribute('data-popup-open')).toBe(false);
+    });
+
+    it('applies the requested anchor and payload only after the parent opens the tooltip', () => {
+        TestBed.configureTestingModule({ imports: [MultipleTriggersHostComponent] });
+        const fixture = TestBed.createComponent(MultipleTriggersHostComponent);
+        const host = fixture.componentInstance;
+        host.open.set(false);
+        fixture.detectChanges();
+
+        const a: HTMLButtonElement = fixture.nativeElement.querySelector('#trigger-a');
+        const b: HTMLButtonElement = fixture.nativeElement.querySelector('#trigger-b');
+        const root = getRoot(fixture);
+
+        b.dispatchEvent(new Event('pointermove'));
+        fixture.detectChanges();
+        expect(host.requests).toEqual([true]);
+        expect(root.open()).toBe(false);
+        expect(root.trigger()).toBe(a);
+        expect(root.payload()).toBeUndefined();
+        expect(b.hasAttribute('aria-describedby')).toBe(false);
+
+        host.open.set(true);
+        fixture.detectChanges();
+        expect(host.requests).toEqual([true]);
+        expect(root.open()).toBe(true);
+        expect(root.trigger()).toBe(b);
+        expect(root.payload()).toBe('B');
+        expect(b.getAttribute('aria-describedby')).toBe(root.contentId);
+        expect(a.hasAttribute('aria-describedby')).toBe(false);
     });
 });
 
