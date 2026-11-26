@@ -2,6 +2,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, resource, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LucideArrowUpRight, LucideMoon, LucideSend, LucideSun } from '@lucide/angular';
+import { name as primitivesName, version as primitivesVersion } from '../../../../../packages/primitives/package.json';
 import { ProjectSettings } from '../examples/project-settings';
 import { ThemeStore } from '../shared/theme';
 import { LandingAccordion } from './landing-accordion';
@@ -27,8 +28,8 @@ export default class LandingPage {
     protected readonly agentsUrl = '/docs/?path=/docs/agents-getting-started--docs';
     protected readonly repositoryUrl = 'https://github.com/radix-ng/primitives';
     protected readonly telegramUrl = 'https://t.me/headless_angular';
-    protected readonly npmVersion = '1.3.0';
-    protected readonly npmUrl = `https://www.npmjs.com/package/@radix-ng/primitives/v/${this.npmVersion}`;
+    protected readonly npmVersion = primitivesVersion;
+    protected readonly npmUrl = `https://www.npmjs.com/package/${primitivesName}/v/${this.npmVersion}`;
     protected readonly skillCommand = 'npx skills add radix-ng/primitives/skills';
     protected readonly exampleSource = resource({
         loader: async ({ abortSignal }) => {

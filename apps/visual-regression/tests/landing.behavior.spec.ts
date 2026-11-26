@@ -99,6 +99,9 @@ test('the landing Accordion and its annotations support keyboard and pointer ins
 });
 
 test('the landing retains its navigation, brand mark, and theme at mobile and desktop widths', async ({ page }) => {
+    const { name: npmPackage, version } = JSON.parse(
+        readFileSync(resolve(__dirname, '../../../packages/primitives/package.json'), 'utf8')
+    ) as { name: string; version: string };
     await page.emulateMedia({ colorScheme: 'dark', reducedMotion: 'reduce' });
     await page.setViewportSize({ width: 375, height: 820 });
     await page.goto('/');
@@ -124,9 +127,9 @@ test('the landing retains its navigation, brand mark, and theme at mobile and de
             'href',
             'https://t.me/headless_angular'
         );
-        await expect(projectLinks.getByRole('link', { name: 'npm v1.3.0', exact: true })).toHaveAttribute(
+        await expect(projectLinks.getByRole('link', { name: `npm v${version}`, exact: true })).toHaveAttribute(
             'href',
-            'https://www.npmjs.com/package/@radix-ng/primitives/v/1.3.0'
+            `https://www.npmjs.com/package/${npmPackage}/v/${version}`
         );
     }
     await mainNav.getByRole('link', { name: 'Agents', exact: true }).click();
