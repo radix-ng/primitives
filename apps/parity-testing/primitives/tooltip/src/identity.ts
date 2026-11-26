@@ -36,7 +36,7 @@ export function identityInitialState(): {
             scenario === 'identity-top-resize' ||
             scenario === 'identity-left-resize',
         lifecycle: scenario === 'identity-lifecycle',
-        pointer: scenario === 'identity-pointer',
+        pointer: scenario === 'identity-pointer' || scenario === 'identity-pointer-focus',
         arrow: scenario === 'identity-arrow',
         side:
             scenario === 'identity-top-resize' || scenario === 'identity-arrow'

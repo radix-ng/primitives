@@ -19,7 +19,9 @@ offsets and `data-uncentered`.
 
 The lifecycle comparison covers `keepMounted`, cancellation, held exits, imperative unmount, and
 completion after exit motion. Pointer scenarios cross the gap in both directions and check how
-`disableHoverablePopup` and the three tracking modes change behavior.
+`disableHoverablePopup` and the three tracking modes change behavior. Tracking continues across
+the gap after a hover open and pauses over the popup. A keyboard open keeps the trigger anchor
+when the pointer moves, and a later hover open tracks again.
 
 Angular keeps `role="tooltip"` on its open popup and links it to the trigger via `aria-describedby`.
 The pinned Base UI popup renders without that role and description in these fixtures. When `open`

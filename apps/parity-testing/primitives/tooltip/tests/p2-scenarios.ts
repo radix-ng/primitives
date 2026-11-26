@@ -3,10 +3,20 @@ import type { TooltipDriver } from './tooltip.parity.spec';
 
 const popupSelector = '[data-identity-popup]';
 const positionerSelector = '[data-identity-positioner]';
+const pointerFixtureStyles = `
+    [data-identity-triggers] { margin-left: 180px !important; }
+    [data-identity-popup] { min-width: 140px; padding: 12px; }
+`;
 
 async function checkpoint<T>(driver: TooltipDriver, name: string, read: () => Promise<T>, expected: T): Promise<void> {
     await expect.poll(read, name).toEqual(expected);
     driver.checkpoints.push({ name, state: await read() });
+}
+
+async function waitForPositioning(driver: TooltipDriver): Promise<void> {
+    await driver.page.evaluate(
+        () => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+    );
 }
 
 function resizeScenario(side: 'top' | 'left') {
@@ -203,11 +213,7 @@ export const p2Scenarios = [
     {
         name: 'identity-pointer',
         async run(driver: TooltipDriver) {
-            await driver.page.addStyleTag({
-                content: `
-                    [data-identity-triggers] { margin-left: 180px !important; }
-                    [data-identity-popup] { min-width: 140px; padding: 12px; }`
-            });
+            await driver.page.addStyleTag({ content: pointerFixtureStyles });
             const popup = driver.page.locator(popupSelector);
             const read = () =>
                 driver.page.evaluate(() => {
@@ -236,7 +242,7 @@ export const p2Scenarios = [
             await driver.move();
             await checkpoint(driver, 'leaving the safe area closes the popup', read, closed);
 
-            const point = { x: trigger.x + trigger.width - 4, y: trigger.y + 3 };
+            let point = { x: trigger.x + trigger.width - 4, y: trigger.y + 3 };
             const tracked = (axis: 'x' | 'y' | 'both') =>
                 popup.evaluate(
                     (node, { trigger, point, axis }) => {
@@ -251,6 +257,21 @@ export const p2Scenarios = [
             await driver.page.mouse.move(point.x, point.y);
             await checkpoint(driver, 'horizontal tracking allows popup hover', read, open);
             await checkpoint(driver, 'horizontal tracking preserves the vertical anchor', () => tracked('x'), true);
+
+            const triggerPoint = { ...point };
+            point.x += 12;
+            await driver.page.mouse.move(point.x, trigger.y + trigger.height + 10, { steps: 3 });
+            await checkpoint(driver, 'horizontal tracking continues in the gap', () => tracked('x'), true);
+            const trackedPopup = (await popup.boundingBox())!;
+            const popupY = trackedPopup.y + trackedPopup.height / 2;
+            await driver.page.mouse.move(point.x, popupY);
+            await driver.page.mouse.move(point.x + 12, popupY);
+            await waitForPositioning(driver);
+            await checkpoint(driver, 'horizontal tracking pauses inside the popup', () => tracked('x'), true);
+            point = triggerPoint;
+            await driver.page.mouse.move(point.x, point.y);
+            await checkpoint(driver, 'horizontal tracking resumes at the trigger', () => tracked('x'), true);
+
             await driver.set('Track Y');
             await driver.page.mouse.move(point.x - 2, point.y + 2);
             point.x -= 2;
@@ -273,6 +294,37 @@ export const p2Scenarios = [
             await checkpoint(driver, 'disabling popup hover lets the pointer pass through', read, passThrough);
             await driver.page.mouse.move(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2, { steps: 5 });
             await checkpoint(driver, 'crossing the gap closes when popup hover is disabled', read, closed);
+        }
+    },
+    {
+        name: 'identity-pointer-focus',
+        async run(driver: TooltipDriver) {
+            await driver.page.addStyleTag({ content: pointerFixtureStyles });
+            await driver.set('Track X');
+            const macWebKit =
+                process.platform === 'darwin' && driver.page.context().browser()?.browserType().name() === 'webkit';
+            await driver.page.keyboard.press(macWebKit ? 'Alt+Tab' : 'Tab');
+            await expect(driver.trigger).toBeFocused();
+            const popup = driver.page.locator(popupSelector);
+            const trigger = (await driver.trigger.boundingBox())!;
+            const center = trigger.x + trigger.width / 2;
+            const isAnchoredAt = (x: number) =>
+                popup.evaluate((node, x) => {
+                    const bounds = node.getBoundingClientRect();
+                    return node.hasAttribute('data-open') && Math.abs(bounds.left + bounds.width / 2 - x) < 2;
+                }, x);
+            await checkpoint(driver, 'keyboard focus opens against the trigger', () => isAnchoredAt(center), true);
+            const pointerX = center + 12;
+            const pointerY = trigger.y + trigger.height / 2;
+            await driver.page.mouse.move(pointerX, pointerY);
+            await waitForPositioning(driver);
+            await checkpoint(driver, 'mouse movement preserves the keyboard anchor', () => isAnchoredAt(center), true);
+
+            await driver.page.keyboard.press('Escape');
+            await expect(popup).toHaveCount(0);
+            await driver.move();
+            await driver.page.mouse.move(pointerX, pointerY);
+            await checkpoint(driver, 'tracking resumes on a subsequent hover open', () => isAnchoredAt(pointerX), true);
         }
     }
 ];

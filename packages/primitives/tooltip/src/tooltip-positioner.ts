@@ -1,5 +1,6 @@
 import {
     afterNextRender,
+    afterRenderEffect,
     computed,
     DestroyRef,
     Directive,
@@ -83,6 +84,36 @@ export class RdxTooltipPositioner extends RdxPopperContentWrapper {
     private readonly containerEl = signal<HTMLElement | null>(null);
 
     private readonly graceArea = useGraceArea(this.triggerEl, this.containerEl, 300);
+
+    private readonly cursorTracking = afterRenderEffect((onCleanup) => {
+        const root = this.rootContext;
+        const trigger = root.trigger();
+        if (
+            !trigger ||
+            !root.isOpen() ||
+            root.trackCursorAxis() === 'none' ||
+            root.openChangeReason() === 'trigger-focus'
+        ) {
+            return;
+        }
+
+        const positioner = this.containerRef.nativeElement;
+        const view = positioner.ownerDocument.defaultView;
+        let tracking = true;
+        const onPointerMove = (event: PointerEvent) => {
+            if (event.pointerType === 'touch') return;
+            const path = event.composedPath();
+            // Freeze the position when the pointer reaches the popup. Re-entering the trigger resumes tracking.
+            if (path.includes(positioner)) {
+                tracking = false;
+            } else if (tracking || path.includes(trigger)) {
+                tracking = true;
+                root.setCursorPosition({ x: event.clientX, y: event.clientY });
+            }
+        };
+        view?.addEventListener('pointermove', onPointerMove, { passive: true });
+        onCleanup(() => view?.removeEventListener('pointermove', onPointerMove));
+    });
 
     private readonly afterNextRender = afterNextRender(() => {
         this.containerEl.set(this.containerRef.nativeElement);

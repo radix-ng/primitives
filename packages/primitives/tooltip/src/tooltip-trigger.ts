@@ -223,7 +223,8 @@ export class RdxTooltipTrigger {
             return;
         }
 
-        if (rootContext.trackCursorAxis() !== 'none') {
+        // Seed the next open. The positioner owns tracking once this trigger is active.
+        if (rootContext.trackCursorAxis() !== 'none' && !this.isOpen()) {
             rootContext.setCursorPosition({ x: event.clientX, y: event.clientY });
         }
 

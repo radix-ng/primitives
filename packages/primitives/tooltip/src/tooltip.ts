@@ -317,7 +317,7 @@ export class RdxTooltip {
         const axis = this.trackCursorAxis();
         const element = this.trigger();
 
-        if (axis === 'none' || !element) {
+        if (axis === 'none' || !element || this.openChangeReason() === 'trigger-focus') {
             return element;
         }
 
@@ -621,6 +621,7 @@ export class RdxTooltip {
 
         const inInstantGroup = !wasOpen && (this.provider?.isInstant() ?? false);
         const commit = () => {
+            if (reason === 'trigger-focus') this.cursorPosition.set(undefined);
             if (selection && (!selection.external || selection.external.element.isConnected)) {
                 this.localTrigger.set(selection);
             }
