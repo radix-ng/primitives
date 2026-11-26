@@ -11,5 +11,5 @@
         "strictTemplates": true,
         "strictInjectionParameters": true
     },
-    "include": ["app.ts", "lazy-view.ts", "settings.ts", "client.ts", "server.ts"]
+    "include": ["app.ts", "*-view.ts", "settings.ts", "client.ts", "server.ts"]
 }

@@ -61,7 +61,10 @@
                 }
             },
             "defaultConfiguration": "development",
-            "continuous": true
+            "continuous": true,
+            "readyWhen": {
+                "signal": true
+            }
         },
         "generate-mascot-docs": {
             "executor": "nx:run-commands",

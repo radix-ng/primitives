@@ -16,15 +16,6 @@
                 }
             }
         },
-        "@nx/vitest:test": {
-            "cache": true,
-            "inputs": ["default", "^production"],
-            "configurations": {
-                "ci": {
-                    "mode": "ci"
-                }
-            }
-        },
         "@nx/js:tsc": {
             "cache": true,
             "dependsOn": ["^build"],
@@ -125,5 +116,26 @@
             "commitMessage": "chore(release): publish {projectName} {version}"
         }
     },
-    "analytics": false
+    "analytics": false,
+    "plugins": [
+        {
+            "plugin": "@nx/vitest",
+            "options": {
+                "testTargetName": "bench",
+                "testMode": "watch"
+            },
+            "include": ["apps/radix-perf-testing/vite.config.mts"]
+        },
+        {
+            "plugin": "@nx/vitest",
+            "options": {
+                "testTargetName": "test",
+                "testMode": "watch"
+            },
+            "include": ["apps/radix-ssr-testing/vite.config.ts", "packages/primitives/vite.config.ts"]
+        }
+    ],
+    "affected": {
+        "legacy": true
+    }
 }

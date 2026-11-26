@@ -20,8 +20,9 @@ One Root can contain several kinds. Combobox and Select can retain a form-value 
 parent owns controlled `open`. In Combobox, `value` is the Signal Forms field. `inputValue` has its own
 editable query contract, including the behavior when a selection replaces the text.
 
-Angular permits local writes to model inputs. Its installed 22.0.2 `FormValueControl` requires
-`value: ModelSignal<T>`; checkbox controls require `checked` and must not define a `value` member.
+Angular permits local writes to model inputs. Its `FormValueControl` requires
+`value: ModelSignal<T>`. `FormCheckboxControl` requires `checked: ModelSignal<boolean>` and reserves
+the `value` member for standard value controls.
 A native submission token can use a differently named TS field with a public alias, as existing
 checkbox-style controls do. See [custom controls](https://angular.dev/guide/forms/signals/custom-controls),
 [FormValueControl](https://angular.dev/api/forms/signals/FormValueControl),

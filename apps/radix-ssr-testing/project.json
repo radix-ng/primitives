@@ -72,7 +72,10 @@
                 }
             },
             "defaultConfiguration": "development",
-            "continuous": true
+            "continuous": true,
+            "readyWhen": {
+                "signal": true
+            }
         },
         "extract-i18n": {
             "executor": "@angular/build:extract-i18n",
@@ -84,12 +87,10 @@
             "executor": "@nx/eslint:lint"
         },
         "test": {
-            "executor": "@nx/vitest:test",
-            "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
             "options": {
-                "configFile": "apps/radix-ssr-testing/vite.config.ts",
-                "reportsDirectory": "../../coverage/apps/radix-ssr-testing",
-                "watch": false
+                "watch": false,
+                "config": "./vite.config.ts",
+                "coverage.reportsDirectory": "../../coverage/apps/radix-ssr-testing"
             },
             "configurations": {
                 "ci": {
@@ -99,6 +100,10 @@
         },
         "serve-static": {
             "executor": "@nx/web:file-server",
+            "readyWhen": {
+                "signal": true
+            },
+            "dependsOn": ["build"],
             "options": {
                 "buildTarget": "radix-ssr-testing:build",
                 "staticFilePath": "dist/apps/radix-ssr-testing/browser",

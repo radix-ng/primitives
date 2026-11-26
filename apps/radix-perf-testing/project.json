@@ -7,11 +7,15 @@
     "tags": [],
     "targets": {
         "bench": {
-            "executor": "@nx/vitest:test",
             "cache": false,
             "options": {
-                "configFile": "apps/radix-perf-testing/vite.config.mts",
-                "watch": false
+                "watch": false,
+                "config": "./vite.config.mts"
+            },
+            "configurations": {
+                "ci": {
+                    "mode": "ci"
+                }
             }
         },
         "lint": {
