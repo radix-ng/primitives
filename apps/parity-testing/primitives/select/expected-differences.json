@@ -2196,24 +2196,6 @@
         "category": "dom-focus"
     },
     {
-        "scenario": "geometry: scroll arrows start and stop",
-        "checkpoint": "hover scrolled",
-        "field": "listScrolled",
-        "angular": true,
-        "react": false,
-        "category": "reference-webkit-hover",
-        "browser": "webkit"
-    },
-    {
-        "scenario": "geometry: scroll arrows start and stop",
-        "checkpoint": "hover scrolled",
-        "field": "highlighted",
-        "angular": [],
-        "react": ["item-0"],
-        "category": "reference-webkit-hover",
-        "browser": "webkit"
-    },
-    {
         "scenario": "sizing: capped",
         "checkpoint": "positioned",
         "field": "focus",

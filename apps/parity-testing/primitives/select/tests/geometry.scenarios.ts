@@ -77,12 +77,7 @@ geometryScenarios.push({
             name: 'native hover moves',
             bounds: await d.page.evaluate(() => Reflect.get(window, 'parityMoves'))
         });
-        // The pin rejects all zero-delta MouseEvents from native WebKit input. Keep the
-        // Angular contract asserted there and record the precise reference failure below.
-        const referenceHoverGap =
-            d.framework === 'react' && d.page.context().browser()!.browserType().name() === 'webkit';
-        if (!referenceHoverGap)
-            await expect.poll(() => d.page.getByTestId('list').evaluate((el) => el.scrollTop)).toBeGreaterThan(before);
+        await expect.poll(() => d.page.getByTestId('list').evaluate((el) => el.scrollTop)).toBeGreaterThan(before);
         await d.page.mouse.move(0, 0);
         await d.page.clock.runFor(100);
         const stopped = await d.page.getByTestId('list').evaluate((el) => el.scrollTop);
@@ -90,7 +85,7 @@ geometryScenarios.push({
         expect(await d.page.getByTestId('list').evaluate((el) => el.scrollTop)).toBe(stopped);
         await d.checkpoint(
             'hover scrolled',
-            { open: true, entries: [['choice', 'item-1']], listScrolled: !referenceHoverGap },
+            { open: true, entries: [['choice', 'item-1']], highlighted: [], listScrolled: true },
             before
         );
         await d.key('End');

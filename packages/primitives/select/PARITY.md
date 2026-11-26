@@ -208,12 +208,9 @@ The redundant unconditional scroll effect in each scroll button is removed, so h
 cannot independently move the list. The common resize helper tolerates missing browser APIs.
 The **Viewport Edges** story and `select-geometry.behavior.spec.ts` guard these layouts in all engines.
 
-**Recorded reference gap:** `reference-webkit-hover` is scoped to the hover checkpoint in WebKit:
-Angular scrolls after native mouse travel, while the pin rejects zero `movementX/Y`. The exact
-`listScrolled: true/false` pair is recorded separately from focus; values/events stay comparable.
-The same guarded handler leaves the reference's `item-0` highlight active; that exact pair is
-scoped to the same engine/checkpoint too.
-Angular's WebKit hover/stop behavior remains required by the Storybook test.
+Playwright 1.65.1's WebKit reports movement deltas during trusted travel over the scroll arrow.
+The pinned scenario verifies that hover clears highlight and starts scrolling in both fixtures,
+and that leaving the arrow stops scrolling. The DOM focus difference is recorded separately.
 
 ## Item-aligned sizing, expansion and anchored fallback
 

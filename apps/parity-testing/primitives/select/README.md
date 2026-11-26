@@ -51,10 +51,6 @@ the popup remains open and the page stays locked. These checkpoints need no focu
 field, optionally scoped to one browser. Any new, changed **or disappeared** difference fails and requires review. Shared assertions
 still apply to both implementations. The report preserves all raw observations even on failure.
 
-- `reference-webkit-hover`: the pin ignores native hover moves with zero `movementX/Y` in WebKit.
-  The hover checkpoint records the exact Angular `listScrolled: true` / React `false` pair; the
-  reference also retains `item-0` highlight instead of clearing it on hover. Both fields are
-  scoped to WebKit. The Angular Storybook hover check still has to pass. Native coordinates/deltas are retained.
 - `transformed-alignment-fallback`: in the two transformed item-aligned cases, Angular uses the
   common anchored engine and stays in the viewport; the pin keeps item mode and overflows. Only
   exact `itemAligned` / `popupWithinViewport` pairs are excepted; keyboard selection and form events
