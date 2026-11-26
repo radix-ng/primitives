@@ -2,7 +2,7 @@
 
 > One example from the [Checkbox](../components/checkbox.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.1` — if the installed version differs, verify the API against the installed package.
 
 `onCheckedChange` emits `{ checked, eventDetails }`; `rdxCheckboxGroup` emits `{ value, eventDetails }`.
 A child or select-all checkbox emits first. The group receives the same event details if the child

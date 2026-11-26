@@ -2,7 +2,7 @@
 
 > One example from the [Menubar](../components/menubar.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.1` — if the installed version differs, verify the API against the installed package.
 
 Use `<rdx-menubar-default orientation="vertical" />` to render the demo vertically.
 Up/Down move between the closed triggers. The cross-axis arrow opens a menu: Right in LTR, Left in RTL.

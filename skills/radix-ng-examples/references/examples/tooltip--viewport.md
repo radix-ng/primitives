@@ -2,7 +2,7 @@
 
 > One example from the [Tooltip](../components/tooltip.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.1` — if the installed version differs, verify the API against the installed package.
 
 Share a tooltip across several triggers and animate the popup as its content and size change.
 

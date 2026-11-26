@@ -2,7 +2,7 @@
 
 > One example from the [Time Field](../components/time-field.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.1` — if the installed version differs, verify the API against the installed package.
 
 Bind `[formField]` directly to the root. Segment edits update the time model, and Reset restores its
 initial value. No extra input is needed for Signal Forms.

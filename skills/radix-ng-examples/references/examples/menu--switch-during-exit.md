@@ -2,7 +2,7 @@
 
 > One example from the [Menu](../components/menu.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.1` — if the installed version differs, verify the API against the installed package.
 
 Reopen from another trigger while a CSS or deferred exit is pending. The accepted opening cancels
 the earlier close, so it does not emit a stale close completion. Open Inbox uses a typed handle;

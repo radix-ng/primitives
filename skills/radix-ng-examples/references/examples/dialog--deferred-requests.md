@@ -2,7 +2,7 @@
 
 > One example from the [Dialog](../components/dialog.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.1` — if the installed version differs, verify the API against the installed package.
 
 Bind `[open]` and listen to `(openChange)` when the application decides when to accept requests.
 Focus and modal behavior follow the bound value. `defaultOpen` applies only to uncontrolled state

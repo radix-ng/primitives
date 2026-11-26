@@ -2,7 +2,7 @@
 
 > One example from the [Select](../components/select.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.1` — if the installed version differs, verify the API against the installed package.
 
 Pass `items` to Root as a record (`{ fr: 'France' }`), an array of `{ value, label }` descriptors, or
 an array of groups with an `items` array. These provide text labels for `rdxSelectValue` before the

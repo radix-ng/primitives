@@ -2,7 +2,7 @@
 
 > One example from the [Menu](../components/menu.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.1` — if the installed version differs, verify the API against the installed package.
 
 Bind a native element or `ElementRef` to the Portal's `container`. An explicit `null` waits without
 creating the popup, even with `keepMounted`; an omitted value or `undefined` uses the default body

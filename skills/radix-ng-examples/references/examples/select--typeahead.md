@@ -2,7 +2,7 @@
 
 > One example from the [Select](../components/select.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.1` — if the installed version differs, verify the API against the installed package.
 
 Focus the closed trigger and type to select a matching option without opening the popup or moving
 focus. Repeated initials cycle through matches; `new y` selects **New York**. Closed-trigger search

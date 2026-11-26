@@ -2,7 +2,7 @@
 
 > One example from the [Menu](../components/menu.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.1` — if the installed version differs, verify the API against the installed package.
 
 Set `openOnHover` on the trigger to open after `delay`; `closeDelay` and the grace area protect
 travel into the popup. Hover opening focuses the popup without highlighting a command. Clicking

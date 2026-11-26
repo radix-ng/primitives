@@ -2,7 +2,7 @@
 
 > One example from the [Context Menu](../components/context-menu.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.1` — if the installed version differs, verify the API against the installed package.
 
 The nearest context area owns a right-click or touch long-press. It consumes the native gesture even
 when an application cancels opening, so the parent area cannot issue a second request.

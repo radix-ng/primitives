@@ -2,7 +2,7 @@
 
 > One example from the [Progress](../components/progress.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.1` — if the installed version differs, verify the API against the installed package.
 
 Use `min` and `max` to set the range. Use `locale` and `format` for localized number formatting, or
 `valueLabel` for a custom display function.

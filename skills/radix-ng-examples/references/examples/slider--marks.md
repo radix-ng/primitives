@@ -2,7 +2,7 @@
 
 > One example from the [Slider](../components/slider.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.1` — if the installed version differs, verify the API against the installed package.
 
 Place tick marks and labels at percentages of the value range. Use `step` to snap the thumb
 to regularly spaced marks.

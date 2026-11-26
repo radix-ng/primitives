@@ -1,3 +1,59 @@
+## 1.4.1 (2026-11-26)
+
+### 🚀 Features
+
+- **tooltip:** align popup lifecycle and positioning with Base UI ([23b1c846](https://github.com/radix-ng/primitives/commit/23b1c846))
+- **tooltip:** add animated viewport handoffs ([1a268fea](https://github.com/radix-ng/primitives/commit/1a268fea))
+- ⚠️  **tooltip:** support controlled trigger identity ([8f49a645](https://github.com/radix-ng/primitives/commit/8f49a645))
+- **storybook:** adopt Base UI Tailwind demo styles ([ababeb6a](https://github.com/radix-ng/primitives/commit/ababeb6a))
+- ⚠️  **field:** expose validity and preserve authored relationships ([e5fac0ad](https://github.com/radix-ng/primitives/commit/e5fac0ad))
+- ⚠️  **meter:** align range semantics and indicator rendering ([3cb20d87](https://github.com/radix-ng/primitives/commit/3cb20d87))
+
+### 🩹 Fixes
+
+- **slider:** align inset ranges to the track ([83a26ade](https://github.com/radix-ng/primitives/commit/83a26ade))
+- **slider:** reflect Field state and observe replacement controls ([1237fc12](https://github.com/radix-ng/primitives/commit/1237fc12))
+- **slider:** integrate Field and prehydrate edge geometry ([c2843ddd](https://github.com/radix-ng/primitives/commit/c2843ddd))
+- **slider:** align value ownership and range interactions ([570c030e](https://github.com/radix-ng/primitives/commit/570c030e))
+- **tooltip:** align the viewport arrow after resizing ([d8096afd](https://github.com/radix-ng/primitives/commit/d8096afd))
+- **tooltip:** track cursor across the hover gap ([a2e86806](https://github.com/radix-ng/primitives/commit/a2e86806))
+- restore Field change validation and update Agents docs check ([c4751fbb](https://github.com/radix-ng/primitives/commit/c4751fbb))
+- ⚠️  **tooltip:** align provider timing and disabled interactions ([d6d4fe99](https://github.com/radix-ng/primitives/commit/d6d4fe99))
+- ⚠️  **tooltip:** separate controlled open state from requests ([e52cff9a](https://github.com/radix-ng/primitives/commit/e52cff9a))
+- ⚠️  **toolbar:** align separator orientation defaults ([fc359b80](https://github.com/radix-ng/primitives/commit/fc359b80))
+- ⚠️  **field:** register native constraints and scope form state ([f9b017fa](https://github.com/radix-ng/primitives/commit/f9b017fa))
+
+### Refactors
+
+- ⚠️  **visually-hidden:** remove public entry point ([602a25c5](https://github.com/radix-ng/primitives/commit/602a25c5))
+
+### ⚠️  Breaking Changes
+
+- **visually-hidden:** remove public entry point  ([602a25c5](https://github.com/radix-ng/primitives/commit/602a25c5))
+- **tooltip:** support controlled trigger identity  ([8f49a645](https://github.com/radix-ng/primitives/commit/8f49a645))
+- **tooltip:** align provider timing and disabled interactions  ([d6d4fe99](https://github.com/radix-ng/primitives/commit/d6d4fe99))
+- **tooltip:** separate controlled open state from requests  ([e52cff9a](https://github.com/radix-ng/primitives/commit/e52cff9a))
+- **toolbar:** align separator orientation defaults  ([fc359b80](https://github.com/radix-ng/primitives/commit/fc359b80))
+  Binding undefined to Toolbar Separator orientation uses
+  the standalone horizontal default. Omit orientation to follow the toolbar.
+- **field:** expose validity and preserve authored relationships  ([e5fac0ad](https://github.com/radix-ng/primitives/commit/e5fac0ad))
+  Field description and error registrations now
+  return cleanup functions in place of separate add and remove methods.
+  Automatic Field errors are hidden while their field is disabled.
+- **field:** register native constraints and scope form state  ([f9b017fa](https://github.com/radix-ng/primitives/commit/f9b017fa))
+  Custom Field adapters now register with
+  registerStateProvider(provider) and dispose the returned registration.
+  Explicit dirty and touched values override observed interaction state
+  when an adapter does not own that state.
+- **meter:** align range semantics and indicator rendering  ([3cb20d87](https://github.com/radix-ng/primitives/commit/3cb20d87))
+  Meter Root announces the value through aria-valuetext.
+  The visual Value is aria-hidden and no longer supplies an automatic
+  aria-describedby. MeterProps uses the aria-valuetext attribute key.
+
+### ❤️ Thank You
+
+- Oleg Pimenov @pimenovoleg
+
 ## 1.4.0 (2026-11-22)
 
 ### 🚀 Features

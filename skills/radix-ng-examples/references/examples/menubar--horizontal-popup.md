@@ -2,7 +2,7 @@
 
 > One example from the [Menubar](../components/menubar.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.1` — if the installed version differs, verify the API against the installed package.
 
 The bar's `orientation` and each Menu Root's `orientation` are independent.
 Use `<rdx-menubar-default menuOrientation="horizontal" />` for horizontal popup items, with

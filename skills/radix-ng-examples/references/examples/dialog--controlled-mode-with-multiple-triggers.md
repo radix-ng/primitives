@@ -2,7 +2,7 @@
 
 > One example from the [Dialog](../components/dialog.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.1` — if the installed version differs, verify the API against the installed package.
 
 Bind both `[(open)]` and `[(triggerId)]` to choose which trigger is active from component state.
 With a one-way `[triggerId]` binding, the supplied ID stays active until the parent updates it.

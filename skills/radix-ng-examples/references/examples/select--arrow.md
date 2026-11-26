@@ -2,7 +2,7 @@
 
 > One example from the [Select](../components/select.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.1` — if the installed version differs, verify the API against the installed package.
 
 Place `rdxSelectArrow` inside the popup to point at its trigger. It reuses the shared Popper geometry,
 including collision handling, logical sides and `arrowPadding` on the positioner. `width` and `height`

@@ -2,7 +2,7 @@
 
 > One example from the [Menu](../components/menu.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.1` — if the installed version differs, verify the API against the installed package.
 
 Declare Menu inside Popover's popup so portaled commands keep their floating ancestry. Escape
 closes the submenu, Menu, then Popover. Selecting an item preserves Popover; clicking outside both

@@ -2,7 +2,7 @@
 
 > One example from the [Select](../components/select.md) index — imports, anatomy, and links to the API and styling contracts are there.
 
-> Generated from `@radix-ng/primitives@1.4.0` — if the installed version differs, verify the API against the installed package.
+> Generated from `@radix-ng/primitives@1.4.1` — if the installed version differs, verify the API against the installed package.
 
 `RdxSelectRoot<Value, Multiple>` and `RdxSelectItem<Value>` accept an unconstrained Value. Values are
 kept intact in Angular models and change events. Equality defaults to `Object.is`; for distinct Date
