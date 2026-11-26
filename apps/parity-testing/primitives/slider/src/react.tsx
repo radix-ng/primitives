@@ -20,6 +20,7 @@ import {
     range,
     recordChange,
     recordCommit,
+    replaceControl,
     step,
     thumbNames,
     type Value
@@ -32,7 +33,16 @@ function SliderFixture() {
     const [defaults, setDefaults] = useState<Value | undefined>(initialDefault);
     const [disabled, setDisabled] = useState(false);
     const [min, setMin] = useState(initialMin);
+    const [generation, setGeneration] = useState('first');
     const latest = useRef<Value>(undefined);
+    const track = (
+        <Slider.Track className="track" data-testid="track">
+            <Slider.Indicator className="indicator" data-testid="indicator" />
+            {thumbNames.map((name, index) => (
+                <Slider.Thumb key={index} index={index} aria-label={name} className="thumb" data-testid="thumb" />
+            ))}
+        </Slider.Track>
+    );
     const slider = (
         <DirectionProvider direction={direction}>
             <Slider.Root
@@ -55,22 +65,23 @@ function SliderFixture() {
                 name="volume"
                 dir={direction}
             >
-                {!field && <Slider.Label>Volume</Slider.Label>}
+                <Slider.Label data-testid="slider-label">{field ? 'Playback level' : 'Volume'}</Slider.Label>
                 <Slider.Value data-testid="value" />
-                <Slider.Control className="control" data-testid="control">
-                    <Slider.Track className="track">
-                        <Slider.Indicator className="indicator" data-testid="indicator" />
-                        {thumbNames.map((name, index) => (
-                            <Slider.Thumb
-                                key={index}
-                                index={index}
-                                aria-label={name}
-                                className="thumb"
-                                data-testid="thumb"
-                            />
-                        ))}
-                    </Slider.Track>
-                </Slider.Control>
+                {replaceControl ? (
+                    <div className="replaceable-control-frame" data-testid="control-frame">
+                        <Slider.Control
+                            key={generation}
+                            className="control"
+                            data-testid="control"
+                            data-generation={generation}
+                        />
+                        {track}
+                    </div>
+                ) : (
+                    <Slider.Control className="control" data-testid="control">
+                        {track}
+                    </Slider.Control>
+                )}
             </Slider.Root>
         </DirectionProvider>
     );
@@ -87,7 +98,9 @@ function SliderFixture() {
                             <Field.Root
                                 name="level"
                                 validationMode="onBlur"
-                                validate={() => 'Volume is out of range.'}
+                                validate={(value) =>
+                                    (Array.isArray(value) ? value[0] : value) < 22 ? 'Volume is out of range.' : null
+                                }
                                 data-testid="field"
                             >
                                 <Field.Label nativeLabel={false} render={<div />}>
@@ -119,6 +132,11 @@ function SliderFixture() {
             <button onClick={() => setDisabled(!disabled)} type="button">
                 Toggle disabled
             </button>
+            {replaceControl && (
+                <button onClick={() => setGeneration('second')} type="button">
+                    Replace control
+                </button>
+            )}
         </>
     );
 }

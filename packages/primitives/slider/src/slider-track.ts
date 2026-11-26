@@ -1,5 +1,6 @@
 import { Directive } from '@angular/core';
 import { injectSliderRootContext } from './slider-context';
+import { sliderPartStateAttributes } from './slider-state-attributes';
 
 /**
  * The track of the slider — the positioning context for the indicator and thumbs.
@@ -11,9 +12,7 @@ import { injectSliderRootContext } from './slider-context';
     exportAs: 'rdxSliderTrack',
     host: {
         style: 'position: relative;',
-        '[attr.data-orientation]': 'root.orientation()',
-        '[attr.data-disabled]': 'root.isDisabled() ? "" : undefined',
-        '[attr.data-dragging]': 'root.dragging() ? "" : undefined'
+        ...sliderPartStateAttributes
     }
 })
 export class RdxSliderTrack {

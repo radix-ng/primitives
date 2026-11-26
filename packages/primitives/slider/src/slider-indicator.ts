@@ -1,5 +1,6 @@
 import { computed, Directive } from '@angular/core';
 import { injectSliderRootContext } from './slider-context';
+import { sliderPartStateAttributes } from './slider-state-attributes';
 import { valueToPercent } from './slider.utils';
 
 function getInsetStyles(
@@ -52,9 +53,7 @@ function getInsetStyles(
     exportAs: 'rdxSliderIndicator',
     host: {
         '[style]': 'indicatorStyle()',
-        '[attr.data-orientation]': 'root.orientation()',
-        '[attr.data-disabled]': 'root.isDisabled() ? "" : undefined',
-        '[attr.data-dragging]': 'root.dragging() ? "" : undefined',
+        ...sliderPartStateAttributes,
         '[attr.data-rdx-slider-indicator]': 'root.prehydratingEdge() ? "" : undefined'
     }
 })

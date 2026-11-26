@@ -1,5 +1,37 @@
 [
     {
+        "scenario": "edge-replace-control",
+        "checkpoint": "geometry after resizing the replacement",
+        "field": "start",
+        "angular": 0,
+        "react": 10,
+        "category": "slider-control-resize"
+    },
+    {
+        "scenario": "edge-replace-control",
+        "checkpoint": "geometry after resizing the replacement",
+        "field": "fill",
+        "angular": 10,
+        "react": 20,
+        "category": "slider-control-resize"
+    },
+    {
+        "scenario": "field",
+        "checkpoint": "neutral field parts",
+        "field": "filled",
+        "angular": 8,
+        "react": 0,
+        "category": "slider-field-filled"
+    },
+    {
+        "scenario": "fieldset-disabled",
+        "checkpoint": "disabled field parts",
+        "field": "filled",
+        "angular": 7,
+        "react": 0,
+        "category": "slider-field-filled"
+    },
+    {
         "scenario": "disable-drag",
         "checkpoint": "drag marker after disable",
         "field": "dragging",

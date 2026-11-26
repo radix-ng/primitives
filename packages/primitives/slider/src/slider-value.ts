@@ -1,5 +1,6 @@
 import { computed, Directive, input } from '@angular/core';
 import { injectSliderRootContext } from './slider-context';
+import { sliderPartStateAttributes } from './slider-state-attributes';
 
 /**
  * Displays the slider's current value(s) as formatted text. Renders into an
@@ -13,7 +14,8 @@ import { injectSliderRootContext } from './slider-context';
     host: {
         'aria-live': 'off',
         '[attr.for]': 'forAttr()',
-        '[textContent]': 'display()'
+        '[textContent]': 'display()',
+        ...sliderPartStateAttributes
     }
 })
 export class RdxSliderValue {

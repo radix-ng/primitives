@@ -73,6 +73,35 @@ class SliderDriver {
         this.checkpoints.push({ name, state: await read() });
     }
 
+    async fieldHooks(name: string, thumbCount: number, attrs: string[], compareFilled = false) {
+        const read = () =>
+            this.root.evaluate((root) => {
+                const parts = root.querySelectorAll(
+                    '[data-testid="slider-label"], [data-testid="control"], [data-testid="track"], [data-testid="thumb"], [data-testid="indicator"], [data-testid="value"]'
+                );
+                const hooks = [
+                    'data-dirty',
+                    'data-disabled',
+                    'data-focused',
+                    'data-invalid',
+                    'data-touched',
+                    'data-valid'
+                ];
+                const nodes = [root, ...parts];
+                return {
+                    states: nodes.map((part) => hooks.filter((attr) => part.hasAttribute(attr))),
+                    filled: nodes.filter((part) => part.hasAttribute('data-filled')).length
+                };
+            });
+        const partCount = 6 + thumbCount;
+        await expect.poll(read, name).toEqual({
+            states: Array.from({ length: partCount }, () => attrs),
+            filled: this.framework === 'angular' ? partCount : 0
+        });
+        const { states, filled } = await read();
+        this.checkpoints.push({ name, state: compareFilled ? { states, filled } : { states } });
+    }
+
     async position(fraction: number) {
         const box = (await this.control.boundingBox())!;
         return { x: box.x + box.width * fraction, y: box.y + box.height / 2 };
@@ -102,8 +131,10 @@ const scenarios: { name: string; run(driver: SliderDriver): Promise<void> }[] = 
             const error = driver.page.getByText('Volume is out of range.');
             await expect(minimum).toHaveAccessibleDescription('Set the playback volume.');
             await expect(error).toBeHidden();
+            await driver.fieldHooks('neutral field parts', 2, [], true);
             await minimum.focus();
             await expect(field).toHaveAttribute('data-focused', '');
+            await driver.fieldHooks('focused parts', 2, ['data-focused']);
             await minimum.press('ArrowRight');
             await expect(field).toHaveAttribute('data-dirty', '');
             await expect(error).toBeHidden();
@@ -114,6 +145,7 @@ const scenarios: { name: string; run(driver: SliderDriver): Promise<void> }[] = 
             await expect(field).not.toHaveAttribute('data-focused');
             await expect(field).toHaveAttribute('data-touched', '');
             await expect(error).toBeVisible();
+            await driver.fieldHooks('invalid parts after blur', 2, ['data-dirty', 'data-invalid', 'data-touched']);
             await expect(maximum).toHaveAccessibleDescription('Set the playback volume. Volume is out of range.');
             const submitted = await driver.page
                 .locator('#values')
@@ -127,6 +159,10 @@ const scenarios: { name: string; run(driver: SliderDriver): Promise<void> }[] = 
                 { ...change([21, 60], 'keyboard', 'keydown'), target: { name: 'level', value: [21, 60] } }
             ]);
             driver.checkpoints.push({ name: 'blurred invalid range', state: { submitted, changes } });
+            await minimum.press('ArrowRight');
+            await driver.button('Before').focus();
+            await expect(error).toBeHidden();
+            await driver.fieldHooks('valid parts after correction', 2, ['data-dirty', 'data-touched', 'data-valid']);
         }
     },
     {
@@ -139,6 +175,7 @@ const scenarios: { name: string; run(driver: SliderDriver): Promise<void> }[] = 
             await expect(field).toHaveAttribute('data-disabled', '');
             await expect(driver.root).toHaveAttribute('data-disabled', '');
             await expect(input).toBeDisabled();
+            await driver.fieldHooks('disabled field parts', 1, ['data-disabled'], true);
             const point = await driver.position(0.8);
             await driver.page.mouse.click(point.x, point.y);
             await expect(input).toHaveValue('20');
@@ -423,6 +460,44 @@ const scenarios: { name: string; run(driver: SliderDriver): Promise<void> }[] = 
                 changes: [change(75, 'track-press', 'pointerdown')],
                 commits: [notification(75, 'track-press', 'pointerup')]
             });
+        }
+    },
+    {
+        name: 'edge-replace-control',
+        async run(driver) {
+            const indicator = driver.page.getByTestId('indicator');
+            const thumb = driver.page.getByTestId('thumb');
+            const geometry = async () => {
+                const [control, handle, fill] = await Promise.all(
+                    [driver.control, thumb, indicator].map((part) => part.boundingBox())
+                );
+                return {
+                    start: Math.round(handle!.x - control!.x),
+                    fill: Math.round(fill!.width)
+                };
+            };
+            await driver.inputs.press('Home');
+            await expect.poll(geometry).toEqual({ start: 0, fill: 10 });
+            const originalInput = await driver.inputs.elementHandle();
+
+            await driver.button('Replace control').click();
+            await expect(driver.control).toHaveAttribute('data-generation', 'second');
+            expect(await driver.inputs.evaluate((input, original) => input === original, originalInput)).toBe(true);
+            await originalInput?.dispose();
+            await expect.poll(geometry, 'replacement at the original width').toEqual({ start: 0, fill: 10 });
+            await driver.page.evaluate(
+                () =>
+                    new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+            );
+
+            const frame = driver.page.getByTestId('control-frame');
+            await frame.evaluate((element: HTMLElement) => {
+                element.style.width = '400px';
+            });
+            await expect
+                .poll(geometry, 'resize of the replacement control')
+                .toEqual(driver.framework === 'angular' ? { start: 0, fill: 10 } : { start: 10, fill: 20 });
+            driver.checkpoints.push({ name: 'geometry after resizing the replacement', state: await geometry() });
         }
     },
     ...(['edge', 'edge-client-only'] as const).map((name) => ({

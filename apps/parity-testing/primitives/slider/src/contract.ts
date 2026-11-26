@@ -23,7 +23,9 @@ declare global {
 
 export const scenario = new URLSearchParams(location.search).get('case') ?? '';
 export const collision: Collision = scenario === 'swap' || scenario === 'none' ? scenario : 'push';
-export const alignment: Alignment = scenario === 'edge' || scenario === 'edge-client-only' ? scenario : 'center';
+export const replaceControl = scenario === 'edge-replace-control';
+export const alignment: Alignment =
+    scenario === 'edge' || replaceControl ? 'edge' : scenario === 'edge-client-only' ? scenario : 'center';
 export const field = scenario === 'field' || scenario === 'fieldset-disabled';
 export const range = ['push', 'swap', 'none', 'range-labels', 'reset', 'controlled-range', 'field'].includes(scenario);
 export const externalForm = scenario === 'reset' ? 'values' : undefined;

@@ -1,5 +1,4 @@
 import {
-    afterNextRender,
     afterRenderEffect,
     booleanAttribute,
     computed,
@@ -10,12 +9,12 @@ import {
     input,
     numberAttribute,
     signal,
-    type Signal,
-    untracked
+    type Signal
 } from '@angular/core';
 import { BooleanInput, NumberInput } from '@radix-ng/primitives/core';
 import { injectSliderRootContext } from './slider-context';
 import type { RdxSliderThumbRef } from './slider-root';
+import { sliderPartStateAttributes } from './slider-state-attributes';
 import { getInsetThumbPositionPercent, valueToPercent } from './slider.utils';
 
 /**
@@ -31,9 +30,8 @@ import { getInsetThumbPositionPercent, valueToPercent } from './slider.utils';
         '[style]': 'thumbStyle()',
         '[attr.data-index]': 'index()',
         '[attr.data-rdx-slider-percent]': 'prehydrationPercent()',
-        '[attr.data-orientation]': 'root.orientation()',
-        '[attr.data-disabled]': 'disabled() ? "" : undefined',
-        '[attr.data-dragging]': 'root.dragging() ? "" : undefined'
+        ...sliderPartStateAttributes,
+        '[attr.data-disabled]': 'disabled() ? "" : undefined'
     }
 })
 export class RdxSliderThumb implements RdxSliderThumbRef {
@@ -133,51 +131,36 @@ export class RdxSliderThumb implements RdxSliderThumbRef {
         const destroyRef = inject(DestroyRef);
         destroyRef.onDestroy(this.root.registerThumb(this));
 
-        afterNextRender(() => {
-            const win = this.root.getOwnerWindow();
-            const ResizeObserverCtor = (win as (Window & { ResizeObserver?: typeof ResizeObserver }) | undefined)
-                ?.ResizeObserver;
-            if (!ResizeObserverCtor) {
-                this.updateInsetPosition();
-                return;
-            }
-
-            const observer = new ResizeObserverCtor(() => this.updateInsetPosition());
-            const control = this.root.controlRef();
-            if (control) {
+        afterRenderEffect({
+            read: (onCleanup) => {
+                const control = this.root.controlRef();
+                const ResizeObserverCtor = control?.ownerDocument.defaultView?.ResizeObserver;
+                if (!this.root.inset() || !control || !ResizeObserverCtor) return;
+                const observer = new ResizeObserverCtor(() => this.updateInsetPosition());
                 observer.observe(control);
+                observer.observe(this.element);
+                onCleanup(() => observer.disconnect());
             }
-            observer.observe(this.element);
-            destroyRef.onDestroy(() => observer.disconnect());
         });
-
-        afterRenderEffect(() => {
-            this.root.inset();
-            this.root.orientation();
-            this.percent();
-            this.index();
-            this.root.values();
-            untracked(() => queueMicrotask(() => this.updateInsetPosition()));
+        afterRenderEffect({
+            read: () => {
+                this.root.values().length;
+                this.updateInsetPosition();
+            }
         });
     }
 
     private updateInsetPosition(): void {
-        if (!this.root.inset()) {
-            this.insetPosition.set(undefined);
-            return;
-        }
-
         const control = this.root.controlRef();
-        if (!control) {
-            return;
-        }
-
-        const position = getInsetThumbPositionPercent(
-            control,
-            this.element,
-            this.percent(),
-            this.root.orientation() === 'vertical'
-        );
+        const position =
+            control && this.root.inset()
+                ? getInsetThumbPositionPercent(
+                      control,
+                      this.element,
+                      this.percent(),
+                      this.root.orientation() === 'vertical'
+                  )
+                : undefined;
         this.insetPosition.set(position);
         this.root.setIndicatorPosition(this.index(), position);
     }

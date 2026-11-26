@@ -27,3 +27,16 @@
     height: 20px;
     background: darkgray;
 }
+
+.replaceable-control-frame {
+    position: relative;
+    width: 200px;
+    height: 20px;
+}
+
+.replaceable-control-frame > .control {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    margin: 0;
+}

@@ -3,6 +3,7 @@ import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
 import { watch } from '@radix-ng/primitives/core';
 import { injectSliderRootContext } from './slider-context';
 import type { SliderValue } from './slider-root';
+import { sliderPartStateAttributes } from './slider-state-attributes';
 import {
     clamp,
     getControlOffset,
@@ -27,9 +28,7 @@ type PointerCoords = { x: number; y: number };
     selector: 'div[rdxSliderControl]',
     exportAs: 'rdxSliderControl',
     host: {
-        '[attr.data-orientation]': 'root.orientation()',
-        '[attr.data-disabled]': 'root.isDisabled() ? "" : undefined',
-        '[attr.data-dragging]': 'root.dragging() ? "" : undefined',
+        ...sliderPartStateAttributes,
         '[attr.data-rdx-slider-control]': 'root.prehydratingEdge() ? "" : undefined',
         '(pointerdown)': 'onPointerDown($event)'
     }
@@ -88,6 +87,7 @@ export class RdxSliderControl {
         inject(DestroyRef).onDestroy(() => {
             control.removeEventListener('touchstart', this.onTouchStart);
             this.finishInteraction();
+            if (this.root.controlRef() === control) this.root.controlRef.set(null);
         });
     }
 

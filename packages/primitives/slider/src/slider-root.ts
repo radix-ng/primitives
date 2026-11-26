@@ -124,12 +124,12 @@ function cloneChangeEventWithTarget(event: Event, value: SliderValue, name: stri
         '[attr.data-disabled]': 'isDisabled() ? "" : undefined',
         '[attr.data-dragging]': 'dragging() ? "" : undefined',
         '[attr.data-rdx-slider-prehydration]': 'prehydratingEdge() ? values().length : undefined',
-        '[attr.data-invalid]': 'displayValid() === false ? "" : undefined',
-        '[attr.data-valid]': 'displayValid() === true ? "" : undefined',
-        '[attr.data-touched]': 'formUi.touchedState() || field?.touchedState() ? "" : undefined',
-        '[attr.data-dirty]': 'formUi.dirtyState() || field?.dirtyState() ? "" : undefined',
-        '[attr.data-filled]': 'field?.filledState() ? "" : undefined',
-        '[attr.data-focused]': 'field?.focusedState() ? "" : undefined',
+        '[attr.data-invalid]': 'fieldState().valid === false ? "" : undefined',
+        '[attr.data-valid]': 'fieldState().valid === true ? "" : undefined',
+        '[attr.data-touched]': 'fieldState().touched ? "" : undefined',
+        '[attr.data-dirty]': 'fieldState().dirty ? "" : undefined',
+        '[attr.data-filled]': 'fieldState().filled ? "" : undefined',
+        '[attr.data-focused]': 'fieldState().focused ? "" : undefined',
         '(focusout)': 'onFocusOut($event)'
     }
 })
@@ -142,6 +142,14 @@ export class RdxSliderRoot extends RdxFormUiControlBase implements ControlValueA
     /** @ignore */
     readonly field = injectFieldRootContext(true);
     private readonly fieldset = injectFieldsetRootContext(true);
+    /** @ignore */
+    readonly fieldState = computed(() => ({
+        valid: this.displayValid(),
+        touched: this.formUi.touchedState() || this.field?.touchedState() === true,
+        dirty: this.formUi.dirtyState() || this.field?.dirtyState() === true,
+        filled: this.field?.filledState() === true,
+        focused: this.field?.focusedState() === true
+    }));
 
     readonly id = input<string>(injectId('rdx-slider-'));
 
@@ -424,14 +432,11 @@ export class RdxSliderRoot extends RdxFormUiControlBase implements ControlValueA
 
     /** @ignore */
     setIndicatorPosition(index: number, position: number | undefined): void {
-        this.indicatorPosition.update(([start, end]) => {
-            if (index === 0) {
-                return [position, end];
-            }
-            if (index === this.values().length - 1) {
-                return [start, position];
-            }
-            return [start, end];
+        this.indicatorPosition.update((previous) => {
+            const [start, end] = previous;
+            if (index === 0 && start !== position) return [position, end];
+            if (index > 0 && index === this.values().length - 1 && end !== position) return [start, position];
+            return previous;
         });
     }
 
@@ -556,10 +561,5 @@ export class RdxSliderRoot extends RdxFormUiControlBase implements ControlValueA
     /** @ignore */
     setDragging(dragging: boolean): void {
         this.dragging.set(dragging);
-    }
-
-    /** @ignore */
-    getOwnerWindow(): Window | undefined {
-        return this.document.defaultView ?? undefined;
     }
 }

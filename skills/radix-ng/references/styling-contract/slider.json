@@ -69,6 +69,36 @@
       "values": "Present while a thumb is dragged."
     },
     {
+      "attribute": "data-valid",
+      "parts": "Control",
+      "values": "Present when the slider displays a valid state."
+    },
+    {
+      "attribute": "data-invalid",
+      "parts": "Control",
+      "values": "Present when the slider displays an invalid state."
+    },
+    {
+      "attribute": "data-touched",
+      "parts": "Control",
+      "values": "Present when the slider or its Field has been touched."
+    },
+    {
+      "attribute": "data-dirty",
+      "parts": "Control",
+      "values": "Present when the slider or its Field is dirty."
+    },
+    {
+      "attribute": "data-focused",
+      "parts": "Control",
+      "values": "Present when the enclosing Field is focused."
+    },
+    {
+      "attribute": "data-filled",
+      "parts": "Control",
+      "values": "Present when the enclosing Field contains a value."
+    },
+    {
       "attribute": "data-orientation",
       "parts": "Label",
       "values": "\"horizontal\" | \"vertical\""
@@ -82,6 +112,36 @@
       "attribute": "data-dragging",
       "parts": "Label",
       "values": "Present while a thumb is dragged."
+    },
+    {
+      "attribute": "data-valid",
+      "parts": "Label",
+      "values": "Present when the slider displays a valid state."
+    },
+    {
+      "attribute": "data-invalid",
+      "parts": "Label",
+      "values": "Present when the slider displays an invalid state."
+    },
+    {
+      "attribute": "data-touched",
+      "parts": "Label",
+      "values": "Present when the slider or its Field has been touched."
+    },
+    {
+      "attribute": "data-dirty",
+      "parts": "Label",
+      "values": "Present when the slider or its Field is dirty."
+    },
+    {
+      "attribute": "data-focused",
+      "parts": "Label",
+      "values": "Present when the enclosing Field is focused."
+    },
+    {
+      "attribute": "data-filled",
+      "parts": "Label",
+      "values": "Present when the enclosing Field contains a value."
     },
     {
       "attribute": "data-orientation",
@@ -99,6 +159,36 @@
       "values": "Present while a thumb is dragged."
     },
     {
+      "attribute": "data-valid",
+      "parts": "Track",
+      "values": "Present when the slider displays a valid state."
+    },
+    {
+      "attribute": "data-invalid",
+      "parts": "Track",
+      "values": "Present when the slider displays an invalid state."
+    },
+    {
+      "attribute": "data-touched",
+      "parts": "Track",
+      "values": "Present when the slider or its Field has been touched."
+    },
+    {
+      "attribute": "data-dirty",
+      "parts": "Track",
+      "values": "Present when the slider or its Field is dirty."
+    },
+    {
+      "attribute": "data-focused",
+      "parts": "Track",
+      "values": "Present when the enclosing Field is focused."
+    },
+    {
+      "attribute": "data-filled",
+      "parts": "Track",
+      "values": "Present when the enclosing Field contains a value."
+    },
+    {
       "attribute": "data-orientation",
       "parts": "Indicator",
       "values": "\"horizontal\" | \"vertical\""
@@ -112,6 +202,36 @@
       "attribute": "data-dragging",
       "parts": "Indicator",
       "values": "Present while a thumb is dragged."
+    },
+    {
+      "attribute": "data-valid",
+      "parts": "Indicator",
+      "values": "Present when the slider displays a valid state."
+    },
+    {
+      "attribute": "data-invalid",
+      "parts": "Indicator",
+      "values": "Present when the slider displays an invalid state."
+    },
+    {
+      "attribute": "data-touched",
+      "parts": "Indicator",
+      "values": "Present when the slider or its Field has been touched."
+    },
+    {
+      "attribute": "data-dirty",
+      "parts": "Indicator",
+      "values": "Present when the slider or its Field is dirty."
+    },
+    {
+      "attribute": "data-focused",
+      "parts": "Indicator",
+      "values": "Present when the enclosing Field is focused."
+    },
+    {
+      "attribute": "data-filled",
+      "parts": "Indicator",
+      "values": "Present when the enclosing Field contains a value."
     },
     {
       "attribute": "data-index",
@@ -132,6 +252,81 @@
       "attribute": "data-dragging",
       "parts": "Thumb",
       "values": "Present while a thumb is dragged."
+    },
+    {
+      "attribute": "data-valid",
+      "parts": "Thumb",
+      "values": "Present when the slider displays a valid state."
+    },
+    {
+      "attribute": "data-invalid",
+      "parts": "Thumb",
+      "values": "Present when the slider displays an invalid state."
+    },
+    {
+      "attribute": "data-touched",
+      "parts": "Thumb",
+      "values": "Present when the slider or its Field has been touched."
+    },
+    {
+      "attribute": "data-dirty",
+      "parts": "Thumb",
+      "values": "Present when the slider or its Field is dirty."
+    },
+    {
+      "attribute": "data-focused",
+      "parts": "Thumb",
+      "values": "Present when the enclosing Field is focused."
+    },
+    {
+      "attribute": "data-filled",
+      "parts": "Thumb",
+      "values": "Present when the enclosing Field contains a value."
+    },
+    {
+      "attribute": "data-orientation",
+      "parts": "Value",
+      "values": "\"horizontal\" | \"vertical\""
+    },
+    {
+      "attribute": "data-disabled",
+      "parts": "Value",
+      "values": "Present when disabled."
+    },
+    {
+      "attribute": "data-dragging",
+      "parts": "Value",
+      "values": "Present while a thumb is dragged."
+    },
+    {
+      "attribute": "data-valid",
+      "parts": "Value",
+      "values": "Present when the slider displays a valid state."
+    },
+    {
+      "attribute": "data-invalid",
+      "parts": "Value",
+      "values": "Present when the slider displays an invalid state."
+    },
+    {
+      "attribute": "data-touched",
+      "parts": "Value",
+      "values": "Present when the slider or its Field has been touched."
+    },
+    {
+      "attribute": "data-dirty",
+      "parts": "Value",
+      "values": "Present when the slider or its Field is dirty."
+    },
+    {
+      "attribute": "data-focused",
+      "parts": "Value",
+      "values": "Present when the enclosing Field is focused."
+    },
+    {
+      "attribute": "data-filled",
+      "parts": "Value",
+      "values": "Present when the enclosing Field contains a value."
     }
   ]
 }

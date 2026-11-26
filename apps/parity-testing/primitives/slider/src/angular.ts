@@ -31,6 +31,7 @@ import {
     range,
     recordChange,
     recordCommit,
+    replaceControl,
     step,
     thumbNames,
     type Value
@@ -72,10 +73,19 @@ installProbe();
         <button (click)="controlled.set(latest)" type="button">Apply request</button>
         <button (click)="controlled.set(35)" type="button">Replace value</button>
         <button (click)="disabled.set(!disabled())" type="button">Toggle disabled</button>
+        @if (replaceControlCase) {
+            <button (click)="replaced.set(true)" type="button">Replace control</button>
+        }
         <ng-template #slider>
             @if (fieldCase) {
                 <fieldset [disabled]="disabled()" rdxFieldsetRoot>
-                    <div [invalid]="true" rdxFieldRoot name="level" validationMode="onBlur" data-testid="field">
+                    <div
+                        [invalid]="fieldInvalid()"
+                        rdxFieldRoot
+                        name="level"
+                        validationMode="onBlur"
+                        data-testid="field"
+                    >
                         <div rdxFieldLabel>Volume</div>
                         <div rdxFieldDescription>Set the playback volume.</div>
                         <div rdxFieldError>Volume is out of range.</div>
@@ -105,12 +115,10 @@ installProbe();
                 name="volume"
                 rdxSliderRoot
             >
-                @if (!fieldCase) {
-                    <div rdxSliderLabel>Volume</div>
-                }
+                <div rdxSliderLabel data-testid="slider-label">{{ fieldCase ? 'Playback level' : 'Volume' }}</div>
                 <output rdxSliderValue data-testid="value"></output>
-                <div class="control" rdxSliderControl data-testid="control">
-                    <div class="track" rdxSliderTrack>
+                <ng-template #track>
+                    <div class="track" rdxSliderTrack data-testid="track">
                         <div class="indicator" rdxSliderIndicator data-testid="indicator"></div>
                         @for (name of thumbNames; track $index) {
                             <div class="thumb" [index]="$index" rdxSliderThumb data-testid="thumb">
@@ -118,13 +126,30 @@ installProbe();
                             </div>
                         }
                     </div>
-                </div>
+                </ng-template>
+                @if (replaceControlCase) {
+                    <div class="replaceable-control-frame" data-testid="control-frame">
+                        @if (replaced()) {
+                            <div class="control" rdxSliderControl data-testid="control" data-generation="second"></div>
+                        } @else {
+                            <div class="control" rdxSliderControl data-testid="control" data-generation="first"></div>
+                        }
+                        <ng-container [ngTemplateOutlet]="track" />
+                    </div>
+                } @else {
+                    <div class="control" rdxSliderControl data-testid="control">
+                        <ng-container [ngTemplateOutlet]="track" />
+                    </div>
+                }
             </div>
         </ng-template>
     `
 })
 class SliderFixture {
     protected readonly fieldCase = field;
+    protected readonly fieldInvalid = signal(true);
+    protected readonly replaceControlCase = replaceControl;
+    protected readonly replaced = signal(false);
     protected readonly alignment = alignment;
     protected readonly collision = collision;
     protected readonly direction = direction;
@@ -143,6 +168,9 @@ class SliderFixture {
     protected request({ value, eventDetails }: RdxSliderValueChangeEvent): void {
         this.latest = value;
         recordChange(value, eventDetails);
+        if (this.fieldCase && !eventDetails.isCanceled()) {
+            this.fieldInvalid.set((Array.isArray(value) ? value[0] : value) < 22);
+        }
     }
 
     protected commit({ value, eventDetails }: RdxSliderValueCommitEvent): void {

@@ -634,6 +634,7 @@ describe('RdxSlider', () => {
 
     it('supports edge-aligned thumb and indicator positioning', async () => {
         const edgeFixture = TestBed.createComponent(EdgeComponent);
+        edgeFixture.componentInstance.thumbAlignment.set('center');
         edgeFixture.detectChanges();
         const control = edgeFixture.debugElement.query(By.css('[rdxSliderControl]')).nativeElement as HTMLElement;
         const thumb = edgeFixture.debugElement.query(By.css('[rdxSliderThumb]')).nativeElement as HTMLElement;
@@ -662,10 +663,8 @@ describe('RdxSlider', () => {
             toJSON: () => ({})
         } as DOMRect);
 
+        edgeFixture.componentInstance.thumbAlignment.set('edge');
         await edgeFixture.whenStable();
-        edgeFixture.detectChanges();
-        await new Promise<void>((resolve) => queueMicrotask(resolve));
-        edgeFixture.detectChanges();
 
         expect(thumb.style.insetInlineStart).toBe('50%');
         expect(indicator.style.width).toBe('50%');

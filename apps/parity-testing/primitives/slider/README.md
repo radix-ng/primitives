@@ -11,13 +11,19 @@ navigation in RTL and vertical layouts, fractional steps, a touch tap, disabling
 and start/end geometry for both inset alignments.
 
 Field scenarios check inherited names in `FormData` and change events, Field descriptions and
-visible errors, validation on leaving the slider group, and disabled Fieldsets.
+visible errors, validation on leaving the slider group, and disabled Fieldsets. Assertions cover
+the Field state attributes on each visual Slider part.
 
 The [exact difference records](expected-differences.json) capture the external form reset
 baseline, off-grid form value and drag marker after disable. Angular restores an uncontrolled
 range to its initial values, submits authored off-grid values, and clears the drag marker on
 disable. The reference fixture keeps the edited values after native reset, rounds off-grid
 values in the native input, and retains its drag marker after disable.
+
+Angular publishes `data-filled` on each part when the Field has a Slider value. The pinned
+fixture reports the Field as unfilled. A separate inset scenario keeps the Thumb mounted while
+replacing and resizing Control. Angular updates the thumb and fill geometry, while the pin uses
+the previous position percentages.
 
 The [Slider matrix](../../../../packages/primitives/slider/PARITY.md) links the Angular Forms,
 SSR and hydration evidence.

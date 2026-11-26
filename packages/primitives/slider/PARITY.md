@@ -39,9 +39,14 @@ native input explicitly and accepts per-thumb accessible names on that input.
   in the native input and `FormData`. The pinned native range rounds it to the configured step.
 - Angular clears the active drag and its styling marker on disable. Both implementations stop
   applying movement. See the paired [difference records](../../../apps/parity-testing/primitives/slider/expected-differences.json).
+- Angular publishes `data-filled` on Slider parts for an enclosing Field with a value. The pin does
+  not mark a Field containing only a Slider as filled.
+- When a Control is replaced and resized while the Thumb stays mounted, Angular recomputes the
+  inset geometry against the new Control. The pin retains the old position percentages in this
+  fixture.
 - The pin exposes disabled behavior and does not provide a Slider read-only mode. Angular uses
-  disabled behavior as well. Real assistive technology, physical devices and the full per-part
-  callback and styling surface remain outside these checks.
+  disabled behavior as well. Real assistive technology, physical devices and per-part callback
+  coverage remain open.
 
 ## Field composition and SSR geometry
 
@@ -50,10 +55,15 @@ native input explicitly and accepts per-thumb accessible names on that input.
   Paired cases cover focus between thumbs, blur validation, submission, and disabling the Fieldset.
   Angular unit tests also cover Reactive Forms `updateOn: 'blur'` and focusing the first enabled
   thumb on invalid submit.
+- Root, Label, Control, Track, Thumb, Indicator and Value reflect the same Field hooks. Paired
+  checks cover neutral validity, focus, touched and dirty state, revealed errors, return to valid
+  state, and inherited disabled state.
 - `edge` positions the thumbs and indicator before Angular's client bundle runs. It uses the same
   CSP-aware serialization helper as Tabs. `edge-client-only` waits for client measurement.
   The hydration audit checks horizontal, vertical and RTL range geometry with the Angular bundle
   blocked, then checks server node reuse, keyboard edits and native reset.
+- A browser scenario replaces the Control while retaining the native range input and resizes the
+  replacement. Angular keeps the thumb edge flush and the indicator aligned to its center.
 
 ## Verification
 

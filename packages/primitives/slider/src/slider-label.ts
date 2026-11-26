@@ -1,6 +1,7 @@
 import { Directive, input } from '@angular/core';
 import { injectId, useLabel } from '@radix-ng/primitives/core';
 import { injectSliderRootContext } from './slider-context';
+import { sliderPartStateAttributes } from './slider-state-attributes';
 
 /** Names the slider group. Clicking the label of a single-thumb slider focuses its native input. */
 @Directive({
@@ -10,9 +11,7 @@ import { injectSliderRootContext } from './slider-context';
         '[id]': 'id()',
         '(pointerdown)': 'label.onPointerDown($event)',
         '(click)': 'label.onClick($event)',
-        '[attr.data-orientation]': 'root.orientation()',
-        '[attr.data-disabled]': 'root.isDisabled() ? "" : undefined',
-        '[attr.data-dragging]': 'root.dragging() ? "" : undefined'
+        ...sliderPartStateAttributes
     }
 })
 export class RdxSliderLabel {
