@@ -10,6 +10,7 @@ import {
     output,
     signal
 } from '@angular/core';
+import type { Middleware } from '@floating-ui/dom';
 import {
     isNode,
     RDX_FLOATING_REGISTRATION,
@@ -21,6 +22,7 @@ import { RdxDismiss, RdxOutsidePressDomEvent } from '@radix-ng/primitives/dismis
 import {
     provideRdxPopperContentConfig,
     provideRdxPopperContentWrapper,
+    type RdxPopperArrow,
     RdxPopperContentWrapper
 } from '@radix-ng/primitives/popper';
 import { injectRdxTooltipContext } from './tooltip';
@@ -189,6 +191,21 @@ export class RdxTooltipPositioner extends RdxPopperContentWrapper {
     registerViewport(): () => void {
         this.viewports.update((count) => count + 1);
         return () => this.viewports.update((count) => count - 1);
+    }
+
+    protected override createArrowMiddleware(arrow: RdxPopperArrow): Middleware {
+        const middleware = super.createArrowMiddleware(arrow);
+        if (!this.viewports()) return middleware;
+
+        // During a resize, the popup is still animating toward the positioner's target dimensions.
+        return {
+            ...middleware,
+            fn: (state) =>
+                middleware.fn({
+                    ...state,
+                    platform: { ...state.platform, getOffsetParent: () => state.elements.floating }
+                })
+        };
     }
 
     protected override getPositionerStyles(): Record<string, string | number | undefined> {

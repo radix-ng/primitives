@@ -21,7 +21,14 @@ import {
     signal,
     Type
 } from '@angular/core';
-import type { Boundary, ComputePositionReturn, Rect, ReferenceElement, VirtualElement } from '@floating-ui/dom';
+import type {
+    Boundary,
+    ComputePositionReturn,
+    Middleware,
+    Rect,
+    ReferenceElement,
+    VirtualElement
+} from '@floating-ui/dom';
 import {
     autoUpdate,
     computePosition,
@@ -109,7 +116,7 @@ type PopperPositionParams = {
         altBoundary: boolean;
     };
     arrow: RdxPopperArrow | undefined;
-    arrowPadding: number;
+    arrowMiddleware: Middleware | undefined;
 };
 
 const context = () => {
@@ -550,11 +557,7 @@ export class RdxPopperContentWrapper {
                             contentStyle.setProperty('--radix-popper-anchor-height', `${anchorHeight}px`);
                         }
                     }),
-                    params.arrow &&
-                        floatingUIArrow({
-                            element: params.arrow.elementRef.nativeElement,
-                            padding: params.arrowPadding
-                        }),
+                    params.arrowMiddleware,
                     transformOrigin({
                         arrowWidth: params.arrowWidth,
                         arrowHeight: params.arrowHeight
@@ -566,6 +569,7 @@ export class RdxPopperContentWrapper {
     });
 
     private positionParams(): PopperPositionParams {
+        const arrow = this.arrow();
         return {
             positioningActive: this.positioningActive(),
             anchor: this.resolvedAnchor(),
@@ -583,9 +587,13 @@ export class RdxPopperContentWrapper {
             shiftCrossAxis: this.defaults().shift?.crossAxis ?? false,
             shiftRootBoundary: this.defaults().shift?.rootBoundary,
             detectOverflowOptions: this.detectOverflowOptions(),
-            arrow: this.arrow(),
-            arrowPadding: this.arrowPadding()
+            arrow,
+            arrowMiddleware: arrow && this.createArrowMiddleware(arrow)
         };
+    }
+
+    protected createArrowMiddleware(arrow: RdxPopperArrow): Middleware {
+        return floatingUIArrow({ element: arrow.elementRef.nativeElement, padding: this.arrowPadding() });
     }
 
     /**

@@ -1,4 +1,4 @@
-import { expect, Page, test } from '@playwright/test';
+import { expect, Locator, Page, test } from '@playwright/test';
 
 /**
  * Behavioral check for the structural `*rdxTooltipPortal` (ADR 0010). Tooltip's old anatomy parked an
@@ -8,6 +8,16 @@ import { expect, Page, test } from '@playwright/test';
 async function gotoStory(page: Page, storyId: string): Promise<void> {
     await page.goto(`/iframe.html?id=${storyId}&viewMode=story`);
     await page.waitForSelector('#storybook-root', { state: 'attached' });
+}
+
+async function expectArrowCentered(trigger: Locator, arrow: Locator): Promise<void> {
+    await expect
+        .poll(async () => {
+            const anchorBounds = (await trigger.boundingBox())!;
+            const arrowBounds = (await arrow.boundingBox())!;
+            return Math.abs(arrowBounds.x + arrowBounds.width / 2 - anchorBounds.x - anchorBounds.width / 2);
+        })
+        .toBeLessThan(2);
 }
 
 test('tooltip teleports the positioner directly into <body> with no wrapper element', async ({ page }) => {
@@ -34,13 +44,7 @@ test('the default arrow is visible and points at the trigger', async ({ page }) 
     await expect(arrow).not.toHaveAttribute('hidden');
     await expect(arrow).toHaveAttribute('data-side', 'top');
 
-    await expect
-        .poll(async () => {
-            const anchorBounds = (await trigger.boundingBox())!;
-            const arrowBounds = (await arrow.boundingBox())!;
-            return Math.abs(arrowBounds.x + arrowBounds.width / 2 - anchorBounds.x - anchorBounds.width / 2);
-        })
-        .toBeLessThan(2);
+    await expectArrowCentered(trigger, arrow);
     const arrowBounds = (await arrow.boundingBox())!;
     const popupBounds = (await popup.boundingBox())!;
     expect(arrowBounds.y).toBeGreaterThan(popupBounds.y + popupBounds.height / 2);
@@ -70,14 +74,18 @@ test('a controlled tooltip follows the slider thumb while dragging', async ({ pa
 });
 
 test('the viewport animates the popup size as hover moves to a new trigger', async ({ page }) => {
+    await page.setViewportSize({ width: 310, height: 330 });
     await gotoStory(page, 'primitives-tooltip--viewport');
     const popup = page.getByRole('tooltip');
+    const arrow = page.locator('[rdxTooltipArrow]');
     const viewport = page.locator('[rdxTooltipViewport]');
     const previous = viewport.locator(':scope > [data-previous]');
-    await page.getByRole('button', { name: 'Set a timer' }).hover();
+    const timer = page.getByRole('button', { name: 'Set a timer' });
+    const deleteButton = page.getByRole('button', { name: 'Delete' });
+    await timer.hover();
     await expect(popup).toBeVisible();
     const initialWidth = (await popup.boundingBox())!.width;
-    await page.getByRole('button', { name: 'Delete' }).hover();
+    await deleteButton.hover();
     await expect(previous).toHaveText('Set a timer');
     await expect(viewport).toHaveAttribute('data-activation-direction', 'right');
     await expect
@@ -92,6 +100,11 @@ test('the viewport animates the popup size as hover moves to a new trigger', asy
     await expect(previous).toHaveCount(0);
     await expect(popup).toHaveText('Delete: This action cannot be undone');
     await expect.poll(async () => (await popup.boundingBox())?.width ?? 0).toBeGreaterThan(initialWidth);
+    await expectArrowCentered(deleteButton, arrow);
+
+    await timer.hover();
+    await expect(popup).toHaveText('Set a timer');
+    await expectArrowCentered(timer, arrow);
 });
 
 test('the viewport settles on the new content with reduced motion', async ({ page }) => {

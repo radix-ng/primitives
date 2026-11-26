@@ -43230,7 +43230,11 @@ import {
                         class="demo-popup relative h-[var(--popup-height,auto)] w-[var(--popup-width,auto)] max-w-72 origin-(--transform-origin) px-2 py-1 text-sm data-ending-style:scale-90 data-ending-style:opacity-0 data-instant:transition-none data-starting-style:scale-90 data-starting-style:opacity-0 motion-safe:transition-[width,height,scale,opacity] motion-safe:duration-350 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)]"
                         rdxTooltipPopup
                     >
-                        <span class="h-1.5 w-3" rdxTooltipArrow aria-hidden="true">
+                        <span
+                            class="h-1.5 w-3 data-instant:transition-none motion-safe:transition-[left,top] motion-safe:duration-350 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)]"
+                            rdxTooltipArrow
+                            aria-hidden="true"
+                        >
                             <span class="demo-popup-arrow block size-full"></span>
                         </span>
 
