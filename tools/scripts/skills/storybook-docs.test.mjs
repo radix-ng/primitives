@@ -46,6 +46,10 @@ test('portable examples reach the single setup guide and rendered stylesheet', (
         new URL('../../../apps/radix-storybook/.storybook/demo-styles.css', import.meta.url),
         'utf8'
     );
+    const defaultSource = readFileSync(
+        new URL('../../../packages/primitives/popover/stories/popover-default.ts', import.meta.url),
+        'utf8'
+    );
     const [, defaultCode] = example.match(/```typescript\n([\s\S]*?)\n```/);
     assert.equal(files.get('demo-styles.css'), sharedStyles);
     assert.match(example, /\]\(\.\.\/guides\/styling\.md#copy-an-example-into-your-app\)/);
@@ -59,9 +63,7 @@ test('portable examples reach the single setup guide and rendered stylesheet', (
     assert.doesNotMatch(fullDocs.join('\n\n'), /^## Setup and shared files$/m);
     const pages = [...files].filter(([file]) => file.endsWith('.md')).map(([, body]) => body);
     assert.ok([...pages, ...fullDocs].every((body) => !body.includes(sharedStyles.trim())));
-    assert.match(defaultCode, /class="demo-surface [^"]*w-80 p-4"/);
-    assert.match(defaultCode, /data-\[starting-style\]:animate-popover-popup-in/);
-    assert.match(defaultCode, /data-\[ending-style\]:animate-popover-popup-out/);
+    assert.equal(defaultCode, defaultSource.replace(/\r\n?/g, '\n').trim());
     assert.doesNotMatch(defaultCode, /from ['"]\.|\.\.\.popoverImports|@layer components/);
     assert.doesNotMatch(example, /<Source\b/);
 });
