@@ -76,8 +76,13 @@ export class RdxMenuAnimatedComponent {}
 
 ```html
 <ng-template rdxMenuPortal>
-    <div [class]="m.positioner" rdxMenuPositioner>
-        <div [class]="cn(m.popup, m.popupAnimated)" rdxMenuPopup>…items…</div>
+    <div class="z-50 data-[closed]:pointer-events-none" sideOffset="4" rdxMenuPositioner>
+        <div
+            class="demo-menu-popup data-[open]:animate-popover-popup-in data-[closed]:animate-popover-popup-out min-w-[8rem] origin-[var(--transform-origin)] p-1 data-[closed]:pointer-events-none data-[closed]:block!"
+            rdxMenuPopup
+        >
+            …items…
+        </div>
     </div>
 </ng-template>
 ```

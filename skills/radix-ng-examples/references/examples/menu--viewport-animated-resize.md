@@ -11,10 +11,12 @@ the popup with a CSS transition (here via Tailwind arbitrary utilities, so no st
 
 ```html
 <div
-    [class]="cn(m.popup, 'overflow-hidden [width:var(--popup-width)] [height:var(--popup-height)] transition-[width,height] duration-200')"
+    class="demo-menu-popup [height:var(--popup-height)] [width:var(--popup-width)] min-w-[8rem] overflow-hidden p-1 transition-[width,height] duration-200 ease-out data-[closed]:pointer-events-none data-[closed]:hidden"
     rdxMenuPopup
 >
-    <div rdxMenuViewport>…items…</div>
+    <div rdxMenuViewport>
+        <div class="w-56">…items…</div>
+    </div>
 </div>
 ```
 
