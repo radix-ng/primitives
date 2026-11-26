@@ -56,7 +56,7 @@ import {
 
             <ng-container #root="rdxTooltip" [handle]="handle" rdxTooltip>
                 <div
-                    class="z-50 w-[var(--positioner-width,max-content)] max-w-(--available-width) data-instant:transition-none motion-safe:transition-[top,left,right,bottom] motion-safe:duration-350 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)]"
+                    class="z-50 h-[var(--positioner-height,auto)] w-[var(--positioner-width,max-content)] max-w-(--available-width) data-instant:transition-none motion-safe:transition-[top,left,right,bottom] motion-safe:duration-350 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)]"
                     *rdxTooltipPortal
                     sideOffset="11"
                     rdxTooltipPositioner

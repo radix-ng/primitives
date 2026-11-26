@@ -18,7 +18,7 @@ import { defaultTooltipConfig, injectRdxTooltipConfig, provideRdxTooltipConfig }
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [RdxTooltip, RdxTooltipTrigger],
+    imports: [RdxTooltip, RdxTooltipTrigger, RdxTooltipPopup],
     template: `
         <ng-container
             #root="rdxTooltip"
@@ -31,6 +31,7 @@ import { defaultTooltipConfig, injectRdxTooltipConfig, provideRdxTooltipConfig }
             rdxTooltip
         >
             <button [closeOnClick]="closeOnClick" [disabled]="triggerDisabled" rdxTooltipTrigger>Trigger</button>
+            <div rdxTooltipPopup>Details</div>
         </ng-container>
     `
 })
@@ -86,7 +87,7 @@ class ProviderHostComponent {}
 
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
-    imports: [RdxTooltip, RdxTooltipTrigger],
+    imports: [RdxTooltip, RdxTooltipTrigger, RdxTooltipPopup],
     template: `
         <div
             [open]="open()"
@@ -101,6 +102,7 @@ class ProviderHostComponent {}
         >
             <button id="trigger-a" rdxTooltipTrigger>A</button>
             <button id="trigger-b" rdxTooltipTrigger payload="B">B</button>
+            <div rdxTooltipPopup>Details</div>
         </div>
     `
 })

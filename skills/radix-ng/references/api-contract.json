@@ -9539,7 +9539,7 @@
           "directive": "RdxTooltipPortal",
           "selector": "ng-template[rdxTooltipPortal]",
           "exportAs": "rdxTooltipPortal",
-          "description": "Structural directive that teleports the tooltip content into a container (default `document.body`)\nwhile the tooltip is open, and keeps it mounted until any CSS exit `@keyframes` finishes.\n\nApply it with the `*` microsyntax on the positioner — `<div *rdxTooltipPortal rdxTooltipPositioner>`\n— or as an explicit `<ng-template rdxTooltipPortal>`. For a custom container use the explicit form\nwith `[container]`.",
+          "description": "Structural directive that teleports the tooltip content into a container (default `document.body`).\nThe content remains mounted through CSS exit motion. Set `keepMounted` to retain it between opens.\n\nApply it with the `*` microsyntax on the positioner — `<div *rdxTooltipPortal rdxTooltipPositioner>`\n— or use an explicit `<ng-template rdxTooltipPortal>` to configure `container` or `keepMounted`.",
           "hostDirectives": [
             "RdxPortalPresence"
           ],
@@ -9548,6 +9548,11 @@
               "name": "container",
               "type": "RdxPortalContainer",
               "description": "Container to portal the content into. Can be a ShadowRoot, an HTML element from any window,\nan ElementRef of either, or a CSS\nselector. Defaults to `document.body` (or when a selector matches nothing).\nExplicit null prevents mounting until a target is provided, even with keepMounted."
+            },
+            {
+              "name": "keepMounted",
+              "default": "false",
+              "description": "Keep the portal mounted (in the container) while the layer is closed. When `true` the content\nstays in the DOM regardless of the {@link RDX_PRESENCE_CONTEXT} `present` flag — the consumer is\nresponsible for hiding it while closed (typically via the `data-closed` / `data-open` state on the\npositioner). Any `*rdxXxxPortal` wrapper opts in by mapping this input in its `hostDirectives`."
             }
           ],
           "outputs": []
@@ -9840,6 +9845,11 @@
               "name": "onOpenChange",
               "type": "RdxTooltipOpenChangeEvent",
               "description": "A cancellable request to change the open state."
+            },
+            {
+              "name": "onOpenChangeComplete",
+              "type": "boolean",
+              "description": "Emitted after the accepted open or close finishes rendering and animating."
             },
             {
               "name": "openChange",

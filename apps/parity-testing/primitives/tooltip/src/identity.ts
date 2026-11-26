@@ -14,6 +14,10 @@ export function identityInitialState(): {
     defaultTriggerId: string | null;
     showPaste: boolean;
     viewport: boolean;
+    lifecycle: boolean;
+    pointer: boolean;
+    arrow: boolean;
+    side: 'top' | 'left' | 'bottom';
 } {
     const scenario = new URLSearchParams(window.location.search).get('identity');
     return {
@@ -27,6 +31,18 @@ export function identityInitialState(): {
         defaultOpen: scenario === 'identity-default',
         defaultTriggerId: scenario === 'identity-controlled' || scenario === 'identity-default' ? pasteId : null,
         showPaste: scenario !== 'identity-late-trigger',
-        viewport: scenario === 'identity-viewport'
+        viewport:
+            scenario === 'identity-viewport' ||
+            scenario === 'identity-top-resize' ||
+            scenario === 'identity-left-resize',
+        lifecycle: scenario === 'identity-lifecycle',
+        pointer: scenario === 'identity-pointer',
+        arrow: scenario === 'identity-arrow',
+        side:
+            scenario === 'identity-top-resize' || scenario === 'identity-arrow'
+                ? 'top'
+                : scenario === 'identity-left-resize'
+                  ? 'left'
+                  : 'bottom'
     };
 }

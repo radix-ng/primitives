@@ -12,12 +12,22 @@ export function TooltipIdentityFixture() {
     const [pastePayload, setPastePayload] = useState('Paste payload');
     const [pasteVersion, setPasteVersion] = useState(0);
     const [requests, setRequests] = useState<IdentityRequest[]>([]);
+    const [completions, setCompletions] = useState<boolean[]>([]);
+    const [keepMounted, setKeepMounted] = useState(initial.lifecycle);
+    const [cursorAxis, setCursorAxis] = useState<Tooltip.Root.Props['trackCursorAxis']>('none');
+    const [disableHover, setDisableHover] = useState(false);
     const cancelClose = useRef(false);
+    const holdClose = useRef(false);
+    const actions = useRef<Tooltip.Root.Actions>(null);
 
     function request(open: boolean, details: Tooltip.Root.ChangeEventDetails): void {
         if (!open && cancelClose.current) {
             cancelClose.current = false;
             details.cancel();
+        }
+        if (!open && !details.isCanceled && holdClose.current) {
+            holdClose.current = false;
+            details.preventUnmountOnClose();
         }
 
         const entry = {
@@ -31,8 +41,15 @@ export function TooltipIdentityFixture() {
 
     return (
         <>
-            <div style={{ display: 'flex', gap: 160, margin: 48 }}>
-                <Tooltip.Trigger id={copyId} handle={handle} payload="Copy payload" type="button">
+            <div style={{ display: 'flex', gap: 160, margin: 48 }} data-identity-triggers>
+                <Tooltip.Trigger
+                    id={copyId}
+                    handle={handle}
+                    payload="Copy payload"
+                    delay={initial.pointer ? 0 : undefined}
+                    closeDelay={initial.pointer ? 240 : undefined}
+                    type="button"
+                >
                     Copy
                 </Tooltip.Trigger>
                 {showPaste && (
@@ -53,17 +70,26 @@ export function TooltipIdentityFixture() {
                 triggerId={triggerId}
                 defaultTriggerId={defaultTriggerId}
                 handle={handle}
+                trackCursorAxis={cursorAxis}
+                disableHoverablePopup={disableHover}
+                actionsRef={actions}
                 onOpenChange={request}
+                onOpenChangeComplete={(open) => setCompletions((previous) => [...previous, open])}
             >
                 {({ payload }) => (
-                    <Tooltip.Portal>
-                        <Tooltip.Positioner side="bottom" data-identity-positioner>
+                    <Tooltip.Portal keepMounted={keepMounted}>
+                        <Tooltip.Positioner
+                            side={initial.side}
+                            sideOffset={initial.pointer ? 24 : 0}
+                            data-identity-positioner
+                        >
                             <Tooltip.Popup data-identity-popup>
                                 {initial.viewport ? (
                                     <Tooltip.Viewport data-identity-viewport>{payload}</Tooltip.Viewport>
                                 ) : (
                                     payload
                                 )}
+                                {initial.arrow && <Tooltip.Arrow data-identity-arrow />}
                             </Tooltip.Popup>
                         </Tooltip.Positioner>
                     </Tooltip.Portal>
@@ -111,6 +137,44 @@ export function TooltipIdentityFixture() {
             <button onClick={() => handle.close()} type="button">
                 Close via handle
             </button>
+            {initial.lifecycle && (
+                <>
+                    <button
+                        onClick={() => {
+                            holdClose.current = true;
+                        }}
+                        type="button"
+                    >
+                        Hold next close
+                    </button>
+                    <button onClick={() => actions.current?.unmount()} type="button">
+                        Finish close
+                    </button>
+                    <button onClick={() => setKeepMounted(false)} type="button">
+                        Remove retention
+                    </button>
+                    <output data-identity-completions>{JSON.stringify(completions)}</output>
+                </>
+            )}
+            {initial.pointer && (
+                <>
+                    <button onClick={() => setCursorAxis('x')} type="button">
+                        Track X
+                    </button>
+                    <button onClick={() => setCursorAxis('y')} type="button">
+                        Track Y
+                    </button>
+                    <button onClick={() => setCursorAxis('both')} type="button">
+                        Track both
+                    </button>
+                    <button onClick={() => setCursorAxis('none')} type="button">
+                        Stop tracking
+                    </button>
+                    <button onClick={() => setDisableHover(true)} type="button">
+                        Disable popup hover
+                    </button>
+                </>
+            )}
             <output data-identity-requests>{JSON.stringify(requests)}</output>
         </>
     );

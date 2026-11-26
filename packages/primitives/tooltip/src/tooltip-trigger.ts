@@ -59,7 +59,7 @@ function isMouseLikePointerType(pointerType: string | undefined): boolean {
         type: 'button',
         'data-grace-area-trigger': "''",
         '[id]': 'triggerId()',
-        '[attr.aria-describedby]': 'isOpen() ? rootContext()?.contentId : undefined',
+        '[attr.aria-describedby]': 'isOpen() ? rootContext()?.contentId() : undefined',
         '[attr.data-popup-open]': 'triggerInteraction.dataPopupOpen()',
         '[attr.data-trigger-disabled]': 'triggerInteraction.disabled() ? "" : undefined',
         '[attr.data-rdx-tooltip-trigger]': 'isDisabled() ? undefined : ""',
@@ -143,7 +143,7 @@ export class RdxTooltipTrigger {
         activeTrigger: () => this.rootContext()?.trigger(),
         open: () => this.rootContext()?.isOpen() ?? false,
         disabled: () => this.isDisabled(),
-        contentId: () => this.rootContext()?.contentId
+        contentId: () => this.rootContext()?.contentId()
     });
 
     private readonly isPointerDown = signal(false);
@@ -201,6 +201,10 @@ export class RdxTooltipTrigger {
 
     protected handlePointerEnter(event: PointerEvent) {
         this.pointerType = event.pointerType;
+        const root = this.rootContext();
+        if (event.pointerType !== 'touch' && root?.trigger() === this.elementRef.nativeElement) {
+            root.cancelHoverClose();
+        }
     }
 
     protected handlePointerMove(event: PointerEvent) {

@@ -1,7 +1,8 @@
-import { Directive, inject } from '@angular/core';
+import { DestroyRef, Directive, inject } from '@angular/core';
 import { usePopupViewport } from '@radix-ng/primitives/core';
 import { injectRdxTooltipContext } from './tooltip';
 import { RdxTooltipPopup } from './tooltip-popup';
+import { RdxTooltipPositioner } from './tooltip-positioner';
 
 /** Animates content between active triggers. Render one direct content wrapper inside the viewport. */
 @Directive({
@@ -18,7 +19,12 @@ export class RdxTooltipViewport {
     protected readonly viewport = usePopupViewport({
         popup: () => this.popup.element,
         open: this.rootContext.isOpen,
-        present: () => this.rootContext.present() || this.rootContext.renderLifecycle.status() === 'ending',
+        present: () => this.rootContext.present() || this.rootContext.transitionStatus() === 'ending',
         track: { trigger: this.rootContext.trigger, payload: this.rootContext.payload }
     });
+
+    constructor() {
+        const positioner = inject(RdxTooltipPositioner, { optional: true });
+        if (positioner) inject(DestroyRef).onDestroy(positioner.registerViewport());
+    }
 }

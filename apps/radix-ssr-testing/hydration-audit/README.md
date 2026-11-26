@@ -103,3 +103,13 @@ distinguishes an omitted orientation from explicit `undefined`, and that clearin
 ```bash
 node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=eager-separator
 ```
+
+The `eager-tooltip` and `detached-tooltip` cases check that an initially open tooltip preserves its
+server popup and description ID when its portal relocates. The detached trigger hydrates on a
+native click and reconnects to the original popup. Both cases verify one popup, precedence
+of a controlled closed state, and removal of the description on close.
+
+```bash
+node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=eager-tooltip
+node apps/radix-ssr-testing/hydration-audit/audit.mjs --skip-build --case=detached-tooltip
+```

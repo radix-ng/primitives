@@ -10,6 +10,7 @@ import {
     signal
 } from '@angular/core';
 import {
+    isNode,
     RDX_FLOATING_REGISTRATION,
     RDX_FLOATING_ROOT_CONTEXT,
     RdxFloatingNodeRegistration,
@@ -43,17 +44,24 @@ import { injectRdxTooltipContext } from './tooltip';
     host: {
         '[attr.data-open]': 'rootContext.isOpen() ? "" : undefined',
         '[attr.data-closed]': 'rootContext.isOpen() ? undefined : ""',
-        '[attr.data-instant]': 'rootContext.instantType()'
+        '[attr.data-instant]': 'rootContext.instantType()',
+        '[hidden]': '!positioningActive()',
+        '[attr.inert]': 'nonInteractive() ? "" : undefined',
+        '(pointerenter)': 'handlePointerEnter($event)'
         // `data-side`/`data-align`/`data-anchor-hidden` and the unified vars come from the inherited
         // wrapper (ADR 0012); tooltip exposes no legacy `--radix-*` aliases.
     }
 })
 export class RdxTooltipPositioner extends RdxPopperContentWrapper {
     protected readonly rootContext = injectRdxTooltipContext();
+    protected override positioningActive = computed(
+        () => this.rootContext.isOpen() || this.rootContext.transitionStatus() === 'ending'
+    );
     private readonly destroyRef = inject(DestroyRef);
     private readonly floatingContext = inject(RDX_FLOATING_ROOT_CONTEXT);
     private readonly registration = inject(RDX_FLOATING_REGISTRATION, { optional: true });
     private readonly containerRef = inject<ElementRef<HTMLElement>>(ElementRef);
+    private readonly viewports = signal(0);
 
     /**
      * Event handler called when the escape key is down. Can be prevented.
@@ -65,7 +73,13 @@ export class RdxTooltipPositioner extends RdxPopperContentWrapper {
      */
     readonly pointerDownOutside = output<RdxOutsidePressDomEvent>();
 
-    private readonly triggerEl = computed(() => this.rootContext.trigger() ?? null);
+    private readonly hoverable = computed(
+        () =>
+            this.rootContext.isOpen() &&
+            !this.rootContext.disableHoverablePopup() &&
+            this.rootContext.trackCursorAxis() !== 'both'
+    );
+    private readonly triggerEl = computed(() => (this.hoverable() ? this.rootContext.trigger() : undefined));
     private readonly containerEl = signal<HTMLElement | null>(null);
 
     private readonly graceArea = useGraceArea(this.triggerEl, this.containerEl, 300);
@@ -89,7 +103,7 @@ export class RdxTooltipPositioner extends RdxPopperContentWrapper {
         });
 
         this.graceArea.onPointerExit(() => {
-            if (this.rootContext.disabled() || this.rootContext.disableHoverablePopup()) return;
+            if (!this.hoverable()) return;
             this.rootContext.closeDelayed();
         });
     });
@@ -100,12 +114,17 @@ export class RdxTooltipPositioner extends RdxPopperContentWrapper {
         // Register as the floating element so dismissal containment (outside-press / focus) treats the
         // popup as "inside".
         this.floatingContext.setFloatingElement(this.containerRef.nativeElement);
+        this.destroyRef.onDestroy(() => {
+            if (this.floatingContext.floatingElement === this.containerRef.nativeElement) {
+                this.floatingContext.setFloatingElement(null);
+            }
+        });
 
         // Dismissal-only (ADR 0017 §1 — a tooltip has no focus manager): Escape and an outside press
         // close it; focus-out is intentionally a no-op (a tooltip never traps or follows focus).
         new RdxDismiss(this.floatingContext, () => this.registration?.node() ?? null, {
             escapeKey: () => true,
-            outsidePress: () => true,
+            outsidePress: (event) => !this.isDehydratedTriggerPress(event),
             focusOutside: () => false,
             onEscapeKeyDown: (event) => this.escapeKeyDown.emit(event),
             onPointerDownOutside: (event) => this.pointerDownOutside.emit(event),
@@ -113,9 +132,54 @@ export class RdxTooltipPositioner extends RdxPopperContentWrapper {
                 this.rootContext.close(reason === 'escape-key' ? 'escape-key' : 'outside-press', event)
         });
 
-        // While following the cursor the popup sits right under the pointer; if it could intercept
-        // the pointer it would steal hover from the trigger and the tooltip would flicker. Render it
-        // pointer-events: none so the pointer always passes through to the trigger underneath.
-        effect(() => this.nonInteractive.set(this.rootContext.trackCursorAxis() !== 'none'));
+        effect(() => this.nonInteractive.set(!this.hoverable()));
+    }
+
+    protected handlePointerEnter(event: PointerEvent): void {
+        if (event.pointerType !== 'touch' && this.hoverable()) this.rootContext.cancelHoverClose();
+    }
+
+    private isDehydratedTriggerPress(event: Event): boolean {
+        const id = this.rootContext.triggerId();
+        const description = this.rootContext.contentId();
+        if (this.rootContext.trigger() || id === null || !description) return false;
+
+        // An incrementally hydrated trigger can receive the press that registers it.
+        const trigger = this.containerRef.nativeElement.ownerDocument.getElementById(id);
+        return (
+            !!trigger &&
+            trigger.getAttribute('aria-describedby') === description &&
+            isNode(event.target) &&
+            trigger.contains(event.target)
+        );
+    }
+
+    /** @internal Viewport size transitions keep the edge nearest the trigger in place. */
+    registerViewport(): () => void {
+        this.viewports.update((count) => count + 1);
+        return () => this.viewports.update((count) => count - 1);
+    }
+
+    protected override getPositionerStyles(): Record<string, string | number | undefined> {
+        const styles = super.getPositionerStyles();
+        const side = this.physicalPlacedSide();
+        if (!this.positioningActive() || !this.viewports() || (side !== 'top' && side !== 'left')) return styles;
+
+        // Percent offsets are relative to the same containing block as Floating UI's x/y.
+        // Use the actual positioner size so authored max widths and boundaries remain effective.
+        if (side === 'top' && styles['top']) {
+            styles['bottom'] = `calc(100% - ${styles['top']} - ${styles['--radix-popper-content-wrapper-height']})`;
+            styles['top'] = undefined;
+        } else if (side === 'left' && styles['left']) {
+            styles['right'] = `calc(100% - ${styles['left']} - ${styles['--radix-popper-content-wrapper-width']})`;
+            styles['left'] = undefined;
+        }
+        // Positioner takes the target size while the Popup animates inside it, in normal flow.
+        styles['display'] = 'grid';
+        styles['gridTemplate'] = 'minmax(0, 1fr) / minmax(0, 1fr)';
+        styles['minWidth'] = '0';
+        if (side === 'top') styles['alignItems'] = 'end';
+        else styles['justifyItems'] = 'end';
+        return styles;
     }
 }

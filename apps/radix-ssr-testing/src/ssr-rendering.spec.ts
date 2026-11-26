@@ -48,6 +48,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { FieldAuditView } from '../hydration-audit/field-view';
 import { MeterAuditView } from '../hydration-audit/meter-view';
 import { ProgressAuditView } from '../hydration-audit/progress-view';
+import { TooltipAuditView } from '../hydration-audit/tooltip-view';
 import AccordionPage from './app/components/accordion/page';
 import AvatarPage from './app/components/avatar/page';
 import CheckboxPage from './app/components/checkbox/page';
@@ -85,6 +86,11 @@ interface SsrCase {
 }
 
 const cases: readonly SsrCase[] = [
+    {
+        selector: 'audit-tooltip-view',
+        component: TooltipAuditView,
+        expects: ['role="tooltip"', 'Initial details', 'aria-describedby="rdx-tooltip-content-']
+    },
     { selector: 'app-accordion', component: AccordionPage, expects: ['One', 'Four'] },
     { selector: 'app-avatar', component: AvatarPage, expects: ['A'] },
     { selector: 'app-checkbox', component: CheckboxPage, expects: ['data-checked'] },

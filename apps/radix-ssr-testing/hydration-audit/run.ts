@@ -24,6 +24,9 @@ async function snapshot(page: Page) {
             .filter((id) => id.startsWith('audit-field-') || id.startsWith('authored-field-') || id.startsWith('rdx-'));
         const detachedTrigger = document.querySelector('[data-detached-dialog-trigger]');
         const detachedPopup = document.querySelector('[data-detached-dialog-popup]');
+        const tooltipTrigger = document.querySelector('[data-audit-tooltip-trigger]');
+        const tooltipPopup = document.querySelector('[data-audit-tooltip-popup]');
+        const tooltipPositioner = document.querySelector('[data-audit-tooltip-positioner]');
         const radioForm = document.querySelector<HTMLFormElement>('[data-radio-audit]');
         const radioView = radioForm?.parentElement;
         const radioGroup = radioView?.querySelector('[role="radiogroup"]');
@@ -39,6 +42,20 @@ async function snapshot(page: Page) {
             errors: window.portalHydrationAudit?.errors ?? [],
             constructed: window.portalHydrationAudit?.constructed ?? [],
             duplicateIds: ids.filter((id, index) => ids.indexOf(id) !== index),
+            tooltip: {
+                triggerId: tooltipTrigger?.id,
+                description: tooltipTrigger?.getAttribute('aria-describedby'),
+                triggerHydrated: tooltipTrigger?.hasAttribute('data-tooltip-hydrated'),
+                triggerOpen: tooltipTrigger?.hasAttribute('data-popup-open'),
+                popupId: tooltipPopup?.id,
+                popupOpen: tooltipPopup?.hasAttribute('data-open'),
+                payload: tooltipPopup?.textContent?.trim(),
+                portalAtBody: tooltipPositioner?.parentElement === document.body,
+                triggerReused: tooltipTrigger === window.auditServerNodes?.['tooltip-trigger'],
+                popupReused: !!tooltipPopup && tooltipPopup === window.auditServerNodes?.['tooltip-popup'],
+                popupCount: document.querySelectorAll('[data-audit-tooltip-popup]').length,
+                controlledClosed: !document.querySelector('[data-audit-tooltip-unexpected]')
+            },
             field: fieldControl
                 ? {
                       nodes: Object.fromEntries(
@@ -435,6 +452,73 @@ async function checkRangeHydration(
         restored.nodes.label?.id === restored.name &&
         !restored.nodes.label.reused &&
         restored.nodes.root.reused;
+}
+
+async function checkTooltipHydration(
+    page: Page,
+    observation: Observation,
+    record: (label: string) => Promise<Snapshot>,
+    release: () => void,
+    late: boolean
+) {
+    const checks = observation.checks;
+    await page.evaluate(() => {
+        window.auditServerNodes!['tooltip-trigger'] = document.querySelector('[data-audit-tooltip-trigger]')!;
+        window.auditServerNodes!['tooltip-popup'] = document.querySelector('[data-audit-tooltip-popup]')!;
+    });
+    const server = await record('server tooltip before bootstrap');
+    const initial = server.tooltip;
+    const payload = late ? 'Late details' : 'Initial details';
+    checks.serverTooltip =
+        !!initial.popupId &&
+        !!initial.triggerId &&
+        initial.popupCount === 1 &&
+        initial.popupOpen === true &&
+        initial.triggerOpen === true &&
+        initial.description === initial.popupId &&
+        initial.payload === payload &&
+        !initial.portalAtBody &&
+        initial.controlledClosed;
+
+    release();
+    await page.waitForFunction(() => window.portalHydrationAudit?.ready, undefined, { timeout: 5000 });
+    await page.waitForFunction(
+        () => document.querySelector('[data-audit-tooltip-positioner]')?.parentElement === document.body
+    );
+    const boot = await record('tooltip relocated after root hydration');
+    checks.popupPreserved =
+        boot.tooltip.popupReused &&
+        boot.tooltip.popupId === initial.popupId &&
+        boot.tooltip.popupCount === 1 &&
+        boot.tooltip.popupOpen === true &&
+        boot.tooltip.controlledClosed;
+    if (late) {
+        checks.detachedTriggerWasDehydrated = boot.tooltip.triggerHydrated === false;
+        await page.locator('[data-audit-tooltip-trigger]').click();
+    }
+    await page.waitForFunction(() => {
+        const trigger = document.querySelector('[data-audit-tooltip-trigger][data-tooltip-hydrated][data-popup-open]');
+        const popup = document.querySelector('[data-audit-tooltip-popup]');
+        return !!popup && popup.id === trigger?.getAttribute('aria-describedby');
+    });
+    const active = await record('hydrated trigger describes the original popup');
+    checks.descriptionPreserved =
+        active.tooltip.triggerReused &&
+        active.tooltip.triggerId === initial.triggerId &&
+        active.tooltip.description === initial.popupId &&
+        active.tooltip.popupReused &&
+        active.tooltip.popupCount === 1 &&
+        active.tooltip.payload === payload &&
+        active.duplicateIds.length === 0;
+
+    await page.locator('button[data-audit-tooltip-close]').click();
+    await page.waitForFunction(() => !document.querySelector('[data-audit-tooltip-popup]'));
+    const closed = await record('closing removes the popup and description');
+    checks.cleanClose =
+        closed.tooltip.popupCount === 0 &&
+        closed.tooltip.description === null &&
+        closed.tooltip.triggerOpen === false &&
+        closed.tooltip.triggerReused;
 }
 
 async function checkSeparatorHydration(
@@ -1043,6 +1127,10 @@ try {
             }
             if (settings.kind === 'separator') {
                 await checkSeparatorHydration(page, observation, record, release);
+                continue;
+            }
+            if (settings.kind === 'tooltip') {
+                await checkTooltipHydration(page, observation, record, release, name === 'detached-tooltip');
                 continue;
             }
             const editedBefore = await page.locator('[data-probe="first"] input').isVisible();

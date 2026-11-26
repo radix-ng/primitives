@@ -13,6 +13,7 @@ import {
     type OpenRequest
 } from '../src/contract.ts';
 import { copyId, pasteId, type IdentityRequest } from '../src/identity.ts';
+import { p2Scenarios } from './p2-scenarios.ts';
 
 type TriggerName = 'Copy' | 'Paste';
 
@@ -23,7 +24,7 @@ interface IdentityState {
     requests?: IdentityRequest[];
 }
 
-class TooltipDriver {
+export class TooltipDriver {
     readonly checkpoints: Checkpoint[] = [];
     readonly measurements: unknown[] = [];
     readonly errors: string[] = [];
@@ -619,7 +620,8 @@ const scenarios = [
                 transitioning: false
             });
         }
-    }
+    },
+    ...p2Scenarios
 ];
 
 const run = createParityRunner({

@@ -1,4 +1,5 @@
 import {
+    afterNextRender,
     afterRenderEffect,
     booleanAttribute,
     computed,
@@ -7,6 +8,7 @@ import {
     effect,
     ElementRef,
     inject,
+    Injector,
     input,
     linkedSignal,
     numberAttribute,
@@ -22,15 +24,16 @@ import {
     createContext,
     createFloatingRootContext,
     getActiveElement,
-    injectId,
     isNode,
     NumberInput,
     provideFloatingRootContext,
     provideFloatingTree,
     RdxCancelableChangeEventDetails,
     RdxFloatingRootContext,
+    RdxPopupPresenceRegistration,
     RdxRenderLifecycle,
-    useRenderLifecycle,
+    RdxTransitionStatus,
+    usePopupLifecycle,
     watch
 } from '@radix-ng/primitives/core';
 import { RdxPopper } from '@radix-ng/primitives/popper';
@@ -56,10 +59,13 @@ interface RdxTooltipTriggerSelection {
 }
 
 export interface RdxTooltipContext {
-    contentId: string;
+    contentId: () => string | undefined;
+    registerContentId: (id: string) => () => void;
     isOpen: Signal<boolean>;
     present: Signal<boolean>;
+    transitionStatus: Signal<RdxTransitionStatus>;
     renderLifecycle: RdxRenderLifecycle;
+    registerPresence: (presence: RdxPopupPresenceRegistration) => () => void;
     /** Whether the tooltip opened/closed without waiting for the delay. */
     instant: Signal<boolean>;
     /** Why the open/close was instant (Base UI `data-instant`), or `undefined` when it was animated. */
@@ -69,12 +75,14 @@ export interface RdxTooltipContext {
     trackCursorAxis: Signal<RdxTrackCursorAxis>;
     /** The active trigger element. */
     trigger: Signal<HTMLElement | undefined>;
+    triggerId: Signal<string | null>;
     triggers: Signal<HTMLElement[]>;
     payload: Signal<unknown>;
     open: (trigger?: HTMLElement, payload?: unknown, event?: Event, reason?: RdxTooltipOpenChangeReason) => void;
     close: (reason?: RdxTooltipOpenChangeReason, event?: Event) => void;
     openChangeReason: Signal<RdxTooltipOpenChangeReason>;
     cancelPendingOpen: (trigger?: HTMLElement) => void;
+    cancelHoverClose: () => void;
     closeHoverOpen: (event?: Event) => void;
     /** Closes after the resolved hover close delay. */
     closeDelayed: (event?: Event) => void;
@@ -134,6 +142,7 @@ const context = () => contextFor(inject(RdxTooltip));
     hostDirectives: [RdxPopper]
 })
 export class RdxTooltip {
+    private readonly injector = inject(Injector);
     private readonly defaultConfig = injectRdxTooltipConfig();
     private readonly provider = injectRdxTooltipProviderContext(true);
     private readonly popper = inject(RdxPopper);
@@ -232,7 +241,22 @@ export class RdxTooltip {
      */
     readonly onOpenChange = output<RdxTooltipOpenChangeEvent>();
 
-    readonly contentId = injectId('rdx-tooltip-content-');
+    /** Emitted after the accepted open or close finishes rendering and animating. */
+    readonly onOpenChangeComplete = output<boolean>();
+
+    private readonly popupId = signal<string | undefined>(undefined);
+    private allocatedContentId?: string;
+
+    /** ID of the mounted popup. The first popup's native host owns the hydrated allocation. */
+    get contentId(): string | undefined {
+        return this.popupId();
+    }
+
+    registerContentId(id: string): () => void {
+        this.allocatedContentId ??= id;
+        this.popupId.set(this.allocatedContentId);
+        return () => this.popupId.set(undefined);
+    }
     private readonly activeRegistration = computed(() => {
         const id = this.triggerId();
         return id === null ? undefined : this.registeredTriggers().get(id);
@@ -255,7 +279,6 @@ export class RdxTooltip {
     });
     readonly cursorPosition = signal<{ x: number; y: number } | undefined>(undefined);
     readonly openChangeReason = signal<RdxTooltipOpenChangeReason>('none');
-    private readonly preventUnmountOnClose = signal(false);
 
     private readonly openedInstant = signal(false);
     private readonly openedInstantType = signal<RdxTooltipInstantType | undefined>(undefined);
@@ -269,21 +292,26 @@ export class RdxTooltip {
     readonly instantType = computed<RdxTooltipInstantType | undefined>(() =>
         this.open() && this.trackCursorAxis() !== 'none' ? 'tracking-cursor' : this.openedInstantType()
     );
-    /** @internal Shared with structural Portal. */
-    readonly renderLifecycle = useRenderLifecycle(
+    private readonly lifecycle = usePopupLifecycle(
+        this.open,
         (open) => {
-            if (open) return;
-
-            this.openedInstant.set(false);
-            this.openedInstantType.set(undefined);
-            if (!this.openState() && !this.preventUnmountOnClose()) {
-                this.localTrigger.set({ id: null });
-                this.detachedPayload.set(undefined);
+            if (!open) {
+                this.openedInstant.set(false);
+                this.openedInstantType.set(undefined);
+                if (!this.openState()) {
+                    this.localTrigger.set({ id: null });
+                    this.detachedPayload.set(undefined);
+                }
             }
+            this.onOpenChangeComplete.emit(open);
         },
-        { open: () => this.open() }
+        'RdxTooltip'
     );
-    readonly present = computed(() => this.open() || this.preventUnmountOnClose());
+    /** @internal Shared with structural Portal. */
+    readonly renderLifecycle = this.lifecycle.renderLifecycle;
+    readonly transitionStatus = this.lifecycle.status;
+    readonly registerPresence = this.lifecycle.registerPresence;
+    readonly present = this.lifecycle.present;
 
     private readonly virtualAnchor = computed<ReferenceElement | undefined>(() => {
         const axis = this.trackCursorAxis();
@@ -369,9 +397,7 @@ export class RdxTooltip {
 
             previousOpen = open;
             this.cancelPendingInteractions();
-            this.renderLifecycle.start(open);
             if (open) {
-                this.preventUnmountOnClose.set(false);
                 this.provider?.onOpen(this.closeForSibling);
             } else {
                 this.provider?.onClose(this.closeForSibling);
@@ -412,6 +438,20 @@ export class RdxTooltip {
     close(reason: RdxTooltipOpenChangeReason = 'none', event?: Event) {
         this.cancelPendingInteractions();
         this.applyClose(reason, event);
+    }
+
+    /** Finishes a pending exit, including one held by `preventUnmountOnClose()`. */
+    unmount(): void {
+        if (this.open()) {
+            // A controlled close may reach the input only after the current event returns.
+            afterNextRender(() => this.lifecycle.unmount(), { injector: this.injector });
+        } else {
+            this.lifecycle.unmount();
+        }
+    }
+
+    cancelHoverClose(): void {
+        this.closeTimer.stop();
     }
 
     private cancelPendingInteractions(): void {
@@ -473,7 +513,7 @@ export class RdxTooltip {
     onTriggerLeave(trigger: HTMLElement, event: Event) {
         this.cancelPendingOpen(trigger);
 
-        if (this.disableHoverablePopup() && this.trigger() === trigger) {
+        if ((this.disableHoverablePopup() || this.trackCursorAxis() === 'both') && this.trigger() === trigger) {
             this.scheduleClose(event);
         }
         // Otherwise the positioner's grace area decides when to close.
@@ -586,7 +626,6 @@ export class RdxTooltip {
             }
             this.openedInstant.set(instant || inInstantGroup);
             this.openedInstantType.set(inInstantGroup ? 'delay' : reason === 'trigger-focus' ? 'focus' : undefined);
-            this.preventUnmountOnClose.set(false);
             this.openChangeReason.set(reason);
         };
         if (wasOpen) {
@@ -618,6 +657,8 @@ export class RdxTooltip {
             trigger?.isConnected ? trigger : undefined
         );
         const { eventDetails } = change;
+        const transaction = this.lifecycle.prepareOpenChange(false, event);
+        eventDetails.preventUnmountOnClose = transaction.preventUnmountOnClose;
         this.onOpenChange.emit({ open: false, eventDetails });
 
         if (eventDetails.isCanceled()) {
@@ -629,9 +670,8 @@ export class RdxTooltip {
                 : reason === 'none' && this.provider?.isInstant()
                   ? 'delay'
                   : undefined;
-        const retain = change.shouldPreventUnmountOnClose();
         this.acceptOpenRequest(false, () => {
-            this.preventUnmountOnClose.set(retain);
+            transaction.commit();
             this.openedInstant.set(instantType !== undefined);
             this.openedInstantType.set(instantType);
             this.openChangeReason.set(reason);
@@ -652,22 +692,27 @@ export class RdxTooltip {
 
 function contextFor(root: RdxTooltip): RdxTooltipContext {
     return {
-        contentId: root.contentId,
+        contentId: () => root.contentId,
+        registerContentId: (id) => root.registerContentId(id),
         isOpen: root.open,
         present: root.present,
+        transitionStatus: root.transitionStatus,
         renderLifecycle: root.renderLifecycle,
+        registerPresence: root.registerPresence,
         instant: root.instant,
         instantType: root.instantType,
         disabled: root.disabled,
         disableHoverablePopup: root.disableHoverablePopup,
         trackCursorAxis: root.trackCursorAxis,
         trigger: root.trigger,
+        triggerId: root.triggerId,
         triggers: root.triggers,
         payload: root.payload,
         openChangeReason: root.openChangeReason.asReadonly(),
         open: (trigger, payload, event, reason) => root.show(trigger, payload, event, reason),
         close: (reason?: RdxTooltipOpenChangeReason, event?: Event) => root.close(reason, event),
         cancelPendingOpen: (trigger) => root.cancelPendingOpen(trigger),
+        cancelHoverClose: () => root.cancelHoverClose(),
         closeHoverOpen: (event) => root.closeHoverOpen(event),
         closeDelayed: (event) => root.scheduleClose(event),
         registerTrigger: (id, trigger, payload, options) => root.registerTrigger(id, trigger, payload, options),

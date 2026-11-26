@@ -13,7 +13,13 @@ canceled removal, and imperative handoff through a detached handle.
 
 The viewport comparison checks directional content changes, frozen outgoing dimensions, live
 resizing, and replacement of the previous snapshot during a rapid switch. It holds the content
-animations to verify which nodes survive before and after completion.
+animations to verify which nodes survive before and after completion. Top and left placements
+keep the trigger-facing edge aligned during the resize. The arrow comparison checks collision
+offsets and `data-uncentered`.
+
+The lifecycle comparison covers `keepMounted`, cancellation, held exits, imperative unmount, and
+completion after exit motion. Pointer scenarios cross the gap in both directions and check how
+`disableHoverablePopup` and the three tracking modes change behavior.
 
 Angular keeps `role="tooltip"` on its open popup and links it to the trigger via `aria-describedby`.
 The pinned Base UI popup renders without that role and description in these fixtures. When `open`
@@ -24,4 +30,4 @@ after the timer fires, and keeps `data-popup-open` after a disabled close is vet
 to resolve an implicit anchor until there is exactly one registered trigger. The pin selects the
 first registration when an already open root attaches two detached triggers without an ID. The
 suite records these differences at the affected checkpoints. See the
-[Tooltip matrix](../../../../packages/primitives/tooltip/PARITY.md) for the remaining cases.
+[Tooltip matrix](../../../../packages/primitives/tooltip/PARITY.md) for the full inventory, including the Angular hydration audit.

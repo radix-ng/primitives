@@ -24,7 +24,7 @@ follows Base UI.
 - ✅ Can follow the cursor with `trackCursorAxis`.
 - ✅ Positions content with the shared Floating UI-based Popper, with an optional custom `anchor`.
 - ✅ Exposes `data-open`, `data-closed`, `data-side`, `data-align`, and a `data-instant` reason (`delay` / `dismiss` / `focus` / `tracking-cursor`) for styling.
-- ✅ Keeps portal content mounted while CSS exit keyframes finish.
+- ✅ Keeps portal content mounted during CSS exit motion and supports persistent mounting.
 
 ## Import
 
@@ -50,8 +50,8 @@ import { tooltipImports } from '@radix-ng/primitives/tooltip';
 ## Anatomy
 
 Apply the parts to your own markup. `rdxTooltipPortal` is a **structural** directive: it teleports its
-content into `document.body` while the tooltip is open and keeps it mounted until any closed-state CSS
-exit keyframes on its root element finish. Use the `*` microsyntax on the positioner (or the explicit
+content into `document.body` and keeps it mounted through the popup's CSS exit transitions or animations.
+Use the `*` microsyntax on the positioner (or the explicit
 `<ng-template rdxTooltipPortal>` form with `[container]` for a custom portal target):
 
 ```html
@@ -76,8 +76,13 @@ including when it is `false`. Set `[open]` to `undefined` to return control to t
 `(onOpenChange)` receives `{ open, eventDetails }` for a request. Call `eventDetails.cancel()` to veto
 it. `(openChange)` emits the requested Boolean after an uncanceled request and supports `[(open)]`.
 In a controlled tooltip, the popup and trigger description update when the parent changes `[open]`.
-Parent writes emit neither output. `RdxTooltip.open()` reads the effective state. To set state from
+Parent writes emit neither request output. `RdxTooltip.open()` reads the effective state. To set state from
 TypeScript in a controlled tooltip, update the value bound to `[open]`.
+
+`(onOpenChangeComplete)` emits the effective Boolean after the popup finishes opening or closing.
+It also follows changes to `[open]`. Call `eventDetails.preventUnmountOnClose()` in
+`(onOpenChange)` to hold a close while custom motion runs. Export the root with
+`#tooltip="rdxTooltip"` and call `tooltip.unmount()` to complete the held close.
 
 Disabling the Root hides the popup and requests a close with reason `disabled` if its open state is
 true. Re-enabling shows the popup again if that state was retained. Disable only the Trigger to
@@ -185,13 +190,16 @@ Install `@lucide/angular` when an example imports it.
 | `data-popup-open`        | This trigger's tooltip is open.          |
 | `data-trigger-disabled`  | The trigger is disabled.                 |
 
-`aria-describedby` points at the popup's id only while the tooltip is open (the popup exists only then).
+`aria-describedby` points at the mounted popup's id while the tooltip is open.
 
 ### Portal
 
 `RdxTooltipPortal` is a structural directive (`*rdxTooltipPortal` or `<ng-template rdxTooltipPortal>`)
 that teleports content to `document.body` by default. Pass `[container]` on the explicit
 `<ng-template>` form to portal into a different element.
+
+Use `<ng-template rdxTooltipPortal keepMounted>` to preserve the same rendered view between opens.
+The positioner becomes hidden and inert when the tooltip is closed and its exit has finished.
 
 ### Positioner
 
@@ -219,6 +227,11 @@ optional `anchor` input overrides the trigger only for positioning.
 | `--available-width` / `--available-height` | Space available before the collision boundary.        |
 | `--transform-origin`                       | Origin to scale/zoom the popup from, based on side/align. |
 | `--positioner-width` / `--positioner-height` | Target popup dimensions when a viewport measures the content. |
+
+For viewport resize motion, size the positioner with `--positioner-width` and `--positioner-height`
+and the popup with `--popup-width` and `--popup-height`. When the resolved physical side is
+`top` or `left`, the positioner uses the far inset and aligns the popup along the edge nearest
+the trigger as its size changes.
 
 ### Popup
 

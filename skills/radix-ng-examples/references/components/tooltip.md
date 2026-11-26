@@ -16,7 +16,7 @@ Displays contextual information when a trigger is hovered or focused.
 - ✅ Can follow the cursor with `trackCursorAxis`.
 - ✅ Positions content with the shared Floating UI-based Popper, with an optional custom `anchor`.
 - ✅ Exposes `data-open`, `data-closed`, `data-side`, `data-align`, and a `data-instant` reason (`delay` / `dismiss` / `focus` / `tracking-cursor`) for styling.
-- ✅ Keeps portal content mounted while CSS exit keyframes finish.
+- ✅ Keeps portal content mounted during CSS exit motion and supports persistent mounting.
 
 ## Import
 
@@ -42,8 +42,8 @@ import { tooltipImports } from '@radix-ng/primitives/tooltip';
 ## Anatomy
 
 Apply the parts to your own markup. `rdxTooltipPortal` is a **structural** directive: it teleports its
-content into `document.body` while the tooltip is open and keeps it mounted until any closed-state CSS
-exit keyframes on its root element finish. Use the `*` microsyntax on the positioner (or the explicit
+content into `document.body` and keeps it mounted through the popup's CSS exit transitions or animations.
+Use the `*` microsyntax on the positioner (or the explicit
 `<ng-template rdxTooltipPortal>` form with `[container]` for a custom portal target):
 
 ```html

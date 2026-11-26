@@ -5,21 +5,24 @@ import { provideRdxPresenceContext } from '@radix-ng/primitives/presence';
 import { injectRdxTooltipContext } from './tooltip';
 
 /**
- * Structural directive that teleports the tooltip content into a container (default `document.body`)
- * while the tooltip is open, and keeps it mounted until any CSS exit `@keyframes` finishes.
+ * Structural directive that teleports the tooltip content into a container (default `document.body`).
+ * The content remains mounted through CSS exit motion. Set `keepMounted` to retain it between opens.
  *
  * Apply it with the `*` microsyntax on the positioner — `<div *rdxTooltipPortal rdxTooltipPositioner>`
- * — or as an explicit `<ng-template rdxTooltipPortal>`. For a custom container use the explicit form
- * with `[container]`.
+ * — or use an explicit `<ng-template rdxTooltipPortal>` to configure `container` or `keepMounted`.
  */
 @Directive({
     selector: 'ng-template[rdxTooltipPortal]',
     exportAs: 'rdxTooltipPortal',
-    hostDirectives: [{ directive: RdxPortalPresence, inputs: ['container'] }],
+    hostDirectives: [{ directive: RdxPortalPresence, inputs: ['container', 'keepMounted'] }],
     providers: [
         provideRdxPresenceContext(() => {
             const root = injectRdxTooltipContext();
-            return { present: root.present, renderLifecycle: root.renderLifecycle };
+            return {
+                present: root.present,
+                renderLifecycle: root.renderLifecycle,
+                registerPresence: root.registerPresence
+            };
         })
     ]
 })

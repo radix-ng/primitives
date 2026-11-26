@@ -6,6 +6,8 @@ export const cases = {
     'eager-progress': { kind: 'progress', placement: 'eager' },
     'eager-meter': { kind: 'meter', placement: 'eager' },
     'eager-separator': { kind: 'separator', placement: 'eager' },
+    'eager-tooltip': { kind: 'tooltip', placement: 'eager' },
+    'detached-tooltip': { kind: 'tooltip', placement: 'eager' },
     'reverse-accordion-presence': { kind: 'accordion', placement: 'reverse' },
     'eager-accordion-retained': { kind: 'accordion', placement: 'eager', retain: true },
     'eager-inline': { kind: 'inline', placement: 'eager' },
@@ -66,6 +68,7 @@ export interface Settings {
         | 'progress'
         | 'meter'
         | 'separator'
+        | 'tooltip'
         | 'inline'
         | 'attribute'
         | 'structural'
