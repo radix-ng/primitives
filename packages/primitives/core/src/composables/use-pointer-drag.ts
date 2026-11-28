@@ -4,6 +4,8 @@ import { assertInInjectionContext, DestroyRef, ElementRef, inject, PLATFORM_ID }
 export interface RdxPointerDragHandlers {
     /** Whether a press may begin a drag (e.g. enabled, not on an opt-out element, at a scroll edge). */
     canStart: (event: PointerEvent) => boolean;
+    /** Pointer travel from the press before capture. Defaults to 4 CSS px. */
+    startThreshold?: number;
     /** A drag actually began (the pointer moved past the start threshold). */
     onStart: (event: PointerEvent) => void;
     /** Pointer moved during a drag. Return `false` to end the gesture early (treated as not committed). */
@@ -18,7 +20,7 @@ const DRAG_THRESHOLD = 4;
 /**
  * Shared pointer-drag lifecycle for gesture primitives (drawer swipe, toast swipe, etc.).
  *
- * A press only becomes a drag once the pointer moves past {@link DRAG_THRESHOLD}; until then it is a
+ * A press becomes a drag on a pointer move that reaches the start threshold. Until then it is a
  * plain tap, so clicks on buttons inside the element keep working (the gesture never captures the
  * pointer for a tap). Once dragging, the pointer is captured so a drag that leaves the element still
  * completes, and `lostpointercapture` / `pointercancel` count as a non-committed end — a swallowed
@@ -83,7 +85,7 @@ export function usePointerDrag(handlers: RdxPointerDragHandlers): void {
             const dx = event.clientX - downEvent.clientX;
             const dy = event.clientY - downEvent.clientY;
 
-            if (Math.hypot(dx, dy) < DRAG_THRESHOLD) {
+            if (Math.hypot(dx, dy) < (handlers.startThreshold ?? DRAG_THRESHOLD)) {
                 return;
             }
 

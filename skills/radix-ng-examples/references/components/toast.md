@@ -11,7 +11,7 @@ A succinct, low-priority message that appears temporarily, stacks, and can be sw
 - ✅ Imperative API — push toasts from anywhere with `add` / `update` / `close` / `promise`.
 - ✅ Headless and unstyled — state is exposed through `data-*` attributes and CSS variables.
 - ✅ Stacking with a hover/focus expand, driven by measured heights (`--toast-offset-y`).
-- ✅ Swipe-to-dismiss with rubber-banding and flick detection in any allowed direction.
+- ✅ Swipe-to-dismiss with axis locking, resistance, and cancellation.
 - ✅ Auto-dismiss timers that pause during hover, keyboard focus, swipe, or while the window is inactive.
 - ✅ Promise toasts with `loading` / `success` / `error` copy.
 - ✅ A polite notifications region, with assertive announcements for high-priority toasts.

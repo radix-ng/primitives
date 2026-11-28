@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import type { Checkpoint } from '../../../shared/compare.ts';
 import { createParityRunner } from '../../../shared/run-scenario.ts';
 import { providerTimeout, requestId, resetTimeout, type RequestSettlement, type ToastEvent } from '../src/contract.ts';
@@ -7,6 +7,7 @@ const removed = (id: string): ToastEvent[] => [
     { id, phase: 'close' },
     { id, phase: 'remove' }
 ];
+const swipeId = 'notice-1';
 
 class ToastDriver {
     readonly checkpoints: Checkpoint[] = [];
@@ -32,7 +33,8 @@ class ToastDriver {
             await this.page.clock.pauseAt(1000);
         }
 
-        await this.page.goto('/' + this.framework + '.html' + (name.startsWith('request-') ? '?requests' : ''));
+        const query = name.startsWith('request-') ? '?requests' : name.startsWith('swipe-') ? '?swipe' : '';
+        await this.page.goto('/' + this.framework + '.html' + query);
         await expect(this.viewport).toBeVisible();
         this.metadata = await this.page.evaluate(() => window.toastParity.reference);
     }
@@ -141,10 +143,38 @@ class ToastDriver {
             .toBe(true);
     }
 
-    async finishRequestExit() {
-        await this.page.getByTestId(requestId).evaluate((root) => {
+    async finishExit(id: string) {
+        await this.page.getByTestId(id).evaluate((root) => {
             for (const animation of root.getAnimations()) animation.finish();
         });
+    }
+
+    async beginSwipe(target: Locator = this.page.getByTestId(swipeId).locator('[data-title]')) {
+        const box = await target.boundingBox();
+        if (!box) throw new Error('Swipe target is missing');
+        const x = Math.round(box.x + box.width / 2);
+        const y = Math.round(box.y + box.height / 2);
+        await this.page.mouse.move(x, y);
+        await this.page.mouse.down();
+        return (dx: number, dy: number) => this.page.mouse.move(x + dx, y + dy);
+    }
+
+    async swipeState(
+        name: string,
+        state: { direction?: 'right' | 'down' | null; x?: number; y?: number; swiping?: boolean; ending?: boolean } = {}
+    ) {
+        await this.checkpoint(
+            name,
+            () =>
+                this.page.getByTestId(swipeId).evaluate((root) => ({
+                    direction: root.getAttribute('data-swipe-direction'),
+                    x: Number.parseFloat(root.style.getPropertyValue('--toast-swipe-movement-x')) || 0,
+                    y: Number.parseFloat(root.style.getPropertyValue('--toast-swipe-movement-y')) || 0,
+                    swiping: root.hasAttribute('data-swiping'),
+                    ending: root.hasAttribute('data-ending-style')
+                })),
+            { direction: null, x: 0, y: 0, swiping: false, ending: false, ...state }
+        );
     }
 
     async focus(name: string, id: string, expanded: boolean) {
@@ -302,7 +332,7 @@ const scenarios: { name: string; run(driver: ToastDriver): Promise<void> }[] = [
                 [secondClose],
                 results
             );
-            await driver.finishRequestExit();
+            await driver.finishExit(requestId);
             await driver.singleToast('upsert owns the remove callback', null, [secondClose, secondRemove], results);
         }
     },
@@ -321,7 +351,7 @@ const scenarios: { name: string; run(driver: ToastDriver): Promise<void> }[] = [
                 [firstClose],
                 [firstFulfilled]
             );
-            await driver.finishRequestExit();
+            await driver.finishExit(requestId);
             await driver.singleToast(
                 'exit completes with one removal',
                 null,
@@ -336,7 +366,7 @@ const scenarios: { name: string; run(driver: ToastDriver): Promise<void> }[] = [
             await driver.action('Start first request');
             await driver.singleToast('pending request is visible', firstLoading);
             await driver.dismissRequest();
-            await driver.finishRequestExit();
+            await driver.finishExit(requestId);
             await driver.singleToast('dismissed while the request is pending', null, [firstClose, firstRemove]);
             await driver.action('Reject first request');
             await driver.singleToast(
@@ -383,7 +413,7 @@ const scenarios: { name: string; run(driver: ToastDriver): Promise<void> }[] = [
                     [firstClose, secondClose],
                     results
                 );
-                await driver.finishRequestExit();
+                await driver.finishExit(requestId);
                 await driver.singleToast(
                     'only the completed exit fires onRemove',
                     null,
@@ -393,6 +423,143 @@ const scenarios: { name: string; run(driver: ToastDriver): Promise<void> }[] = [
             } finally {
                 await outgoing.dispose();
             }
+        }
+    },
+    ...(['right', 'down'] as const).map((direction) => ({
+        name: 'swipe-lock-' + direction,
+        async run(driver: ToastDriver) {
+            await driver.addNotices(1);
+            const move = await driver.beginSwipe();
+            const horizontal = direction === 'right';
+            // The first movement sets the reference position for the drag.
+            await move(horizontal ? 1 : 0, horizontal ? 0 : 1);
+            await move(horizontal ? 16 : 0, horizontal ? 0 : 16);
+            const locked = { direction, x: horizontal ? 15 : 0, y: horizontal ? 0 : 15 };
+            await driver.swipeState('first displacement locks the axis', { ...locked, swiping: true });
+
+            await move(horizontal ? 55 : 85, horizontal ? 85 : 55);
+            const diagonal = { direction, x: horizontal ? 54 : 0, y: horizontal ? 0 : 54 };
+            await driver.swipeState('larger movement on the other axis keeps the lock', { ...diagonal, swiping: true });
+            await driver.page.mouse.up();
+            await driver.swipeState('release dismisses in the locked direction', { ...diagonal, ending: true });
+            await driver.finishExit(swipeId);
+            await driver.singleToast('completed exit removes the swipe target once', null, removed(swipeId));
+        }
+    })),
+    {
+        name: 'swipe-short',
+        async run(driver) {
+            await driver.addNotices(1);
+            const move = await driver.beginSwipe();
+            await move(1, 0);
+            await move(20, 0);
+            await driver.swipeState('short drag previews movement', { direction: 'right', x: 19, swiping: true });
+            await driver.page.mouse.up();
+            await driver.swipeState('short release clears movement and direction');
+            await driver.singleToast('short release leaves the toast open', { id: swipeId, title: 'Notification 1' });
+
+            const moveToThreshold = await driver.beginSwipe();
+            await moveToThreshold(1, 0);
+            await moveToThreshold(41, 0);
+            await driver.swipeState('exactly 40 pixels previews the drag', {
+                direction: 'right',
+                x: 40,
+                swiping: true
+            });
+            await driver.page.mouse.up();
+            await driver.swipeState('release at the threshold keeps the toast open');
+
+            const movePastThreshold = await driver.beginSwipe();
+            await movePastThreshold(1, 0);
+            await movePastThreshold(42, 0);
+            await driver.swipeState('41 pixels crosses the threshold', { direction: 'right', x: 41, swiping: true });
+            await driver.page.mouse.up();
+            await driver.swipeState('release past the threshold starts exit', {
+                direction: 'right',
+                x: 41,
+                ending: true
+            });
+            await driver.finishExit(swipeId);
+            await driver.singleToast('distance commits one dismissal', null, removed(swipeId));
+        }
+    },
+    {
+        name: 'swipe-reverse',
+        async run(driver) {
+            await driver.addNotices(1);
+            const move = await driver.beginSwipe();
+            await move(1, 0);
+            await move(80, 0);
+            await driver.swipeState('outward drag crosses the threshold', { direction: 'right', x: 79, swiping: true });
+            await move(56, 0);
+            await driver.swipeState('reversal still previews the current position', {
+                direction: 'right',
+                x: 55,
+                swiping: true
+            });
+            await driver.page.mouse.up();
+            await driver.swipeState('release after reversal clears the armed drag');
+            await driver.singleToast('change of mind preserves the toast', { id: swipeId, title: 'Notification 1' });
+        }
+    },
+    {
+        name: 'swipe-pointercancel',
+        async run(driver) {
+            await driver.addNotices(1);
+            const root = driver.page.getByTestId(swipeId);
+            await root.evaluate((element) => {
+                element.addEventListener(
+                    'pointerdown',
+                    (event) => {
+                        element.dataset.swipePointer = String(event.pointerId);
+                    },
+                    { once: true }
+                );
+            });
+            const move = await driver.beginSwipe();
+            await move(1, 0);
+            await move(75, 0);
+            await driver.swipeState('long drag previews dismissal', { direction: 'right', x: 74, swiping: true });
+            await root.dispatchEvent('pointercancel', {
+                pointerId: Number(await root.getAttribute('data-swipe-pointer')),
+                pointerType: 'mouse',
+                isPrimary: true
+            });
+            await driver.page.mouse.up();
+            await driver.swipeState('pointercancel restores the resting state');
+            await driver.singleToast('canceled gesture leaves the toast open', {
+                id: swipeId,
+                title: 'Notification 1'
+            });
+
+            const retry = await driver.beginSwipe();
+            await retry(1, 0);
+            await retry(75, 0);
+            await driver.swipeState('next gesture starts from zero', { direction: 'right', x: 74, swiping: true });
+            await driver.page.mouse.up();
+            await driver.swipeState('next gesture can dismiss', { direction: 'right', x: 74, ending: true });
+            await driver.finishExit(swipeId);
+            await driver.singleToast('one dismissal follows the canceled drag', null, removed(swipeId));
+        }
+    },
+    {
+        name: 'swipe-interactive-descendants',
+        async run(driver) {
+            await driver.addNotices(1);
+            for (const target of ['swipe-action', 'ignore', 'legacy-ignore']) {
+                const move = await driver.beginSwipe(driver.page.getByTestId(target));
+                await move(1, 0);
+                await move(75, 0);
+                await driver.swipeState(target + ' stays outside the gesture');
+                await driver.page.mouse.up();
+            }
+            await driver.page.getByRole('button', { name: 'Action' }).click();
+            await driver.checkpoint(
+                'the native action remains clickable',
+                () => driver.page.evaluate(() => ({ activations: window.toastParity.activations })),
+                { activations: 1 }
+            );
+            await driver.singleToast('ignore targets leave the toast open', { id: swipeId, title: 'Notification 1' });
         }
     },
     {

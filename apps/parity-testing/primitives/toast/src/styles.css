@@ -18,7 +18,17 @@
     display: none;
 }
 
-[data-testid='request'][data-ending-style] {
+[data-swipe-fixture] {
+    right: 100px;
+    bottom: 100px;
+}
+
+[data-swipe-fixture] [data-toast] {
+    user-select: none;
+}
+
+[data-testid='request'][data-ending-style],
+[data-swipe-fixture] [data-ending-style] {
     animation: toast-fixture-exit 30s linear paused;
 }
 

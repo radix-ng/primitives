@@ -4,7 +4,13 @@
 
 > Generated from `@radix-ng/primitives@1.4.1` — if the installed version differs, verify the API against the installed package.
 
-Drag a toast toward an allowed `swipeDirection` to dismiss it; release early to snap back.
+Drag in an allowed `swipeDirection` and release after travelling more than 40 CSS pixels.
+When both axes are allowed, the first displacement locks the axis. Reversing an armed swipe can
+cancel it. A short release or `pointercancel` returns the toast to its resting position.
+
+Buttons, links, inputs, textareas, and elements with `role="button"` keep their native interactions.
+Use `data-base-ui-swipe-ignore` on other regions that should opt out. Angular also supports
+`data-swipe-ignore` and `data-toast-swipe-ignore`.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';

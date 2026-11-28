@@ -17,7 +17,12 @@ type Reference = { commit: string; packageVersion: string; digest: string };
 declare global {
     const __PARITY_REFERENCE__: Reference;
     interface Window {
-        toastParity: { reference: Reference; events: ToastEvent[]; settlements: RequestSettlement[] };
+        toastParity: {
+            reference: Reference;
+            events: ToastEvent[];
+            settlements: RequestSettlement[];
+            activations: number;
+        };
     }
 }
 
@@ -25,7 +30,7 @@ export const providerTimeout = 1000;
 export const resetTimeout = 500;
 
 export function installFixture(): void {
-    window.toastParity = { reference: __PARITY_REFERENCE__, events: [], settlements: [] };
+    window.toastParity = { reference: __PARITY_REFERENCE__, events: [], settlements: [], activations: 0 };
 }
 
 export function notification(id: string, title: string, timeout?: number, owner?: RequestOwner) {

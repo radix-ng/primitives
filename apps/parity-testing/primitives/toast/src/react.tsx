@@ -20,6 +20,7 @@ function ToastFixture({ setLimit }: { setLimit: (limit: number) => void }) {
     const resolveSave = useRef<(() => void) | undefined>(undefined);
     const [requests] = useState(() => createRequests(manager.promise));
     const owners = new URLSearchParams(location.search).has('requests') ? requestOwners : [];
+    const swipe = new URLSearchParams(location.search).has('swipe');
 
     function addNotice() {
         const index = ++count.current;
@@ -81,11 +82,24 @@ function ToastFixture({ setLimit }: { setLimit: (limit: number) => void }) {
             ))}
 
             <Toast.Portal>
-                <Toast.Viewport data-testid="viewport">
+                <Toast.Viewport data-testid="viewport" data-swipe-fixture={swipe ? '' : undefined}>
                     {manager.toasts.map((toast) => (
                         <Toast.Root key={toast.id} toast={toast} data-testid={toast.id} data-toast>
                             <Toast.Title data-title />
                             <Toast.Description>Notification details</Toast.Description>
+                            {swipe && (
+                                <>
+                                    <div data-base-ui-swipe-ignore>
+                                        <span data-testid="ignore">Ignore swipe</span>
+                                    </div>
+                                    <div data-swipe-ignore>
+                                        <span data-testid="legacy-ignore">Legacy ignore</span>
+                                    </div>
+                                    <button onClick={() => window.toastParity.activations++} type="button">
+                                        <span data-testid="swipe-action">Action</span>
+                                    </button>
+                                </>
+                            )}
                             <Toast.Close data-testid={`dismiss-${toast.id}`}>Dismiss</Toast.Close>
                         </Toast.Root>
                     ))}

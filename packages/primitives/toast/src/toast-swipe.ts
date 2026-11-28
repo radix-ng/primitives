@@ -1,174 +1,170 @@
 import { assertInInjectionContext, DestroyRef, inject } from '@angular/core';
-import { usePointerDrag } from '@radix-ng/primitives/core';
+import { isElement, usePointerDrag } from '@radix-ng/primitives/core';
 
 /** Direction a swipe travels to dismiss a toast. */
 export type RdxToastSwipeDirection = 'up' | 'down' | 'left' | 'right';
 
-/** Unit vectors per dismiss direction (screen coordinates: +y is down). */
-const UNIT: Record<RdxToastSwipeDirection, { x: number; y: number }> = {
-    up: { x: 0, y: -1 },
-    down: { x: 0, y: 1 },
-    left: { x: -1, y: 0 },
-    right: { x: 1, y: 0 }
-};
+type Axis = 'x' | 'y';
+type Point = Record<Axis, number>;
 
-/** Default travel (px) past which a release dismisses. */
-const DEFAULT_THRESHOLD = 45;
-/** Signed velocity (px/ms) toward the dismiss direction that flicks a toast away. */
-const FLICK_VELOCITY = 0.3;
-/** iOS-style resistance when dragging opposite the dismiss direction. */
-const RUBBER_BAND = 0.5;
+const AXIS: Record<RdxToastSwipeDirection, Axis> = { up: 'y', down: 'y', left: 'x', right: 'x' };
+const SIGN: Record<RdxToastSwipeDirection, number> = { up: -1, down: 1, left: -1, right: 1 };
+const REST: Point = { x: 0, y: 0 };
+const DEFAULT_THRESHOLD = 40;
+const REVERSE_CANCEL_THRESHOLD = 10;
+const SWIPE_IGNORE =
+    'button,a,input,textarea,[role="button"],[data-base-ui-swipe-ignore],[data-swipe-ignore],[data-toast-swipe-ignore]';
+
+interface Swipe {
+    origin?: Point;
+    previous: Point;
+    baseline: Point;
+    axis?: Axis;
+    direction?: RdxToastSwipeDirection;
+    initialTravel: number;
+    offset: Point;
+    canceled: boolean;
+}
 
 export interface RdxToastSwipeConfig {
-    /** The toast element the gesture lives on (CSS variables + data attributes are written here). */
+    /** The toast element the gesture lives on (CSS variables and data attributes are written here). */
     element: () => HTMLElement;
-    /** Allowed dismiss directions; the gesture follows whichever the user drags toward most. */
+    /** Allowed dismiss directions. When both axes are enabled, the first displacement locks the axis. */
     directions: () => RdxToastSwipeDirection[];
     /** Whether the gesture is armed (false while the toast is leaving). */
     enabled: () => boolean;
-    /** Travel (px) past which a release dismisses. Defaults to {@link DEFAULT_THRESHOLD}. */
+    /** Travel (px) past which a release dismisses. Defaults to 40 CSS px. */
     threshold?: number;
     /** Called once per release that commits to dismissal. */
     onDismiss: (event: PointerEvent) => void;
-    /** Called when a swipe actually begins (e.g. to pause auto-dismiss timers). */
+    /** Called when a swipe begins. */
     onPress?: () => void;
-    /** Called when a started swipe ends, dismissing or not (balances {@link RdxToastSwipeConfig.onPress}). */
+    /** Called when a started swipe ends, balancing onPress. */
     onRelease?: () => void;
 }
 
+const displacement = (direction: RdxToastSwipeDirection, point: Point) => point[AXIS[direction]] * SIGN[direction];
+
+function signedDirection(axis: Axis, value: number): RdxToastSwipeDirection {
+    return axis === 'x' ? (value > 0 ? 'right' : 'left') : value > 0 ? 'down' : 'up';
+}
+
+/** Dampen motion opposite to the allowed directions while keeping the drag on its active axis. */
+function damp(value: number, axis: Axis, directions: readonly RdxToastSwipeDirection[]): number {
+    return directions.includes(signedDirection(axis, value)) ? value : Math.sign(value) * Math.sqrt(Math.abs(value));
+}
+
 /**
- * Headless swipe-to-dismiss for a toast, built on the shared {@link usePointerDrag} lifecycle (which
- * owns pointer capture, the start threshold, window listeners, and tap/cancel handling). This layer
- * adds the toast-specific direction projection, rubber-banding, flick detection, and the styling
- * contract — it applies no transform itself:
- *
- * - `--toast-swipe-movement-x` / `--toast-swipe-movement-y` — signed px offset along the active axis.
- * - `[data-swiping]` — present while a gesture is active (drive `transition: none` off this).
- * - `[data-swipe-direction]` — the active direction.
- * - `[data-swipe-dismiss]` — present briefly when a release commits to dismissal.
- *
- * Mark inner interactive regions with `[data-toast-swipe-ignore]` to opt them out of the gesture.
- * `RdxToastRoot` (the gesture host) sets `touch-action: none` so a touch-drag is not stolen by native
- * scrolling — without it the gesture only works with a mouse, not on touch devices.
- * Must be called from an injection context (a directive constructor).
+ * Writes headless swipe state through CSS variables and data attributes. The shared pointer-drag
+ * handler owns capture and cancellation. Interactive descendants and swipe-ignore markers opt out.
  */
 export function useToastSwipe(config: RdxToastSwipeConfig): void {
     assertInInjectionContext(useToastSwipe);
 
-    const el = () => config.element();
-    const axisSize = (direction: RdxToastSwipeDirection | null) =>
-        direction === 'left' || direction === 'right' ? el().offsetWidth : el().offsetHeight;
+    const threshold = config.threshold ?? DEFAULT_THRESHOLD;
+    let swipe: Swipe | undefined;
 
-    const rubber = (distance: number, direction: RdxToastSwipeDirection | null) => {
-        const size = axisSize(direction) || 1;
-        return (1 - 1 / ((Math.abs(distance) * RUBBER_BAND) / size + 1)) * size;
-    };
-
-    let active = false;
-    let startX = 0;
-    let startY = 0;
-    let direction: RdxToastSwipeDirection | null = null;
-    let pending = 0;
-    let lastProjected = 0;
-    let lastTime = 0;
-    let velocity = 0;
-
-    const write = (offset: number, dir: RdxToastSwipeDirection | null) => {
-        const unit = dir ? UNIT[dir] : { x: 0, y: 0 };
-        const node = el();
-        node.style.setProperty('--toast-swipe-movement-x', `${unit.x * offset}px`);
-        node.style.setProperty('--toast-swipe-movement-y', `${unit.y * offset}px`);
-    };
-
-    /** Pick the allowed direction the drag points toward most, with its signed projection (px). */
-    const project = (dx: number, dy: number) => {
-        let best: RdxToastSwipeDirection | null = null;
-        let bestProjection = 0;
-        for (const dir of config.directions()) {
-            const unit = UNIT[dir];
-            const projection = dx * unit.x + dy * unit.y;
-            if (projection > bestProjection) {
-                bestProjection = projection;
-                best = dir;
-            }
-        }
-        return { direction: best, projection: bestProjection };
+    const write = (offset: Point) => {
+        const node = config.element();
+        node.style.setProperty('--toast-swipe-movement-x', `${offset.x}px`);
+        node.style.setProperty('--toast-swipe-movement-y', `${offset.y}px`);
     };
 
     usePointerDrag({
-        canStart: (event) => {
-            if (!config.enabled()) {
-                return false;
-            }
-            return !(event.target as Element | null)?.closest('[data-toast-swipe-ignore]');
-        },
+        // The first move sets the origin, including the small movement that precedes a touch drag.
+        startThreshold: 0,
+        canStart: (event) =>
+            config.enabled() && !event.composedPath().some((node) => isElement(node) && node.matches(SWIPE_IGNORE)),
         onStart: (event) => {
-            active = true;
-            startX = event.clientX;
-            startY = event.clientY;
-            direction = null;
-            pending = 0;
-            lastProjected = 0;
-            lastTime = event.timeStamp;
-            velocity = 0;
-
-            el().setAttribute('data-swiping', '');
-            el().removeAttribute('data-swipe-dismiss');
+            const press = { x: event.clientX, y: event.clientY };
+            swipe = { previous: press, baseline: { ...press }, initialTravel: 0, offset: REST, canceled: false };
+            const node = config.element();
+            node.setAttribute('data-swiping', '');
+            node.removeAttribute('data-swipe-direction');
+            node.removeAttribute('data-swipe-dismiss');
             config.onPress?.();
         },
         onMove: (event) => {
-            // Abort if the toast began leaving mid-drag; the end handler settles back.
-            if (!config.enabled()) {
-                return false;
+            if (!swipe || !config.enabled()) return false;
+
+            event.preventDefault();
+            const point = { x: event.clientX, y: event.clientY };
+            const origin = (swipe.origin ??= point);
+            // When the pointer reverses, measure cancellation from the new position.
+            for (const axis of ['x', 'y'] as const) {
+                if ((point[axis] - swipe.previous[axis]) * (point[axis] - swipe.baseline[axis]) < 0) {
+                    swipe.baseline[axis] = point[axis];
+                }
+            }
+            swipe.previous = point;
+
+            const delta = { x: point.x - origin.x, y: point.y - origin.y };
+            const directions = config.directions();
+            const horizontal = directions.includes('left') || directions.includes('right');
+            const vertical = directions.includes('up') || directions.includes('down');
+            if (!swipe.axis && horizontal && vertical && Math.hypot(delta.x, delta.y) >= 1) {
+                swipe.axis = Math.abs(delta.x) > Math.abs(delta.y) ? 'x' : 'y';
             }
 
-            const dx = event.clientX - startX;
-            const dy = event.clientY - startY;
-            const { direction: dir, projection } = project(dx, dy);
-
-            if (dir) {
-                direction = dir;
+            if (!swipe.direction) {
+                const axis = swipe.axis ?? (Math.abs(delta.x) >= Math.abs(delta.y) ? 'x' : 'y');
+                const direction = signedDirection(axis, delta[axis]);
+                if (delta[axis] !== 0 && directions.includes(direction)) {
+                    swipe.direction = direction;
+                    swipe.initialTravel = displacement(direction, delta);
+                    config.element().setAttribute('data-swipe-direction', direction);
+                }
+            } else {
+                const { baseline, direction, initialTravel } = swipe;
+                const travel = displacement(direction, { x: point.x - baseline.x, y: point.y - baseline.y });
+                if (travel > threshold) {
+                    swipe.canceled = false;
+                } else if (
+                    !(directions.includes('left') && directions.includes('right')) &&
+                    !(directions.includes('up') && directions.includes('down')) &&
+                    initialTravel - travel >= REVERSE_CANCEL_THRESHOLD
+                ) {
+                    swipe.canceled = true;
+                }
             }
-            el().setAttribute('data-swipe-direction', direction ?? '');
 
-            // Move freely toward the dismiss direction; resist dragging the other way.
-            pending = projection >= 0 ? projection : -rubber(projection, direction);
-
-            const dt = event.timeStamp - lastTime;
-            if (dt > 0) {
-                velocity = (projection - lastProjected) / dt;
-                lastProjected = projection;
-                lastTime = event.timeStamp;
-            }
-
-            write(pending, direction);
+            swipe.offset = {
+                x: horizontal && swipe.axis !== 'y' ? damp(delta.x, 'x', directions) : 0,
+                y: vertical && swipe.axis !== 'x' ? damp(delta.y, 'y', directions) : 0
+            };
+            write(swipe.offset);
             return true;
         },
         onEnd: (event, committed) => {
-            active = false;
-            el().removeAttribute('data-swiping');
+            const completed = swipe;
+            swipe = undefined;
+            const node = config.element();
+            node.removeAttribute('data-swiping');
 
-            const threshold = config.threshold ?? DEFAULT_THRESHOLD;
-            const dismiss = committed && config.enabled() && (pending >= threshold || velocity >= FLICK_VELOCITY);
+            const direction =
+                committed && completed && !completed.canceled && config.enabled()
+                    ? config.directions().find((candidate) => displacement(candidate, completed.offset) > threshold)
+                    : undefined;
 
-            if (dismiss) {
-                el().setAttribute('data-swipe-dismiss', '');
-                config.onDismiss(event);
-            } else {
-                // Settle home; the consumer's `transition` animates the snap-back.
-                write(0, direction);
+            try {
+                if (direction) {
+                    node.setAttribute('data-swipe-direction', direction);
+                    node.setAttribute('data-swipe-dismiss', '');
+                    config.onDismiss(event);
+                } else {
+                    node.removeAttribute('data-swipe-direction');
+                    write(REST);
+                }
+            } finally {
+                config.onRelease?.();
             }
-
-            config.onRelease?.();
-            direction = null;
         }
     });
 
-    // usePointerDrag does not call onEnd when the host is destroyed mid-gesture; balance the onPress
-    // that paused the timers so the manager doesn't stay paused forever.
+    // The shared handler releases listeners on destroy. Balance the outstanding timer hold here.
     inject(DestroyRef).onDestroy(() => {
-        if (active) {
-            active = false;
+        if (swipe) {
+            swipe = undefined;
             config.onRelease?.();
         }
     });

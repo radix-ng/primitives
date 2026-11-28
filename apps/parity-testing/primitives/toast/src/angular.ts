@@ -44,11 +44,18 @@ installFixture();
         }
 
         <div rdxToastPortal>
-            <div rdxToastViewport data-testid="viewport">
+            <div [attr.data-swipe-fixture]="swipe ? '' : undefined" rdxToastViewport data-testid="viewport">
                 @for (toast of manager.toasts(); track toast.id) {
                     <div [toast]="toast" [attr.data-testid]="toast.id" rdxToastRoot data-toast>
                         <h2 rdxToastTitle data-title>{{ toast.title }}</h2>
                         <p rdxToastDescription>Notification details</p>
+                        @if (swipe) {
+                            <div data-base-ui-swipe-ignore><span data-testid="ignore">Ignore swipe</span></div>
+                            <div data-swipe-ignore><span data-testid="legacy-ignore">Legacy ignore</span></div>
+                            <button (click)="activate()" type="button">
+                                <span data-testid="swipe-action">Action</span>
+                            </button>
+                        }
                         <button [attr.data-testid]="'dismiss-' + toast.id" rdxToastClose type="button">Dismiss</button>
                     </div>
                 }
@@ -62,6 +69,7 @@ class ToastFixture {
     protected readonly timedToast = notification('timed', 'Timed');
     protected readonly newTimeout = resetTimeout;
     protected readonly owners = new URLSearchParams(location.search).has('requests') ? requestOwners : [];
+    protected readonly swipe = new URLSearchParams(location.search).has('swipe');
     protected readonly requests = createRequests((request, options) => this.manager.promise(request, options));
 
     private count = 0;
@@ -80,6 +88,10 @@ class ToastFixture {
     protected finishSave(): void {
         this.resolveSave?.();
         this.resolveSave = undefined;
+    }
+
+    protected activate(): void {
+        window.toastParity.activations++;
     }
 }
 

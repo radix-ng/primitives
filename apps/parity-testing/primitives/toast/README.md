@@ -15,6 +15,13 @@ Both fixtures apply the same CSS to hide limited notifications.
 | `request-reuse-during-exit`                                          | Reuse of the native Root, cancellation of the first CSS exit, delivery of results to the active ID, and removal only after the replacement exits |
 | `portal-keyboard-restore`, `portal-focus-next`                       | Portal placement, region name and live policy, F6, Tab and Shift+Tab, Escape, next-toast focus and return to the original control                |
 
+`swipe-lock-right` and `swipe-lock-down` check the motion offsets and direction on diagonal drags.
+`swipe-short` checks short releases and the 40/41 px boundary. `swipe-reverse` checks the change of
+mind, and `swipe-pointercancel` delivers a cancel event during a native mouse drag and checks the
+next swipe. `swipe-interactive-descendants` covers a nested button target and both Base UI ignore
+markers. Both gesture surfaces disable text selection so each drag exercises the primitive's
+pointer handling. These comparisons exercise mouse input in the three engines.
+
 The timer scenarios advance a paused Playwright clock. Queue states match by notification ID.
 The request scenarios hold real CSS exits in both fixtures and complete them through WAAPI.
 The overflow scenario also records native order. The [reviewed difference](expected-differences.json)
