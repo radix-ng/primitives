@@ -47,3 +47,27 @@ test.describe('Composite reorder behavior', () => {
         expect(errors).toEqual([]);
     });
 });
+
+test('inherits live provider direction across a Portal into an LTR container', async ({ page }) => {
+    const errors = await gotoStory(page, 'utilities-composite--portalled-direction');
+
+    const destination = page.getByTestId('portal-destination');
+    const composite = destination.locator(':scope > [rdxCompositeRoot]');
+    const first = composite.getByRole('button', { name: 'One', exact: true });
+    const middle = composite.getByRole('button', { name: 'Two', exact: true });
+    const last = composite.getByRole('button', { name: 'Three', exact: true });
+    const toggle = page.getByRole('button', { name: /^Switch primitive direction to/ });
+
+    await expect(toggle).toHaveText('Switch primitive direction to LTR');
+    await expect(composite).toHaveCSS('direction', 'ltr');
+    await middle.press('ArrowRight');
+    await expect(first).toBeFocused();
+
+    await toggle.click();
+    await expect(toggle).toHaveText('Switch primitive direction to RTL');
+    await expect(composite).toHaveCSS('direction', 'ltr');
+    await middle.press('ArrowRight');
+    await expect(last).toBeFocused();
+
+    expect(errors).toEqual([]);
+});

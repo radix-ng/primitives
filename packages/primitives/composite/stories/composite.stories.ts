@@ -4,6 +4,8 @@ import { RdxCompositeDefaultComponent } from './composite-default';
 import defaultSource from './composite-default?raw';
 import { RdxCompositeListOnlyComponent } from './composite-list-only';
 import listOnlySource from './composite-list-only?raw';
+import { RdxCompositePortalledDirectionComponent } from './composite-portalled-direction';
+import portalledDirectionSource from './composite-portalled-direction?raw';
 import { RdxCompositeReorderComponent } from './composite-reorder';
 import reorderSource from './composite-reorder?raw';
 
@@ -19,7 +21,12 @@ export default {
     title: 'Utilities/Composite',
     decorators: [
         moduleMetadata({
-            imports: [RdxCompositeDefaultComponent, RdxCompositeListOnlyComponent, RdxCompositeReorderComponent]
+            imports: [
+                RdxCompositeDefaultComponent,
+                RdxCompositeListOnlyComponent,
+                RdxCompositeReorderComponent,
+                RdxCompositePortalledDirectionComponent
+            ]
         }),
         tailwindDemoDecorator()
     ]
@@ -50,6 +57,16 @@ export const Reorder: Story = {
     render: () => ({
         template: html`
             <rdx-composite-reorder />
+        `
+    })
+};
+
+export const PortalledDirection: Story = {
+    tags: ['!visual'],
+    parameters: source(portalledDirectionSource),
+    render: () => ({
+        template: html`
+            <rdx-composite-portalled-direction />
         `
     })
 };

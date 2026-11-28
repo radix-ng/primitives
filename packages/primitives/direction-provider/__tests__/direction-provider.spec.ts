@@ -31,13 +31,14 @@ class ProbeHost {}
     standalone: true,
     imports: [DirectionProbe, RdxDirectionProvider],
     template: `
-        <section [direction]="direction()" rdxDirectionProvider>
+        <section [direction]="direction()" [dir]="dir()" rdxDirectionProvider>
             <span directionProbe></span>
         </section>
     `
 })
 class DirectionProviderHost {
-    readonly direction = signal<Direction>('rtl');
+    readonly direction = signal<Direction | undefined>('rtl');
+    readonly dir = signal<Direction | undefined>(undefined);
 }
 
 @Component({
@@ -114,6 +115,32 @@ describe('DirectionProvider', () => {
         host.direction.set('ltr');
         fixture.detectChanges();
 
+        expect(probe.direction()).toBe('ltr');
+    });
+
+    it('prefers direction over dir and falls back to the parent as overrides are removed', async () => {
+        const parentDirection = signal<Direction>('ltr');
+        TestBed.configureTestingModule({ providers: [provideDirection(parentDirection)] });
+
+        const fixture = TestBed.createComponent(DirectionProviderHost);
+        const host = fixture.componentInstance;
+        host.dir.set('ltr');
+        await fixture.whenStable();
+
+        const probe = fixture.debugElement.query(By.directive(DirectionProbe)).injector.get(DirectionProbe);
+        expect(probe.direction()).toBe('rtl');
+
+        parentDirection.set('rtl');
+        host.direction.set(undefined);
+        await fixture.whenStable();
+        expect(probe.direction()).toBe('ltr');
+
+        host.dir.set(undefined);
+        await fixture.whenStable();
+        expect(probe.direction()).toBe('rtl');
+
+        parentDirection.set('ltr');
+        await fixture.whenStable();
         expect(probe.direction()).toBe('ltr');
     });
 
