@@ -1,6 +1,7 @@
 import { Component, inject, output, provideZonelessChangeDetection, signal } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import {
+    RdxToastAction,
     RdxToastClose,
     RdxToastDescription,
     RdxToastManager,
@@ -11,10 +12,13 @@ import {
     RdxToastViewport
 } from '@radix-ng/primitives/toast';
 import {
+    controlNotification,
+    controlsId,
     createRequests,
     installFixture,
     notification,
     providerTimeout,
+    recordControl,
     requestOwners,
     resetTimeout,
     saveNotification
@@ -24,8 +28,26 @@ import './styles.css';
 installFixture();
 
 @Component({
+    selector: 'fixture-toast-close',
+    hostDirectives: [{ directive: RdxToastClose, inputs: ['disabled'] }],
+    template: `
+        <span>Dismiss</span>
+    `
+})
+class FixtureToastClose {}
+
+@Component({
     selector: 'toast-fixture',
-    imports: [RdxToastClose, RdxToastDescription, RdxToastPortal, RdxToastRoot, RdxToastTitle, RdxToastViewport],
+    imports: [
+        FixtureToastClose,
+        RdxToastAction,
+        RdxToastClose,
+        RdxToastDescription,
+        RdxToastPortal,
+        RdxToastRoot,
+        RdxToastTitle,
+        RdxToastViewport
+    ],
     template: `
         <input data-testid="origin" aria-label="Focus origin" />
         <button (click)="addNotice()" type="button">Add notification</button>
@@ -42,6 +64,11 @@ installFixture();
             <button (click)="requests.resolve(owner)" type="button">Resolve {{ owner }} request</button>
             <button (click)="requests.reject(owner)" type="button">Reject {{ owner }} request</button>
         }
+        @if (controls) {
+            <button (click)="manager.add(controlToast)" type="button">Show controls</button>
+            <button (click)="controlsDisabled.update(invert)" type="button">Toggle controls disabled</button>
+            <button (click)="cancelClose.update(invert)" type="button">Toggle close cancellation</button>
+        }
 
         <div rdxToastPortal>
             <div [attr.data-swipe-fixture]="swipe ? '' : undefined" rdxToastViewport data-testid="viewport">
@@ -56,7 +83,56 @@ installFixture();
                                 <span data-testid="swipe-action">Action</span>
                             </button>
                         }
-                        <button [attr.data-testid]="'dismiss-' + toast.id" rdxToastClose type="button">Dismiss</button>
+                        @if (toast.id === controlsId) {
+                            <form (submit)="onSubmit($event)">
+                                @if (controls === 'custom') {
+                                    <!-- rdxToastAction supplies the keyboard activation being tested. -->
+                                    <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events -->
+                                    <div
+                                        [disabled]="controlsDisabled()"
+                                        (click)="recordControl('action')"
+                                        rdxToastAction
+                                        data-testid="action"
+                                    >
+                                        <span>Action</span>
+                                    </div>
+                                    <fixture-toast-close
+                                        [disabled]="controlsDisabled()"
+                                        (click)="onClose($event)"
+                                        data-testid="close"
+                                    />
+                                } @else {
+                                    <button
+                                        [disabled]="controlsDisabled()"
+                                        (click)="recordControl('action')"
+                                        rdxToastAction
+                                        data-testid="action"
+                                    >
+                                        <span>Action</span>
+                                    </button>
+                                    <button
+                                        [disabled]="controlsDisabled()"
+                                        (click)="onClose($event)"
+                                        rdxToastClose
+                                        data-testid="close"
+                                    >
+                                        <span>Dismiss</span>
+                                    </button>
+                                }
+                                <button
+                                    (click)="recordControl('action')"
+                                    rdxToastAction
+                                    type="submit"
+                                    data-testid="submit-action"
+                                >
+                                    Submit action
+                                </button>
+                            </form>
+                        } @else {
+                            <button [attr.data-testid]="'dismiss-' + toast.id" rdxToastClose type="button">
+                                Dismiss
+                            </button>
+                        }
                     </div>
                 }
             </div>
@@ -70,6 +146,13 @@ class ToastFixture {
     protected readonly newTimeout = resetTimeout;
     protected readonly owners = new URLSearchParams(location.search).has('requests') ? requestOwners : [];
     protected readonly swipe = new URLSearchParams(location.search).has('swipe');
+    protected readonly controls = new URLSearchParams(location.search).get('controls');
+    protected readonly controlsId = controlsId;
+    protected readonly controlToast = controlNotification();
+    protected readonly recordControl = recordControl;
+    protected readonly controlsDisabled = signal(false);
+    protected readonly cancelClose = signal(false);
+    protected readonly invert = (value: boolean) => !value;
     protected readonly requests = createRequests((request, options) => this.manager.promise(request, options));
 
     private count = 0;
@@ -92,6 +175,16 @@ class ToastFixture {
 
     protected activate(): void {
         window.toastParity.activations++;
+    }
+
+    protected onClose(event: MouseEvent): void {
+        recordControl('close');
+        if (this.cancelClose()) event.preventDefault();
+    }
+
+    protected onSubmit(event: SubmitEvent): void {
+        event.preventDefault();
+        recordControl('submit');
     }
 }
 

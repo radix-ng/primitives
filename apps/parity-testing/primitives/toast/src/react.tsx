@@ -2,10 +2,13 @@ import { Toast } from '@base-ui/react/toast';
 import { Fragment, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
+    controlNotification,
+    controlsId,
     createRequests,
     installFixture,
     notification,
     providerTimeout,
+    recordControl,
     requestOwners,
     resetTimeout,
     saveNotification
@@ -21,6 +24,10 @@ function ToastFixture({ setLimit }: { setLimit: (limit: number) => void }) {
     const [requests] = useState(() => createRequests(manager.promise));
     const owners = new URLSearchParams(location.search).has('requests') ? requestOwners : [];
     const swipe = new URLSearchParams(location.search).has('swipe');
+    const controls = new URLSearchParams(location.search).get('controls');
+    const custom = controls === 'custom';
+    const [controlsDisabled, setControlsDisabled] = useState(false);
+    const [cancelClose, setCancelClose] = useState(false);
 
     function addNotice() {
         const index = ++count.current;
@@ -80,6 +87,19 @@ function ToastFixture({ setLimit }: { setLimit: (limit: number) => void }) {
                     </button>
                 </Fragment>
             ))}
+            {controls && (
+                <>
+                    <button onClick={() => manager.add(controlNotification())} type="button">
+                        Show controls
+                    </button>
+                    <button onClick={() => setControlsDisabled(!controlsDisabled)} type="button">
+                        Toggle controls disabled
+                    </button>
+                    <button onClick={() => setCancelClose(!cancelClose)} type="button">
+                        Toggle close cancellation
+                    </button>
+                </>
+            )}
 
             <Toast.Portal>
                 <Toast.Viewport data-testid="viewport" data-swipe-fixture={swipe ? '' : undefined}>
@@ -100,7 +120,45 @@ function ToastFixture({ setLimit }: { setLimit: (limit: number) => void }) {
                                     </button>
                                 </>
                             )}
-                            <Toast.Close data-testid={`dismiss-${toast.id}`}>Dismiss</Toast.Close>
+                            {toast.id === controlsId ? (
+                                <form
+                                    onSubmit={(event) => {
+                                        event.preventDefault();
+                                        recordControl('submit');
+                                    }}
+                                >
+                                    <Toast.Action
+                                        data-testid="action"
+                                        nativeButton={!custom}
+                                        render={custom ? <div /> : undefined}
+                                        disabled={controlsDisabled}
+                                        onClick={() => recordControl('action')}
+                                    >
+                                        <span>Action</span>
+                                    </Toast.Action>
+                                    <Toast.Close
+                                        data-testid="close"
+                                        nativeButton={!custom}
+                                        render={custom ? <div /> : undefined}
+                                        disabled={controlsDisabled}
+                                        onClick={(event) => {
+                                            recordControl('close');
+                                            if (cancelClose) event.preventBaseUIHandler();
+                                        }}
+                                    >
+                                        <span>Dismiss</span>
+                                    </Toast.Close>
+                                    <Toast.Action
+                                        data-testid="submit-action"
+                                        type="submit"
+                                        onClick={() => recordControl('action')}
+                                    >
+                                        Submit action
+                                    </Toast.Action>
+                                </form>
+                            ) : (
+                                <Toast.Close data-testid={`dismiss-${toast.id}`}>Dismiss</Toast.Close>
+                            )}
                         </Toast.Root>
                     ))}
                 </Toast.Viewport>

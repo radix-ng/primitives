@@ -3084,6 +3084,11 @@
           "values": "the notification has a type"
         },
         {
+          "attribute": "data-disabled",
+          "parts": "Close, Action",
+          "values": "the control is disabled"
+        },
+        {
           "attribute": "data-swiping",
           "parts": "Root",
           "values": "a swipe gesture is active"

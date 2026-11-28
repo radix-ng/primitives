@@ -1,7 +1,15 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import type { Checkpoint } from '../../../shared/compare.ts';
 import { createParityRunner } from '../../../shared/run-scenario.ts';
-import { providerTimeout, requestId, resetTimeout, type RequestSettlement, type ToastEvent } from '../src/contract.ts';
+import {
+    controlsId,
+    providerTimeout,
+    requestId,
+    resetTimeout,
+    type ControlEvent,
+    type RequestSettlement,
+    type ToastEvent
+} from '../src/contract.ts';
 
 const removed = (id: string): ToastEvent[] => [
     { id, phase: 'close' },
@@ -33,8 +41,11 @@ class ToastDriver {
             await this.page.clock.pauseAt(1000);
         }
 
-        const query = name.startsWith('request-') ? '?requests' : name.startsWith('swipe-') ? '?swipe' : '';
-        await this.page.goto('/' + this.framework + '.html' + query);
+        const query = new URLSearchParams();
+        if (name.startsWith('request-')) query.set('requests', '');
+        if (name.startsWith('swipe-')) query.set('swipe', '');
+        if (name.startsWith('controls-')) query.set('controls', name.split('-')[1]);
+        await this.page.goto('/' + this.framework + '.html?' + query);
         await expect(this.viewport).toBeVisible();
         this.metadata = await this.page.evaluate(() => window.toastParity.reference);
     }
@@ -144,9 +155,54 @@ class ToastDriver {
     }
 
     async finishExit(id: string) {
-        await this.page.getByTestId(id).evaluate((root) => {
+        const toast = this.page.getByTestId(id);
+        await expect
+            .poll(() =>
+                toast.evaluate((root) => root.getAnimations().some((animation) => animation.playState === 'paused'))
+            )
+            .toBe(true);
+        await toast.evaluate((root) => {
             for (const animation of root.getAnimations()) animation.finish();
         });
+    }
+
+    async controls(name: string, events: ControlEvent[]) {
+        await this.checkpoint(name, () => this.page.evaluate(() => ({ events: window.toastParity.controlEvents })), {
+            events
+        });
+    }
+
+    async controlHosts(name: string, custom: boolean, disabled: boolean) {
+        await this.checkpoint(
+            name,
+            () =>
+                this.viewport
+                    .getByTestId(controlsId)
+                    .locator('[data-testid="action"], [data-testid="close"]')
+                    .evaluateAll((elements) =>
+                        elements.map((element) => ({
+                            native: element.tagName === 'BUTTON',
+                            role: element.getAttribute('role'),
+                            type: element.getAttribute('type'),
+                            toastType: element.getAttribute('data-type'),
+                            disabled: element.hasAttribute('disabled'),
+                            ariaDisabled: element.getAttribute('aria-disabled'),
+                            tabIndex: element.getAttribute('tabindex')
+                        }))
+                    )
+                    .then((hosts) => ({ hosts })),
+            {
+                hosts: Array.from({ length: 2 }, () => ({
+                    native: !custom,
+                    role: custom ? 'button' : null,
+                    type: custom ? null : 'button',
+                    toastType: 'info',
+                    disabled: !custom && disabled,
+                    ariaDisabled: custom && disabled ? 'true' : null,
+                    tabIndex: custom && disabled ? '-1' : '0'
+                }))
+            }
+        );
     }
 
     async beginSwipe(target: Locator = this.page.getByTestId(swipeId).locator('[data-title]')) {
@@ -562,6 +618,103 @@ const scenarios: { name: string; run(driver: ToastDriver): Promise<void> }[] = [
             await driver.singleToast('ignore targets leave the toast open', { id: swipeId, title: 'Notification 1' });
         }
     },
+    ...(['native', 'custom'] as const).flatMap((host) => [
+        {
+            name: `controls-${host}-activation`,
+            async run(driver: ToastDriver) {
+                const { page } = driver;
+                const action = page.getByTestId('action');
+                const close = page.getByTestId('close');
+                await driver.action('Show controls');
+                await driver.controlHosts('button host semantics', host === 'custom', false);
+                driver.checkpoints.push({
+                    name: 'collapsed close remains exposed to assistive technology',
+                    state: { ariaHidden: await close.getAttribute('aria-hidden') }
+                });
+
+                await action.locator('span').click();
+                await action.press('Enter');
+                await page.keyboard.down('Space');
+                await driver.controls('Space waits for keyup and the form has not submitted', ['action', 'action']);
+                await page.keyboard.up('Space');
+                await driver.controls('pointer, Enter and Space each activate Action once', [
+                    'action',
+                    'action',
+                    'action'
+                ]);
+                await driver.singleToast('Action keeps the notification open', {
+                    id: controlsId,
+                    title: 'Control notification',
+                    type: 'info'
+                });
+
+                await page.getByTestId('submit-action').click();
+                const events: ControlEvent[] = ['action', 'action', 'action', 'action', 'submit'];
+                await driver.controls('authored submit type submits once', events);
+
+                await driver.action('Toggle close cancellation');
+                await close.focus();
+                await expect(close).not.toHaveAttribute('aria-hidden', 'true');
+                await close.locator('span').click();
+                await close.press('Space');
+                events.push('close', 'close');
+                await driver.controls('authored handler cancels pointer and keyboard dismissal', events);
+                await driver.singleToast('canceled Close keeps the notification open', {
+                    id: controlsId,
+                    title: 'Control notification',
+                    type: 'info'
+                });
+
+                await driver.action('Toggle close cancellation');
+                await close.press('Enter');
+                await driver.controls('authored click runs before dismissal', [...events, 'close', 'dismissed']);
+                await driver.singleToast(
+                    'Close starts one exit',
+                    {
+                        id: controlsId,
+                        title: 'Control notification',
+                        type: 'info',
+                        ending: true
+                    },
+                    [{ id: controlsId, phase: 'close' }]
+                );
+                await driver.finishExit(controlsId);
+                await driver.singleToast('completed exit removes the notification once', null, removed(controlsId));
+            }
+        },
+        {
+            name: `controls-${host}-disabled`,
+            async run(driver: ToastDriver) {
+                const { page } = driver;
+                const custom = host === 'custom';
+                await driver.action('Toggle controls disabled');
+                await driver.action('Show controls');
+                await driver.controlHosts('disabled semantics before interaction', custom, true);
+                for (const id of ['action', 'close']) {
+                    const target = page.getByTestId(id);
+                    await target.click({ force: true });
+                    await target.press('Enter');
+                    await target.press('Space');
+                    await target.dispatchEvent('click');
+                }
+                await expect(page.getByTestId('submit-action')).toHaveAttribute('type', 'submit');
+                await driver.controls('disabled controls suppress clicks and key activation', []);
+                await driver.singleToast('disabled controls keep the notification open', {
+                    id: controlsId,
+                    title: 'Control notification',
+                    type: 'info'
+                });
+
+                await driver.action('Toggle controls disabled');
+                await driver.controlHosts('enabled semantics restored in place', custom, false);
+                await page.getByTestId('action').press('Enter');
+                await page.getByTestId('close').press('Space');
+                await driver.controls('both controls activate after enabling', ['action', 'close', 'dismissed']);
+                await driver.finishExit(controlsId);
+                await driver.singleToast('re-enabled Close dismisses once', null, removed(controlsId));
+            }
+        }
+    ]),
     {
         name: 'portal-keyboard-restore',
         async run(driver) {

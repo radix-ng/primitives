@@ -7,6 +7,8 @@ export interface ToastEvent {
 export const requestOwners = ['first', 'second'] as const;
 type RequestOwner = (typeof requestOwners)[number];
 export const requestId = 'request';
+export const controlsId = 'controls';
+export type ControlEvent = 'action' | 'close' | 'submit' | 'dismissed';
 export interface RequestSettlement {
     owner: RequestOwner;
     outcome: 'fulfilled' | 'rejected';
@@ -22,6 +24,7 @@ declare global {
             events: ToastEvent[];
             settlements: RequestSettlement[];
             activations: number;
+            controlEvents: ControlEvent[];
         };
     }
 }
@@ -30,7 +33,29 @@ export const providerTimeout = 1000;
 export const resetTimeout = 500;
 
 export function installFixture(): void {
-    window.toastParity = { reference: __PARITY_REFERENCE__, events: [], settlements: [], activations: 0 };
+    window.toastParity = {
+        reference: __PARITY_REFERENCE__,
+        events: [],
+        settlements: [],
+        activations: 0,
+        controlEvents: []
+    };
+}
+
+export function recordControl(event: ControlEvent): void {
+    window.toastParity.controlEvents.push(event);
+}
+
+export function controlNotification() {
+    const toast = notification(controlsId, 'Control notification', 0);
+    return {
+        ...toast,
+        type: 'info',
+        onClose() {
+            recordControl('dismissed');
+            toast.onClose();
+        }
+    };
 }
 
 export function notification(id: string, title: string, timeout?: number, owner?: RequestOwner) {

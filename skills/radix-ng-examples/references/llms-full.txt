@@ -41343,6 +41343,7 @@ styling, use `[data-behind]` on Content in place of `[data-front]` on Root.
 | `data-expanded`        | Viewport, Root, Content                  | the viewport is hovered or has keyboard focus          |
 | `data-behind`          | Content                                  | this notification is behind the front of the stack     |
 | `data-type`            | Root, Title, Description, Close, Action  | the notification has a `type`                          |
+| `data-disabled`        | Close, Action                            | the control is disabled                                |
 | `data-swiping`         | Root                                     | a swipe gesture is active                              |
 | `data-swipe-direction` | Root                                     | the swipe direction (`up`/`down`/`left`/`right`)       |
 | `data-swipe-dismiss`   | Root                                     | a release committed to dismissal                       |
@@ -41372,11 +41373,29 @@ A single toast. Bind the toast model from the viewport's `@for`.
 Anchors a toast to an element via popper. Forwards the popper positioning inputs (`anchor`, `side`,
 `sideOffset`, `align`, `alignOffset`, `arrowPadding`, `avoidCollisions`, `collisionPadding`, …).
 
+### RdxToastAction
+
+Runs a consumer action. Apply `rdxToastAction` to a native `<button>` for native button semantics.
+Other hosts receive button semantics and activate once with Enter or Space. Supply the label and
+`(click)` handler in the template. To use `toast.actionProps`, bind its label and call its handler
+in the template, as shown in the Undo action example. Call the manager's `close` method when the
+action should also dismiss the notification.
+
+### RdxToastClose
+
+Dismisses the notification when activated. Apply `rdxToastClose` to a native `<button>` or to a
+custom host with an accessible name. The template's `(click)` handler runs before dismissal. Call
+`$event.preventDefault()` in that handler to keep the notification open.
+
+Both parts accept `disabled`. Native buttons use the `disabled` attribute. Custom hosts use
+`aria-disabled` and leave the default tab order. A native button defaults to `type="button"`.
+Set `type="submit"` explicitly when the control should submit a form.
+
 ### Other parts
 
-`RdxToastViewport`, `RdxToastContent`, `RdxToastTitle`, `RdxToastDescription`, `RdxToastClose`, and
-`RdxToastAction` use the queue or their enclosing Root. `RdxToastPortal` forwards a `container`
-input. `RdxToastArrow` uses its enclosing Positioner's arrow geometry.
+`RdxToastViewport`, `RdxToastContent`, `RdxToastTitle`, and `RdxToastDescription` use the queue or
+their enclosing Root. `RdxToastPortal` forwards a `container` input. `RdxToastArrow` uses its
+enclosing Positioner's arrow geometry.
 
 ---
 

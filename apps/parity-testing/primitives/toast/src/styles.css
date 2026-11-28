@@ -27,7 +27,13 @@
     user-select: none;
 }
 
+[data-testid='controls'] [role='button'] {
+    display: inline-block;
+    padding: 4px;
+}
+
 [data-testid='request'][data-ending-style],
+[data-testid='controls'][data-ending-style],
 [data-swipe-fixture] [data-ending-style] {
     animation: toast-fixture-exit 30s linear paused;
 }

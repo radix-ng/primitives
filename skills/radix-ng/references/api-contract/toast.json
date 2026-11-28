@@ -8,7 +8,35 @@
       "selector": "[rdxToastAction]",
       "exportAs": "rdxToastAction",
       "description": "An action button inside a toast (e.g. \"Undo\"). Unlike {@link RdxToastClose} it does not dismiss\non its own — wire your handler with `(click)` and call `close()` from the exposed context when\nthe action should also close the toast.",
-      "inputs": [],
+      "hostDirectives": [
+        "RdxButtonDirective"
+      ],
+      "inputs": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the action is disabled."
+        },
+        {
+          "name": "type",
+          "type": "RdxButtonType",
+          "default": "'button'",
+          "description": "The `type` attribute applied to native `<button>` hosts."
+        },
+        {
+          "name": "role",
+          "type": "string | null | undefined",
+          "default": "undefined",
+          "description": "The authored ARIA role. `null` removes the attribute; `undefined` restores the default."
+        },
+        {
+          "name": "tabIndex",
+          "type": "number | null | undefined",
+          "default": "injectTabIndexAttribute()",
+          "description": "The authored tab order, overriding disabled and composite defaults.\n`null` removes the attribute; `undefined` restores the default."
+        }
+      ],
       "outputs": []
     },
     {
@@ -25,8 +53,36 @@
       "directive": "RdxToastClose",
       "selector": "[rdxToastClose]",
       "exportAs": "rdxToastClose",
-      "description": "Button that dismisses its toast. Put it on a native `<button>` for built-in semantics.",
-      "inputs": [],
+      "description": "Button that dismisses its toast. A click handler can cancel dismissal with `preventDefault()`.",
+      "hostDirectives": [
+        "RdxButtonDirective"
+      ],
+      "inputs": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the close button is disabled."
+        },
+        {
+          "name": "type",
+          "type": "RdxButtonType",
+          "default": "'button'",
+          "description": "The `type` attribute applied to native `<button>` hosts."
+        },
+        {
+          "name": "role",
+          "type": "string | null | undefined",
+          "default": "undefined",
+          "description": "The authored ARIA role. `null` removes the attribute; `undefined` restores the default."
+        },
+        {
+          "name": "tabIndex",
+          "type": "number | null | undefined",
+          "default": "injectTabIndexAttribute()",
+          "description": "The authored tab order, overriding disabled and composite defaults.\n`null` removes the attribute; `undefined` restores the default."
+        }
+      ],
       "outputs": []
     },
     {
