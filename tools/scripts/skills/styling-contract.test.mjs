@@ -114,17 +114,31 @@ test('Accordion parts keep their distinct hooks, and Stepper retains its documen
     );
 });
 
-test('OTP and Editable use explicit Parts / Present on columns; Toast keeps its real data-state', () => {
+test('explicit part columns retain the documented owners for OTP, Editable and Toast', () => {
     assert.equal(
         parseDataAttributes(doc('otp-field')).find(({ attribute }) => attribute === 'data-disabled')?.parts,
         'Root, Input'
     );
     assert.ok(parseDataAttributes(doc('editable')).every(({ parts }) => parts));
-    assert.deepEqual(parseDataAttributes(doc('toast'))[0], {
-        attribute: 'data-state',
-        parts: 'Root',
-        values: 'open while visible, closed once dismissal begins'
-    });
+    const toast = parseDataAttributes(doc('toast'));
+    assert.deepEqual(
+        ['data-starting-style', 'data-ending-style'].map((attribute) =>
+            toast.find((hook) => hook.attribute === attribute)
+        ),
+        [
+            {
+                attribute: 'data-starting-style',
+                parts: 'Root',
+                values: 'the notification is applying its initial enter style'
+            },
+            { attribute: 'data-ending-style', parts: 'Root', values: 'dismissal has begun' }
+        ]
+    );
+    assert.equal(toast.find(({ attribute }) => attribute === 'data-expanded')?.parts, 'Viewport, Root, Content');
+    assert.equal(
+        toast.find(({ attribute }) => attribute === 'data-state'),
+        undefined
+    );
 });
 
 test('all existing MDX attribute-table rows survive extraction, including repeated hooks on different parts', () => {
