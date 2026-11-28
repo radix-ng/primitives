@@ -172,18 +172,29 @@ describe('RdxToastManager', () => {
         expect(onRemove).toHaveBeenCalledTimes(1);
     });
 
-    it('finishes an abandoned dismissal when the same id is re-added mid-leave', () => {
-        const onRemove = vi.fn();
-        const id = manager.add({ id: 'x', title: 'Old', timeout: 0, onRemove });
-        manager.close(id); // now ending, leave animation in flight
-        expect(manager.toasts().find((t) => t.id === id)?.transitionStatus).toBe('ending');
+    it('discards an interrupted exit and its removal callback when the same id is re-added', () => {
+        const oldRemove = vi.fn();
+        const newRemove = vi.fn();
+        const id = manager.add({ id: 'x', title: 'Old', timeout: 0, onRemove: oldRemove });
+        manager.close(id);
+        const outgoing = manager.toasts()[0];
+        expect(outgoing.transitionStatus).toBe('ending');
 
-        manager.add({ id: 'x', title: 'New', timeout: 0 }); // resurrect before animationend
-        // The abandoned toast's onRemove fired, and the queue holds the fresh, open toast.
-        expect(onRemove).toHaveBeenCalledTimes(1);
-        const toast = manager.toasts().find((t) => t.id === 'x');
-        expect(toast?.title).toBe('New');
-        expect(toast?.transitionStatus).toBe('starting');
+        manager.add({ id, title: 'New', timeout: 0, onRemove: newRemove });
+        expect(manager.toasts()).toMatchObject([{ id, title: 'New', transitionStatus: 'starting' }]);
+        expect(oldRemove).not.toHaveBeenCalled();
+
+        manager.close(id);
+        const replacement = manager.toasts()[0];
+        manager.completeTransition(outgoing);
+        expect(manager.toasts()[0]).toBe(replacement);
+        expect(newRemove).not.toHaveBeenCalled();
+
+        manager.completeTransition(replacement);
+        manager.completeTransition(replacement);
+        expect(manager.toasts()).toEqual([]);
+        expect(newRemove).toHaveBeenCalledTimes(1);
+        expect(oldRemove).not.toHaveBeenCalled();
     });
 
     it('only sets aria-labelledby / aria-describedby when the parts are rendered', () => {

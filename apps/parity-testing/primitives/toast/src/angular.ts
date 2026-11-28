@@ -10,7 +10,15 @@ import {
     RdxToastTitle,
     RdxToastViewport
 } from '@radix-ng/primitives/toast';
-import { installFixture, notification, providerTimeout, resetTimeout, saveNotification } from './contract';
+import {
+    createRequests,
+    installFixture,
+    notification,
+    providerTimeout,
+    requestOwners,
+    resetTimeout,
+    saveNotification
+} from './contract';
 import './styles.css';
 
 installFixture();
@@ -29,6 +37,11 @@ installFixture();
         <button (click)="startSave(false)" type="button">Start save</button>
         <button (click)="startSave(true)" type="button">Start persistent save</button>
         <button (click)="finishSave()" type="button">Finish save</button>
+        @for (owner of owners; track owner) {
+            <button (click)="requests.start(owner)" type="button">Start {{ owner }} request</button>
+            <button (click)="requests.resolve(owner)" type="button">Resolve {{ owner }} request</button>
+            <button (click)="requests.reject(owner)" type="button">Reject {{ owner }} request</button>
+        }
 
         <div rdxToastPortal>
             <div rdxToastViewport data-testid="viewport">
@@ -48,6 +61,8 @@ class ToastFixture {
     protected readonly manager = inject(RdxToastManager);
     protected readonly timedToast = notification('timed', 'Timed');
     protected readonly newTimeout = resetTimeout;
+    protected readonly owners = new URLSearchParams(location.search).has('requests') ? requestOwners : [];
+    protected readonly requests = createRequests((request, options) => this.manager.promise(request, options));
 
     private count = 0;
     private resolveSave?: () => void;

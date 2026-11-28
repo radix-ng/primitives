@@ -17,3 +17,13 @@
 [data-toast][data-limited] {
     display: none;
 }
+
+[data-testid='request'][data-ending-style] {
+    animation: toast-fixture-exit 30s linear paused;
+}
+
+@keyframes toast-fixture-exit {
+    to {
+        opacity: 0;
+    }
+}

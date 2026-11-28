@@ -5,6 +5,8 @@
 > Generated from `@radix-ng/primitives@1.4.1` — if the installed version differs, verify the API against the installed package.
 
 Pass a fixed `id` to upsert a single toast in place instead of stacking duplicates.
+Reusing the ID during exit replaces the toast and discards that exit's `onRemove`. The
+replacement has its own `onClose` and `onRemove` callbacks.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';

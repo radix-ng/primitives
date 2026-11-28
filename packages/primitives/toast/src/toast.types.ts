@@ -57,7 +57,7 @@ export interface RdxToastObject<Data = unknown> {
     updateKey?: number | string;
     /** Invoked when the toast is dismissed (by timeout, swipe, or `close()`). */
     onClose?: () => void;
-    /** Invoked after the leave animation completes and the toast leaves the queue. */
+    /** Invoked on completed exit or explicit removal. */
     onRemove?: () => void;
 }
 

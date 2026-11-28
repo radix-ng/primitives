@@ -8,6 +8,9 @@ Drive one toast through `loading`, then `success` or `error`. The timer starts w
 settles and uses the result's `timeout` or the provider default. A result with `timeout: 0` stays
 until dismissed.
 
+Each settlement updates the active toast with the request's `id`. When requests share an ID,
+the last settlement supplies the visible result. Use distinct IDs for independent notifications.
+
 ```typescript
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import {

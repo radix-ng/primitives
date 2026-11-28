@@ -1,7 +1,15 @@
 import { Toast } from '@base-ui/react/toast';
-import { useRef, useState } from 'react';
+import { Fragment, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { installFixture, notification, providerTimeout, resetTimeout, saveNotification } from './contract';
+import {
+    createRequests,
+    installFixture,
+    notification,
+    providerTimeout,
+    requestOwners,
+    resetTimeout,
+    saveNotification
+} from './contract';
 import './styles.css';
 
 installFixture();
@@ -10,6 +18,8 @@ function ToastFixture({ setLimit }: { setLimit: (limit: number) => void }) {
     const manager = Toast.useToastManager();
     const count = useRef(0);
     const resolveSave = useRef<(() => void) | undefined>(undefined);
+    const [requests] = useState(() => createRequests(manager.promise));
+    const owners = new URLSearchParams(location.search).has('requests') ? requestOwners : [];
 
     function addNotice() {
         const index = ++count.current;
@@ -56,6 +66,19 @@ function ToastFixture({ setLimit }: { setLimit: (limit: number) => void }) {
             <button onClick={finishSave} type="button">
                 Finish save
             </button>
+            {owners.map((owner) => (
+                <Fragment key={owner}>
+                    <button onClick={() => requests.start(owner)} type="button">
+                        Start {owner} request
+                    </button>
+                    <button onClick={() => requests.resolve(owner)} type="button">
+                        Resolve {owner} request
+                    </button>
+                    <button onClick={() => requests.reject(owner)} type="button">
+                        Reject {owner} request
+                    </button>
+                </Fragment>
+            ))}
 
             <Toast.Portal>
                 <Toast.Viewport data-testid="viewport">

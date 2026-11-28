@@ -121,8 +121,6 @@ export class RdxToastManager {
 
         this.setToasts([...this._toasts().filter((item) => item.id !== id), toast]);
         this.scheduleTimeout(toast);
-        // A replacement takes ownership of this ID before an abandoned exit notifies the caller.
-        existing?.onRemove?.();
         return id;
     }
 
@@ -222,7 +220,8 @@ export class RdxToastManager {
 
     /**
      * Drive a toast through a promise's lifecycle: show `loading`, then swap to `success` or
-     * `error` copy when it settles. Returns the original promise for chaining.
+     * `error` copy on the active toast with that ID when it settles. The returned promise
+     * resolves with the operation's value or rejects with its error.
      */
     async promise<Value, Data = unknown>(
         promise: Promise<Value>,

@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import type { Checkpoint } from '../../../shared/compare.ts';
 import { createParityRunner } from '../../../shared/run-scenario.ts';
-import { providerTimeout, resetTimeout, type ToastEvent } from '../src/contract.ts';
+import { providerTimeout, requestId, resetTimeout, type RequestSettlement, type ToastEvent } from '../src/contract.ts';
 
 const removed = (id: string): ToastEvent[] => [
     { id, phase: 'close' },
@@ -32,7 +32,7 @@ class ToastDriver {
             await this.page.clock.pauseAt(1000);
         }
 
-        await this.page.goto('/' + this.framework + '.html');
+        await this.page.goto('/' + this.framework + '.html' + (name.startsWith('request-') ? '?requests' : ''));
         await expect(this.viewport).toBeVisible();
         this.metadata = await this.page.evaluate(() => window.toastParity.reference);
     }
@@ -101,7 +101,12 @@ class ToastDriver {
         });
     }
 
-    async timed(name: string, toast: { id: string; title: string; type?: string } | null, events: ToastEvent[] = []) {
+    async singleToast(
+        name: string,
+        toast: { id: string; title: string; type?: string; ending?: boolean } | null,
+        events: ToastEvent[] = [],
+        settlements: RequestSettlement[] = []
+    ) {
         await this.checkpoint(
             name,
             () =>
@@ -109,15 +114,37 @@ class ToastDriver {
                     toasts: [...viewport.querySelectorAll<HTMLElement>('[data-toast]')].map((root) => ({
                         id: root.dataset.testid,
                         title: root.querySelector('[data-title]')?.textContent?.trim(),
-                        type: root.getAttribute('data-type')
+                        type: root.getAttribute('data-type'),
+                        ending: root.hasAttribute('data-ending-style')
                     })),
-                    events: window.toastParity.events
+                    events: window.toastParity.events,
+                    settlements: window.toastParity.settlements
                 })),
             {
-                toasts: toast ? [{ id: toast.id, title: toast.title, type: toast.type ?? null }] : [],
-                events
+                toasts: toast
+                    ? [{ id: toast.id, title: toast.title, type: toast.type ?? null, ending: toast.ending ?? false }]
+                    : [],
+                events,
+                settlements
             }
         );
+    }
+
+    async dismissRequest() {
+        await this.page.getByTestId('dismiss-' + requestId).click();
+        await expect
+            .poll(() =>
+                this.page
+                    .getByTestId(requestId)
+                    .evaluate((root) => root.getAnimations().some((animation) => animation.playState === 'paused'))
+            )
+            .toBe(true);
+    }
+
+    async finishRequestExit() {
+        await this.page.getByTestId(requestId).evaluate((root) => {
+            for (const animation of root.getAnimations()) animation.finish();
+        });
     }
 
     async focus(name: string, id: string, expanded: boolean) {
@@ -139,6 +166,19 @@ class ToastDriver {
 
 const timed = { id: 'timed', title: 'Timed' };
 const saved = { id: 'save', title: 'Saved', type: 'success' };
+const firstLoading = { id: requestId, title: 'Saving first', type: 'loading' };
+const secondLoading = { id: requestId, title: 'Saving second', type: 'loading' };
+const firstExit = { ...firstLoading, ending: true };
+const firstSaved = { id: requestId, title: 'Saved first', type: 'success' };
+const secondSaved = { id: requestId, title: 'Saved second', type: 'success' };
+const firstFailed = { id: requestId, title: 'Failed first', type: 'error' };
+const firstClose = { id: requestId, owner: 'first', phase: 'close' } as const;
+const secondClose = { id: requestId, owner: 'second', phase: 'close' } as const;
+const firstRemove = { ...firstClose, phase: 'remove' } as const;
+const secondRemove = { ...secondClose, phase: 'remove' } as const;
+const firstFulfilled = { owner: 'first', outcome: 'fulfilled' } as const;
+const secondFulfilled = { owner: 'second', outcome: 'fulfilled' } as const;
+const firstRejected = { owner: 'first', outcome: 'rejected' } as const;
 
 const scenarios: { name: string; run(driver: ToastDriver): Promise<void> }[] = [
     {
@@ -168,12 +208,12 @@ const scenarios: { name: string; run(driver: ToastDriver): Promise<void> }[] = [
             const clock = driver.page.clock;
             await driver.action('Add timed notification');
             await clock.runFor(providerTimeout - 250);
-            await driver.timed('still present before the provider timeout', timed);
+            await driver.singleToast('still present before the provider timeout', timed);
             await driver.action('Update copy');
             await clock.runFor(100);
-            await driver.timed('updated copy stays on the same toast', { ...timed, title: 'Updated' });
+            await driver.singleToast('updated copy stays on the same toast', { ...timed, title: 'Updated' });
             await clock.runFor(200);
-            await driver.timed('dismissed at the original deadline', null, removed('timed'));
+            await driver.singleToast('dismissed at the original deadline', null, removed('timed'));
         }
     },
     {
@@ -184,9 +224,9 @@ const scenarios: { name: string; run(driver: ToastDriver): Promise<void> }[] = [
             await clock.runFor(providerTimeout - 250);
             await driver.action('Reset timer');
             await clock.runFor(resetTimeout - 100);
-            await driver.timed('still present past the original deadline', timed);
+            await driver.singleToast('still present past the original deadline', timed);
             await clock.runFor(200);
-            await driver.timed('dismissed at the replacement deadline', null, removed('timed'));
+            await driver.singleToast('dismissed at the replacement deadline', null, removed('timed'));
         }
     },
     {
@@ -197,21 +237,21 @@ const scenarios: { name: string; run(driver: ToastDriver): Promise<void> }[] = [
             await clock.runFor(350);
             await driver.page.getByTestId('timed').hover();
             await clock.runFor(providerTimeout);
-            await driver.timed('hover pauses the timer', timed);
+            await driver.singleToast('hover pauses the timer', timed);
 
             await driver.page.getByTestId('origin').focus();
             await keyboard.press('F6');
             await mouse.move(8, 250);
             await clock.runFor(providerTimeout);
             await driver.focus('leaving hover keeps keyboard focus', 'viewport', true);
-            await driver.timed('keyboard focus keeps the timer paused', timed);
+            await driver.singleToast('keyboard focus keeps the timer paused', timed);
 
             await keyboard.press('F6');
             await clock.runFor(300);
             await driver.focus('leaving the viewport restores focus', 'origin', false);
-            await driver.timed('the remaining time is preserved', timed);
+            await driver.singleToast('the remaining time is preserved', timed);
             await clock.runFor(500);
-            await driver.timed('the resumed timer dismisses the toast', null, removed('timed'));
+            await driver.singleToast('the resumed timer dismisses the toast', null, removed('timed'));
         }
     },
     {
@@ -220,16 +260,16 @@ const scenarios: { name: string; run(driver: ToastDriver): Promise<void> }[] = [
             const clock = driver.page.clock;
             await driver.action('Start save');
             await clock.runFor(providerTimeout * 2);
-            await driver.timed('pending promise has no dismissal timer', {
+            await driver.singleToast('pending promise has no dismissal timer', {
                 id: 'save',
                 title: 'Saving',
                 type: 'loading'
             });
             await driver.action('Finish save');
             await clock.runFor(providerTimeout - 100);
-            await driver.timed('resolved content uses the provider timeout', saved);
+            await driver.singleToast('resolved content uses the provider timeout', saved);
             await clock.runFor(200);
-            await driver.timed('provider timeout dismisses the result', null, removed('save'));
+            await driver.singleToast('provider timeout dismisses the result', null, removed('save'));
         }
     },
     {
@@ -240,7 +280,119 @@ const scenarios: { name: string; run(driver: ToastDriver): Promise<void> }[] = [
             await clock.runFor(100);
             await driver.action('Finish save');
             await clock.runFor(providerTimeout * 6);
-            await driver.timed('explicit zero keeps the promise result mounted', saved);
+            await driver.singleToast('explicit zero keeps the promise result mounted', saved);
+        }
+    },
+    {
+        name: 'request-shared-id-settlement-order',
+        async run(driver) {
+            await driver.action('Start first request');
+            await driver.singleToast('first request creates the loading toast', firstLoading);
+            await driver.action('Start second request');
+            await driver.singleToast('second request upserts the same ID', secondLoading);
+            await driver.action('Resolve second request');
+            await driver.singleToast('second result reaches the shared toast', secondSaved, [], [secondFulfilled]);
+            await driver.action('Reject first request');
+            const results = [secondFulfilled, firstRejected];
+            await driver.singleToast('last settlement updates the active ID', firstFailed, [], results);
+            await driver.dismissRequest();
+            await driver.singleToast(
+                'upsert owns the close callback',
+                { ...firstFailed, ending: true },
+                [secondClose],
+                results
+            );
+            await driver.finishRequestExit();
+            await driver.singleToast('upsert owns the remove callback', null, [secondClose, secondRemove], results);
+        }
+    },
+    {
+        name: 'request-settlement-during-exit',
+        async run(driver) {
+            await driver.action('Start first request');
+            await driver.singleToast('pending request is visible', firstLoading);
+            await driver.dismissRequest();
+            await driver.singleToast('first dismissal starts a retained exit', firstExit, [firstClose]);
+            await driver.action('Resolve first request');
+            await driver.dismissRequest();
+            await driver.singleToast(
+                'settlement and repeated close leave the exit intact',
+                firstExit,
+                [firstClose],
+                [firstFulfilled]
+            );
+            await driver.finishRequestExit();
+            await driver.singleToast(
+                'exit completes with one removal',
+                null,
+                [firstClose, firstRemove],
+                [firstFulfilled]
+            );
+        }
+    },
+    {
+        name: 'request-settlement-after-removal',
+        async run(driver) {
+            await driver.action('Start first request');
+            await driver.singleToast('pending request is visible', firstLoading);
+            await driver.dismissRequest();
+            await driver.finishRequestExit();
+            await driver.singleToast('dismissed while the request is pending', null, [firstClose, firstRemove]);
+            await driver.action('Reject first request');
+            await driver.singleToast(
+                'rejection does not recreate the removed ID',
+                null,
+                [firstClose, firstRemove],
+                [firstRejected]
+            );
+        }
+    },
+    {
+        name: 'request-reuse-during-exit',
+        async run(driver) {
+            await driver.action('Start first request');
+            await driver.singleToast('pending request is visible', firstLoading);
+            await driver.dismissRequest();
+            const root = driver.page.getByTestId(requestId);
+            const outgoing = await root.elementHandle();
+            try {
+                await driver.action('Start second request');
+                await driver.singleToast('replacement abandons the previous exit', secondLoading, [firstClose]);
+                expect(await root.evaluate((element, previous) => element === previous, outgoing)).toBe(true);
+                await expect.poll(() => root.evaluate((element) => element.getAnimations().length)).toBe(0);
+
+                await driver.action('Resolve first request');
+                await driver.singleToast(
+                    'older result reaches the active replacement ID',
+                    firstSaved,
+                    [firstClose],
+                    [firstFulfilled]
+                );
+                await driver.action('Resolve second request');
+                const results = [firstFulfilled, secondFulfilled];
+                await driver.singleToast(
+                    'latest result reaches the same replacement',
+                    secondSaved,
+                    [firstClose],
+                    results
+                );
+                await driver.dismissRequest();
+                await driver.singleToast(
+                    'replacement has its own exit',
+                    { ...secondSaved, ending: true },
+                    [firstClose, secondClose],
+                    results
+                );
+                await driver.finishRequestExit();
+                await driver.singleToast(
+                    'only the completed exit fires onRemove',
+                    null,
+                    [firstClose, secondClose, secondRemove],
+                    results
+                );
+            } finally {
+                await outgoing.dispose();
+            }
         }
     },
     {

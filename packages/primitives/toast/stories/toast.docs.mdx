@@ -114,6 +114,9 @@ Drive one toast through `loading`, then `success` or `error`. The timer starts w
 settles and uses the result's `timeout` or the provider default. A result with `timeout: 0` stays
 until dismissed.
 
+Each settlement updates the active toast with the request's `id`. When requests share an ID,
+the last settlement supplies the visible result. Use distinct IDs for independent notifications.
+
 <Canvas of={Stories.Promise} />
 
 ### Types
@@ -143,6 +146,8 @@ Attach a typed `data` payload and read it back in the template for rich, app-spe
 ### Deduplicated
 
 Pass a fixed `id` to upsert a single toast in place instead of stacking duplicates.
+Reusing the ID during exit replaces the toast and discards that exit's `onRemove`. The
+replacement has its own `onClose` and `onRemove` callbacks.
 
 <Canvas of={Stories.Deduplicated} />
 
