@@ -33,9 +33,9 @@ part used either on its own or inside a `[rdxToggleGroup]`.
 </button>
 ```
 
-When placed inside a `[rdxToggleGroup]`, give each toggle a stable `value` — its pressed state is then
-derived from the group's value and it joins the group's composite focus. In dev mode, a grouped toggle
-without `value` emits a warning because it cannot participate in group value changes.
+Inside a `[rdxToggleGroup]`, the group drives pressed state and composite focus. Omitted and empty
+`value` inputs use a distinct generated identity per toggle. Supply stable values for controlled
+groups, defaults and form data.
 
 On a custom host such as `<span>`, set `[nativeButton]="false"` to add button semantics and
 keyboard activation. Set `tabIndex` to override the default tab order.

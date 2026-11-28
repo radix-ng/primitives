@@ -45,9 +45,8 @@ composite focus over `Button`, `Link`, `Input`, `Group` and `Separator` parts.
 
 Stack a toolbar part on another primitive's trigger/input to compose it — e.g.
 `<button rdxToolbarButton rdxMenuTrigger>` or `<input rdxToolbarInput rdxNumberFieldInput>`.
-Use `rdxToggleGroupWithoutFocus` for toggle groups inside a toolbar so the toggles share the toolbar's
-composite focus. Disabled state from `rdxToolbarRoot` or `rdxToolbarGroup` cascades into those toggle
-groups and their items.
+Place `rdxToggleGroup` inside a toolbar to share the toolbar's tab stop and arrow navigation.
+Disabled state from `rdxToolbarRoot` or `rdxToolbarGroup` cascades to the toggle group and its items.
 
 `rdxToolbarButton` includes button activation without an additional `rdxButton`. On custom hosts,
 set `[nativeButton]="false"`; Enter and Space activate the control, with Space handled on keydown.

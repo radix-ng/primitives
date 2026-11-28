@@ -8,6 +8,7 @@ export * from './src/composite-item';
 export * from './src/composite-item-owner';
 export * from './src/composite-list';
 export * from './src/composite-list-item';
+export * from './src/composite-parent';
 export * from './src/composite-root';
 export * from './src/types';
 export * from './src/utils';

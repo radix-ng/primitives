@@ -7,7 +7,7 @@
       "directive": "RdxToggleGroupWithoutFocus",
       "selector": "[rdxToggleGroupWithoutFocus]",
       "exportAs": "rdxToggleGroupWithoutFocus",
-      "description": "A toggle group that does NOT create its own composite root, for use inside a container that\nalready owns keyboard focus (e.g. a toolbar). The `[rdxToggle]` children register with the nearest\nancestor composite root instead. Mirrors Base UI's behavior of skipping its composite root\nwhen nested in a toolbar.",
+      "description": "A toggle group that does NOT create its own composite root, for use inside a container that\nalready owns keyboard focus (e.g. a toolbar). The `[rdxToggle]` children register with the nearest\nancestor composite root instead. `rdxToggleGroup` delegates automatically inside a Toolbar.",
       "hostDirectives": [
         "RdxFormUiStateHost"
       ],
@@ -107,7 +107,7 @@
       "directive": "RdxToggleGroup",
       "selector": "[rdxToggleGroup]",
       "exportAs": "rdxToggleGroup",
-      "description": "A set of two-state buttons that can be toggled on or off. Owns composite keyboard focus over its\n`[rdxToggle]` children.\n\nSee https://base-ui.com/react/components/toggle-group",
+      "description": "A set of two-state buttons that can be toggled on or off. Inside Toolbar, its items share\nthe Toolbar's composite focus.\n\nSee https://base-ui.com/react/components/toggle-group",
       "hostDirectives": [
         "RdxCompositeRoot",
         "RdxFormUiStateHost"

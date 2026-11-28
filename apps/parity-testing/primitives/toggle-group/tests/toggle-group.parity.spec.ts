@@ -214,6 +214,98 @@ const scenarios: { name: string; run(driver: ToggleGroupDriver): Promise<void> }
             await driver.focusBefore();
             await driver.focus('Tab skips a disabled toolbar group', 'Copy', 'Tab');
             await driver.state('disabling the group preserves the selection', ['Underline'], requests);
+
+            await driver.action('Disable toolbar');
+            await expect(driver.group).toHaveAttribute('data-disabled', '');
+            await expect(driver.item('Bold')).toBeDisabled();
+            await expect(driver.item('Underline')).toBeDisabled();
+            await driver.state('the disabled toolbar root also preserves the selection', ['Underline'], requests);
+        }
+    },
+    {
+        name: 'generated-values',
+        async run(driver) {
+            await expect(driver.item('Bold')).toBeDisabled();
+            await driver.focusBefore();
+            await driver.focus('Tab skips the disabled item without an authored value', 'Italic', 'Tab');
+
+            await driver.page.keyboard.press('Space');
+            const requests = click('italic', ['generated-1']);
+            await driver.state(
+                'pressing an empty-valued item leaves the other empty-valued item unpressed',
+                ['Italic'],
+                requests
+            );
+            await driver.item('Underline').click();
+            requests.push(...click('underline', ['generated-1', 'generated-2']));
+            await driver.state('empty values generate distinct identities', ['Italic', 'Underline'], requests);
+
+            await driver.action('Enable Bold');
+            await driver.item('Bold').click();
+            requests.push(...click('bold', ['generated-1', 'generated-2', 'generated-3']));
+            await driver.state(
+                'an item without a value participates after being enabled',
+                ['Bold', 'Italic', 'Underline'],
+                requests
+            );
+            await driver.item('Italic').click();
+            requests.push(...click('italic', ['generated-2', 'generated-3'], false));
+            await driver.state(
+                'clearing one item preserves the other generated selections',
+                ['Bold', 'Underline'],
+                requests
+            );
+            await driver.item('Italic').click();
+            requests.push(...click('italic', ['generated-2', 'generated-3', 'generated-1']));
+            await driver.state('a repeated press reuses the same identity', ['Bold', 'Italic', 'Underline'], requests);
+        }
+    },
+    ...['dynamic-multiple', 'dynamic-multiple-toolbar'].map((name) => ({
+        name,
+        async run(driver: ToggleGroupDriver) {
+            await driver.state('single selection begins with Bold', ['Bold'], []);
+            await driver.focusBefore();
+            await driver.focus('Tab enters the composite', 'Bold', 'Tab');
+            await driver.focus('arrows preserve selection', 'Italic', 'ArrowRight');
+
+            await driver.action('Toggle multiple');
+            await expect(driver.group).toHaveAttribute('data-multiple', '');
+            await driver.state('enabling multiple preserves the selection', ['Bold'], []);
+            await driver.item('Italic').click();
+            const requests = click('italic', ['bold', 'italic']);
+            await driver.state('multiple mode adds the next selection', ['Bold', 'Italic'], requests);
+
+            await driver.action('Toggle multiple');
+            await expect(driver.group).not.toHaveAttribute('data-multiple');
+            await driver.state('the previous array survives a mode change', ['Bold', 'Italic'], requests);
+            await driver.item('Underline').click();
+            requests.push(...click('underline'));
+            await driver.state('single mode replaces on the next press', ['Underline'], requests);
+            await driver.focus('roving focus still works after changing modes', 'Italic', 'ArrowLeft');
+        }
+    })),
+    {
+        name: 'dynamic-items',
+        async run(driver) {
+            await driver.focusBefore();
+            await driver.focus('Bold starts as the tab stop', 'Bold', 'Tab');
+
+            await driver.action('Reverse items');
+            await expect(driver.group.getByRole('button')).toHaveText(['Underline', 'Italic', 'Bold']);
+            await driver.focusBefore();
+            await driver.focus('the tab stop follows the same item after reordering', 'Bold', 'Tab');
+
+            await driver.action('Remove Bold');
+            await expect(driver.item('Bold')).toHaveCount(0);
+            await driver.focusBefore();
+            await driver.focus('removal of the last tab stop restores a reachable item', 'Underline', 'Tab');
+
+            await driver.action('Restore Bold');
+            await expect(driver.group.getByRole('button')).toHaveText(['Bold', 'Underline', 'Italic']);
+            await driver.focusBefore();
+            await driver.focus('inserting a preceding item preserves the tab stop', 'Underline', 'Tab');
+            await driver.focus('ArrowLeft reaches the restored item', 'Bold', 'ArrowLeft');
+            await driver.state('collection updates make no selection requests', [], []);
         }
     }
 ];

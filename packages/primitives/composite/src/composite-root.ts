@@ -14,6 +14,7 @@ import {
 import { BooleanInput, createContext, Direction, isHTMLElement } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { RdxCompositeList } from './composite-list';
+import { RDX_COMPOSITE_PARENT } from './composite-parent';
 import { preserveFocusOnMove } from './preserve-focus-on-move';
 import {
     RdxCompositeItemRegistration,
@@ -42,6 +43,9 @@ import {
 const compositeHosts = new WeakSet<HTMLElement>();
 
 const rootContext = (): RdxCompositeRootContext => {
+    if (inject(RDX_COMPOSITE_PARENT, { self: true, optional: true })) {
+        return injectRdxCompositeRootContext(false, { skipSelf: true });
+    }
     const root = inject(RdxCompositeRoot);
 
     return {
@@ -78,6 +82,7 @@ export const [injectRdxCompositeRootContext, provideRdxCompositeRootContext] = c
 export class RdxCompositeRoot {
     readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
     private readonly compositeList = inject(RdxCompositeList, { self: true });
+    private readonly delegatesToParent = inject(RDX_COMPOSITE_PARENT, { self: true, optional: true });
     private hasSetInitialIndex = false;
     private highlightedElement: HTMLElement | null = null;
     private previousItems: readonly RdxCompositeItemRegistration[] | undefined;
@@ -143,6 +148,7 @@ export class RdxCompositeRoot {
     readonly itemMap = this.compositeList.itemMap;
 
     constructor() {
+        if (this.delegatesToParent) return;
         const destroyRef = inject(DestroyRef);
         const host = this.elementRef.nativeElement;
         compositeHosts.add(host);
@@ -302,14 +308,14 @@ export class RdxCompositeRoot {
     }
 
     protected handleKeydown(event: KeyboardEvent): void {
-        this.handleCompositeKeydown(event, false);
+        if (!this.delegatesToParent) this.handleCompositeKeydown(event, false);
     }
 
     /** Select the whole value when focus lands on a native text input item (Base UI parity). */
     protected handleFocusIn(event: FocusEvent): void {
         const target = event.target;
 
-        if (isNativeTextInput(target)) {
+        if (!this.delegatesToParent && isNativeTextInput(target)) {
             target.setSelectionRange(0, target.value.length);
         }
     }

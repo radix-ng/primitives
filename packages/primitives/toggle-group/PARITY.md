@@ -18,10 +18,14 @@ CVA and Signal Forms are Angular contracts.
 
 ## Navigation and composition
 
-| Boundary                   | Contract                                                                                                                                                                       | Evidence                                     |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------- |
-| P2 · Selection transaction | Single selection replaces or clears the array. Multiple selection appends or removes an item. Item and group share the details, and either can cancel.                         | Paired `single` and `multiple`.              |
-| P2 · Roving focus          | Tab initially enters at the first enabled item. Arrows, Home and End move focus independently of selection, with direction, orientation, looping and disabled items respected. | Paired `horizontal`, `vertical` and `rtl`.   |
-| P2 · Toolbar               | `rdxToggleGroupWithoutFocus` delegates navigation to Toolbar. Toolbar or its group can disable the toggles.                                                                    | Paired `toolbar` and toolbar-disabled units. |
+| Boundary                   | Contract                                                                                                                                                                            | Evidence                                                                   |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| P2 · Selection transaction | Single selection replaces or clears the array. Multiple selection appends or removes an item. Item and group share the details, and either can cancel.                              | Paired `single` and `multiple`.                                            |
+| P2 · Roving focus          | Tab initially enters at the first enabled item. Arrows, Home and End move focus independently of selection, with direction, orientation, looping and disabled items respected.      | Paired `horizontal`, `vertical` and `rtl`.                                 |
+| P2 · Toolbar               | `rdxToggleGroup` inherits disabled state and shares the enclosing Toolbar's tab stop and navigation. `rdxToggleGroupWithoutFocus` supports explicit delegation to other composites. | Paired `toolbar` and legacy directive units.                               |
+| P2 · Item identities       | Omitted and empty values receive unique identities preserved in server markup. A disabled custom item is skipped even when its value was generated.                                 | Paired `generated-values` and SSR.                                         |
+| P2 · Dynamic groups        | Toggling `multiple` preserves the current array. Reordering and insertion preserve the surviving tab stop. Removing the last highlighted item restores a reachable tab stop.        | Paired `dynamic-multiple`, `dynamic-multiple-toolbar` and `dynamic-items`. |
+
+Further coverage includes client hydration of generated identities and mixed, nested composite owners.
 
 Run `pnpm test-parity toggle-group` for the [paired suite](../../../apps/parity-testing/primitives/toggle-group/README.md).

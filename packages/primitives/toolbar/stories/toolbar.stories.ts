@@ -7,7 +7,6 @@ import {
     LucideUnderline
 } from '@lucide/angular';
 import { RdxToggle } from '@radix-ng/primitives/toggle';
-import { RdxToggleGroupWithoutFocus } from '@radix-ng/primitives/toggle-group';
 import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator } from '@radix-ng/primitives/toolbar';
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
@@ -40,7 +39,6 @@ export default {
                 RdxToolbarButton,
                 RdxToolbarLink,
                 RdxToolbarSeparator,
-                RdxToggleGroupWithoutFocus,
                 RdxToggle,
                 ToolbarWithMenuExample,
                 ToolbarWithTooltipExample,

@@ -1,4 +1,14 @@
-import { booleanAttribute, computed, Directive, input, model, output, signal } from '@angular/core';
+import {
+    booleanAttribute,
+    computed,
+    Directive,
+    input,
+    model,
+    OnChanges,
+    output,
+    signal,
+    SimpleChanges
+} from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 import {
     BooleanInput,
@@ -12,6 +22,7 @@ import {
     useNativeFormControl,
     watch
 } from '@radix-ng/primitives/core';
+import { injectToolbarGroupContext, injectToolbarRootContext } from '@radix-ng/primitives/toolbar';
 import { RdxToggleGroupContext } from './toggle-group-context';
 
 export type RdxToggleGroupValueChangeReason = 'none';
@@ -48,7 +59,7 @@ export function toggleGroupContext(instance: RdxToggleGroupBase): RdxToggleGroup
 })
 export abstract class RdxToggleGroupBase
     extends RdxFormUiControlBase
-    implements ControlValueAccessor, RdxFormValueControl<string[] | undefined>
+    implements ControlValueAccessor, OnChanges, RdxFormValueControl<string[] | undefined>
 {
     /**
      * Editable pressed values for Angular Forms and two-way bindings. A single value is `[value]`.
@@ -93,9 +104,19 @@ export abstract class RdxToggleGroupBase
 
     /** @ignore */
     readonly pressedValues = computed(() => this.controlledValue() ?? this.value() ?? []);
+    private readonly hasAuthoredValue = signal(false);
+    private readonly hasFormValue = signal(false);
     /** @ignore */
-    readonly isValueInitialized = computed(() => this.controlledValue() !== undefined || this.value() !== undefined);
+    readonly isValueInitialized = computed(
+        () =>
+            this.controlledValue() !== undefined ||
+            this.defaultValue() !== undefined ||
+            this.hasAuthoredValue() ||
+            this.hasFormValue()
+    );
 
+    protected readonly toolbarRoot = injectToolbarRootContext(true);
+    private readonly toolbarGroup = injectToolbarGroupContext(true);
     protected readonly accessorDisabled = signal(false);
     /** @ignore */
     readonly isDisabled = computed(() => this.disabled() || this.accessorDisabled() || this.isExternallyDisabled());
@@ -136,9 +157,15 @@ export abstract class RdxToggleGroupBase
         return { markAsTouched: () => this.onTouched?.() };
     }
 
-    /** @ignore Extra disabled state inherited from composite parents such as Toolbar. */
+    /** @ignore Extra disabled state inherited from an enclosing toolbar. */
     protected isExternallyDisabled(): boolean {
-        return false;
+        return (this.toolbarRoot?.disabled() ?? false) || (this.toolbarGroup?.disabled() ?? false);
+    }
+
+    /** @ignore */
+    // eslint-disable-next-line no-restricted-syntax -- Observe authored model input changes separately from internal edits (ADR 0071).
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['value']) this.hasAuthoredValue.set(changes['value'].currentValue !== undefined);
     }
 
     /** @ignore */
@@ -187,6 +214,7 @@ export abstract class RdxToggleGroupBase
 
     /** @ignore */
     writeValue(value: string[] | string | null): void {
+        this.hasFormValue.set(true);
         this.value.set(value == null ? [] : Array.isArray(value) ? value : [value]);
     }
 

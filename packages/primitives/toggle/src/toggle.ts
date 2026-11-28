@@ -4,6 +4,7 @@ import { injectRdxCompositeRootContext, RdxCompositeItem } from '@radix-ng/primi
 import {
     BooleanInput,
     createCancelableChangeEventDetails,
+    injectId,
     RdxCancelableChangeEventDetails,
     rdxDevWarning,
     watch
@@ -45,15 +46,17 @@ export interface RdxTogglePressedChangeEvent {
 })
 export class RdxToggle {
     private readonly group = injectToggleGroupContext(true);
+    private readonly generatedValue = this.group ? injectId('rdx-toggle-') : '';
     private readonly compositeItem = inject(RdxCompositeItem, { self: true });
     private readonly isComposite = !!injectRdxCompositeRootContext(true);
     private readonly buttonBehavior = inject(RdxButtonBehavior, { self: true });
     private readonly buttonConfig = inject(RDX_BUTTON_CONFIG, { self: true, optional: true });
 
     /**
-     * A value identifying this toggle inside a `[rdxToggleGroup]`. Required when used in a group.
+     * A value identifying this toggle inside a `[rdxToggleGroup]`. Omitted and empty values use a generated identity.
      */
     readonly value = input<string>();
+    private readonly groupValue = computed(() => this.value() || this.generatedValue);
 
     /**
      * The pressed state when initially rendered (uncontrolled, standalone only).
@@ -93,8 +96,7 @@ export class RdxToggle {
     /** The effective pressed state. A group owns the state of its items. */
     readonly pressed = computed(() => {
         if (this.group) {
-            const value = this.value();
-            return value !== undefined && this.group.value().includes(value);
+            return this.group.value().includes(this.groupValue());
         }
         return this.pressedInput() ?? this.uncontrolledPressed();
     });
@@ -143,7 +145,7 @@ export class RdxToggle {
             if (this.group && this.value() === undefined && this.group.isValueInitialized()) {
                 rdxDevWarning(
                     'toggle-group/missing-toggle-value',
-                    '`rdxToggle` is inside a toggle group but has no `value`. Add a stable `value` so the group can derive and update its pressed state.',
+                    "`rdxToggle` has no `value`. Provide a stable value when setting the group's value or defaultValue.",
                     'components/toggle-group'
                 );
             }
@@ -153,8 +155,7 @@ export class RdxToggle {
             effect(() => {
                 this.compositeItem.setMetadata({
                     disabled: this.isDisabled(),
-                    focusableWhenDisabled: false,
-                    value: this.value()
+                    focusableWhenDisabled: false
                 });
             });
         }
@@ -163,26 +164,6 @@ export class RdxToggle {
     /** @ignore */
     protected onClick(event?: Event): void {
         if (this.isDisabled()) {
-            return;
-        }
-
-        if (this.group) {
-            const value = this.value();
-            if (value !== undefined) {
-                const next = !this.pressedState();
-                const trigger = event?.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
-                const { eventDetails } = createCancelableChangeEventDetails(
-                    'none',
-                    event ?? new Event('toggle.pressed-change'),
-                    trigger
-                );
-                this.onPressedChange.emit({ pressed: next, eventDetails });
-                if (eventDetails.isCanceled()) {
-                    return;
-                }
-
-                this.group.toggle(value, next, event, eventDetails);
-            }
             return;
         }
 
@@ -195,6 +176,11 @@ export class RdxToggle {
         );
         this.onPressedChange.emit({ pressed: next, eventDetails });
         if (eventDetails.isCanceled()) {
+            return;
+        }
+
+        if (this.group) {
+            this.group.toggle(this.groupValue(), next, event, eventDetails);
             return;
         }
 

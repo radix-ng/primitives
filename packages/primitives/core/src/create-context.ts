@@ -1,7 +1,7 @@
 // Thanks for idea.
 // https://github.com/unovue/reka-ui/blob/v2/packages/core/src/shared/createContext.ts
 
-import { inject, InjectionToken, Provider } from '@angular/core';
+import { inject, InjectionToken, InjectOptions, Provider } from '@angular/core';
 import { docsUrl } from './dev/diagnostics';
 
 /**
@@ -11,9 +11,9 @@ import { docsUrl } from './dev/diagnostics';
  */
 export interface InjectContext<T> {
     (): T;
-    (optional: false): T;
-    (optional: true): T | null;
-    (optional?: boolean): T | null;
+    (optional: false, options?: Omit<InjectOptions, 'optional'>): T;
+    (optional: true, options?: Omit<InjectOptions, 'optional'>): T | null;
+    (optional?: boolean, options?: Omit<InjectOptions, 'optional'>): T | null;
 }
 
 /**
@@ -37,14 +37,15 @@ export function createContext<T>(
     /**
      * Retrieves the context value from Angular's dependency injection
      * @param optional If true, returns null when context is not provided instead of throwing
+     * @param options Angular lookup flags for the context token
      * @returns The context value or null if optional and not provided
      * @throws Error when context is not provided and not optional
      */
-    const injectContext = (optional = false): T | null => {
+    const injectContext = (optional = false, options?: Omit<InjectOptions, 'optional'>): T | null => {
         // Always inject optionally so a missing context produces our own descriptive
         // error instead of Angular's generic NullInjectorError. This also catches a
         // provided factory that returns null/undefined for the non-optional case.
-        const value = inject(CONTEXT_TOKEN, { optional: true });
+        const value = inject(CONTEXT_TOKEN, { ...options, optional: true });
 
         if (value == null && !optional) {
             const docsHint = docs ? ` See ${docsUrl(docs)} for the required part hierarchy.` : '';

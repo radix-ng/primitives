@@ -1,5 +1,5 @@
 import { booleanAttribute, computed, Directive, effect, inject, input } from '@angular/core';
-import { RdxCompositeMetadata, RdxCompositeRoot } from '@radix-ng/primitives/composite';
+import { RDX_COMPOSITE_PARENT, RdxCompositeRoot } from '@radix-ng/primitives/composite';
 import {
     BooleanInput,
     Direction,
@@ -8,12 +8,13 @@ import {
     RdxFormUiStateHost
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
+import { injectToolbarRootContext } from '@radix-ng/primitives/toolbar';
 import { RdxToggleGroupBase, toggleGroupContext } from './toggle-group-base';
 import { provideToggleGroupContext } from './toggle-group-context';
 
 /**
- * A set of two-state buttons that can be toggled on or off. Owns composite keyboard focus over its
- * `[rdxToggle]` children.
+ * A set of two-state buttons that can be toggled on or off. Inside Toolbar, its items share
+ * the Toolbar's composite focus.
  *
  * @see https://base-ui.com/react/components/toggle-group
  */
@@ -22,6 +23,7 @@ import { provideToggleGroupContext } from './toggle-group-context';
     exportAs: 'rdxToggleGroup',
     hostDirectives: [RdxCompositeRoot, RdxFormUiStateHost],
     providers: [
+        { provide: RDX_COMPOSITE_PARENT, useFactory: () => injectToolbarRootContext(true) !== null },
         provideToggleGroupContext(() => toggleGroupContext(inject(RdxToggleGroup))),
         provideValueAccessor(RdxToggleGroup),
         provideFormUiState(() => inject(RdxToggleGroup).formUi)
@@ -40,16 +42,14 @@ export class RdxToggleGroup extends RdxToggleGroupBase {
     readonly loopFocus = input<boolean, BooleanInput>(true, { transform: booleanAttribute });
 
     private readonly compositeRoot = inject(RdxCompositeRoot, { self: true });
-    private readonly itemMetadata = computed(() =>
-        Array.from(this.compositeRoot.itemMap().values()).filter(isToggleItemMetadata)
-    );
     private readonly disabledIndices = computed(() =>
-        this.itemMetadata()
-            .filter((metadata) => metadata.disabled)
+        Array.from(this.compositeRoot.itemMap().values())
+            .filter((metadata) => metadata['disabled'] === true && metadata['focusableWhenDisabled'] !== true)
             .map((metadata) => metadata.index)
     );
     constructor() {
         super();
+        if (this.toolbarRoot) return;
 
         effect(() => {
             this.compositeRoot.setOrientation(this.orientation());
@@ -62,14 +62,4 @@ export class RdxToggleGroup extends RdxToggleGroupBase {
             this.compositeRoot.setDisabledIndices(this.disabledIndices());
         });
     }
-}
-
-interface RdxToggleItemMetadata {
-    [key: string]: unknown;
-    disabled: boolean;
-    value: string;
-}
-
-function isToggleItemMetadata(metadata: RdxCompositeMetadata): metadata is RdxCompositeMetadata<RdxToggleItemMetadata> {
-    return typeof metadata['disabled'] === 'boolean' && typeof metadata['value'] === 'string';
 }

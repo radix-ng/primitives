@@ -8,7 +8,7 @@ import {
     LucideUnderline
 } from '@lucide/angular';
 import { RdxToggle } from '@radix-ng/primitives/toggle';
-import { RdxToggleGroupWithoutFocus } from '@radix-ng/primitives/toggle-group';
+import { RdxToggleGroup } from '@radix-ng/primitives/toggle-group';
 import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator } from '@radix-ng/primitives/toolbar';
 
 @Component({
@@ -23,7 +23,7 @@ import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator }
         LucideTextAlignStart,
         LucideUnderline,
         RdxToggle,
-        RdxToggleGroupWithoutFocus,
+        RdxToggleGroup,
         RdxToolbarButton,
         RdxToolbarLink,
         RdxToolbarRoot,
@@ -36,7 +36,7 @@ import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator }
             orientation="vertical"
             aria-label="Formatting options"
         >
-            <div class="flex flex-col gap-1" [value]="alignment" rdxToggleGroupWithoutFocus aria-label="Text alignment">
+            <div class="flex flex-col gap-1" [value]="alignment" rdxToggleGroup aria-label="Text alignment">
                 <button
                     class="demo-toolbar-toggle data-[pressed]:bg-primary data-[pressed]:text-primary-foreground focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center focus-visible:ring-2"
                     rdxToggle

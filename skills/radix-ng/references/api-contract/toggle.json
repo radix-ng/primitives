@@ -39,7 +39,7 @@
         {
           "name": "value",
           "type": "string",
-          "description": "A value identifying this toggle inside a `[rdxToggleGroup]`. Required when used in a group."
+          "description": "A value identifying this toggle inside a `[rdxToggleGroup]`. Omitted and empty values use a generated identity."
         },
         {
           "name": "tabIndex",

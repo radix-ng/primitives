@@ -208,6 +208,10 @@ class ToggleDefaultsPage {}
         <div [defaultValue]="['a']" [controlledValue]="[]" rdxToggleGroup>
             <button rdxToggle value="a">Controlled</button>
         </div>
+        <div rdxToggleGroup>
+            <button rdxToggle>Generated</button>
+            <button rdxToggle value="">Generated from empty</button>
+        </div>
     `
 })
 class ToggleGroupDefaultsPage {}
@@ -868,11 +872,29 @@ describe('SSR rendering', () => {
         expect(buttons.map((button) => button.getAttribute('aria-pressed'))).toEqual(['true', 'false']);
         expect(buttons.map((button) => button.hasAttribute('data-pressed'))).toEqual([true, false]);
     });
-    it('serializes ToggleGroup defaults and explicit empty selections', async () => {
+    it('serializes ToggleGroup defaults, empty selections and distinct generated identities', async () => {
         const html = await renderToString('app-toggle-group-defaults', ToggleGroupDefaultsPage);
         const buttons = [...new DOMParser().parseFromString(html, 'text/html').querySelectorAll('button[rdxtoggle]')];
-        expect(buttons.map((button) => button.getAttribute('aria-pressed'))).toEqual(['true', 'false', 'false']);
-        expect(buttons.map((button) => button.hasAttribute('data-pressed'))).toEqual([true, false, false]);
+        expect(buttons.map((button) => button.getAttribute('aria-pressed'))).toEqual([
+            'true',
+            'false',
+            'false',
+            'false',
+            'false'
+        ]);
+        expect(buttons.map((button) => button.hasAttribute('data-pressed'))).toEqual([
+            true,
+            false,
+            false,
+            false,
+            false
+        ]);
+        const generatedIds = buttons.slice(3).map((button) => {
+            const ids: [string, string[]][] = JSON.parse(button.getAttribute('data-rdx-ids') ?? '[]');
+            return ids[0]?.[1][0];
+        });
+        expect(generatedIds).toEqual([expect.stringMatching(/^rdx-toggle-/), expect.stringMatching(/^rdx-toggle-/)]);
+        expect(new Set(generatedIds).size).toBe(2);
     });
     it('resolves Switch defaults, Field associations and the authored input before server serialization', async () => {
         const html = await renderToString('app-switch-defaults', SwitchDefaultsPage);

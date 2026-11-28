@@ -1,18 +1,33 @@
 export const scenario = new URLSearchParams(location.search).get('case');
+export const generatedValues = scenario === 'generated-values';
+export const dynamicMultiple = scenario === 'dynamic-multiple' || scenario === 'dynamic-multiple-toolbar';
+export const dynamicItems = scenario === 'dynamic-items';
 export const initialDefault =
     scenario === 'horizontal'
         ? ['underline']
-        : scenario === 'default' || scenario === 'controlled'
+        : scenario === 'default' || scenario === 'controlled' || dynamicMultiple
           ? ['bold']
           : undefined;
 export const initialValue = scenario === 'controlled' ? [] : undefined;
-export const multiple = scenario === 'multiple';
+export const multiple = scenario === 'multiple' || generatedValues;
 export const orientation = scenario === 'vertical' ? 'vertical' : 'horizontal';
 export const direction = scenario === 'rtl' ? 'rtl' : 'ltr';
 export const loopFocus = scenario !== 'vertical';
-export const toolbar = scenario === 'toolbar';
-export const disabledItem = scenario === 'horizontal' || toolbar;
-export const customItem = multiple || scenario === 'horizontal';
+export const toolbar = scenario === 'toolbar' || scenario === 'dynamic-multiple-toolbar';
+
+export function authoredValue(value: string): string | undefined {
+    if (!generatedValues) return value;
+    return value === 'bold' ? undefined : '';
+}
+
+export function isCustomItem(value: string): boolean {
+    return generatedValues ? value === 'bold' : value === 'italic' && (multiple || scenario === 'horizontal');
+}
+
+export function isDisabledItem(value: string, firstDisabled: boolean): boolean {
+    if (generatedValues) return firstDisabled && value === 'bold';
+    return value === 'italic' && (scenario === 'horizontal' || scenario === 'toolbar');
+}
 
 export const items = [
     { value: 'bold', label: 'Bold' },
@@ -48,6 +63,7 @@ export function installProbe(): void {
 }
 
 let lastDetails: Details | undefined;
+const generatedIds = new Map<string, string>();
 
 export function recordItem(item: string, pressed: boolean, details: Details): void {
     lastDetails = details;
@@ -62,9 +78,17 @@ export function recordItem(item: string, pressed: boolean, details: Details): vo
 }
 
 export function recordGroup(value: readonly string[], details: Details): void {
+    const recordedValue = value.map((id) => {
+        if (!generatedValues) return id;
+        const known = generatedIds.get(id);
+        if (known !== undefined) return known;
+        const label = `generated-${generatedIds.size + 1}`;
+        generatedIds.set(id, label);
+        return label;
+    });
     window.toggleGroupParity.requests.push({
         part: 'group',
-        value: [...value],
+        value: recordedValue,
         reason: details.reason,
         eventType: details.event.type,
         sharedDetails: details === lastDetails

@@ -5,15 +5,19 @@ import { Toolbar } from '@base-ui/react/toolbar';
 import { useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
-    customItem,
+    authoredValue,
     direction,
-    disabledItem,
+    dynamicItems,
+    dynamicMultiple,
+    generatedValues,
     initialDefault,
+    multiple as initialMultiple,
     initialValue,
     installProbe,
+    isCustomItem,
+    isDisabledItem,
     items,
     loopFocus,
-    multiple,
     orientation,
     recordGroup,
     recordItem,
@@ -26,6 +30,10 @@ function ToggleGroupFixture() {
     const [defaults, setDefaults] = useState<string[] | undefined>(initialDefault);
     const [controlled, setControlled] = useState<string[] | undefined>(initialValue);
     const [toolbarGroupDisabled, setToolbarGroupDisabled] = useState(false);
+    const [toolbarDisabled, setToolbarDisabled] = useState(false);
+    const [multiple, setMultiple] = useState(initialMultiple);
+    const [options, setOptions] = useState(items);
+    const [firstDisabled, setFirstDisabled] = useState(generatedValues);
     const pending = useRef<readonly string[]>(undefined);
 
     const group = (
@@ -41,13 +49,13 @@ function ToggleGroupFixture() {
             }}
             aria-label="Formatting"
         >
-            {items.map(({ value, label }) => {
-                const custom = customItem && value === 'italic';
+            {options.map(({ value, label }) => {
+                const custom = isCustomItem(value);
                 return (
                     <Toggle
                         key={value}
-                        value={value}
-                        disabled={disabledItem && value === 'italic'}
+                        value={authoredValue(value)}
+                        disabled={isDisabledItem(value, firstDisabled)}
                         nativeButton={!custom}
                         render={custom ? <span /> : undefined}
                         onPressedChange={(pressed, details) => recordItem(value, pressed, details)}
@@ -64,7 +72,7 @@ function ToggleGroupFixture() {
             <input aria-label="Before" />
             {toolbar ? (
                 <>
-                    <Toolbar.Root aria-label="Editing">
+                    <Toolbar.Root disabled={toolbarDisabled} aria-label="Editing">
                         <Toolbar.Group disabled={toolbarGroupDisabled} aria-label="Choices">
                             {group}
                         </Toolbar.Group>
@@ -72,6 +80,15 @@ function ToggleGroupFixture() {
                     </Toolbar.Root>
                     <button onClick={() => setToolbarGroupDisabled(true)} type="button">
                         Disable toolbar group
+                    </button>
+                    <button
+                        onClick={() => {
+                            setToolbarGroupDisabled(false);
+                            setToolbarDisabled(true);
+                        }}
+                        type="button"
+                    >
+                        Disable toolbar
                     </button>
                 </>
             ) : (
@@ -86,6 +103,32 @@ function ToggleGroupFixture() {
             <button onClick={() => setControlled([])} type="button">
                 Clear selection
             </button>
+            {generatedValues && (
+                <button onClick={() => setFirstDisabled(false)} type="button">
+                    Enable Bold
+                </button>
+            )}
+            {dynamicMultiple && (
+                <button onClick={() => setMultiple((current) => !current)} type="button">
+                    Toggle multiple
+                </button>
+            )}
+            {dynamicItems && (
+                <>
+                    <button onClick={() => setOptions((current) => current.slice().reverse())} type="button">
+                        Reverse items
+                    </button>
+                    <button
+                        onClick={() => setOptions((current) => current.filter((item) => item.value !== 'bold'))}
+                        type="button"
+                    >
+                        Remove Bold
+                    </button>
+                    <button onClick={() => setOptions((current) => [items[0], ...current])} type="button">
+                        Restore Bold
+                    </button>
+                </>
+            )}
         </DirectionProvider>
     );
 }

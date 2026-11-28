@@ -124,9 +124,9 @@ Install `@lucide/angular` for the icons.
 
 ### Item
 
-`RdxToggle` — see the [Toggle](?path=/docs/primitives-toggle--docs) page. Each item needs a stable
-`value`. In dev mode, a grouped toggle without `value` emits a warning because the group cannot derive
-or update its pressed state.
+`RdxToggle` uses a generated identity when `value` is omitted or empty. Give items stable values when
+setting the group's value or default, or when submitting named form data.
+See the [Toggle](?path=/docs/primitives-toggle--docs) page.
 
 ### WithoutFocus
 
@@ -134,10 +134,9 @@ or update its pressed state.
 
 <ArgTypes of={RdxToggleGroupWithoutFocus} />
 
-Use `rdxToggleGroupWithoutFocus` inside a composite parent that already owns focus, such as
-`rdxToolbarRoot`. It keeps the same value, disabled, orientation and multiple-selection behavior as
-`rdxToggleGroup`, but lets its toggles register with the ancestor composite root. When placed inside
-`rdxToolbarRoot` or `rdxToolbarGroup`, disabled state cascades into the toggle group and its items.
+Inside a Toolbar, `rdxToggleGroup` automatically shares the Toolbar's tab stop and arrow navigation.
+Disabled state from `rdxToolbarRoot` and `rdxToolbarGroup` cascades to the toggle group and its items.
+Use `rdxToggleGroupWithoutFocus` to delegate to another kind of composite parent.
 
 ## Accessibility
 

@@ -20,7 +20,6 @@ import {
     LucideUnderline
 } from '@lucide/angular';
 import { RdxToggle } from '@radix-ng/primitives/toggle';
-import { RdxToggleGroupWithoutFocus } from '@radix-ng/primitives/toggle-group';
 import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator } from '@radix-ng/primitives/toolbar';
 
 @Component({
@@ -35,7 +34,6 @@ import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator }
         LucideTextAlignStart,
         LucideUnderline,
         RdxToggle,
-        RdxToggleGroupWithoutFocus,
         RdxToolbarButton,
         RdxToolbarLink,
         RdxToolbarRoot,

@@ -1,5 +1,6 @@
 import { computed, Directive, effect, ElementRef, inject, output } from '@angular/core';
 import { createContext, useElementRegistry } from '@radix-ng/primitives/core';
+import { RDX_COMPOSITE_PARENT } from './composite-parent';
 import {
     RdxCompositeItemMetadata,
     RdxCompositeItemRegistration,
@@ -8,6 +9,9 @@ import {
 } from './types';
 
 const listContext = (): RdxCompositeListContext => {
+    if (inject(RDX_COMPOSITE_PARENT, { self: true, optional: true })) {
+        return injectRdxCompositeListContext(false, { skipSelf: true });
+    }
     const list = inject(RdxCompositeList);
 
     return {

@@ -17,7 +17,7 @@ import {
     LucideUnderline
 } from '@lucide/angular';
 import { RdxToggle } from '@radix-ng/primitives/toggle';
-import { RdxToggleGroupWithoutFocus } from '@radix-ng/primitives/toggle-group';
+import { RdxToggleGroup } from '@radix-ng/primitives/toggle-group';
 import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator } from '@radix-ng/primitives/toolbar';
 
 @Component({
@@ -32,7 +32,7 @@ import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator }
         LucideTextAlignStart,
         LucideUnderline,
         RdxToggle,
-        RdxToggleGroupWithoutFocus,
+        RdxToggleGroup,
         RdxToolbarButton,
         RdxToolbarLink,
         RdxToolbarRoot,
@@ -44,7 +44,7 @@ import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator }
             rdxToolbarRoot
             aria-label="Formatting options"
         >
-            <div class="flex gap-px" rdxToggleGroupWithoutFocus multiple aria-label="Text formatting">
+            <div class="flex gap-px" rdxToggleGroup multiple aria-label="Text formatting">
                 <button class="demo-button demo-toolbar-pressable size-8" rdxToggle value="bold" aria-label="Bold">
                     <svg lucideBold size="16"></svg>
                 </button>
@@ -63,7 +63,7 @@ import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator }
 
             <div class="bg-foreground m-1 h-4 w-px" rdxToolbarSeparator orientation="vertical"></div>
 
-            <div class="flex gap-px" [value]="alignment" rdxToggleGroupWithoutFocus aria-label="Text alignment">
+            <div class="flex gap-px" [value]="alignment" rdxToggleGroup aria-label="Text alignment">
                 <button
                     class="demo-button demo-toolbar-pressable size-8"
                     rdxToggle

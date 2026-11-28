@@ -41418,9 +41418,9 @@ part used either on its own or inside a `[rdxToggleGroup]`.
 </button>
 ```
 
-When placed inside a `[rdxToggleGroup]`, give each toggle a stable `value` — its pressed state is then
-derived from the group's value and it joins the group's composite focus. In dev mode, a grouped toggle
-without `value` emits a warning because it cannot participate in group value changes.
+Inside a `[rdxToggleGroup]`, the group drives pressed state and composite focus. Omitted and empty
+`value` inputs use a distinct generated identity per toggle. Supply stable values for controlled
+groups, defaults and form data.
 
 On a custom host such as `<span>`, set `[nativeButton]="false"` to add button semantics and
 keyboard activation. Set `tabIndex` to override the default tab order.
@@ -42286,18 +42286,17 @@ Install `@lucide/angular` for the icons.
 
 ### Item
 
-`RdxToggle` — see the [Toggle](components/toggle.md) page. Each item needs a stable
-`value`. In dev mode, a grouped toggle without `value` emits a warning because the group cannot derive
-or update its pressed state.
+`RdxToggle` uses a generated identity when `value` is omitted or empty. Give items stable values when
+setting the group's value or default, or when submitting named form data.
+See the [Toggle](components/toggle.md) page.
 
 ### WithoutFocus
 
 `RdxToggleGroupWithoutFocus`
 
-Use `rdxToggleGroupWithoutFocus` inside a composite parent that already owns focus, such as
-`rdxToolbarRoot`. It keeps the same value, disabled, orientation and multiple-selection behavior as
-`rdxToggleGroup`, but lets its toggles register with the ancestor composite root. When placed inside
-`rdxToolbarRoot` or `rdxToolbarGroup`, disabled state cascades into the toggle group and its items.
+Inside a Toolbar, `rdxToggleGroup` automatically shares the Toolbar's tab stop and arrow navigation.
+Disabled state from `rdxToolbarRoot` and `rdxToolbarGroup` cascades to the toggle group and its items.
+Use `rdxToggleGroupWithoutFocus` to delegate to another kind of composite parent.
 
 ## Accessibility
 
@@ -42331,7 +42330,7 @@ import {
     LucideUnderline
 } from '@lucide/angular';
 import { RdxToggle } from '@radix-ng/primitives/toggle';
-import { RdxToggleGroupWithoutFocus } from '@radix-ng/primitives/toggle-group';
+import { RdxToggleGroup } from '@radix-ng/primitives/toggle-group';
 import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator } from '@radix-ng/primitives/toolbar';
 
 @Component({
@@ -42346,7 +42345,7 @@ import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator }
         LucideTextAlignStart,
         LucideUnderline,
         RdxToggle,
-        RdxToggleGroupWithoutFocus,
+        RdxToggleGroup,
         RdxToolbarButton,
         RdxToolbarLink,
         RdxToolbarRoot,
@@ -42358,7 +42357,7 @@ import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator }
             rdxToolbarRoot
             aria-label="Formatting options"
         >
-            <div class="flex gap-px" rdxToggleGroupWithoutFocus multiple aria-label="Text formatting">
+            <div class="flex gap-px" rdxToggleGroup multiple aria-label="Text formatting">
                 <button class="demo-button demo-toolbar-pressable size-8" rdxToggle value="bold" aria-label="Bold">
                     <svg lucideBold size="16"></svg>
                 </button>
@@ -42377,7 +42376,7 @@ import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator }
 
             <div class="bg-foreground m-1 h-4 w-px" rdxToolbarSeparator orientation="vertical"></div>
 
-            <div class="flex gap-px" [value]="alignment" rdxToggleGroupWithoutFocus aria-label="Text alignment">
+            <div class="flex gap-px" [value]="alignment" rdxToggleGroup aria-label="Text alignment">
                 <button
                     class="demo-button demo-toolbar-pressable size-8"
                     rdxToggle
@@ -42461,9 +42460,8 @@ composite focus over `Button`, `Link`, `Input`, `Group` and `Separator` parts.
 
 Stack a toolbar part on another primitive's trigger/input to compose it — e.g.
 `<button rdxToolbarButton rdxMenuTrigger>` or `<input rdxToolbarInput rdxNumberFieldInput>`.
-Use `rdxToggleGroupWithoutFocus` for toggle groups inside a toolbar so the toggles share the toolbar's
-composite focus. Disabled state from `rdxToolbarRoot` or `rdxToolbarGroup` cascades into those toggle
-groups and their items.
+Place `rdxToggleGroup` inside a toolbar to share the toolbar's tab stop and arrow navigation.
+Disabled state from `rdxToolbarRoot` or `rdxToolbarGroup` cascades to the toggle group and its items.
 
 `rdxToolbarButton` includes button activation without an additional `rdxButton`. On custom hosts,
 set `[nativeButton]="false"`; Enter and Space activate the control, with Space handled on keydown.
@@ -42487,7 +42485,7 @@ import {
     LucideUnderline
 } from '@lucide/angular';
 import { RdxToggle } from '@radix-ng/primitives/toggle';
-import { RdxToggleGroupWithoutFocus } from '@radix-ng/primitives/toggle-group';
+import { RdxToggleGroup } from '@radix-ng/primitives/toggle-group';
 import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator } from '@radix-ng/primitives/toolbar';
 
 @Component({
@@ -42502,7 +42500,7 @@ import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator }
         LucideTextAlignStart,
         LucideUnderline,
         RdxToggle,
-        RdxToggleGroupWithoutFocus,
+        RdxToggleGroup,
         RdxToolbarButton,
         RdxToolbarLink,
         RdxToolbarRoot,
@@ -42514,7 +42512,7 @@ import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator }
             rdxToolbarRoot
             aria-label="Formatting options"
         >
-            <div class="flex gap-px" rdxToggleGroupWithoutFocus multiple aria-label="Text formatting">
+            <div class="flex gap-px" rdxToggleGroup multiple aria-label="Text formatting">
                 <button class="demo-button demo-toolbar-pressable size-8" rdxToggle value="bold" aria-label="Bold">
                     <svg lucideBold size="16"></svg>
                 </button>
@@ -42533,7 +42531,7 @@ import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator }
 
             <div class="bg-foreground m-1 h-4 w-px" rdxToolbarSeparator orientation="vertical"></div>
 
-            <div class="flex gap-px" [value]="alignment" rdxToggleGroupWithoutFocus aria-label="Text alignment">
+            <div class="flex gap-px" [value]="alignment" rdxToggleGroup aria-label="Text alignment">
                 <button
                     class="demo-button demo-toolbar-pressable size-8"
                     rdxToggle
@@ -42593,7 +42591,7 @@ import {
     LucideUnderline
 } from '@lucide/angular';
 import { RdxToggle } from '@radix-ng/primitives/toggle';
-import { RdxToggleGroupWithoutFocus } from '@radix-ng/primitives/toggle-group';
+import { RdxToggleGroup } from '@radix-ng/primitives/toggle-group';
 import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator } from '@radix-ng/primitives/toolbar';
 
 @Component({
@@ -42608,7 +42606,7 @@ import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator }
         LucideTextAlignStart,
         LucideUnderline,
         RdxToggle,
-        RdxToggleGroupWithoutFocus,
+        RdxToggleGroup,
         RdxToolbarButton,
         RdxToolbarLink,
         RdxToolbarRoot,
@@ -42621,7 +42619,7 @@ import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator }
             orientation="vertical"
             aria-label="Formatting options"
         >
-            <div class="flex flex-col gap-1" [value]="alignment" rdxToggleGroupWithoutFocus aria-label="Text alignment">
+            <div class="flex flex-col gap-1" [value]="alignment" rdxToggleGroup aria-label="Text alignment">
                 <button
                     class="demo-toolbar-toggle data-[pressed]:bg-primary data-[pressed]:text-primary-foreground focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center focus-visible:ring-2"
                     rdxToggle
@@ -42680,7 +42678,6 @@ import {
     LucideUnderline
 } from '@lucide/angular';
 import { RdxToggle } from '@radix-ng/primitives/toggle';
-import { RdxToggleGroupWithoutFocus } from '@radix-ng/primitives/toggle-group';
 import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator } from '@radix-ng/primitives/toolbar';
 
 @Component({
@@ -42695,7 +42692,6 @@ import { RdxToolbarButton, RdxToolbarLink, RdxToolbarRoot, RdxToolbarSeparator }
         LucideTextAlignStart,
         LucideUnderline,
         RdxToggle,
-        RdxToggleGroupWithoutFocus,
         RdxToolbarButton,
         RdxToolbarLink,
         RdxToolbarRoot,
