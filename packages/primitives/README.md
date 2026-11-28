@@ -1,14 +1,10 @@
 # @radix-ng/primitives
 
-> **Headless, signals-first UI primitives with first-class Angular Forms support.**
+> **Headless, signals-first UI primitives for Angular 21 and 22.**
 
-Radix NG is a low-level UI primitive library for Angular with a focus on accessibility,
-customization, and developer experience. The primitives are **headless** — they ship no styles and
-expose state via `data-*` attributes, so you can use them as the base layer of your design system
-or adopt them incrementally.
-
-The library grew out of an Angular port of [Radix UI](https://www.radix-ui.com/); its API and
-behavior now align primarily with [Base UI](https://base-ui.com/).
+Compose keyboard interaction and focus management into your own markup with Angular directives.
+Style each part with CSS or Tailwind using its documented `data-*` attributes.
+[Base UI](https://base-ui.com/) is the primary reference for component APIs and behavior.
 
 ## Installation
 
@@ -48,34 +44,26 @@ import {
 export class DemoComponent {}
 ```
 
-Style the parts via the `data-*` attributes they expose (e.g. `[data-state="open"]`,
-`[data-disabled]`) with any CSS approach — Tailwind, CSS modules, vanilla CSS.
+Use `[data-open]` and `[data-closed]` to style the Collapsible panel.
 
-## Angular forms, one Field contract
+## Angular Forms
 
-The same controls and accessible Field parts work across every Angular form API while Angular owns
-the model and validation:
+Inside an `rdxFieldRoot`, use `rdxNgControlField` with a Reactive Forms or `ngModel` control.
+For Signal Forms, apply `rdxSignalField` from `@radix-ng/primitives/signal-forms` alongside
+`[formField]`. These adapters expose Angular's validation and interaction state to the Field parts.
 
-```html
-<!-- Reactive Forms / ngModel -->
-<input rdxInput formControlName="email" rdxNgControlField />
-
-<!-- Signal Forms -->
-<input rdxInput [formField]="accountForm.email" rdxSignalField />
-```
-
-ControlValueAccessors remain available for Reactive and template-driven forms. The optional
-`@radix-ng/primitives/signal-forms` entry adds Angular Signal Forms without a separate Radix NG form
-model. Signal Forms is stable in Angular 22; Reactive Forms and `ngModel` remain supported on Angular
-21 and 22. Compare the [paired recipes and runtime-verified
-matrix](https://radix-ng.com/docs/?path=/docs/primitives-signal-forms--docs#one-recipe-two-angular-apis),
-and see the [migration guide](https://radix-ng.com/docs/?path=/docs/guides-forms-migration--docs) when
-upgrading from 1.0.10.
+Support varies by control. Reactive Forms and `ngModel` use native inputs or primitives with a
+`ControlValueAccessor`. Signal Forms is stable in Angular 22. Date Field, Time Field, and Editable
+use `model()` for Signal Forms. See the
+[control integration matrix](https://radix-ng.com/docs/?path=/docs/primitives-signal-forms--docs#control-integration-matrix),
+[complete form examples](https://radix-ng.com/docs/?path=/docs/primitives-signal-forms--docs#one-recipe-two-angular-apis),
+and the [migration guide](https://radix-ng.com/docs/?path=/docs/guides-forms-migration--docs) for
+upgrades from 1.0.10.
 
 ## Documentation
 
-- 📖 [radix-ng.com](https://radix-ng.com) — documentation, examples & API reference
-- 📄 Plain-Markdown docs for every component: `https://radix-ng.com/components/<name>.md`
+- 📖 [Storybook](https://radix-ng.com/docs/) — component guides, live examples, and API reference
+- 📄 Component Markdown at `https://radix-ng.com/docs/components/<name>.md`
 
 ## For AI coding assistants
 
@@ -87,8 +75,8 @@ upgrading from 1.0.10.
   npx skills add radix-ng/primitives/skills
   ```
 
-- **llms.txt** — [radix-ng.com/llms.txt](https://radix-ng.com/llms.txt) (index) ·
-  [radix-ng.com/llms-full.txt](https://radix-ng.com/llms-full.txt) (all docs in one file)
+- [LLM documentation index](https://radix-ng.com/docs/llms.txt) and
+  [full reference](https://radix-ng.com/docs/llms-full.txt)
 
 ## Community
 

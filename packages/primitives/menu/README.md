@@ -1,9 +1,11 @@
 # @radix-ng/primitives/menu
 
-Current differential scope: 199 scenarios, 549 executable comparisons and 48 touch capability skips.
-See [PARITY.md](PARITY.md) for the current contract and pending projection and remaining finalFocus/API audits.
+Headless Angular menus with keyboard navigation, native item activation, and submenus.
 
-The notes below record individual implementation increments.
+See [PARITY.md](PARITY.md) for the current contract and the
+[behavioral comparison suite](../../../apps/parity-testing/primitives/menu/README.md) for coverage and run commands.
+
+## Implementation history
 
 Touch input reuses the shared native pointer tracker. Menu classifies compatibility mousedown from
 its owning trigger without replacing the event. Touch submenus open on mousedown and consume the
@@ -11,8 +13,8 @@ following click once; repeat taps close them. Disabled items prevent pointer foc
 keyboard-focusable. Trigger data-pressed now follows the menu's open session; style native :active
 if physical press feedback is needed.
 
-Twenty-five trusted-touch scenarios add 44 executable comparisons. Menu now defines 122 scenarios /
-366 planned comparisons, with 335 executed and 31 unsupported touch capability skips. Native events,
+Twenty-five trusted-touch scenarios added 44 executable comparisons. At that point the suite had
+122 scenarios and 366 planned comparisons, with 335 executed and 31 capability skips. Native events,
 focus, values, scrolling and lifecycle remain compared. See [ADR 0049](../../../docs/adr/0049-menu-trusted-touch.md)
 and [the matrix](PARITY.md) for exact macOS WebKit focus limits and remaining device/AT work.
 
@@ -21,8 +23,8 @@ closes a touch-opened child; a first tap promotes an arrow-opened child before a
 Forward-arrow entry and canceled touch promotion preserve the opening ARIA policy. Hover promotion
 keeps the original scroll policy; a fresh touch opening chooses the small/wide policy again.
 
-Seventeen new hybrid scenarios add 34 executable comparisons. The matrix now defines 139 cases /
-417 planned comparisons: 369 executable and 48 touch capability skips. Exact source-event pairs
+Seventeen hybrid scenarios added 34 executable comparisons, bringing the suite to 139 cases and
+417 planned comparisons, with 369 executable and 48 touch capability skips. Exact source-event pairs
 preserve Angular's original keydown/Pointer Events instead of manufacturing React-style callbacks.
 See [ADR 0050](../../../docs/adr/0050-menu-hybrid-input.md) and [the matrix](PARITY.md).
 
@@ -32,8 +34,8 @@ use the existing modifier-preserving click helper. Keyup prevents duplicate acti
 keyboard change details therefore carry the activation click, replacing the previous keydown.
 Space continues typeahead, and closing resets that query for retained reopening.
 
-The Native Elements example uses normal Angular click handlers. Twenty-three host cases add 69
-comparisons; the matrix now defines 162 cases / 486 planned comparisons, with 438 executable and
+The Native Elements example uses normal Angular click handlers. Twenty-three host cases added 69
+comparisons, bringing the suite to 162 cases and 486 planned comparisons, with 438 executable and
 48 touch capability skips. The ten prior keyboard source-event pairs now match and were removed.
 That increment left disabled-first initial focus open; ADR 0052 below subsequently covered it. See
 [ADR 0051](../../../docs/adr/0051-menu-native-host-activation.md).
@@ -43,15 +45,15 @@ Arrow/Home/End navigation still includes disabled items without activating them.
 selector is shared by Popup and trigger recovery; SubTrigger stays in the parent's Tab order while
 open. Shared bridge disposal preserves current Angular tabindex bindings when a popup is retained.
 
-Initial Focus demonstrates disabled-first/all-disabled and keepMounted behavior. Thirteen new cases /
-39 comparisons bring the matrix to 175 cases, 477 executable comparisons and 48 touch capability
+Initial Focus demonstrates disabled-first/all-disabled and keepMounted behavior. Thirteen new cases
+and 39 comparisons brought the suite to 175 cases, 477 executable comparisons and 48 touch capability
 skips. Nested Tab departure was subsequently covered by ADR 0053 below. See
 [ADR 0052](../../../docs/adr/0052-menu-initial-focus-boundaries.md).
 
 Nested Tab departure now follows the structural portal's logical declaration order through the
 shared Floating Focus Manager. Forward Tab closes the chain or lands on a native control inside
 the parent; Shift+Tab closes only the child and returns to SubTrigger. Initial Focus exposes this
-path with Nested menu and Keep mounted toggles. Six new cases bring the current suite to 181 cases /
+path with Nested menu and Keep mounted toggles. Six new cases brought the suite to 181 cases and
 495 executable comparisons and 48 capability skips. One exact pin-only dropped child completion
 extends the existing lifecycle exception. See [ADR 0053](../../../docs/adr/0053-menu-portal-tab-handoff.md)
 and [the matrix](PARITY.md).
@@ -60,6 +62,6 @@ Focus-out cancellation and explicit finalFocus now follow the pinned reference a
 child menus. Escape honors false, forward Tab preserves its destination, and Shift+Tab is an
 explicit cancelable return. Regular items retain logical highlight on blur; SubTrigger re-entry
 transfers it back to the parent. Shared guard/snapshot policies preserve closed retained Tab stops.
-Eighteen new cases bring the current suite to 199 cases / 549 executable comparisons with the same
+Eighteen new cases brought the suite to 199 cases and 549 executable comparisons with the same
 48 capability skips. No new exceptions were added. See
 [ADR 0054](../../../docs/adr/0054-menu-focus-out-and-final-focus.md) and the Return Focus example.

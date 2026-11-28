@@ -1,16 +1,9 @@
 # Primitive behavioral comparisons
 
 The same Playwright actions run against Angular primitives and unmodified, pinned Base UI React
-sources. These are regression checks with reviewed differences, not full parity certification.
-[Select](primitives/select/README.md), [Popover](primitives/popover/README.md),
-[Menu](primitives/menu/README.md), [Context Menu](primitives/context-menu/README.md),
-[Menubar](primitives/menubar/README.md), [Tabs](primitives/tabs/README.md),
-[Button](primitives/button/README.md), [Autocomplete](primitives/autocomplete/README.md),
-[Dialog](primitives/dialog/README.md), [Radio](primitives/radio/README.md),
-[Checkbox](primitives/checkbox/README.md), [Separator](primitives/separator/README.md),
-[Slider](primitives/slider/README.md), and
-[Tooltip](primitives/tooltip/README.md) have independent suites.
-The [coverage matrix](COVERAGE.md) distinguishes pinned comparisons from Angular regression checks.
+sources. The runner discovers suites from `primitives/*/suite.json`. Browse the
+[primitive suites](primitives/) for their commands, coverage, and reviewed differences.
+The [coverage matrix](COVERAGE.md) records pinned comparisons and Angular-only regression checks.
 
 ## Structure
 
@@ -48,25 +41,13 @@ each suite observes its own public actions and component state.
 
 ## Run
 
-Use Node.js 24 (`nvm use`) and install workspace dependencies, then:
+Use Node.js 24 (`nvm use`) and install workspace dependencies. Use the suite directory name
+to run a single primitive.
 
 ```bash
 pnpm exec playwright install chromium firefox webkit
 pnpm test-parity                 # every discovered suite
 pnpm test-parity select          # one primitive
-pnpm test-parity popover         # independent floating/focus suite
-pnpm test-parity menu            # native items, transactions and submenu suite
-pnpm test-parity context-menu    # native context gestures, point anchor and focus
-pnpm test-parity menubar         # native opening, roving and sibling ownership
-pnpm test-parity tabs            # initial selection, null/default values and notifications
-pnpm test-parity button          # native/custom hosts, keyboard phases, disabled and forms
-pnpm test-parity autocomplete    # initial/default state, navigation, read-only and value/query/preview
-pnpm test-parity dialog          # open ownership, focus, trigger identity and Portal lifetime
-pnpm test-parity radio           # initial selection, late defaults and native serialization
-pnpm test-parity checkbox        # checked and group ownership, native activation and select-all
-pnpm test-parity separator       # accessibility, orientation updates and Toolbar composition
-pnpm test-parity slider          # value ownership, native forms, range interaction and geometry
-pnpm test-parity tooltip         # open ownership, defaults, hover, focus and cancellation
 pnpm test-parity:select          # convenience alias
 pnpm test-parity select --project=webkit # one engine
 pnpm parity:build select         # type-check/build one suite without running browsers

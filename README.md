@@ -3,26 +3,24 @@
 [![Version](https://img.shields.io/npm/v/@radix-ng/primitives?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/@radix-ng/primitives)
 [![Downloads](https://img.shields.io/npm/dm/@radix-ng/primitives.svg?style=flat&colorA=000000&colorB=000000)](https://www.npmjs.com/package/@radix-ng/primitives)
 [![License](https://img.shields.io/npm/l/@radix-ng/primitives?style=flat&colorA=000000&colorB=000000)](/LICENSE)
-[![Angular](https://img.shields.io/badge/Angular-21+-000000?style=flat&logo=angular&logoColor=fff&colorA=000000&colorB=000000)](https://angular.dev)
+[![Angular](https://img.shields.io/badge/Angular-21%20%2F%2022-000000?style=flat&logo=angular&logoColor=fff&colorA=000000&colorB=000000)](https://angular.dev)
 [![Discord Chat](https://img.shields.io/discord/1231525968586346567?style=flat&logo=discord&logoColor=fff&color=000)](https://discord.gg/NaJb2XRWX9)
 
-> **Headless, signals-first UI primitives with first-class Angular Forms support.**
+> **Headless, signals-first UI primitives for Angular.**
 
-Radix NG is a low-level UI primitive library for Angular with a focus on accessibility, customization,
-and developer experience. The primitives are **headless** — they ship no styles and expose state via
-`data-*` attributes, so you can use them as the base layer of your design system or adopt them
-incrementally.
+Use Angular directives to add keyboard interaction and focus management to your own markup. Style
+the documented `data-*` states with CSS or Tailwind, and connect supported controls to Angular Forms.
+Browse the [live examples and API reference](https://radix-ng.com/docs/).
 
-The library grew out of an Angular port of [Radix UI](https://www.radix-ui.com/); its API and behavior
-now align primarily with [Base UI](https://base-ui.com/).
+The library grew out of an Angular port of [Radix UI](https://www.radix-ui.com/).
+[Base UI](https://base-ui.com/) is the primary reference for component APIs and behavior.
 
 ## Features
 
-- 🎯 **Headless** — no styles, full control. State is exposed through `data-*` attributes.
+- 🎯 **Headless** — your design system supplies the visual styles.
 - ♿ **Accessible** — built to the [WAI-ARIA authoring practices](https://www.w3.org/WAI/ARIA/apg/), with keyboard navigation and focus management.
 - ⚡ **Signals-first** — modern Angular API (`input()`, `model()`, `computed()`, `signal()`).
-- 📝 **Angular-native forms** — the same controls and Field anatomy work with Reactive Forms,
-  `ngModel`, and Signal Forms.
+- 📝 **Angular-native forms** — shared Field labels, descriptions, and errors across supported form APIs.
 - 🧩 **Composable** — primitives compose via `hostDirectives` and shared building blocks.
 - 🌗 **Theme-ready** — state-driven styling works with light/dark and any design tokens.
 - 📦 **Tree-shakeable** — granular secondary entry points (`@radix-ng/primitives/<name>`).
@@ -64,35 +62,27 @@ import {
 export class DemoComponent {}
 ```
 
-Primitives are headless: style them via the `data-*` attributes they expose (e.g.
-`[data-open]`, `[data-disabled]`) with the tooling of your choice.
+Use `[data-open]` and `[data-closed]` to style the Collapsible panel.
 
-## Angular forms, one Field contract
+## Angular Forms
 
-Angular remains the source of truth for values, validation, submission, and reset. Radix NG connects
-that state to the same headless controls, accessible Field parts, and `data-*` styling contract on
-every form path:
+Inside an `rdxFieldRoot`, use `rdxNgControlField` with a Reactive Forms or `ngModel` control.
+For Signal Forms, apply `rdxSignalField` from `@radix-ng/primitives/signal-forms` alongside
+`[formField]`. These adapters expose Angular's validation and interaction state to the Field parts.
 
-```html
-<!-- Reactive Forms and ngModel use the Angular Forms adapter. -->
-<input rdxInput formControlName="email" rdxNgControlField />
-
-<!-- Signal Forms uses the structural field adapter. -->
-<input rdxInput [formField]="accountForm.email" rdxSignalField />
-```
-
-Existing ControlValueAccessors stay available for Reactive and template-driven forms. The optional
-`@radix-ng/primitives/signal-forms` entry adds Angular Signal Forms without introducing a parallel
-Radix NG form model. Signal Forms is stable in Angular 22; the Reactive and template-driven paths
-remain supported on Angular 21 and 22. See the [paired recipes and executable control
-matrix](https://radix-ng.com/docs/?path=/docs/primitives-signal-forms--docs#one-recipe-two-angular-apis),
-or the [migration guide](https://radix-ng.com/docs/?path=/docs/guides-forms-migration--docs) when
-upgrading from 1.0.10.
+Support varies by control. Reactive Forms and `ngModel` use native inputs or primitives with a
+`ControlValueAccessor`. Signal Forms is stable in Angular 22. Date Field, Time Field, and Editable
+use `model()` for Signal Forms. See the
+[control integration matrix](https://radix-ng.com/docs/?path=/docs/primitives-signal-forms--docs#control-integration-matrix),
+[complete form examples](https://radix-ng.com/docs/?path=/docs/primitives-signal-forms--docs#one-recipe-two-angular-apis),
+and the [migration guide](https://radix-ng.com/docs/?path=/docs/guides-forms-migration--docs) for
+upgrades from 1.0.10.
 
 ## Documentation
 
-- 📖 [radix-ng.com](https://radix-ng.com) — documentation, examples & API reference (Storybook)
-- 📄 [radix-ng.com/llms.txt](https://radix-ng.com/llms.txt) — docs for LLMs (full text at [/llms-full.txt](https://radix-ng.com/llms-full.txt))
+- 📖 [Storybook](https://radix-ng.com/docs/) — component guides, live examples, and API reference
+- 📄 [LLM documentation index](https://radix-ng.com/docs/llms.txt) and [full reference](https://radix-ng.com/docs/llms-full.txt)
+- 🧩 Component Markdown at `https://radix-ng.com/docs/components/<name>.md`
 - 🤖 [AI assistant skills](#ai-assistant-skills) — for Claude Code, Cursor, Copilot, and others
 - 🎙 [The Story of My Radix UI Port for Angular](https://frontendconf.ru/moscow/2025/abstracts/16014) — talk, FrontendConf Moscow 2025
 
@@ -109,18 +99,7 @@ Claude Code, Cursor, Codex, Cline, Windsurf, GitHub Copilot, Gemini, and other a
 npx skills add radix-ng/primitives/skills
 ```
 
-`ng add @radix-ng/primitives` also offers to add a Radix NG section to your `AGENTS.md` /
-`CLAUDE.md`, pointing agents at the docs and skills automatically. Plain-Markdown docs for every
-component are served at `https://radix-ng.com/components/<name>.md`.
-
-## Components
-
-Browse every component — with live examples, the `data-*` styling contract, and a full API
-reference — in the docs: **[radix-ng.com](https://radix-ng.com)** (plain-Markdown for each component
-is served at `radix-ng.com/components/<name>.md`). The site is generated from the source, so it is
-always the current list of what's available.
-
-### Roadmap
+## Roadmap
 
 Planned, not yet available:
 
@@ -157,7 +136,10 @@ Contributions are welcome! The repository is an Nx monorepo:
     └── primitives         headless primitives (no styling)
 ```
 
+Use the Node version in [`.nvmrc`](.nvmrc) and the pnpm version in [`package.json`](package.json).
+
 ```bash
+pnpm install
 pnpm primitives:test       # run tests
 pnpm primitives:build      # build the library
 pnpm storybook:primitives  # start Storybook
