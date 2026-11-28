@@ -62,6 +62,10 @@ export const appRoutes: Route[] = [
             {
                 path: 'tabs',
                 loadComponent: () => import('./components/tabs/page')
+            },
+            {
+                path: 'toast',
+                loadComponent: () => import('./components/toast/page')
             }
         ]
     }

@@ -58,6 +58,7 @@ import {
 } from '@radix-ng/primitives/select';
 import { RdxTabsList, RdxTabsPanel, RdxTabsPanelPresence, RdxTabsRoot, RdxTabsTab } from '@radix-ng/primitives/tabs';
 import LabelPage from '../src/app/components/label/page';
+import ToastPage from '../src/app/components/toast/page';
 import { CheckboxAuditView } from './checkbox-view';
 import { FieldAuditView } from './field-view';
 import { LazyPortalView } from './lazy-view';
@@ -173,6 +174,7 @@ export class HydrationProbe {
         SeparatorAuditView,
         SliderAuditView,
         TooltipAuditView,
+        ToastPage,
         RdxPopoverRoot,
         RdxPopoverTrigger,
         RdxPopoverPortal,
@@ -204,6 +206,9 @@ export class HydrationProbe {
             }
             @case ('tooltip') {
                 <audit-tooltip-view [late]="state.settings.name === 'detached-tooltip'" />
+            }
+            @case ('toast') {
+                <app-toast />
             }
             @case ('accordion') {
                 <section [attr.data-widget]="name()">

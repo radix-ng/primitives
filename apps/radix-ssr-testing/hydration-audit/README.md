@@ -122,3 +122,13 @@ of a controlled closed state, and removal of the description on close.
 node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=eager-tooltip
 node apps/radix-ssr-testing/hydration-audit/audit.mjs --skip-build --case=detached-tooltip
 ```
+
+The `eager-toast` case checks the initial notification and its accessible relationships while
+the client bundle is blocked. Hydration moves the original portal, viewport, and notification to
+the body with their server IDs and focus intact. F6 and Escape then verify keyboard entry, one
+close/remove sequence, and focus restoration. A new notification uses the same viewport and fresh
+label IDs.
+
+```bash
+node apps/radix-ssr-testing/hydration-audit/audit.mjs --case=eager-toast
+```

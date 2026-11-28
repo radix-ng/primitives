@@ -7,6 +7,8 @@ import { injectRdxToastRootContext } from './toast-root';
     exportAs: 'rdxToastClose',
     host: {
         type: 'button',
+        // WebKit can skip buttons without an explicit tab stop.
+        tabindex: '0',
         '[attr.data-type]': 'rootContext.toast().type',
         '(click)': 'rootContext.close()'
     }

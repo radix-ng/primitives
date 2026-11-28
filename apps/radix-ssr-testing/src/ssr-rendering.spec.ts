@@ -71,6 +71,7 @@ import SeparatorPage from './app/components/separator/page';
 import SliderPage from './app/components/slider/page';
 import SwitchPage from './app/components/switch/page';
 import TabsPage from './app/components/tabs/page';
+import ToastPage from './app/components/toast/page';
 import ToggleGroupPage from './app/components/toggle-group/page';
 
 /**
@@ -681,6 +682,28 @@ class SliderAlignmentsPage {
 }
 
 describe('SSR rendering', () => {
+    it('renders a single initial Toast and its ARIA relationships at the portal declaration', async () => {
+        const html = await renderToString('app-toast', ToastPage);
+        const document = new DOMParser().parseFromString(html, 'text/html');
+        const portal = document.querySelector('app-toast > [rdxToastPortal]');
+        const viewport = portal?.querySelector('[rdxToastViewport]');
+        const toast = viewport?.querySelector('[data-toast-entry="initial"]');
+        const title = toast?.querySelector('[rdxToastTitle]');
+        const description = toast?.querySelector('[rdxToastDescription]');
+
+        expect(html).toMatch(/\bngh="\d+"/);
+        expect(document.querySelectorAll('[rdxToastPortal]')).toHaveLength(1);
+        expect(document.querySelectorAll('[rdxToastRoot]')).toHaveLength(1);
+        expect(viewport?.getAttribute('role')).toBe('region');
+        expect(viewport?.getAttribute('aria-label')).toBe('Notifications');
+        expect(viewport?.getAttribute('aria-live')).toBe('polite');
+        expect(toast?.getAttribute('role')).toBe('dialog');
+        expect(title?.textContent).toBe('Initial notification');
+        expect(description?.textContent).toBe('Project saved.');
+        expect(document.getElementById(toast?.getAttribute('aria-labelledby') ?? '')).toBe(title);
+        expect(document.getElementById(toast?.getAttribute('aria-describedby') ?? '')).toBe(description);
+    });
+
     it('renders Slider value and label relationships before measuring inset thumbs', async () => {
         const html = await renderToString('app-slider-alignments', SliderAlignmentsPage, [
             { provide: CSP_NONCE, useValue: 'slider-audit-nonce' }

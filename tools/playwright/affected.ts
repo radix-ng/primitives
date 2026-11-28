@@ -147,6 +147,7 @@ export function selectChecks(input: {
         'select',
         'dialog',
         'tabs',
+        'toast',
         'accordion',
         'collapsible',
         'label',

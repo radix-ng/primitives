@@ -9,6 +9,7 @@ export const cases = {
     'eager-slider': { kind: 'slider', placement: 'eager' },
     'eager-tooltip': { kind: 'tooltip', placement: 'eager' },
     'detached-tooltip': { kind: 'tooltip', placement: 'eager' },
+    'eager-toast': { kind: 'toast', placement: 'eager' },
     'reverse-accordion-presence': { kind: 'accordion', placement: 'reverse' },
     'eager-accordion-retained': { kind: 'accordion', placement: 'eager', retain: true },
     'eager-inline': { kind: 'inline', placement: 'eager' },
@@ -71,6 +72,7 @@ export interface Settings {
         | 'separator'
         | 'slider'
         | 'tooltip'
+        | 'toast'
         | 'inline'
         | 'attribute'
         | 'structural'

@@ -70,6 +70,14 @@ export default defineConfig({
                     'packages/primitives/separator/src/separator.directive.ts',
                     'packages/primitives/toolbar/src/toolbar-root.ts',
                     'packages/primitives/toolbar/src/toolbar-separator.ts',
+                    'packages/primitives/toast/src/toast-close.ts',
+                    'packages/primitives/toast/src/toast-description.ts',
+                    'packages/primitives/toast/src/toast-portal.ts',
+                    'packages/primitives/toast/src/toast-provider.ts',
+                    'packages/primitives/toast/src/toast-root.ts',
+                    'packages/primitives/toast/src/toast-swipe.ts',
+                    'packages/primitives/toast/src/toast-title.ts',
+                    'packages/primitives/toast/src/toast-viewport.ts',
 
                     'packages/primitives/core/src/view-anchor.ts',
                     'packages/primitives/core/src/floating/internal-backdrop.ts',
@@ -94,7 +102,10 @@ export default defineConfig({
                     'server.ts',
                     'index.html'
                 ].map((file) => `apps/radix-ssr-testing/hydration-audit/${file}`);
-                fixture.push('apps/radix-ssr-testing/src/app/components/label/page.ts');
+                fixture.push(
+                    'apps/radix-ssr-testing/src/app/components/label/page.ts',
+                    'apps/radix-ssr-testing/src/app/components/toast/page.ts'
+                );
                 const hashes = (files: string[]) =>
                     Object.fromEntries(
                         files.map((file) => [file, createHash('sha256').update(readFileSync(file)).digest('hex')])

@@ -1,0 +1,10 @@
+[
+    {
+        "scenario": "queue-overflow",
+        "checkpoint": "native queue order",
+        "field": "order",
+        "angular": ["notice-1", "notice-2", "notice-3", "notice-4"],
+        "react": ["notice-4", "notice-3", "notice-2", "notice-1"],
+        "category": "queue-dom-order"
+    }
+]

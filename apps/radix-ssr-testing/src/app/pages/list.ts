@@ -19,6 +19,7 @@ import { RouterModule } from '@angular/router';
                 <a href="/list/switch">Switch</a>
                 <a href="/list/slider">Slider</a>
                 <a href="/list/tabs">Tabs</a>
+                <a href="/list/toast">Toast</a>
                 <a href="/list/toggle-group">Toggle Group</a>
             </div>
             <router-outlet />

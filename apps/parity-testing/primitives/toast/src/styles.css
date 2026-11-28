@@ -1,0 +1,19 @@
+[data-testid='viewport'] {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    width: 240px;
+    min-height: 32px;
+}
+
+[data-toast] {
+    padding: 8px;
+}
+
+[data-toast] :is(h2, p) {
+    margin: 0;
+}
+
+[data-toast][data-limited] {
+    display: none;
+}

@@ -27,6 +27,10 @@ async function snapshot(page: Page) {
         const tooltipTrigger = document.querySelector('[data-audit-tooltip-trigger]');
         const tooltipPopup = document.querySelector('[data-audit-tooltip-popup]');
         const tooltipPositioner = document.querySelector('[data-audit-tooltip-positioner]');
+        const toastPage = document.querySelector('app-toast');
+        const toastPortal = document.querySelector('[data-toast-node="portal"]');
+        const toastViewport = toastPortal?.querySelector('[data-toast-node="viewport"]');
+        const toastRoot = toastViewport?.querySelector('[data-toast-node="root"]');
         const radioForm = document.querySelector<HTMLFormElement>('[data-radio-audit]');
         const radioView = radioForm?.parentElement;
         const radioGroup = radioView?.querySelector('[role="radiogroup"]');
@@ -42,6 +46,31 @@ async function snapshot(page: Page) {
             errors: window.portalHydrationAudit?.errors ?? [],
             constructed: window.portalHydrationAudit?.constructed ?? [],
             duplicateIds: ids.filter((id, index) => ids.indexOf(id) !== index),
+            toast: toastPage
+                ? {
+                      nodes: Object.fromEntries(
+                          [...document.querySelectorAll<HTMLElement>('[data-toast-node]')].map((node) => [
+                              node.dataset.toastNode!,
+                              {
+                                  id: node.id,
+                                  reused: window.auditServerNodes?.['toast:' + node.dataset.toastNode] === node
+                              }
+                          ])
+                      ),
+                      portals: document.querySelectorAll('[data-toast-node="portal"]').length,
+                      entries: [...document.querySelectorAll('[data-toast-entry]')].map((node) =>
+                          node.getAttribute('data-toast-entry')
+                      ),
+                      atDeclaration: toastPortal?.parentElement === toastPage,
+                      atBody: toastPortal?.parentElement === document.body,
+                      focus: active?.getAttribute('data-toast-node'),
+                      title: toastRoot?.querySelector('[data-toast-node="title"]')?.textContent?.trim(),
+                      name: toastRoot?.getAttribute('aria-labelledby'),
+                      description: toastRoot?.getAttribute('aria-describedby'),
+                      starting: toastRoot?.hasAttribute('data-starting-style'),
+                      events: toastPage.querySelector('[data-toast-events]')?.textContent?.trim()
+                  }
+                : undefined,
             tooltip: {
                 triggerId: tooltipTrigger?.id,
                 description: tooltipTrigger?.getAttribute('aria-describedby'),
@@ -601,6 +630,89 @@ async function checkSeparatorHydration(
     const cleared = (await record('clearing orientation updates the original rule')).separators;
     checks.clearsOrientationOnOriginalNodes =
         matches(cleared, 'horizontal') && parts.every(([name]) => cleared[name]?.reused === true);
+}
+
+async function checkToastHydration(
+    page: Page,
+    observation: Observation,
+    record: (label: string) => Promise<Snapshot>,
+    release: () => void
+) {
+    const checks = observation.checks;
+    const close = page.getByRole('button', { name: 'Dismiss notification' });
+    await page.locator('app-toast').evaluate((host) => {
+        for (const node of host.querySelectorAll<HTMLElement>('[data-toast-node]')) {
+            window.auditServerNodes!['toast:' + node.dataset.toastNode] = node;
+        }
+    });
+    await close.focus();
+    const before = (await record('initial Toast and focused close button in server DOM')).toast;
+    const hasRelationships = (toast: Snapshot['toast']) =>
+        !!toast?.nodes.title?.id &&
+        toast.name === toast.nodes.title.id &&
+        !!toast.nodes.description?.id &&
+        toast.description === toast.nodes.description.id;
+    checks.serverToast =
+        !!before?.atDeclaration &&
+        before.portals === 1 &&
+        before.entries.join() === 'initial' &&
+        before.title === 'Initial notification' &&
+        before.focus === 'close' &&
+        before.events === '' &&
+        hasRelationships(before);
+
+    release();
+    await page.waitForFunction(() => window.portalHydrationAudit?.ready, undefined, { timeout: 5000 });
+    await page.waitForFunction(
+        () => document.querySelector('[data-toast-node="portal"]')?.parentElement === document.body,
+        undefined,
+        { timeout: 5000 }
+    );
+    const hydrated = await record('same viewport and Toast relocated to body');
+    const boot = hydrated.toast;
+    checks.reusedToast =
+        !!before &&
+        !!boot?.atBody &&
+        boot.portals === 1 &&
+        boot.entries.join() === 'initial' &&
+        !boot.starting &&
+        ['portal', 'viewport', 'root', 'title', 'description', 'close'].every(
+            (part) => boot.nodes[part]?.reused && boot.nodes[part].id === before.nodes[part]?.id
+        );
+    checks.preservedFocusAndRelationships =
+        boot?.focus === 'close' && hasRelationships(boot) && hydrated.duplicateIds.length === 0;
+
+    const origin = page.getByRole('textbox', { name: 'Notification focus origin' });
+    await origin.focus();
+    await page.keyboard.press('F6');
+    const entered = (await record('F6 enters the relocated viewport')).toast;
+    await page.keyboard.press('Tab');
+    const tabbed = (await record('Tab focuses the original notification')).toast;
+    checks.keyboardEntry = entered?.focus === 'viewport' && tabbed?.focus === 'root' && tabbed.nodes.root.reused;
+
+    await page.keyboard.press('Escape');
+    await page.locator('[data-toast-entry="initial"]').waitFor({ state: 'detached', timeout: 5000 });
+    const closed = (await record('Escape dismisses the initial toast and restores focus')).toast;
+    checks.closedOnce =
+        closed?.entries.length === 0 &&
+        closed.events === 'close,remove' &&
+        closed.focus === 'origin' &&
+        closed.nodes.viewport.reused;
+
+    await page.getByRole('button', { name: 'Add notification' }).click();
+    await page.getByRole('dialog', { name: 'New notification' }).waitFor({ timeout: 5000 });
+    const added = await record('new notification uses the same portal and fresh label IDs');
+    const next = added.toast;
+    checks.newToast =
+        next?.entries.length === 1 &&
+        !!next.entries[0]?.startsWith('rdx-toast-') &&
+        next.title === 'New notification' &&
+        next.events === 'close,remove' &&
+        next.nodes.viewport.reused &&
+        next.name !== before?.name &&
+        next.description !== before?.description &&
+        hasRelationships(next) &&
+        added.duplicateIds.length === 0;
 }
 
 async function checkSliderHydration(
@@ -1311,6 +1423,10 @@ try {
             }
             if (settings.kind === 'tooltip') {
                 await checkTooltipHydration(page, observation, record, release, name === 'detached-tooltip');
+                continue;
+            }
+            if (settings.kind === 'toast') {
+                await checkToastHydration(page, observation, record, release);
                 continue;
             }
             const editedBefore = await page.locator('[data-probe="first"] input').isVisible();
