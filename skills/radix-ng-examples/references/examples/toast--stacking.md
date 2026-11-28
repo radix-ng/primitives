@@ -4,8 +4,10 @@
 
 > Generated from `@radix-ng/primitives@1.4.1` — if the installed version differs, verify the API against the installed package.
 
-Add several toasts to see the collapsed stack, then hover or focus it to expand. Auto-dismiss pauses
-while the stack is hovered or focused.
+Add several toasts to see the collapsed stack, then hover or focus it to expand. The default limit
+is three visible notifications. The oldest excess notifications stay in the queue with `data-limited`
+and `inert`. Hide them in CSS with `data-limited:hidden` and let the manager promote them when a
+visible notification starts closing.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
@@ -52,7 +54,7 @@ import {
             >
                 @for (toast of manager.toasts(); track toast.id) {
                     <div
-                        class="group data-[state=open]:animate-toast-in data-[state=closed]:animate-toast-out absolute right-0 bottom-0 [z-index:calc(50-var(--toast-index))] w-full origin-bottom [transform:translateY(calc(var(--toast-index)*-0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-[expanded]:[transform:translateY(calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1))] data-[expanded]:opacity-100 data-[front]:opacity-100"
+                        class="group motion-safe:animate-toast-in motion-safe:data-ending-style:animate-toast-out absolute right-0 bottom-0 [z-index:calc(50-var(--toast-index))] w-full origin-bottom [transform:translateY(calc(var(--toast-index)*-0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-limited:hidden data-[expanded]:[transform:translateY(calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1))] data-[expanded]:opacity-100"
                         [toast]="toast"
                         rdxToastRoot
                     >

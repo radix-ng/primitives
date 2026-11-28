@@ -1,10 +1,10 @@
-import { computed, Directive, effect, inject, Injectable, input, Provider, signal } from '@angular/core';
+import { computed, DestroyRef, Directive, effect, inject, Injectable, input, Provider, signal } from '@angular/core';
 import { RdxIdGenerator } from '@radix-ng/primitives/core';
 import { RdxToastAddOptions, RdxToastObject, RdxToastPromiseOptions } from './toast.types';
 
 /** Default auto-dismiss delay (ms) applied when a toast omits `timeout`. */
 const DEFAULT_TIMEOUT = 5000;
-/** Max number of toasts kept in the queue; the oldest is dropped past this. */
+/** Max number of toasts shown in the stack. */
 const DEFAULT_LIMIT = 3;
 
 interface TimerState {
@@ -28,6 +28,7 @@ interface TimerState {
 @Injectable()
 export class RdxToastManager {
     private readonly idGenerator = inject(RdxIdGenerator);
+    private readonly closeListeners = new Set<(ids: ReadonlySet<string>) => void>();
 
     private readonly _toasts = signal<RdxToastObject[]>([]);
     /** The live queue, oldest first. Render it in `RdxToastViewport` (e.g. via `@for`). */
@@ -53,17 +54,40 @@ export class RdxToastManager {
         const list = this._toasts();
         const heights = this._heights();
         const result: Record<string, { index: number; offsetY: number }> = {};
+        let visibleIndex = 0;
         let offsetInFront = 0;
         for (let i = list.length - 1; i >= 0; i--) {
             const toast = list[i];
-            result[toast.id] = { index: list.length - 1 - i, offsetY: offsetInFront };
-            offsetInFront += heights[toast.id] ?? 0;
+            const visible = !toast.limited && toast.transitionStatus !== 'ending';
+            result[toast.id] = { index: visible ? visibleIndex++ : list.length - 1 - i, offsetY: offsetInFront };
+            if (visible) offsetInFront += heights[toast.id] ?? 0;
         }
         return result;
     });
 
+    /** @internal The height of the newest visible toast, for the viewport's CSS variable. */
+    readonly frontmostHeight = computed(() => {
+        const toasts = this._toasts();
+        for (let index = toasts.length - 1; index >= 0; index--) {
+            const toast = toasts[index];
+            if (!toast.limited && toast.transitionStatus !== 'ending') return this._heights()[toast.id];
+        }
+        return undefined;
+    });
+
+    private visibleLimit = DEFAULT_LIMIT;
+
     /** Max number of simultaneously visible toasts. Configurable via `[rdxToastProvider]`. */
-    limit = DEFAULT_LIMIT;
+    get limit(): number {
+        return this.visibleLimit;
+    }
+
+    set limit(limit: number) {
+        if (this.visibleLimit !== limit) {
+            this.visibleLimit = limit;
+            this.setToasts(this._toasts());
+        }
+    }
 
     /** Default auto-dismiss delay (ms) for toasts that omit `timeout`. Set via `[rdxToastProvider]`. */
     defaultTimeout = DEFAULT_TIMEOUT;
@@ -72,9 +96,22 @@ export class RdxToastManager {
     /** Nested-pause depth so overlapping holds (hover + swipe) resume only when all release. */
     private pauseDepth = 0;
 
+    constructor() {
+        inject(DestroyRef).onDestroy(() => {
+            this.timers.forEach((_, id) => this.clearTimer(id));
+            this.closeListeners.clear();
+        });
+    }
+
     /** Queue a new toast. Returns its id (generated when not supplied). */
     add<Data = unknown>(options: RdxToastAddOptions<Data>): string {
         const id = options.id ?? this.idGenerator.getId('rdx-toast-');
+        const existing = this._toasts().find((toast) => toast.id === id);
+        if (existing && existing.transitionStatus !== 'ending') {
+            this.updateToast(existing, options, true);
+            return id;
+        }
+
         const toast: RdxToastObject<Data> = {
             ...options,
             id,
@@ -82,46 +119,18 @@ export class RdxToastManager {
             transitionStatus: 'starting'
         };
 
-        // Re-adding an id that is mid-dismissal resurrects it rather than updating it: finish the
-        // abandoned dismissal so its leave handler can't later remove the replacement, and its
-        // `onRemove` still fires. (A same-id toast that is still open is a normal update — left alone.)
-        const existing = this._toasts().find((t) => t.id === id);
-        if (existing?.transitionStatus === 'ending') {
-            this.clearTimer(id);
-            existing.onRemove?.();
-        }
-
-        let evicted: RdxToastObject[] = [];
-        this._toasts.update((toasts) => {
-            const next = [...toasts.filter((t) => t.id !== id), toast as RdxToastObject];
-            // Enforce the limit by dropping the oldest entries.
-            const overflow = next.length - this.limit;
-            if (overflow > 0) {
-                evicted = next.slice(0, overflow);
-                return next.slice(overflow);
-            }
-            return next;
-        });
-
-        // Fully retire evicted toasts (timer + height + callback), not just their timers.
-        evicted.forEach((dropped) => {
-            this.clearTimer(dropped.id);
-            this.clearHeight(dropped.id);
-            dropped.onRemove?.();
-        });
-
+        this.setToasts([...this._toasts().filter((item) => item.id !== id), toast]);
         this.scheduleTimeout(toast);
+        // A replacement takes ownership of this ID before an abandoned exit notifies the caller.
+        existing?.onRemove?.();
         return id;
     }
 
-    /** Merge new options into an existing toast (no-op if the id is unknown). */
+    /** Merge new options into a toast that has not started closing. */
     update<Data = unknown>(id: string, options: Partial<RdxToastAddOptions<Data>>): void {
-        this._toasts.update((toasts) =>
-            toasts.map((toast) => (toast.id === id ? { ...toast, ...options, id } : toast))
-        );
         const toast = this._toasts().find((t) => t.id === id);
-        if (toast) {
-            this.scheduleTimeout(toast);
+        if (toast && toast.transitionStatus !== 'ending') {
+            this.updateToast(toast, options);
         }
     }
 
@@ -130,20 +139,17 @@ export class RdxToastManager {
      * Omit `id` to dismiss every toast at once (mirrors Base UI's `close()`).
      */
     close(id?: string): void {
-        if (id === undefined) {
-            this._toasts().forEach((toast) => this.close(toast.id));
-            return;
-        }
+        const toasts = this._toasts();
+        const closing = toasts.filter(
+            (toast) => (id === undefined || toast.id === id) && toast.transitionStatus !== 'ending'
+        );
+        if (closing.length === 0) return;
 
-        const toast = this._toasts().find((t) => t.id === id);
-        if (!toast) {
-            return;
-        }
-
-        this.clearTimer(id);
-        toast.onClose?.();
-
-        this._toasts.update((toasts) => toasts.map((t) => (t.id === id ? { ...t, transitionStatus: 'ending' } : t)));
+        const ids = new Set(closing.map((toast) => toast.id));
+        ids.forEach((toastId) => this.clearTimer(toastId));
+        this.setToasts(toasts.map((toast) => (ids.has(toast.id) ? { ...toast, transitionStatus: 'ending' } : toast)));
+        closing.forEach((toast) => toast.onClose?.());
+        this.closeListeners.forEach((listener) => listener(ids));
     }
 
     /**
@@ -153,9 +159,26 @@ export class RdxToastManager {
     remove(id: string): void {
         const toast = this._toasts().find((t) => t.id === id);
         this.clearTimer(id);
-        this._toasts.update((toasts) => toasts.filter((t) => t.id !== id));
+        this.setToasts(this._toasts().filter((t) => t.id !== id));
         this.clearHeight(id);
         toast?.onRemove?.();
+    }
+
+    /** @internal Registers a viewport to recover focus after the queue commits a dismissal. */
+    onClose(listener: (ids: ReadonlySet<string>) => void): () => void {
+        this.closeListeners.add(listener);
+        return () => this.closeListeners.delete(listener);
+    }
+
+    /** @internal Completes the phase only if its queue entry still owns this transition. */
+    completeTransition(toast: RdxToastObject): void {
+        const current = this._toasts();
+        if (!current.includes(toast)) return;
+        if (toast.transitionStatus === 'ending') {
+            this.remove(toast.id);
+        } else if (toast.transitionStatus === 'starting') {
+            this._toasts.set(current.map((item) => (item === toast ? { ...item, transitionStatus: undefined } : item)));
+        }
     }
 
     /** Toggle the expanded (hover/focus) state of the stack. Called by the viewport. */
@@ -165,7 +188,7 @@ export class RdxToastManager {
 
     /** Record a toast's measured height (px) for expanded-stack offset math. Called by each root. */
     setHeight(id: string, height: number): void {
-        this._heights.update((heights) => (heights[id] === height ? heights : { ...heights, [id]: height }));
+        this._heights.update((heights) => ((heights[id] ?? 0) === height ? heights : { ...heights, [id]: height }));
     }
 
     /** Pause every auto-dismiss timer (e.g. while the viewport is hovered, focused, or being swiped). */
@@ -190,9 +213,9 @@ export class RdxToastManager {
         }
         const now = Date.now();
         this.timers.forEach((timer, id) => {
-            if (timer.handle === null && timer.remaining > 0) {
+            if (timer.handle === null) {
                 timer.start = now;
-                timer.handle = setTimeout(() => this.close(id), timer.remaining);
+                timer.handle = setTimeout(() => this.close(id), Math.max(timer.remaining, 0));
             }
         });
     }
@@ -205,15 +228,48 @@ export class RdxToastManager {
         promise: Promise<Value>,
         options: RdxToastPromiseOptions<Value, Data>
     ): Promise<Value> {
-        const id = this.add<Data>({ ...resolveCopy(options.loading), timeout: 0, loading: true });
+        const id = this.add<Data>({ ...resolveCopy(options.loading), type: 'loading', loading: true });
+        const settle = (result: RdxToastAddOptions<Data>, type: 'success' | 'error') => {
+            this.update<Data>(id, { ...result, type, loading: false, timeout: result.timeout });
+        };
 
         try {
             const value = await promise;
-            this.update<Data>(id, { ...resolveCopy(options.success, value), loading: false, timeout: DEFAULT_TIMEOUT });
+            settle(resolveCopy(options.success, value), 'success');
             return value;
         } catch (error) {
-            this.update<Data>(id, { ...resolveCopy(options.error, error), loading: false, timeout: DEFAULT_TIMEOUT });
+            settle(resolveCopy(options.error, error), 'error');
             throw error;
+        }
+    }
+
+    private setToasts(toasts: RdxToastObject[]): void {
+        let active = 0;
+        const next = toasts.slice();
+        for (let i = next.length - 1; i >= 0; i--) {
+            const toast = next[i];
+            if (toast.transitionStatus !== 'ending') {
+                const limited = active++ >= this.limit;
+                if (Boolean(toast.limited) !== limited) next[i] = { ...toast, limited };
+            }
+        }
+        this._toasts.set(next);
+    }
+
+    private updateToast<Data>(
+        toast: RdxToastObject,
+        options: Partial<RdxToastAddOptions<Data>>,
+        resetTimer = false
+    ): void {
+        const next = { ...toast, ...options, id: toast.id };
+        this._toasts.update((toasts) => toasts.map((item) => (item === toast ? next : item)));
+        if (
+            resetTimer ||
+            !this.timers.has(toast.id) ||
+            Object.hasOwn(options, 'timeout') ||
+            this.isLoading(toast) !== this.isLoading(next)
+        ) {
+            this.scheduleTimeout(next);
         }
     }
 
@@ -221,7 +277,7 @@ export class RdxToastManager {
         this.clearTimer(toast.id);
 
         const timeout = toast.timeout ?? this.defaultTimeout;
-        if (timeout <= 0 || toast.loading) {
+        if (timeout <= 0 || this.isLoading(toast)) {
             return;
         }
 
@@ -230,6 +286,10 @@ export class RdxToastManager {
             timer.handle = setTimeout(() => this.close(toast.id), timeout);
         }
         this.timers.set(toast.id, timer);
+    }
+
+    private isLoading(toast: RdxToastObject): boolean {
+        return Boolean(toast.loading || toast.type === 'loading');
     }
 
     private clearTimer(id: string): void {

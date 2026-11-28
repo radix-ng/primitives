@@ -1,5 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { axe } from 'jest-axe';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { RdxToastContent } from '../src/toast-content';
 import { RdxToastDescription } from '../src/toast-description';
 import { RdxToastManager } from '../src/toast-provider';
 import { RdxToastRoot } from '../src/toast-root';
@@ -13,17 +16,19 @@ import { RdxToastViewport } from '../src/toast-viewport';
         <div rdxToastViewport>
             @for (toast of toasts(); track toast.id) {
                 <div [toast]="toast" rdxToastRoot>
-                    @if (toast.title) {
-                        <p rdxToastTitle>{{ toast.title }}</p>
-                    }
-                    @if (toast.description) {
-                        <p rdxToastDescription>{{ toast.description }}</p>
-                    }
+                    <div rdxToastContent>
+                        @if (toast.title) {
+                            <p rdxToastTitle>{{ toast.title }}</p>
+                        }
+                        @if (toast.description) {
+                            <p rdxToastDescription>{{ toast.description }}</p>
+                        }
+                    </div>
                 </div>
             }
         </div>
     `,
-    imports: [RdxToastViewport, RdxToastRoot, RdxToastTitle, RdxToastDescription]
+    imports: [RdxToastViewport, RdxToastRoot, RdxToastContent, RdxToastTitle, RdxToastDescription]
 })
 class TestHostComponent {
     private readonly manager = inject(RdxToastManager);
@@ -34,11 +39,20 @@ describe('RdxToastManager', () => {
     let manager: RdxToastManager;
 
     beforeEach(() => {
+        vi.stubGlobal(
+            'ResizeObserver',
+            class {
+                observe(): void {}
+                disconnect(): void {}
+            }
+        );
         TestBed.configureTestingModule({
             providers: [RdxToastManager]
         });
         manager = TestBed.inject(RdxToastManager);
     });
+
+    afterEach(() => vi.unstubAllGlobals());
 
     it('adds a toast and returns a stable id', () => {
         const id = manager.add({ title: 'Saved', timeout: 0 });
@@ -73,13 +87,25 @@ describe('RdxToastManager', () => {
         expect(manager.toasts().some((t) => t.id === id)).toBe(false);
     });
 
-    it('enforces the configured limit, dropping the oldest', () => {
+    it('recomputes the visible stack after closing or changing the limit', () => {
         manager.limit = 2;
         manager.add({ id: 'a', title: 'A', timeout: 0 });
         manager.add({ id: 'b', title: 'B', timeout: 0 });
         manager.add({ id: 'c', title: 'C', timeout: 0 });
-        const ids = manager.toasts().map((t) => t.id);
-        expect(ids).toEqual(['b', 'c']);
+        const limitedIds = () =>
+            manager
+                .toasts()
+                .filter((toast) => toast.limited)
+                .map((toast) => toast.id);
+        expect(limitedIds()).toEqual(['a']);
+
+        manager.limit = 1;
+        expect(limitedIds()).toEqual(['a', 'b']);
+        manager.close('c');
+        expect(limitedIds()).toEqual(['a']);
+        expect(manager.layout().b.index).toBe(0);
+        manager.limit = 2;
+        expect(limitedIds()).toEqual([]);
     });
 
     it('renders queued toasts through the viewport host component', () => {
@@ -89,11 +115,11 @@ describe('RdxToastManager', () => {
         fixture.detectChanges();
         const root = fixture.nativeElement.querySelector('[rdxToastRoot]');
         expect(root).toBeTruthy();
-        expect(root.getAttribute('data-state')).toBe('open');
-        expect(root.getAttribute('role')).toBe('status');
+        expect(root.hasAttribute('data-starting-style')).toBe(true);
+        expect(root.getAttribute('role')).toBe('dialog');
     });
 
-    it('exposes stack index and front marker on rendered roots', () => {
+    it('exposes stack index on Root and behind state on Content', () => {
         const fixture = TestBed.createComponent(TestHostComponent);
         fixture.detectChanges();
         manager.add({ id: 'old', title: 'Old', timeout: 0 });
@@ -106,8 +132,8 @@ describe('RdxToastManager', () => {
         const newEl = roots[1] as HTMLElement;
         expect(oldEl.style.getPropertyValue('--toast-index')).toBe('1');
         expect(newEl.style.getPropertyValue('--toast-index')).toBe('0');
-        expect(newEl.getAttribute('data-front')).toBe('');
-        expect(oldEl.getAttribute('data-front')).toBeNull();
+        expect(oldEl.querySelector('[rdxToastContent]')).toHaveAttribute('data-behind');
+        expect(newEl.querySelector('[rdxToastContent]')).not.toHaveAttribute('data-behind');
     });
 
     it('toggles expanded state on the manager', () => {
@@ -133,13 +159,17 @@ describe('RdxToastManager', () => {
         }
     });
 
-    it('fires onRemove for a toast evicted by the limit', () => {
+    it('keeps the limited toast and calls onRemove only when it actually leaves the queue', () => {
         manager.limit = 1;
         const onRemove = vi.fn();
         manager.add({ id: 'a', title: 'A', timeout: 0, onRemove });
         manager.add({ id: 'b', title: 'B', timeout: 0 });
+        expect(onRemove).not.toHaveBeenCalled();
+        expect(manager.toasts()).toMatchObject([{ id: 'a', limited: true }, { id: 'b' }]);
+        manager.close('b');
+        expect(manager.toasts()[0].limited).toBe(false);
+        manager.remove('a');
         expect(onRemove).toHaveBeenCalledTimes(1);
-        expect(manager.toasts().map((t) => t.id)).toEqual(['b']);
     });
 
     it('finishes an abandoned dismissal when the same id is re-added mid-leave', () => {
@@ -165,5 +195,98 @@ describe('RdxToastManager', () => {
         const root = fixture.nativeElement.querySelector('[rdxToastRoot]');
         expect(root.getAttribute('aria-labelledby')).toBeTruthy();
         expect(root.getAttribute('aria-describedby')).toBeNull();
+    });
+
+    it('[WCAG 4.1.2] names the live region and the rendered notification dialog', async () => {
+        const fixture = TestBed.createComponent(TestHostComponent);
+        manager.add({ title: 'Saved', description: 'The project was saved', timeout: 0 });
+        fixture.detectChanges();
+
+        const viewport = fixture.nativeElement.querySelector('[rdxToastViewport]');
+        expect(viewport).toHaveAccessibleName('Notifications');
+        expect(viewport).toHaveAttribute('aria-live', 'polite');
+        const root = viewport.querySelector('[rdxToastRoot]');
+        expect(root).toHaveAccessibleName('Saved');
+        expect(root).toHaveAccessibleDescription('The project was saved');
+        expect(await axe(fixture.nativeElement)).toHaveNoViolations();
+    });
+
+    it('commits close before callbacks and ignores repeated requests and late updates', () => {
+        const onClose = vi.fn(() => manager.close('toast'));
+        manager.add({ id: 'toast', title: 'Saved', timeout: 0, onClose });
+        manager.close();
+        manager.update('toast', { title: 'Updated' });
+        expect(onClose).toHaveBeenCalledTimes(1);
+        expect(manager.toasts()[0]).toMatchObject({ title: 'Saved', transitionStatus: 'ending' });
+    });
+
+    it('preserves time remaining on a copy update and honors explicit timeout changes', () => {
+        vi.useFakeTimers();
+        try {
+            const id = manager.add({ title: 'Original', timeout: 1000 });
+            vi.advanceTimersByTime(750);
+            manager.update(id, { title: 'Updated' });
+            vi.advanceTimersByTime(249);
+            expect(manager.toasts()[0].transitionStatus).toBe('starting');
+            vi.advanceTimersByTime(1);
+            expect(manager.toasts()[0].transitionStatus).toBe('ending');
+
+            manager.add({ id, timeout: 1000 });
+            manager.update(id, { timeout: 0 });
+            vi.advanceTimersByTime(1000);
+            expect(manager.toasts()[0].transitionStatus).toBe('starting');
+        } finally {
+            vi.useRealTimers();
+        }
+    });
+
+    it('preserves time remaining while the viewport window is blurred', () => {
+        vi.useFakeTimers();
+        try {
+            const fixture = TestBed.createComponent(TestHostComponent);
+            fixture.detectChanges();
+            manager.add({ title: 'Saved', timeout: 1000 });
+            vi.advanceTimersByTime(750);
+
+            window.dispatchEvent(new FocusEvent('blur'));
+            fixture.detectChanges();
+            vi.advanceTimersByTime(1000);
+            expect(manager.toasts()[0].transitionStatus).not.toBe('ending');
+
+            window.dispatchEvent(new FocusEvent('focus'));
+            fixture.detectChanges();
+            vi.advanceTimersByTime(250);
+            expect(manager.toasts()[0].transitionStatus).toBe('ending');
+        } finally {
+            vi.useRealTimers();
+        }
+    });
+
+    it('honors the result timeout and provider default when a promise settles', async () => {
+        vi.useFakeTimers();
+        try {
+            manager.defaultTimeout = 250;
+            await manager.promise(Promise.resolve('report'), {
+                loading: { id: 'success' },
+                success: (value) => ({ title: value, timeout: 0 }),
+                error: 'Failed'
+            });
+            const error = new Error('timeout');
+            await expect(
+                manager.promise(Promise.reject(error), {
+                    loading: { id: 'error' },
+                    success: 'Saved',
+                    error: 'Failed'
+                })
+            ).rejects.toBe(error);
+            expect(manager.toasts()).toMatchObject([
+                { title: 'report', type: 'success' },
+                { title: 'Failed', type: 'error' }
+            ]);
+            vi.advanceTimersByTime(250);
+            expect(manager.toasts().map((toast) => toast.transitionStatus)).toEqual(['starting', 'ending']);
+        } finally {
+            vi.useRealTimers();
+        }
     });
 });

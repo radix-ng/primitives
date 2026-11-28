@@ -12,18 +12,28 @@ A succinct, low-priority message that appears temporarily, stacks, and can be sw
 - ✅ Headless and unstyled — state is exposed through `data-*` attributes and CSS variables.
 - ✅ Stacking with a hover/focus expand, driven by measured heights (`--toast-offset-y`).
 - ✅ Swipe-to-dismiss with rubber-banding and flick detection in any allowed direction.
-- ✅ Auto-dismiss timers that pause while the stack is hovered, focused, or being swiped.
+- ✅ Auto-dismiss timers that pause during hover, keyboard focus, swipe, or while the window is inactive.
 - ✅ Promise toasts with `loading` / `success` / `error` copy.
-- ✅ Accessible — announces through `role="status"` / `role="alert"` by priority.
+- ✅ A polite notifications region, with assertive announcements for high-priority toasts.
 
 ## Import
 
 ```ts
-import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
+import {
+    provideRdxToastManager,
+    RdxToastClose,
+    RdxToastContent,
+    RdxToastDescription,
+    RdxToastManager,
+    RdxToastPortal,
+    RdxToastRoot,
+    RdxToastTitle,
+    RdxToastViewport
+} from '@radix-ng/primitives/toast';
 ```
 
-`toastImports` bundles every part directive; `provideRdxToastManager()` (or the `[rdxToastProvider]`
-directive) supplies the queue, and `RdxToastManager` is injected to push toasts.
+Use `provideRdxToastManager()` in the component's providers or `[rdxToastProvider]` on a wrapper.
+Inject `RdxToastManager` from that scope to push notifications into the same queue.
 
 ## Anatomy
 
@@ -31,18 +41,18 @@ Provide the manager once, render the viewport, and iterate the queue. Each item 
 `manager.toasts()` is bound to a `rdxToastRoot`.
 
 ```html
-<div rdxToastProvider>
+<div>
     <div rdxToastPortal>
         <div rdxToastViewport>
-            <!-- @for (toast of manager.toasts(); track toast.id) -->
-            <div rdxToastRoot [toast]="toast">
-                <div rdxToastContent>
-                    <p rdxToastTitle></p>
-                    <p rdxToastDescription></p>
-                    <button rdxToastAction></button>
-                    <button rdxToastClose></button>
+            @for (toast of manager.toasts(); track toast.id) {
+                <div class="data-limited:hidden" rdxToastRoot [toast]="toast">
+                    <div rdxToastContent>
+                        <p rdxToastTitle>{{ toast.title }}</p>
+                        <p rdxToastDescription>{{ toast.description }}</p>
+                        <button rdxToastClose>Dismiss</button>
+                    </div>
                 </div>
-            </div>
+            }
         </div>
     </div>
 </div>
@@ -53,11 +63,13 @@ const manager = inject(RdxToastManager);
 manager.add({ title: 'Saved', description: 'Your changes are live.' });
 ```
 
-An anchored toast is wrapped in `rdxToastPositioner` instead of joining the stack:
+Wrap an anchored toast in `rdxToastPositioner` and put `rdxToastArrow` inside the Root to show a
+decorative arrow. Import both directives from `@radix-ng/primitives/toast`.
 
 ```html
 <div rdxToastPositioner [anchor]="toast.positionerProps.anchor">
     <div rdxToastRoot [toast]="toast">
+        <span rdxToastArrow></span>
         <div rdxToastContent>
             <p rdxToastTitle></p>
         </div>

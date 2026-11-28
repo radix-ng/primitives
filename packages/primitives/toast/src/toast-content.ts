@@ -4,14 +4,14 @@ import { injectRdxToastRootContext } from './toast-root';
 /**
  * Wraps a toast's inner parts (title, description, actions) — the Angular counterpart of
  * `<Toast.Content>`. Headless: it carries no styles; consumers apply `overflow: hidden` to clip
- * taller toasts during the stack/expand animation. It mirrors the root's `data-state` so content
- * can transition together with the root.
+ * taller toasts during the stack/expand animation. Exposes the expanded and behind states.
  */
 @Directive({
     selector: '[rdxToastContent]',
     exportAs: 'rdxToastContent',
     host: {
-        '[attr.data-state]': 'rootContext.toast().transitionStatus === "ending" ? "closed" : "open"'
+        '[attr.data-expanded]': 'rootContext.expanded() ? "" : undefined',
+        '[attr.data-behind]': 'rootContext.behind() ? "" : undefined'
     }
 })
 export class RdxToastContent {

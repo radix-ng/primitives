@@ -40115,12 +40115,12 @@ import {
             >
                 @for (toast of manager.toasts(); track toast.id) {
                     <div
-                        class="demo-popup group motion-safe:ease-demo-toast absolute right-0 bottom-0 z-[calc(50-var(--toast-index))] w-full origin-bottom [transform:translate(var(--toast-x),calc(var(--toast-position)+var(--toast-y)))_scale(var(--toast-scale))] [--toast-position:calc(var(--toast-index)*-0.75rem)] [--toast-scale:calc(max(0,1-var(--toast-index)*0.1))] [--toast-x:var(--toast-swipe-movement-x,0px)] [--toast-y:var(--toast-swipe-movement-y,0px)] after:absolute after:top-full after:left-0 after:h-[calc(var(--toast-gap)+1px)] after:w-full data-expanded:[--toast-position:calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1)] data-expanded:[--toast-scale:1] data-swiping:transition-none data-[state=closed]:opacity-0 data-[state=closed]:not-data-swipe-dismiss:[--toast-y:150%] data-[state=closed]:data-swipe-dismiss:data-[swipe-direction=down]:[--toast-y:calc(var(--toast-swipe-movement-y,0px)+150%)] data-[state=closed]:data-swipe-dismiss:data-[swipe-direction=right]:[--toast-x:calc(var(--toast-swipe-movement-x,0px)+150%)] motion-safe:transition-[transform,opacity] motion-safe:duration-500 motion-safe:starting:opacity-0 motion-safe:starting:[--toast-y:150%]"
+                        class="demo-popup group motion-safe:ease-demo-toast absolute right-0 bottom-0 z-[calc(50-var(--toast-index))] w-full origin-bottom [transform:translate(var(--toast-x),calc(var(--toast-position)+var(--toast-y)))_scale(var(--toast-scale))] [--toast-position:calc(var(--toast-index)*-0.75rem)] [--toast-scale:calc(max(0,1-var(--toast-index)*0.1))] [--toast-x:var(--toast-swipe-movement-x,0px)] [--toast-y:var(--toast-swipe-movement-y,0px)] after:absolute after:top-full after:left-0 after:h-[calc(var(--toast-gap)+1px)] after:w-full data-ending-style:opacity-0 data-ending-style:not-data-swipe-dismiss:[--toast-y:150%] data-expanded:[--toast-position:calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1)] data-expanded:[--toast-scale:1] data-limited:hidden data-swiping:transition-none data-ending-style:data-swipe-dismiss:data-[swipe-direction=down]:[--toast-y:calc(var(--toast-swipe-movement-y,0px)+150%)] data-ending-style:data-swipe-dismiss:data-[swipe-direction=right]:[--toast-x:calc(var(--toast-swipe-movement-x,0px)+150%)] motion-safe:transition-[transform,opacity] motion-safe:duration-500 motion-safe:data-starting-style:opacity-0 motion-safe:data-starting-style:[--toast-y:150%]"
                         [toast]="toast"
                         rdxToastRoot
                     >
                         <div
-                            class="motion-safe:ease-demo-toast flex items-center gap-4 overflow-hidden p-3 group-not-data-front:opacity-0 group-data-expanded:opacity-100 motion-safe:transition-opacity motion-safe:duration-250"
+                            class="motion-safe:ease-demo-toast flex items-center gap-4 overflow-hidden p-3 data-behind:not-data-expanded:opacity-0 motion-safe:transition-opacity motion-safe:duration-250"
                             rdxToastContent
                         >
                             <div class="flex min-w-0 flex-1 flex-col gap-1">
@@ -40166,18 +40166,28 @@ export class ToastDefaultExample {
 - ✅ Headless and unstyled — state is exposed through `data-*` attributes and CSS variables.
 - ✅ Stacking with a hover/focus expand, driven by measured heights (`--toast-offset-y`).
 - ✅ Swipe-to-dismiss with rubber-banding and flick detection in any allowed direction.
-- ✅ Auto-dismiss timers that pause while the stack is hovered, focused, or being swiped.
+- ✅ Auto-dismiss timers that pause during hover, keyboard focus, swipe, or while the window is inactive.
 - ✅ Promise toasts with `loading` / `success` / `error` copy.
-- ✅ Accessible — announces through `role="status"` / `role="alert"` by priority.
+- ✅ A polite notifications region, with assertive announcements for high-priority toasts.
 
 ## Import
 
 ```ts
-import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
+import {
+    provideRdxToastManager,
+    RdxToastClose,
+    RdxToastContent,
+    RdxToastDescription,
+    RdxToastManager,
+    RdxToastPortal,
+    RdxToastRoot,
+    RdxToastTitle,
+    RdxToastViewport
+} from '@radix-ng/primitives/toast';
 ```
 
-`toastImports` bundles every part directive; `provideRdxToastManager()` (or the `[rdxToastProvider]`
-directive) supplies the queue, and `RdxToastManager` is injected to push toasts.
+Use `provideRdxToastManager()` in the component's providers or `[rdxToastProvider]` on a wrapper.
+Inject `RdxToastManager` from that scope to push notifications into the same queue.
 
 ## Anatomy
 
@@ -40185,18 +40195,18 @@ Provide the manager once, render the viewport, and iterate the queue. Each item 
 `manager.toasts()` is bound to a `rdxToastRoot`.
 
 ```html
-<div rdxToastProvider>
+<div>
     <div rdxToastPortal>
         <div rdxToastViewport>
-            <!-- @for (toast of manager.toasts(); track toast.id) -->
-            <div rdxToastRoot [toast]="toast">
-                <div rdxToastContent>
-                    <p rdxToastTitle></p>
-                    <p rdxToastDescription></p>
-                    <button rdxToastAction></button>
-                    <button rdxToastClose></button>
+            @for (toast of manager.toasts(); track toast.id) {
+                <div class="data-limited:hidden" rdxToastRoot [toast]="toast">
+                    <div rdxToastContent>
+                        <p rdxToastTitle>{{ toast.title }}</p>
+                        <p rdxToastDescription>{{ toast.description }}</p>
+                        <button rdxToastClose>Dismiss</button>
+                    </div>
                 </div>
-            </div>
+            }
         </div>
     </div>
 </div>
@@ -40207,11 +40217,13 @@ const manager = inject(RdxToastManager);
 manager.add({ title: 'Saved', description: 'Your changes are live.' });
 ```
 
-An anchored toast is wrapped in `rdxToastPositioner` instead of joining the stack:
+Wrap an anchored toast in `rdxToastPositioner` and put `rdxToastArrow` inside the Root to show a
+decorative arrow. Import both directives from `@radix-ng/primitives/toast`.
 
 ```html
 <div rdxToastPositioner [anchor]="toast.positionerProps.anchor">
     <div rdxToastRoot [toast]="toast">
+        <span rdxToastArrow></span>
         <div rdxToastContent>
             <p rdxToastTitle></p>
         </div>
@@ -40264,12 +40276,12 @@ import {
             >
                 @for (toast of manager.toasts(); track toast.id) {
                     <div
-                        class="demo-popup group motion-safe:ease-demo-toast absolute right-0 bottom-0 z-[calc(50-var(--toast-index))] w-full origin-bottom [transform:translate(var(--toast-x),calc(var(--toast-position)+var(--toast-y)))_scale(var(--toast-scale))] [--toast-position:calc(var(--toast-index)*-0.75rem)] [--toast-scale:calc(max(0,1-var(--toast-index)*0.1))] [--toast-x:var(--toast-swipe-movement-x,0px)] [--toast-y:var(--toast-swipe-movement-y,0px)] after:absolute after:top-full after:left-0 after:h-[calc(var(--toast-gap)+1px)] after:w-full data-expanded:[--toast-position:calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1)] data-expanded:[--toast-scale:1] data-swiping:transition-none data-[state=closed]:opacity-0 data-[state=closed]:not-data-swipe-dismiss:[--toast-y:150%] data-[state=closed]:data-swipe-dismiss:data-[swipe-direction=down]:[--toast-y:calc(var(--toast-swipe-movement-y,0px)+150%)] data-[state=closed]:data-swipe-dismiss:data-[swipe-direction=right]:[--toast-x:calc(var(--toast-swipe-movement-x,0px)+150%)] motion-safe:transition-[transform,opacity] motion-safe:duration-500 motion-safe:starting:opacity-0 motion-safe:starting:[--toast-y:150%]"
+                        class="demo-popup group motion-safe:ease-demo-toast absolute right-0 bottom-0 z-[calc(50-var(--toast-index))] w-full origin-bottom [transform:translate(var(--toast-x),calc(var(--toast-position)+var(--toast-y)))_scale(var(--toast-scale))] [--toast-position:calc(var(--toast-index)*-0.75rem)] [--toast-scale:calc(max(0,1-var(--toast-index)*0.1))] [--toast-x:var(--toast-swipe-movement-x,0px)] [--toast-y:var(--toast-swipe-movement-y,0px)] after:absolute after:top-full after:left-0 after:h-[calc(var(--toast-gap)+1px)] after:w-full data-ending-style:opacity-0 data-ending-style:not-data-swipe-dismiss:[--toast-y:150%] data-expanded:[--toast-position:calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1)] data-expanded:[--toast-scale:1] data-limited:hidden data-swiping:transition-none data-ending-style:data-swipe-dismiss:data-[swipe-direction=down]:[--toast-y:calc(var(--toast-swipe-movement-y,0px)+150%)] data-ending-style:data-swipe-dismiss:data-[swipe-direction=right]:[--toast-x:calc(var(--toast-swipe-movement-x,0px)+150%)] motion-safe:transition-[transform,opacity] motion-safe:duration-500 motion-safe:data-starting-style:opacity-0 motion-safe:data-starting-style:[--toast-y:150%]"
                         [toast]="toast"
                         rdxToastRoot
                     >
                         <div
-                            class="motion-safe:ease-demo-toast flex items-center gap-4 overflow-hidden p-3 group-not-data-front:opacity-0 group-data-expanded:opacity-100 motion-safe:transition-opacity motion-safe:duration-250"
+                            class="motion-safe:ease-demo-toast flex items-center gap-4 overflow-hidden p-3 data-behind:not-data-expanded:opacity-0 motion-safe:transition-opacity motion-safe:duration-250"
                             rdxToastContent
                         >
                             <div class="flex min-w-0 flex-1 flex-col gap-1">
@@ -40311,8 +40323,10 @@ export class ToastDefaultExample {
 
 ### Stacking
 
-Add several toasts to see the collapsed stack, then hover or focus it to expand. Auto-dismiss pauses
-while the stack is hovered or focused.
+Add several toasts to see the collapsed stack, then hover or focus it to expand. The default limit
+is three visible notifications. The oldest excess notifications stay in the queue with `data-limited`
+and `inert`. Hide them in CSS with `data-limited:hidden` and let the manager promote them when a
+visible notification starts closing.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
@@ -40359,7 +40373,7 @@ import {
             >
                 @for (toast of manager.toasts(); track toast.id) {
                     <div
-                        class="group data-[state=open]:animate-toast-in data-[state=closed]:animate-toast-out absolute right-0 bottom-0 [z-index:calc(50-var(--toast-index))] w-full origin-bottom [transform:translateY(calc(var(--toast-index)*-0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-[expanded]:[transform:translateY(calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1))] data-[expanded]:opacity-100 data-[front]:opacity-100"
+                        class="group motion-safe:animate-toast-in motion-safe:data-ending-style:animate-toast-out absolute right-0 bottom-0 [z-index:calc(50-var(--toast-index))] w-full origin-bottom [transform:translateY(calc(var(--toast-index)*-0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-limited:hidden data-[expanded]:[transform:translateY(calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1))] data-[expanded]:opacity-100"
                         [toast]="toast"
                         rdxToastRoot
                     >
@@ -40449,7 +40463,7 @@ import {
             >
                 @for (toast of manager.toasts(); track toast.id) {
                     <div
-                        class="group data-[state=open]:animate-toast-in data-[state=closed]:animate-toast-out absolute right-0 bottom-0 [z-index:calc(50-var(--toast-index))] w-full origin-bottom [transform:translateY(calc(var(--toast-index)*-0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-[expanded]:[transform:translateY(calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1))] data-[expanded]:opacity-100 data-[front]:opacity-100"
+                        class="group motion-safe:animate-toast-in motion-safe:data-ending-style:animate-toast-out absolute right-0 bottom-0 [z-index:calc(50-var(--toast-index))] w-full origin-bottom [transform:translateY(calc(var(--toast-index)*-0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-limited:hidden data-[expanded]:[transform:translateY(calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1))] data-[expanded]:opacity-100"
                         [toast]="toast"
                         [swipeDirection]="['right', 'down']"
                         rdxToastRoot
@@ -40489,7 +40503,9 @@ export class ToastSwipeExample {
 
 ### Promise
 
-Drive one toast through a promise: `loading`, then `success` or `error`.
+Drive one toast through `loading`, then `success` or `error`. The timer starts when the promise
+settles and uses the result's `timeout` or the provider default. A result with `timeout: 0` stays
+until dismissed.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
@@ -40536,7 +40552,7 @@ import {
             >
                 @for (toast of manager.toasts(); track toast.id) {
                     <div
-                        class="group data-[state=open]:animate-toast-in data-[state=closed]:animate-toast-out absolute right-0 bottom-0 [z-index:calc(50-var(--toast-index))] w-full origin-bottom [transform:translateY(calc(var(--toast-index)*-0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-[expanded]:[transform:translateY(calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1))] data-[expanded]:opacity-100 data-[front]:opacity-100"
+                        class="group motion-safe:animate-toast-in motion-safe:data-ending-style:animate-toast-out absolute right-0 bottom-0 [z-index:calc(50-var(--toast-index))] w-full origin-bottom [transform:translateY(calc(var(--toast-index)*-0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-limited:hidden data-[expanded]:[transform:translateY(calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1))] data-[expanded]:opacity-100"
                         [toast]="toast"
                         rdxToastRoot
                     >
@@ -40642,7 +40658,7 @@ import {
             >
                 @for (toast of manager.toasts(); track toast.id) {
                     <div
-                        class="group data-[state=open]:animate-toast-in data-[state=closed]:animate-toast-out absolute right-0 bottom-0 [z-index:calc(50-var(--toast-index))] w-full origin-bottom [transform:translateY(calc(var(--toast-index)*-0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-[expanded]:[transform:translateY(calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1))] data-[expanded]:opacity-100 data-[front]:opacity-100"
+                        class="group motion-safe:animate-toast-in motion-safe:data-ending-style:animate-toast-out absolute right-0 bottom-0 [z-index:calc(50-var(--toast-index))] w-full origin-bottom [transform:translateY(calc(var(--toast-index)*-0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-limited:hidden data-[expanded]:[transform:translateY(calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1))] data-[expanded]:opacity-100"
                         [toast]="toast"
                         rdxToastRoot
                     >
@@ -40749,7 +40765,7 @@ import {
             >
                 @for (toast of manager.toasts(); track toast.id) {
                     <div
-                        class="group data-[state=open]:animate-toast-in-top data-[state=closed]:animate-toast-out-top absolute top-0 left-0 [z-index:calc(50-var(--toast-index))] w-full origin-top [transform:translateY(calc(var(--toast-index)*0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-[expanded]:[transform:translateY(calc(var(--toast-offset-y)+var(--toast-index)*var(--toast-gap)))] data-[expanded]:opacity-100 data-[front]:opacity-100"
+                        class="group motion-safe:animate-toast-in-top motion-safe:data-ending-style:animate-toast-out-top absolute top-0 left-0 [z-index:calc(50-var(--toast-index))] w-full origin-top [transform:translateY(calc(var(--toast-index)*0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-limited:hidden data-[expanded]:[transform:translateY(calc(var(--toast-offset-y)+var(--toast-index)*var(--toast-gap)))] data-[expanded]:opacity-100"
                         [toast]="toast"
                         [swipeDirection]="['up']"
                         rdxToastRoot
@@ -40839,7 +40855,7 @@ import {
             >
                 @for (toast of manager.toasts(); track toast.id) {
                     <div
-                        class="group data-[state=open]:animate-toast-in data-[state=closed]:animate-toast-out absolute right-0 bottom-0 [z-index:calc(50-var(--toast-index))] w-full origin-bottom [transform:translateY(calc(var(--toast-index)*-0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-[expanded]:[transform:translateY(calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1))] data-[expanded]:opacity-100 data-[front]:opacity-100"
+                        class="group motion-safe:animate-toast-in motion-safe:data-ending-style:animate-toast-out absolute right-0 bottom-0 [z-index:calc(50-var(--toast-index))] w-full origin-bottom [transform:translateY(calc(var(--toast-index)*-0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-limited:hidden data-[expanded]:[transform:translateY(calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1))] data-[expanded]:opacity-100"
                         [toast]="toast"
                         rdxToastRoot
                     >
@@ -40944,7 +40960,7 @@ interface MentionData {
             >
                 @for (toast of manager.toasts(); track toast.id) {
                     <div
-                        class="group data-[state=open]:animate-toast-in data-[state=closed]:animate-toast-out absolute right-0 bottom-0 [z-index:calc(50-var(--toast-index))] w-full origin-bottom [transform:translateY(calc(var(--toast-index)*-0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-[expanded]:[transform:translateY(calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1))] data-[expanded]:opacity-100 data-[front]:opacity-100"
+                        class="group motion-safe:animate-toast-in motion-safe:data-ending-style:animate-toast-out absolute right-0 bottom-0 [z-index:calc(50-var(--toast-index))] w-full origin-bottom [transform:translateY(calc(var(--toast-index)*-0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-limited:hidden data-[expanded]:[transform:translateY(calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1))] data-[expanded]:opacity-100"
                         [toast]="toast"
                         rdxToastRoot
                     >
@@ -41044,7 +41060,7 @@ import {
             >
                 @for (toast of manager.toasts(); track toast.id) {
                     <div
-                        class="group data-[state=open]:animate-toast-in data-[state=closed]:animate-toast-out absolute right-0 bottom-0 [z-index:calc(50-var(--toast-index))] w-full origin-bottom [transform:translateY(calc(var(--toast-index)*-0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-[expanded]:[transform:translateY(calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1))] data-[expanded]:opacity-100 data-[front]:opacity-100"
+                        class="group motion-safe:animate-toast-in motion-safe:data-ending-style:animate-toast-out absolute right-0 bottom-0 [z-index:calc(50-var(--toast-index))] w-full origin-bottom [transform:translateY(calc(var(--toast-index)*-0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-limited:hidden data-[expanded]:[transform:translateY(calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1))] data-[expanded]:opacity-100"
                         [toast]="toast"
                         rdxToastRoot
                     >
@@ -41138,7 +41154,7 @@ import {
             >
                 @for (toast of manager.toasts(); track toast.id) {
                     <div
-                        class="group data-[state=open]:animate-toast-in data-[state=closed]:animate-toast-out absolute right-0 bottom-0 [z-index:calc(50-var(--toast-index))] w-full origin-bottom [transform:translateY(calc(var(--toast-index)*-0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-[expanded]:[transform:translateY(calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1))] data-[expanded]:opacity-100 data-[front]:opacity-100"
+                        class="group motion-safe:animate-toast-in motion-safe:data-ending-style:animate-toast-out absolute right-0 bottom-0 [z-index:calc(50-var(--toast-index))] w-full origin-bottom [transform:translateY(calc(var(--toast-index)*-0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-limited:hidden data-[expanded]:[transform:translateY(calc((var(--toast-offset-y)+var(--toast-index)*var(--toast-gap))*-1))] data-[expanded]:opacity-100"
                         [toast]="toast"
                         rdxToastRoot
                     >
@@ -41187,12 +41203,14 @@ export class ToastVaryingHeightsExample {
 
 ### Anchored
 
-Pin a toast to an element with `rdxToastPositioner` (powered by popper) instead of joining the stack.
+Pin a toast to an element with `rdxToastPositioner`. A toast with `positionerProps.anchor` disables
+the stack's swipe gesture. Dismiss it with `Escape`, its close button, or a timer.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import {
     provideRdxToastManager,
+    RdxToastArrow,
     RdxToastClose,
     RdxToastContent,
     RdxToastDescription,
@@ -41216,6 +41234,7 @@ import {
         RdxToastPortal,
         RdxToastViewport,
         RdxToastPositioner,
+        RdxToastArrow,
         RdxToastRoot,
         RdxToastContent,
         RdxToastTitle,
@@ -41235,10 +41254,11 @@ import {
                     @if (toast.positionerProps; as positioner) {
                         <div [anchor]="positioner.anchor" [side]="positioner.side ?? 'top'" rdxToastPositioner>
                             <div
-                                class="data-[state=open]:animate-popover-popup-in data-[state=closed]:animate-popover-popup-out w-72 origin-[var(--toast-transform-origin)]"
+                                class="motion-safe:animate-popover-popup-in motion-safe:data-ending-style:animate-popover-popup-out w-72 origin-[var(--toast-transform-origin)] data-limited:hidden"
                                 [toast]="toast"
                                 rdxToastRoot
                             >
+                                <span class="text-card demo-arrow my-px" rdxToastArrow></span>
                                 <div
                                     class="demo-popup relative flex [transform:translate3d(var(--toast-swipe-movement-x,0px),var(--toast-swipe-movement-y,0px),0)] items-start gap-3 p-4 pr-9 [transition:var(--transition-demo-toast-swipe)] group-data-[swiping]:[transition:none]"
                                     rdxToastContent
@@ -41280,26 +41300,46 @@ export class ToastAnchoredExample {
 }
 ```
 
-## Exit motion
+## Keyboard and announcements
 
-Apply the exit transition or keyframes to `rdxToastRoot[data-state="closed"]`. The queue waits
-for finite CSS motion on that element before removing it. A toast with zero-duration motion
-is removed after its closed state renders. Animations on child parts run independently of removal.
+Press `F6` to focus the notifications region. `Tab` visits the notifications and their controls.
+Press `F6` again or `Shift+Tab` from the region to return to the previous control. `Escape` dismisses
+the notification that contains focus. When that notification closes, focus moves to another
+available notification or returns to the previous control.
+
+Supply a `rdxToastTitle` or an `aria-label` to name each notification dialog. A `rdxToastDescription`
+supplies its description. The viewport announces normal messages politely and announces messages
+with `priority: 'high'` assertively.
+
+## Enter and exit motion
+
+Use `[data-starting-style]` on `rdxToastRoot` for the initial state of an enter transition. Apply the
+exit transition or keyframes to `rdxToastRoot[data-ending-style]`. The queue waits for finite CSS
+motion on the Root before removing it. A toast with zero-duration motion leaves after its ending
+state renders. Animations on child parts run independently of removal.
+
+**Migration.** Replace `[data-state="closed"]` on Root with `[data-ending-style]`. For enter
+keyframes, use a base animation class on Root with an ending-style override. For collapsed stack
+styling, use `[data-behind]` on Content in place of `[data-front]` on Root.
 
 ## Data attributes
 
-| Attribute              | Part | Present when                                            |
-| ---------------------- | ---- | ------------------------------------------------------- |
-| `data-state`           | Root | `open` while visible, `closed` once dismissal begins    |
-| `data-front`           | Root | this is the frontmost toast (`--toast-index` is `0`)    |
-| `data-expanded`        | Root | the viewport is hovered or focused                      |
-| `data-type`            | Root | the toast has a `type`                                  |
-| `data-swiping`         | Root | a swipe gesture is active                               |
-| `data-swipe-direction` | Root | the active swipe direction (`up`/`down`/`left`/`right`) |
-| `data-swipe-dismiss`   | Root | a release committed to dismissal                        |
+| Attribute              | Part                                     | Present when                                           |
+| ---------------------- | ---------------------------------------- | ------------------------------------------------------ |
+| `data-starting-style`  | Root                                     | the notification is applying its initial enter style   |
+| `data-ending-style`    | Root                                     | dismissal has begun                                    |
+| `data-limited`         | Root                                     | the notification is beyond the visible limit           |
+| `data-expanded`        | Viewport, Root, Content                  | the viewport is hovered or has keyboard focus          |
+| `data-behind`          | Content                                  | this notification is behind the front of the stack     |
+| `data-type`            | Root, Title, Description, Close, Action  | the notification has a `type`                          |
+| `data-swiping`         | Root                                     | a swipe gesture is active                              |
+| `data-swipe-direction` | Root                                     | the swipe direction (`up`/`down`/`left`/`right`)       |
+| `data-swipe-dismiss`   | Root                                     | a release committed to dismissal                       |
+| `data-side`, `data-align`, `data-uncentered` | Arrow                | Popper reports the corresponding placement or offset  |
 
 The root also writes CSS variables for styling: `--toast-index`, `--toast-height`,
 `--toast-offset-y`, and `--toast-swipe-movement-x` / `--toast-swipe-movement-y`.
+The viewport exposes `--toast-frontmost-height` for the newest visible toast.
 
 ## Example files
 
@@ -41309,7 +41349,8 @@ Install `@lucide/angular` when an example imports it.
 
 ### RdxToastProvider
 
-Hosts the `RdxToastManager` for its subtree (`[rdxToastProvider]`).
+Hosts the `RdxToastManager` for its subtree (`[rdxToastProvider]`). `limit` defaults to `3` and
+`timeout` defaults to `5000` milliseconds. `timeout: 0` disables automatic dismissal.
 
 ### RdxToastRoot
 
@@ -41322,9 +41363,9 @@ Anchors a toast to an element via popper. Forwards the popper positioning inputs
 
 ### Other parts
 
-`RdxToastPortal`, `RdxToastViewport`, `RdxToastContent`, `RdxToastTitle`, `RdxToastDescription`,
-`RdxToastClose` and `RdxToastAction` take no inputs of their own — they read from the toast root
-context and the manager. `RdxToastPortal` forwards a `container` input to the underlying portal.
+`RdxToastViewport`, `RdxToastContent`, `RdxToastTitle`, `RdxToastDescription`, `RdxToastClose`, and
+`RdxToastAction` use the queue or their enclosing Root. `RdxToastPortal` forwards a `container`
+input. `RdxToastArrow` uses its enclosing Positioner's arrow geometry.
 
 ---
 

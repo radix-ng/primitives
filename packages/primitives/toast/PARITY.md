@@ -1,88 +1,34 @@
 # Toast — parity matrix
 
-Initial inventory: 2026-11-17. Reference pin: **Base UI 1.9.0**,
-`cf696d6f6e08c699c5bda24d5a033430909f2285` ([reference manifest](../../../apps/parity-testing/reference.json)).
+Reference pin: **Base UI 1.9.0**, `cf696d6f6e08c699c5bda24d5a033430909f2285`
+([reference manifest](../../../apps/parity-testing/reference.json), [pinned Toast source](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/toast)).
 
-Primary counterpart: [toast](https://github.com/mui/base-ui/tree/cf696d6f6e08c699c5bda24d5a033430909f2285/packages/react/src/toast).
-Pinned exported parts/functions: `Provider`, `Viewport`, `Root`, `Content`, `Description`, `Title`, `Close`, `Action`, `Portal`, `Positioner`, `Arrow`, `useToastManager`, `createToastManager`.
+The [public entry](index.ts) exports Provider, Viewport, Root, Content, Title, Description, Close,
+Action, Portal, Positioner, Arrow and the Angular DI manager. The manager owns queue state, timers
+and completion. Root reads the toast passed by the consumer and reports its measured size and motion
+completion. The [state ownership contract](../../../docs/engineering/state-ownership.md) applies to
+this delegated state. There is no per-toast open model.
 
-**Scope: initial source inventory and comparison backlog.** Exported local declarations and evidence
-locations were inventoried; complete per-handler, per-attribute and browser equivalence has not been
-established. A source observation below is not a newly passing runtime or differential result.
+## Compared behavior
 
-**Breaking changes are permitted; backward compatibility does not constrain the target.** Apply the
-[state ownership/defaults contract](../../../docs/engineering/state-ownership.md) per field. Inputs,
-models, outputs, defaults and part boundaries may change; do not retain compatibility mirrors or
-aliases solely for the old API. Review earlier ADR decisions explicitly when replacing them.
+| Area                         | Implementation and evidence                                                                                                                                                                                                                                                                                                                                             | Remaining comparison                                                                                                                            |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| G1 — queue and lifetime      | Over-limit toasts stay in the queue with `limited`; the stack promotes them on close and live limit changes. Closure is idempotent, commits before callbacks and ignores updates during exit. Plain updates preserve the timer; promise settlement uses the result timeout or provider default. Angular manager units and a three-engine Storybook overflow regression. | External manager API, functional updates, duplicate IDs during pending promises, and callbacks when replacing a toast during exit.              |
+| G2 — focus and announcements | A named polite region supports F6 and Escape with focus restoration, and high-priority messages use the shared assertive announcer. Hover, keyboard focus, swipe and window blur pause timers. Angular axe coverage for the normal toast and three-engine F6/Tab/Shift+Tab/Escape coverage.                                                                             | Focus guards with portals and custom focus targets, overlapping holds and windows, simultaneous announcements, and real screen-reader coverage. |
+| G3 — state and motion        | Root exposes `data-starting-style`, `data-ending-style` and inert `data-limited`. Content exposes `data-expanded` and `data-behind`. Root owns finite CSS exit motion. Viewport exposes `--toast-frontmost-height`. Angular units and three-engine motion and reduced-motion regressions.                                                                               | Interruptions and replacement animations across the two implementations.                                                                        |
+| G4 — anchors and gestures    | Anchored toasts disable swipe when their model has an anchor. `RdxToastArrow` delegates to Popper and exposes its placement and alignment. Three-engine arrow/drag and live-anchor/clipping regressions.                                                                                                                                                                | Pointer-type and swipe-axis/cancel parity, data-derived Positioner props, and the Action/Close native-host contract.                            |
 
-## Public surface inventory
+Angular keeps its DI-based manager, oldest-first queue iteration, and always-mounted attribute
+portal ([ADR 0010](../../../docs/adr/0010-structural-portal-presence.md)). `data-swipe-dismiss`
+remains an Angular styling hook. The migration from `data-state` and `data-front` is documented
+in [Toast Storybook](stories/toast.docs.mdx).
 
-Source of truth: [entry barrel](index.ts). These are directly exported decorated classes, not a
-claim that inherited/host-directive APIs or every upstream prop have already been compared. Exported
-composition bases, guards and internal helpers are not thereby promoted to stable public widget parts.
+## Evidence and next step
 
-| Angular declaration                               | Selector / role         | Direct input/model/output declarations           |
-| ------------------------------------------------- | ----------------------- | ------------------------------------------------ |
-| [`RdxToastAction`](src/toast-action.ts)           | `[rdxToastAction]`      | No direct signal input/model/output declaration. |
-| [`RdxToastClose`](src/toast-close.ts)             | `[rdxToastClose]`       | No direct signal input/model/output declaration. |
-| [`RdxToastContent`](src/toast-content.ts)         | `[rdxToastContent]`     | No direct signal input/model/output declaration. |
-| [`RdxToastDescription`](src/toast-description.ts) | `[rdxToastDescription]` | No direct signal input/model/output declaration. |
-| [`RdxToastPortal`](src/toast-portal.ts)           | `[rdxToastPortal]`      | No direct signal input/model/output declaration. |
-| [`RdxToastPositioner`](src/toast-positioner.ts)   | `[rdxToastPositioner]`  | No direct signal input/model/output declaration. |
-| [`RdxToastProvider`](src/toast-provider.ts)       | `[rdxToastProvider]`    | `limit`, `timeout`                               |
-| [`RdxToastRoot`](src/toast-root.ts)               | `[rdxToastRoot]`        | `toast`, `swipeDirection`                        |
-| [`RdxToastTitle`](src/toast-title.ts)             | `[rdxToastTitle]`       | No direct signal input/model/output declaration. |
-| [`RdxToastViewport`](src/toast-viewport.ts)       | `[rdxToastViewport]`    | No direct signal input/model/output declaration. |
+- [Manager and rendering units](__tests__/toast-manager.spec.ts)
+- [Storybook behavior](../../../apps/visual-regression/tests/toast.behavior.spec.ts) and
+  [anchored consumer](../../../apps/visual-regression/tests/floating-consumers.behavior.spec.ts)
 
-Inherited classes and composed directives may add state/API. Follow those sources when completing
-the comparison; similar part names or selector counts do not prove the same contract.
-
-## State ownership and defaults
-
-Ownership class for this entry: **Shared mechanism / delegated ownership**. The [shared contract](../../../docs/engineering/state-ownership.md)
-distinguishes controlled UI requests, editable form models, readonly configuration, native DOM state
-and derived/render state. Local writes to required form models are legitimate Angular behavior.
-For strict controlled UI state, a request must not mutate the effective value before parent acceptance.
-
-No direct open/value/checked/pressed model was found in the exported decorated classes.
-This is **not** a claim of statelessness: composition, services, native DOM or internal signals can
-own state. The family-specific matrix below identifies the relevant boundary.
-
-No explicit default-prefixed signal input/model was found in these local declarations. Inherited
-defaults still require inspection. Readonly input/configuration defaults are not uncontrolled state
-seeds; do not add dummy defaultValue/valueChange APIs to satisfy a template.
-
-Always include allowed `false`, `0`, `''`, `[]` and `null` cases; initial parent/CVA/Signal Forms
-writes; default changes after initialization; ignored/delayed/replaced controlled requests; cancellation
-and native/form reset. Not every case applies to readonly or infrastructure entries: mark those
-boundaries explicitly instead of converting all models to readonly inputs.
-
-## Family-specific comparison matrix
-
-“Source” identifies a local implementation fact. “Compare/verify/audit” is pending work. Priorities
-describe the target work, not a certificate or a reproduced defect count.
-
-| Area                     | Current observation / required target comparison                                                                                                                                                                              | Priority |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| Manager ownership        | Source: Root consumes a required toast object; queue/service state owns add/update/close, timeout and removal. Do not add an unrelated open model to each rendered toast.                                                     | P1       |
-| Lifecycle/default policy | Define provider configuration updates versus per-toast initial timeout/priority snapshots, pause/resume, imperative close acceptance, swipe preview and actual remove/completion timing.                                      | P1       |
-| State/accessibility      | Source: Root publishes a generic data-state string; the pinned Root declares starting/ending and other per-part hooks. Compare actual state attributes, announcements, queue limits, gestures and Portal/Positioner behavior. | P2       |
-
-Also compare the actual emitted per-part attributes/CSS variables with both the pinned declaration
-files and runtime state mapping. Check native hosts, event reasons/details/default prevention,
-accessibility relationships, keyboard/RTL and cleanup where applicable. Angular framework adapters
-are permitted; changed observable behavior needs evidence or an explicitly reviewed deviation.
-
-## Evidence inventory and next checks
-
-- [Local unit files](__tests__): **1 file discovered**; not a passing-test count.
-- No same-family named browser behavior file was found. Cross-family consumer or shared-mechanism checks may exist; locate them before claiming absence or coverage.
-- No dedicated `suite.json` was found for this entry. Check shared suites for partial consumer evidence; this page claims no new paired comparisons.
-- No conventional same-family SSR page was found; inspect shared SSR/hydration fixtures for applicable cases. No SSR/hydration result is claimed here.
-
-No runtime suite was executed for this initial matrix sweep. Complete focused state/DI units,
-native/layout browser cases and SSR/hydration checks before promoting rows; add a paired pinned
-fixture before certifying equivalent observable behavior. See the
-[verification skill](../../../.agents/skills/radix-testing/SKILL.md),
-[matrix index](../../../docs/engineering/parity-matrices.md) and
-[upstream preparation guide](../../../docs/engineering/upstream-reference.md).
+The next increment is a [pinned Toast comparison suite](../../../apps/parity-testing/README.md)
+covering the queue, focus and timer transactions from G1 and G2. SSR and hydration have yet to
+be verified for Toast.

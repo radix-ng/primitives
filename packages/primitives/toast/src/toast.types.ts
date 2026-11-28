@@ -1,7 +1,7 @@
 import { RdxTransitionStatus } from '@radix-ng/primitives/core';
 import { Align, RdxPopperAnchorElement, Side } from '@radix-ng/primitives/popper';
 
-/** Relative ordering hint for a toast. `high` toasts are announced assertively. */
+/** Announcement priority. `high` toasts are announced assertively. */
 export type RdxToastPriority = 'low' | 'high';
 
 /** Action-button options carried on a toast and read back by the consumer (e.g. an "Undo" button). */
@@ -39,12 +39,14 @@ export interface RdxToastObject<Data = unknown> {
     type?: string;
     /** Auto-dismiss delay in ms. `0` (or a negative value) disables auto-dismiss. */
     timeout?: number;
-    /** Announcement priority. `high` → `role="alert"` (assertive); `low` → `role="status"`. */
+    /** Announcement priority. High-priority toasts are announced assertively. */
     priority?: RdxToastPriority;
     /** Arbitrary caller payload, surfaced back to templates/handlers. */
     data?: Data;
     /** Enter/leave phase, set by the manager while a toast mounts or is being removed. */
     transitionStatus?: RdxTransitionStatus;
+    /** Managed by the queue. A limited toast stays in the queue until it can join the visible stack. */
+    limited?: boolean;
     /** Set while a `promise()` toast is awaiting its source promise. */
     loading?: boolean;
     /** Action-button options surfaced to the template. */

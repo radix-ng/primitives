@@ -10,7 +10,8 @@ import { injectRdxToastRootContext } from './toast-root';
     selector: '[rdxToastAction]',
     exportAs: 'rdxToastAction',
     host: {
-        type: 'button'
+        type: 'button',
+        '[attr.data-type]': 'rootContext.toast().type'
     }
 })
 export class RdxToastAction {

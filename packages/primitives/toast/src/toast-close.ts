@@ -7,6 +7,7 @@ import { injectRdxToastRootContext } from './toast-root';
     exportAs: 'rdxToastClose',
     host: {
         type: 'button',
+        '[attr.data-type]': 'rootContext.toast().type',
         '(click)': 'rootContext.close()'
     }
 })

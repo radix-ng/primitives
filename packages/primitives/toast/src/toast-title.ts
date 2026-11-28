@@ -6,7 +6,8 @@ import { injectRdxToastRootContext } from './toast-root';
     selector: '[rdxToastTitle]',
     exportAs: 'rdxToastTitle',
     host: {
-        '[id]': 'rootContext.titleId'
+        '[id]': 'rootContext.titleId',
+        '[attr.data-type]': 'rootContext.toast().type'
     }
 })
 export class RdxToastTitle {

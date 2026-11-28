@@ -8885,6 +8885,16 @@
           "outputs": []
         },
         {
+          "directive": "RdxToastArrow",
+          "selector": "[rdxToastArrow]",
+          "description": "Optional decorative arrow for a toast rendered inside a positioner.",
+          "hostDirectives": [
+            "RdxPopperArrow"
+          ],
+          "inputs": [],
+          "outputs": []
+        },
+        {
           "directive": "RdxToastClose",
           "selector": "[rdxToastClose]",
           "exportAs": "rdxToastClose",
@@ -8896,7 +8906,7 @@
           "directive": "RdxToastContent",
           "selector": "[rdxToastContent]",
           "exportAs": "rdxToastContent",
-          "description": "Wraps a toast's inner parts (title, description, actions) — the Angular counterpart of\n`<Toast.Content>`. Headless: it carries no styles; consumers apply `overflow: hidden` to clip\ntaller toasts during the stack/expand animation. It mirrors the root's `data-state` so content\ncan transition together with the root.",
+          "description": "Wraps a toast's inner parts (title, description, actions) — the Angular counterpart of\n`<Toast.Content>`. Headless: it carries no styles; consumers apply `overflow: hidden` to clip\ntaller toasts during the stack/expand animation. Exposes the expanded and behind states.",
           "inputs": [],
           "outputs": []
         },
@@ -9064,7 +9074,7 @@
           "directive": "RdxToastRoot",
           "selector": "[rdxToastRoot]",
           "exportAs": "rdxToastRoot",
-          "description": "A single toast — the Angular counterpart of `<Toast.Root>`. Bind the toast model from the\nviewport's `@for`; this directive owns the announcement `role`, the `data-state` enter/leave\ncontract, swipe-to-dismiss, and the stacking variables consumers style against.\n\nStacking / styling contract written to the host (no transform is applied for you):\n- `--toast-index` — position from the front (`0` = frontmost).\n- `--toast-height` — this toast's measured height (px).\n- `--toast-offset-y` — combined height (px) of the toasts stacked in front, for expanded layout.\n- `--toast-swipe-movement-x` / `--toast-swipe-movement-y` — live swipe offset (px).\n- `[data-front]` — present on the frontmost toast.\n- `[data-expanded]` — present while the viewport is hovered/focused.\n- `[data-state]` — `open` while visible, `closed` once dismissal begins.\n- `[data-swiping]` / `[data-swipe-direction]` / `[data-swipe-dismiss]` — gesture state.\n\nThe toast leaves the queue after finite CSS animations and transitions on the Root finish.\nWithout motion, it is removed after the closed state has rendered.",
+          "description": "A single toast. Bind the toast model from the viewport's `@for` to expose its stacking, motion,\nswipe and accessibility state on the host.\n\nStacking / styling contract written to the host (no transform is applied for you):\n- `--toast-index` — position from the front (`0` = frontmost).\n- `--toast-height` — this toast's measured height (px).\n- `--toast-offset-y` — combined height (px) of the toasts stacked in front, for expanded layout.\n- `--toast-swipe-movement-x` / `--toast-swipe-movement-y` — live swipe offset (px).\n- `[data-expanded]` — present while the viewport is hovered/focused.\n- `[data-limited]` — present while the toast is beyond the visible limit.\n- `[data-starting-style]` / `[data-ending-style]` — enter and exit styling hooks.\n- `[data-swiping]` / `[data-swipe-direction]` / `[data-swipe-dismiss]` — gesture state.\n\nThe toast leaves the queue after finite CSS animations and transitions on the Root finish.\nWithout motion, it is removed after the closed state has rendered.",
           "inputs": [
             {
               "name": "swipeDirection",
@@ -9093,7 +9103,7 @@
           "directive": "RdxToastViewport",
           "selector": "[rdxToastViewport]",
           "exportAs": "rdxToastViewport",
-          "description": "The positioned region that holds the visible toasts — the Angular counterpart of\n`<Toast.Viewport>`. Exposes the queue for templates to render, and while it is hovered or focused\nit expands the stack (`data-expanded` on each root) and pauses every auto-dismiss timer, resuming\nonce neither hover nor focus remains — matching Base UI.\n\nHeadless: it carries no positioning styles. Consumers position it (e.g. fixed bottom-right) and\niterate `viewport.toasts()` with `@for`.",
+          "description": "The positioned region that holds the visible toasts. Hover or keyboard focus expands the stack\nand pauses auto-dismiss. F6 moves focus between the notifications and the previous control.",
           "inputs": [],
           "outputs": []
         }

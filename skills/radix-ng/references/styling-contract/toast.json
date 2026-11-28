@@ -6,27 +6,37 @@
   "description": "A succinct, low-priority message that appears temporarily, stacks, and can be swiped away.",
   "doc": "radix-ng-examples/references/components/toast.md",
   "storybook": "https://radix-ng.com/docs/?path=/docs/primitives-toast--docs",
-  "anatomy": "<div rdxToastProvider>\n    <div rdxToastPortal>\n        <div rdxToastViewport>\n            <!-- @for (toast of manager.toasts(); track toast.id) -->\n            <div rdxToastRoot [toast]=\"toast\">\n                <div rdxToastContent>\n                    <p rdxToastTitle></p>\n                    <p rdxToastDescription></p>\n                    <button rdxToastAction></button>\n                    <button rdxToastClose></button>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>",
+  "anatomy": "<div>\n    <div rdxToastPortal>\n        <div rdxToastViewport>\n            @for (toast of manager.toasts(); track toast.id) {\n                <div class=\"data-limited:hidden\" rdxToastRoot [toast]=\"toast\">\n                    <div rdxToastContent>\n                        <p rdxToastTitle>{{ toast.title }}</p>\n                        <p rdxToastDescription>{{ toast.description }}</p>\n                        <button rdxToastClose>Dismiss</button>\n                    </div>\n                </div>\n            }\n        </div>\n    </div>\n</div>",
   "dataAttributes": [
     {
-      "attribute": "data-state",
+      "attribute": "data-starting-style",
       "parts": "Root",
-      "values": "open while visible, closed once dismissal begins"
+      "values": "the notification is applying its initial enter style"
     },
     {
-      "attribute": "data-front",
+      "attribute": "data-ending-style",
       "parts": "Root",
-      "values": "this is the frontmost toast (--toast-index is 0)"
+      "values": "dismissal has begun"
+    },
+    {
+      "attribute": "data-limited",
+      "parts": "Root",
+      "values": "the notification is beyond the visible limit"
     },
     {
       "attribute": "data-expanded",
-      "parts": "Root",
-      "values": "the viewport is hovered or focused"
+      "parts": "Viewport, Root, Content",
+      "values": "the viewport is hovered or has keyboard focus"
+    },
+    {
+      "attribute": "data-behind",
+      "parts": "Content",
+      "values": "this notification is behind the front of the stack"
     },
     {
       "attribute": "data-type",
-      "parts": "Root",
-      "values": "the toast has a type"
+      "parts": "Root, Title, Description, Close, Action",
+      "values": "the notification has a type"
     },
     {
       "attribute": "data-swiping",
@@ -36,12 +46,27 @@
     {
       "attribute": "data-swipe-direction",
       "parts": "Root",
-      "values": "the active swipe direction (up/down/left/right)"
+      "values": "the swipe direction (up/down/left/right)"
     },
     {
       "attribute": "data-swipe-dismiss",
       "parts": "Root",
       "values": "a release committed to dismissal"
+    },
+    {
+      "attribute": "data-side",
+      "parts": "Arrow",
+      "values": "Popper reports the corresponding placement or offset"
+    },
+    {
+      "attribute": "data-align",
+      "parts": "Arrow",
+      "values": "Popper reports the corresponding placement or offset"
+    },
+    {
+      "attribute": "data-uncentered",
+      "parts": "Arrow",
+      "values": "Popper reports the corresponding placement or offset"
     }
   ]
 }

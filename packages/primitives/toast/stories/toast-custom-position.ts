@@ -39,7 +39,7 @@ import {
             >
                 @for (toast of manager.toasts(); track toast.id) {
                     <div
-                        class="group data-[state=open]:animate-toast-in-top data-[state=closed]:animate-toast-out-top absolute top-0 left-0 [z-index:calc(50-var(--toast-index))] w-full origin-top [transform:translateY(calc(var(--toast-index)*0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-[expanded]:[transform:translateY(calc(var(--toast-offset-y)+var(--toast-index)*var(--toast-gap)))] data-[expanded]:opacity-100 data-[front]:opacity-100"
+                        class="group motion-safe:animate-toast-in-top motion-safe:data-ending-style:animate-toast-out-top absolute top-0 left-0 [z-index:calc(50-var(--toast-index))] w-full origin-top [transform:translateY(calc(var(--toast-index)*0.75rem))_scale(calc(1-var(--toast-index)*0.05))] [opacity:calc(1-var(--toast-index)*0.3)] [transition:var(--transition-demo-toast-stack)] data-limited:hidden data-[expanded]:[transform:translateY(calc(var(--toast-offset-y)+var(--toast-index)*var(--toast-gap)))] data-[expanded]:opacity-100"
                         [toast]="toast"
                         [swipeDirection]="['up']"
                         rdxToastRoot

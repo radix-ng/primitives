@@ -18,18 +18,28 @@ import { RdxToastPositioner } from '../src/toast-positioner';
 - ✅ Headless and unstyled — state is exposed through `data-*` attributes and CSS variables.
 - ✅ Stacking with a hover/focus expand, driven by measured heights (`--toast-offset-y`).
 - ✅ Swipe-to-dismiss with rubber-banding and flick detection in any allowed direction.
-- ✅ Auto-dismiss timers that pause while the stack is hovered, focused, or being swiped.
+- ✅ Auto-dismiss timers that pause during hover, keyboard focus, swipe, or while the window is inactive.
 - ✅ Promise toasts with `loading` / `success` / `error` copy.
-- ✅ Accessible — announces through `role="status"` / `role="alert"` by priority.
+- ✅ A polite notifications region, with assertive announcements for high-priority toasts.
 
 ## Import
 
 ```ts
-import { provideRdxToastManager, RdxToastManager, toastImports } from '@radix-ng/primitives/toast';
+import {
+    provideRdxToastManager,
+    RdxToastClose,
+    RdxToastContent,
+    RdxToastDescription,
+    RdxToastManager,
+    RdxToastPortal,
+    RdxToastRoot,
+    RdxToastTitle,
+    RdxToastViewport
+} from '@radix-ng/primitives/toast';
 ```
 
-`toastImports` bundles every part directive; `provideRdxToastManager()` (or the `[rdxToastProvider]`
-directive) supplies the queue, and `RdxToastManager` is injected to push toasts.
+Use `provideRdxToastManager()` in the component's providers or `[rdxToastProvider]` on a wrapper.
+Inject `RdxToastManager` from that scope to push notifications into the same queue.
 
 ## Anatomy
 
@@ -37,18 +47,18 @@ Provide the manager once, render the viewport, and iterate the queue. Each item 
 `manager.toasts()` is bound to a `rdxToastRoot`.
 
 ```html
-<div rdxToastProvider>
+<div>
     <div rdxToastPortal>
         <div rdxToastViewport>
-            <!-- @for (toast of manager.toasts(); track toast.id) -->
-            <div rdxToastRoot [toast]="toast">
-                <div rdxToastContent>
-                    <p rdxToastTitle></p>
-                    <p rdxToastDescription></p>
-                    <button rdxToastAction></button>
-                    <button rdxToastClose></button>
+            @for (toast of manager.toasts(); track toast.id) {
+                <div class="data-limited:hidden" rdxToastRoot [toast]="toast">
+                    <div rdxToastContent>
+                        <p rdxToastTitle>{{ toast.title }}</p>
+                        <p rdxToastDescription>{{ toast.description }}</p>
+                        <button rdxToastClose>Dismiss</button>
+                    </div>
                 </div>
-            </div>
+            }
         </div>
     </div>
 </div>
@@ -59,11 +69,13 @@ const manager = inject(RdxToastManager);
 manager.add({ title: 'Saved', description: 'Your changes are live.' });
 ```
 
-An anchored toast is wrapped in `rdxToastPositioner` instead of joining the stack:
+Wrap an anchored toast in `rdxToastPositioner` and put `rdxToastArrow` inside the Root to show a
+decorative arrow. Import both directives from `@radix-ng/primitives/toast`.
 
 ```html
 <div rdxToastPositioner [anchor]="toast.positionerProps.anchor">
     <div rdxToastRoot [toast]="toast">
+        <span rdxToastArrow></span>
         <div rdxToastContent>
             <p rdxToastTitle></p>
         </div>
@@ -83,8 +95,10 @@ Push a single toast; it auto-dismisses after the timeout.
 
 ### Stacking
 
-Add several toasts to see the collapsed stack, then hover or focus it to expand. Auto-dismiss pauses
-while the stack is hovered or focused.
+Add several toasts to see the collapsed stack, then hover or focus it to expand. The default limit
+is three visible notifications. The oldest excess notifications stay in the queue with `data-limited`
+and `inert`. Hide them in CSS with `data-limited:hidden` and let the manager promote them when a
+visible notification starts closing.
 
 <Canvas of={Stories.Stacking} />
 
@@ -96,7 +110,9 @@ Drag a toast toward an allowed `swipeDirection` to dismiss it; release early to 
 
 ### Promise
 
-Drive one toast through a promise: `loading`, then `success` or `error`.
+Drive one toast through `loading`, then `success` or `error`. The timer starts when the promise
+settles and uses the result's `timeout` or the provider default. A result with `timeout: 0` stays
+until dismissed.
 
 <Canvas of={Stories.Promise} />
 
@@ -138,30 +154,51 @@ Measured heights feed `--toast-offset-y`, so the expanded stack lines up even wi
 
 ### Anchored
 
-Pin a toast to an element with `rdxToastPositioner` (powered by popper) instead of joining the stack.
+Pin a toast to an element with `rdxToastPositioner`. A toast with `positionerProps.anchor` disables
+the stack's swipe gesture. Dismiss it with `Escape`, its close button, or a timer.
 
 <Canvas of={Stories.Anchored} />
 
-## Exit motion
+## Keyboard and announcements
 
-Apply the exit transition or keyframes to `rdxToastRoot[data-state="closed"]`. The queue waits
-for finite CSS motion on that element before removing it. A toast with zero-duration motion
-is removed after its closed state renders. Animations on child parts run independently of removal.
+Press `F6` to focus the notifications region. `Tab` visits the notifications and their controls.
+Press `F6` again or `Shift+Tab` from the region to return to the previous control. `Escape` dismisses
+the notification that contains focus. When that notification closes, focus moves to another
+available notification or returns to the previous control.
+
+Supply a `rdxToastTitle` or an `aria-label` to name each notification dialog. A `rdxToastDescription`
+supplies its description. The viewport announces normal messages politely and announces messages
+with `priority: 'high'` assertively.
+
+## Enter and exit motion
+
+Use `[data-starting-style]` on `rdxToastRoot` for the initial state of an enter transition. Apply the
+exit transition or keyframes to `rdxToastRoot[data-ending-style]`. The queue waits for finite CSS
+motion on the Root before removing it. A toast with zero-duration motion leaves after its ending
+state renders. Animations on child parts run independently of removal.
+
+**Migration.** Replace `[data-state="closed"]` on Root with `[data-ending-style]`. For enter
+keyframes, use a base animation class on Root with an ending-style override. For collapsed stack
+styling, use `[data-behind]` on Content in place of `[data-front]` on Root.
 
 ## Data attributes
 
-| Attribute              | Part | Present when                                            |
-| ---------------------- | ---- | ------------------------------------------------------- |
-| `data-state`           | Root | `open` while visible, `closed` once dismissal begins    |
-| `data-front`           | Root | this is the frontmost toast (`--toast-index` is `0`)    |
-| `data-expanded`        | Root | the viewport is hovered or focused                      |
-| `data-type`            | Root | the toast has a `type`                                  |
-| `data-swiping`         | Root | a swipe gesture is active                               |
-| `data-swipe-direction` | Root | the active swipe direction (`up`/`down`/`left`/`right`) |
-| `data-swipe-dismiss`   | Root | a release committed to dismissal                        |
+| Attribute              | Part                                     | Present when                                           |
+| ---------------------- | ---------------------------------------- | ------------------------------------------------------ |
+| `data-starting-style`  | Root                                     | the notification is applying its initial enter style   |
+| `data-ending-style`    | Root                                     | dismissal has begun                                    |
+| `data-limited`         | Root                                     | the notification is beyond the visible limit           |
+| `data-expanded`        | Viewport, Root, Content                  | the viewport is hovered or has keyboard focus          |
+| `data-behind`          | Content                                  | this notification is behind the front of the stack     |
+| `data-type`            | Root, Title, Description, Close, Action  | the notification has a `type`                          |
+| `data-swiping`         | Root                                     | a swipe gesture is active                              |
+| `data-swipe-direction` | Root                                     | the swipe direction (`up`/`down`/`left`/`right`)       |
+| `data-swipe-dismiss`   | Root                                     | a release committed to dismissal                       |
+| `data-side`, `data-align`, `data-uncentered` | Arrow                | Popper reports the corresponding placement or offset  |
 
 The root also writes CSS variables for styling: `--toast-index`, `--toast-height`,
 `--toast-offset-y`, and `--toast-swipe-movement-x` / `--toast-swipe-movement-y`.
+The viewport exposes `--toast-frontmost-height` for the newest visible toast.
 
 ## Example files
 
@@ -171,7 +208,8 @@ Install `@lucide/angular` when an example imports it.
 
 ### RdxToastProvider
 
-Hosts the `RdxToastManager` for its subtree (`[rdxToastProvider]`).
+Hosts the `RdxToastManager` for its subtree (`[rdxToastProvider]`). `limit` defaults to `3` and
+`timeout` defaults to `5000` milliseconds. `timeout: 0` disables automatic dismissal.
 
 <ArgTypes of={RdxToastProvider} />
 
@@ -190,6 +228,6 @@ Anchors a toast to an element via popper. Forwards the popper positioning inputs
 
 ### Other parts
 
-`RdxToastPortal`, `RdxToastViewport`, `RdxToastContent`, `RdxToastTitle`, `RdxToastDescription`,
-`RdxToastClose` and `RdxToastAction` take no inputs of their own — they read from the toast root
-context and the manager. `RdxToastPortal` forwards a `container` input to the underlying portal.
+`RdxToastViewport`, `RdxToastContent`, `RdxToastTitle`, `RdxToastDescription`, `RdxToastClose`, and
+`RdxToastAction` use the queue or their enclosing Root. `RdxToastPortal` forwards a `container`
+input. `RdxToastArrow` uses its enclosing Positioner's arrow geometry.

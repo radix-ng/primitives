@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RdxToastAction } from './src/toast-action';
+import { RdxToastArrow } from './src/toast-arrow';
 import { RdxToastClose } from './src/toast-close';
 import { RdxToastContent } from './src/toast-content';
 import { RdxToastDescription } from './src/toast-description';
@@ -11,6 +12,7 @@ import { RdxToastTitle } from './src/toast-title';
 import { RdxToastViewport } from './src/toast-viewport';
 
 export * from './src/toast-action';
+export * from './src/toast-arrow';
 export * from './src/toast-close';
 export * from './src/toast-content';
 export * from './src/toast-description';
@@ -28,6 +30,7 @@ export const toastImports = [
     RdxToastPortal,
     RdxToastViewport,
     RdxToastPositioner,
+    RdxToastArrow,
     RdxToastRoot,
     RdxToastContent,
     RdxToastTitle,

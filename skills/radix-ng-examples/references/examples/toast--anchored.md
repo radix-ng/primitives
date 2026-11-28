@@ -4,12 +4,14 @@
 
 > Generated from `@radix-ng/primitives@1.4.1` — if the installed version differs, verify the API against the installed package.
 
-Pin a toast to an element with `rdxToastPositioner` (powered by popper) instead of joining the stack.
+Pin a toast to an element with `rdxToastPositioner`. A toast with `positionerProps.anchor` disables
+the stack's swipe gesture. Dismiss it with `Escape`, its close button, or a timer.
 
 ```typescript
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import {
     provideRdxToastManager,
+    RdxToastArrow,
     RdxToastClose,
     RdxToastContent,
     RdxToastDescription,
@@ -33,6 +35,7 @@ import {
         RdxToastPortal,
         RdxToastViewport,
         RdxToastPositioner,
+        RdxToastArrow,
         RdxToastRoot,
         RdxToastContent,
         RdxToastTitle,
@@ -52,10 +55,11 @@ import {
                     @if (toast.positionerProps; as positioner) {
                         <div [anchor]="positioner.anchor" [side]="positioner.side ?? 'top'" rdxToastPositioner>
                             <div
-                                class="data-[state=open]:animate-popover-popup-in data-[state=closed]:animate-popover-popup-out w-72 origin-[var(--toast-transform-origin)]"
+                                class="motion-safe:animate-popover-popup-in motion-safe:data-ending-style:animate-popover-popup-out w-72 origin-[var(--toast-transform-origin)] data-limited:hidden"
                                 [toast]="toast"
                                 rdxToastRoot
                             >
+                                <span class="text-card demo-arrow my-px" rdxToastArrow></span>
                                 <div
                                     class="demo-popup relative flex [transform:translate3d(var(--toast-swipe-movement-x,0px),var(--toast-swipe-movement-y,0px),0)] items-start gap-3 p-4 pr-9 [transition:var(--transition-demo-toast-swipe)] group-data-[swiping]:[transition:none]"
                                     rdxToastContent
