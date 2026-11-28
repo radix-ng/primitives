@@ -1,4 +1,4 @@
-import { expect, Page, test } from '@playwright/test';
+import { expect, Locator, Page, test } from '@playwright/test';
 
 async function gotoStory(page: Page, storyId: string): Promise<string[]> {
     const errors: string[] = [];
@@ -16,6 +16,17 @@ async function gotoStory(page: Page, storyId: string): Promise<string[]> {
 const slot = '[rdxOtpFieldInput]';
 const readCode = (page: Page) =>
     page.locator(slot).evaluateAll((inputs) => inputs.map((input) => (input as HTMLInputElement).value).join(''));
+
+async function pasteText(input: Locator, text: string): Promise<void> {
+    await input.evaluate((element, value) => {
+        const clipboard = new DataTransfer();
+        clipboard.setData('text/plain', value);
+        const event = new ClipboardEvent('paste', { bubbles: true, cancelable: true });
+        // Firefox discards text from DataTransfer passed through ClipboardEventInit.
+        Object.defineProperty(event, 'clipboardData', { value: clipboard });
+        element.dispatchEvent(event);
+    }, text);
+}
 
 test.describe('OTP Field behavior', () => {
     test('moves focus while typing and rejects characters outside numeric validation', async ({ page }) => {
@@ -58,13 +69,7 @@ test.describe('OTP Field behavior', () => {
         const errors = await gotoStory(page, 'primitives-otp-field--default');
         const slots = page.locator(slot);
 
-        await slots.nth(0).evaluate((element) => {
-            const clipboard = new DataTransfer();
-            clipboard.setData('text/plain', '123456');
-            element.dispatchEvent(
-                new ClipboardEvent('paste', { bubbles: true, cancelable: true, clipboardData: clipboard })
-            );
-        });
+        await pasteText(slots.first(), '123456');
         await expect.poll(() => readCode(page)).toBe('123456');
         await expect(slots.nth(5)).toBeFocused();
         await expect
@@ -82,13 +87,7 @@ test.describe('OTP Field behavior', () => {
 
         await expect(slots).toHaveCount(8);
         await expect(page.locator('[rdxOtpFieldSeparator]')).toHaveAttribute('role', 'separator');
-        await slots.nth(0).evaluate((element) => {
-            const clipboard = new DataTransfer();
-            clipboard.setData('text/plain', 'AB12-CD34');
-            element.dispatchEvent(
-                new ClipboardEvent('paste', { bubbles: true, cancelable: true, clipboardData: clipboard })
-            );
-        });
+        await pasteText(slots.first(), 'AB12-CD34');
         await expect.poll(() => readCode(page)).toBe('AB12CD34');
         await expect(slots.nth(7)).toBeFocused();
 
@@ -97,6 +96,30 @@ test.describe('OTP Field behavior', () => {
         await expect(slots.nth(0)).toBeFocused();
         await page.keyboard.press('End');
         await expect(slots.nth(7)).toBeFocused();
+        expect(errors).toEqual([]);
+    });
+
+    test('submits the Field-owned code after the controlled proposal is applied', async ({ page }) => {
+        const errors = await gotoStory(page, 'primitives-otp-field--controlled');
+        const slots = page.locator(slot);
+        const form = page.locator('form');
+        const apply = page.getByRole('button', { name: 'Apply edit' });
+        const submitted = page.getByRole('status');
+
+        await slots.first().focus();
+        await pasteText(slots.first(), '1234');
+        await expect(apply).toBeEnabled();
+        await expect.poll(() => readCode(page)).toBe('');
+        await expect(slots.first()).toBeFocused();
+        await expect(submitted).toHaveCount(0);
+        await expect
+            .poll(() => form.evaluate((element) => Array.from(new FormData(element as HTMLFormElement))))
+            .toEqual([['verificationCode', '']]);
+
+        await apply.click();
+        await expect(submitted).toHaveText('Submitted code 1234');
+        await expect(slots.last()).toBeFocused();
+        await expect.poll(() => readCode(page)).toBe('1234');
         expect(errors).toEqual([]);
     });
 });

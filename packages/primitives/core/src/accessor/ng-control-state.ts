@@ -1,4 +1,4 @@
-import { computed, DestroyRef, inject, Injector, signal, Signal } from '@angular/core';
+import { afterNextRender, computed, DestroyRef, inject, Injector, signal, Signal } from '@angular/core';
 import type { ValidationErrors } from '@angular/forms';
 import { NgControl } from '@angular/forms';
 import type { RdxValidationError } from '../signal-forms/form-control';
@@ -71,7 +71,7 @@ export function injectNgControlState(): RdxNgControlState {
     let resetControl: ((value: unknown) => void) | undefined;
 
     const connect = () => {
-        if (destroyed) {
+        if (destroyed || unsubscribe) {
             return;
         }
 
@@ -106,6 +106,8 @@ export function injectNgControlState(): RdxNgControlState {
     // `NgControl` resolves its value accessor from this same element. Defer the lookup until every
     // directive on the host has finished constructing to avoid a DI cycle.
     queueMicrotask(connect);
+    // A zoneless first render can start after the initial lookup but before NgControl receives its input.
+    afterNextRender(() => queueMicrotask(connect));
 
     destroyRef.onDestroy(() => {
         destroyed = true;

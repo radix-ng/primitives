@@ -1,5 +1,7 @@
 import { Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { tailwindDemoDecorator } from '../../storybook/tailwind-demo';
+import { OtpFieldControlledExample } from './otp-field-controlled';
+import controlledSource from './otp-field-controlled?raw';
 import { OtpFieldDefaultExample } from './otp-field-default';
 import defaultSource from './otp-field-default?raw';
 import { OtpFieldReactiveFormsExample } from './otp-field-forms';
@@ -33,6 +35,7 @@ export default {
                 OtpFieldNormalizeExample,
                 OtpFieldPlaceholderExample,
                 OtpFieldMaskExample,
+                OtpFieldControlledExample,
                 OtpFieldReactiveFormsExample,
                 OtpFieldNgModelExample,
                 OtpFieldSignalFormsExample
@@ -94,6 +97,16 @@ export const Mask: Story = {
     render: () => ({
         template: html`
             <rdx-otp-field-mask-example />
+        `
+    })
+};
+
+export const Controlled: Story = {
+    tags: ['!visual'],
+    parameters: source(controlledSource),
+    render: () => ({
+        template: html`
+            <rdx-otp-field-controlled-example />
         `
     })
 };

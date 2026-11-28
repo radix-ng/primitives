@@ -30,7 +30,8 @@ import {
     RdxFormUiTouchTarget,
     RdxFormValueControl,
     serializeNativeFormValue,
-    useNativeFormControl
+    useNativeFormControl,
+    watch
 } from '@radix-ng/primitives/core';
 import { injectDirection } from '@radix-ng/primitives/direction-provider';
 import { injectFieldRootContext } from '@radix-ng/primitives/field';
@@ -45,6 +46,12 @@ import {
 } from './types';
 
 const attr = (value: boolean) => (value ? '' : undefined);
+
+interface PendingOtpEdit {
+    value: string;
+    focusIndex: number;
+    completion?: RdxOtpFieldValueCompleteEvent;
+}
 
 function positiveIntegerAttribute(value: NumberInput): number {
     const parsed = numberAttribute(value);
@@ -67,7 +74,7 @@ function positiveIntegerAttribute(value: NumberInput): number {
     hostDirectives: [
         {
             directive: RdxControlValueAccessor,
-            inputs: ['value: value', 'disabled']
+            inputs: ['disabled']
         }
     ],
     host: {
@@ -89,9 +96,9 @@ function positiveIntegerAttribute(value: NumberInput): number {
         '(focusout)': 'onFocusOut($event)'
     }
 })
-export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValueControl<string> {
+export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValueControl<string | null | undefined> {
     /** @ignore */
-    protected readonly cva = injectControlValueAccessor<string>();
+    protected readonly cva = injectControlValueAccessor<string | null>();
 
     /** The id applied to the first slot; subsequent slots receive `{id}-2`, `{id}-3`, and so on. */
     readonly id = input<string>(injectId('rdx-otp-field-'));
@@ -143,8 +150,11 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
     /** Initial uncontrolled value. It is normalized before first render and restored on form reset. */
     readonly defaultValue = input<string>();
 
-    /** Current value. Use with `[(value)]` for two-way binding. */
-    readonly value = model<string>('');
+    /** Editable value for Angular Forms and `[(value)]`. Null represents an empty code. */
+    readonly value = model<string | null>();
+
+    /** Parent-owned code. The parent applies accepted edits through this input. */
+    readonly controlledValue = input<string>();
 
     /** Emitted before a user edit is committed. Call `eventDetails.cancel()` to reject the change. */
     readonly onValueChange = output<RdxOtpFieldValueChangeEvent>();
@@ -160,9 +170,6 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
 
     /** @ignore Native input used for autofill and browser form semantics. */
     readonly nativeInput = signal<HTMLInputElement | null>(null);
-
-    /** @ignore The current normalized value shared by the slots and forms. */
-    readonly currentValue = computed(() => this.normalize(this.cva.value() ?? this.value() ?? ''));
 
     /** @ignore True when the CVA, this root, or an enclosing Field disables interaction. */
     readonly isDisabled = computed(() =>
@@ -215,44 +222,45 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
     private readonly platformId = inject(PLATFORM_ID);
     private readonly destroyRef = inject(DestroyRef);
     private readonly hasNativeInput = signal(true);
-    private appliedDefaultValue = false;
-    private previousModelValue: string | undefined;
-    private previousCvaValue: string | undefined;
+    private readonly effectiveName = computed(() => this.fieldRootContext?.name() ?? this.name());
+    private readonly usesCva = computed(() => this.cva.value() !== undefined || this.ngControlState.connected());
+    private readonly editableValue = computed(() => (this.usesCva() ? (this.cva.value() ?? null) : this.value()));
+    private readonly parentValue = computed(() => (this.usesCva() ? undefined : this.controlledValue()));
+    private readonly initialValue = signal<string | null | undefined>(undefined);
+    private pendingEdit: PendingOtpEdit | undefined;
     private nativeDefaultValueSet = false;
+
+    /** @ignore The normalized value shared by the slots and native submission. */
+    readonly currentValue = computed(() => {
+        const value = this.parentValue() ?? this.editableValue();
+        const initialValue = this.initialValue();
+        if (value !== undefined) return this.normalize(value ?? '');
+        return this.normalize((initialValue === undefined ? this.defaultValue() : initialValue) ?? '');
+    });
 
     // The text input created after render owns serialization, so the shared helper only coordinates
     // form reset and imperative submit. It never creates a duplicate hidden entry.
     private readonly nativeFormControl = useNativeFormControl({
-        name: this.name,
+        name: this.effectiveName,
         form: this.form,
         disabled: this.isDisabled,
         value: this.currentValue,
         serialize: serializeNativeFormValue,
         hasNativeControl: this.hasNativeInput,
         syncNativeControl: () => this.syncNativeInput(),
-        defaultValue: () => this.normalize(this.defaultValue() ?? this.cva.value() ?? this.value() ?? ''),
-        onReset: (value) => {
+        defaultValue: this.currentValue,
+        onReset: () => {
             const hadFocus = this.focusedIndex() >= 0;
-            const normalized = this.normalize(value ?? '');
-            this.value.set(normalized);
-            if (!this.resetNgControl(normalized)) {
-                this.cva.writeValue(normalized);
+            this.pendingEdit = undefined;
+            if (this.parentValue() === undefined && !this.resetNgControl(undefined)) {
+                this.value.set(this.initialValue());
             }
-            this.previousModelValue = normalized;
-            this.previousCvaValue = normalized;
             this.focusedIndex.set(-1);
             // Native reset clears each slot's DOM value. The model may not change for slots whose
             // characters already match, so sync every slot after the reset and the next render.
-            afterNextRender(
-                () => {
-                    for (const slot of this.inputs()) {
-                        slot.hostElement().value = slot.value();
-                    }
-                },
-                { injector: this.injector }
-            );
+            afterNextRender(() => this.syncSlots(), { injector: this.injector });
             if (hadFocus) {
-                this.focusInput(Math.min(codePoints(normalized).length, this.length() - 1));
+                this.focusInput(Math.min(codePoints(this.currentValue()).length, this.length() - 1));
             }
             this.formUi.resetInteractionState?.();
         }
@@ -261,81 +269,36 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
     constructor() {
         super();
 
+        watch([], () => {
+            const value = this.editableValue();
+            this.initialValue.set(value === undefined ? (this.defaultValue() ?? '') : value);
+        });
+
         effect(() => {
             if (this.inputs().length > 0) {
                 this.fieldRootContext?.setControlId(this.inputId(0));
             }
         });
 
-        effect(() => {
-            const field = this.fieldRootContext;
-            if (!field) {
-                return;
+        const field = this.fieldRootContext;
+        if (field) {
+            this.destroyRef.onDestroy(
+                field.registerControlState({
+                    filled: this.isFilled,
+                    blurred: this.formUi.touchedState,
+                    changed: this.formUi.dirtyState,
+                    ownsNativeEdit: (target) =>
+                        target === this.nativeInput() || this.inputs().some((slot) => slot.hostElement() === target)
+                })
+            );
+        }
+
+        watch([this.currentValue, () => this.parentValue() !== undefined], ([value, controlled]) => {
+            const edit = this.pendingEdit;
+            this.pendingEdit = undefined;
+            if (controlled && edit?.value === value) {
+                this.acceptEdit(edit);
             }
-            field.setDirty(this.formUi.dirtyState());
-            field.setTouched(this.formUi.touchedState());
-            field.setFilled(this.isFilled());
-            field.setFocused(this.isFocused());
-        });
-
-        // Keep the Signal Forms model and CVA value synchronized while respecting which side was
-        // written (a model input, Signal Forms, or Reactive/template-driven Forms).
-        effect(() => {
-            const modelValue = this.value() ?? '';
-            const cvaValue = this.cva.value();
-            const modelChanged = this.previousModelValue !== undefined && modelValue !== this.previousModelValue;
-            const cvaChanged = this.previousCvaValue !== undefined && cvaValue !== this.previousCvaValue;
-            const sourceValue =
-                cvaChanged && !modelChanged
-                    ? (cvaValue ?? modelValue)
-                    : modelChanged && !cvaChanged
-                      ? modelValue
-                      : !modelValue && cvaValue !== undefined
-                        ? cvaValue
-                        : modelValue;
-            const normalized = this.normalize(sourceValue);
-
-            untracked(() => {
-                if (modelValue !== normalized) {
-                    this.value.set(normalized);
-                }
-                if (cvaValue !== normalized) {
-                    this.cva.writeValue(normalized);
-                }
-                this.previousModelValue = normalized;
-                this.previousCvaValue = normalized;
-            });
-        });
-
-        effect(() => {
-            const initialValue = this.defaultValue();
-            if (initialValue === undefined || this.appliedDefaultValue) {
-                return;
-            }
-
-            this.appliedDefaultValue = true;
-            const normalized = this.normalize(initialValue);
-            untracked(() => {
-                this.value.set(normalized);
-                this.cva.writeValue(normalized);
-                this.previousModelValue = normalized;
-                this.previousCvaValue = normalized;
-            });
-        });
-
-        effect(() => {
-            // Re-apply normalization when value, length, validation, or the custom normalizer changes.
-            const rawValue = this.currentValue();
-            const normalized = this.normalize(rawValue);
-            if (rawValue !== normalized) {
-                untracked(() => {
-                    this.value.set(normalized);
-                    this.cva.writeValue(normalized);
-                    this.previousModelValue = normalized;
-                    this.previousCvaValue = normalized;
-                });
-            }
-            this.syncNativeInput();
         });
 
         effect(() => {
@@ -400,9 +363,9 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
     }
 
     /** @ignore Called when a slot receives a native `input` event. */
-    handleSlotInput(index: number, attempted: string, event: Event): number | null {
+    handleSlotInput(index: number, attempted: string, event: Event): boolean {
         if (this.isDisabled() || this.readonly()) {
-            return null;
+            return false;
         }
 
         const { value: accepted, rejectedCharacters } = this.normalizeWithRejection(attempted);
@@ -413,24 +376,29 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
         const current = codePoints(this.currentValue());
         if (codePoints(attempted).length === 0) {
             if (index >= current.length) {
-                return null;
+                return false;
             }
             current.splice(index, 1);
-            return this.commitUserValue(current.join(''), 'input-clear', event) ? 0 : null;
+            return this.commitUserValue(current.join(''), 'input-clear', event, index);
         }
 
         if (acceptedCharacters.length === 0) {
-            return null;
+            return false;
         }
 
         const next = replaceAt(current, index, acceptedCharacters, this.length());
-        return this.commitUserValue(next.join(''), 'input-change', event) ? acceptedCharacters.length : null;
+        return this.commitUserValue(
+            next.join(''),
+            'input-change',
+            event,
+            Math.min(index + acceptedCharacters.length, this.length() - 1)
+        );
     }
 
     /** @ignore Handles a paste into the currently focused slot. */
-    handlePaste(index: number, attempted: string, event: ClipboardEvent): number | null {
+    handlePaste(index: number, attempted: string, event: ClipboardEvent): void {
         if (this.isDisabled() || this.readonly()) {
-            return null;
+            return;
         }
         const { value: accepted, rejectedCharacters } = this.normalizeWithRejection(attempted);
         if (rejectedCharacters) {
@@ -438,14 +406,13 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
         }
         const pastedCharacters = codePoints(accepted);
         const isCompletePaste = pastedCharacters.length >= this.length();
-        const insertedLength = Math.min(pastedCharacters.length, Math.max(0, this.length() - index));
-        const committed = this.commitUserValue(
+        this.commitUserValue(
             replaceAt(codePoints(this.currentValue()), index, pastedCharacters, this.length()).join(''),
             'input-paste',
             event,
+            Math.min(index + pastedCharacters.length, this.length() - 1),
             isCompletePaste
         );
-        return committed ? insertedLength : null;
     }
 
     /** @ignore Applies a native autofill value from the hidden input. */
@@ -454,10 +421,7 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
             this.syncNativeInput();
             return;
         }
-        const accepted = this.commitUserValue(attempted, 'input-change', event);
-        if (accepted) {
-            this.focusInput(Math.min(codePoints(this.currentValue()).length, this.length() - 1));
-        }
+        this.commitUserValue(attempted, 'input-change', event);
     }
 
     /** @ignore Handles Backspace/Delete without leaving holes in the compact string value. */
@@ -474,9 +438,7 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
             return;
         }
         characters.splice(removeIndex, 1);
-        if (this.commitUserValue(characters.join(''), 'keyboard', event)) {
-            this.focusInput(Math.max(0, backward ? index - 1 : removeIndex));
-        }
+        this.commitUserValue(characters.join(''), 'keyboard', event, Math.max(0, backward ? index - 1 : removeIndex));
     }
 
     /** @ignore Clears the full code for the Ctrl/Cmd+Backspace shortcut. */
@@ -484,9 +446,7 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
         if (this.isDisabled() || this.readonly() || this.currentValue() === '') {
             return;
         }
-        if (this.commitUserValue('', 'keyboard', event)) {
-            this.focusInput(0);
-        }
+        this.commitUserValue('', 'keyboard', event, 0);
     }
 
     /** @ignore Focus-in is delegated from the root so wrapped slots count as one field. */
@@ -528,24 +488,25 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
 
     /** @ignore Bridges the CVA into `markAsTouched` (dual forms). */
     protected override formUiTouchTarget(): RdxFormUiTouchTarget {
-        return injectControlValueAccessor<string>();
+        return injectControlValueAccessor<string | null>();
     }
 
     private commitUserValue(
         attemptedValue: string,
         reason: RdxOtpFieldChangeReason,
         event: Event,
+        focusIndex?: number,
         completePaste = false
     ): boolean {
         const previousValue = this.currentValue();
         const { value: normalized, rejectedCharacters } = this.normalizeWithRejection(attemptedValue);
-        let changed = false;
+        const changed = normalized !== previousValue;
 
         if (rejectedCharacters) {
             this.onValueInvalid.emit(attemptedValue);
         }
 
-        if (normalized !== previousValue) {
+        if (changed) {
             const trigger = event.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
             const { eventDetails } = createCancelableChangeEventDetails(reason, event, trigger);
             this.onValueChange.emit({ value: normalized, eventDetails });
@@ -553,30 +514,62 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
                 this.syncNativeInput();
                 return false;
             }
-            this.value.set(normalized);
-            this.cva.setValue(normalized);
-            this.previousModelValue = normalized;
-            this.previousCvaValue = normalized;
-            this.formUi.markDirty();
-            this.fieldRootContext?.notifyEdited();
-            changed = true;
         }
 
         const wasComplete = codePoints(previousValue).length === this.length();
-        const isComplete = codePoints(normalized).length === this.length();
-        const shouldComplete = isComplete && (!wasComplete || completePaste);
-        if (shouldComplete && (changed || completePaste)) {
-            this.onValueComplete.emit({
+        const nextLength = codePoints(normalized).length;
+        const completed = nextLength === this.length() && (!wasComplete || completePaste) && (changed || completePaste);
+        const edit: PendingOtpEdit = {
+            value: normalized,
+            focusIndex: focusIndex ?? Math.min(nextLength, this.length() - 1)
+        };
+        if (completed) {
+            edit.completion = {
                 value: normalized,
                 reason: reason === 'input-paste' ? 'input-paste' : 'input-change',
                 event
-            });
+            };
+        }
+
+        if (changed) {
+            if (this.parentValue() !== undefined) {
+                this.pendingEdit = edit;
+                this.syncNativeInput();
+                return true;
+            }
+            if (this.usesCva()) {
+                this.cva.setValue(normalized);
+            } else {
+                this.value.set(normalized);
+            }
+        }
+        this.acceptEdit(edit, changed);
+        return true;
+    }
+
+    private acceptEdit(edit: PendingOtpEdit, changed = true): void {
+        if (changed) {
+            this.formUi.markDirty();
+            this.fieldRootContext?.notifyEdited();
+        }
+        this.focusInput(edit.focusIndex);
+        this.syncNativeInput();
+        if (edit.completion) {
+            this.syncSlots();
+            this.onValueComplete.emit(edit.completion);
             if (this.autoSubmit()) {
                 this.nativeFormControl.requestSubmit();
             }
         }
-        this.syncNativeInput();
-        return true;
+    }
+
+    private syncSlots(): void {
+        for (const slot of this.inputs()) {
+            const element = slot.hostElement();
+            if (element.value !== slot.value()) {
+                element.value = slot.value();
+            }
+        }
     }
 
     private normalize(value: string): string {
@@ -625,7 +618,7 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
             return;
         }
 
-        const name = this.name();
+        const name = this.effectiveName();
         if (name) {
             input.name = name;
         } else {
@@ -646,7 +639,7 @@ export class RdxOtpFieldRoot extends RdxFormUiControlBase implements RdxFormValu
         input.setCustomValidity(this.isFilled() && !this.isComplete() ? `Enter all ${this.length()} characters.` : '');
 
         if (!this.nativeDefaultValueSet) {
-            input.defaultValue = this.normalize(this.defaultValue() ?? this.currentValue());
+            input.defaultValue = this.currentValue();
             this.nativeDefaultValueSet = true;
         }
     }

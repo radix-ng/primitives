@@ -44,6 +44,11 @@
           "description": "Submit the owning form as soon as a complete user-entered value is committed."
         },
         {
+          "name": "controlledValue",
+          "type": "string",
+          "description": "Parent-owned code. The parent applies accepted edits through this input."
+        },
+        {
           "name": "defaultValue",
           "type": "string",
           "description": "Initial uncontrolled value. It is normalized before first render and restored on form reset."
@@ -113,9 +118,8 @@
         },
         {
           "name": "value",
-          "type": "string",
-          "default": "''",
-          "description": "Current value. Use with `[(value)]` for two-way binding."
+          "type": "string | null",
+          "description": "Editable value for Angular Forms and `[(value)]`. Null represents an empty code."
         },
         {
           "name": "dirty",

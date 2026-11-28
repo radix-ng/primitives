@@ -27975,6 +27975,74 @@ import { RdxOtpFieldInput, RdxOtpFieldRoot } from '@radix-ng/primitives/otp-fiel
 export class OtpFieldMaskExample {}
 ```
 
+### Controlled value
+
+Bind `[controlledValue]` when the parent decides whether and when to apply an edit. Paste a four-digit
+code and choose **Apply edit**. The field moves focus to the last slot, completes the code and
+submits the applied value under the surrounding Field's name.
+
+```typescript
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { RdxFieldLabel, RdxFieldRoot } from '@radix-ng/primitives/field';
+import { RdxOtpFieldInput, RdxOtpFieldRoot } from '@radix-ng/primitives/otp-field';
+
+@Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'rdx-otp-field-controlled-example',
+    imports: [RdxFieldRoot, RdxFieldLabel, RdxOtpFieldRoot, RdxOtpFieldInput],
+    template: `
+        <form class="flex flex-col items-start gap-3" (submit)="submit($event)">
+            <div class="flex flex-col gap-1" name="verificationCode" rdxFieldRoot>
+                <label class="text-foreground text-sm font-bold" rdxFieldLabel>Verification code</label>
+                <div
+                    class="flex items-center gap-2"
+                    [length]="4"
+                    [controlledValue]="code()"
+                    (onValueChange)="proposed.set($event.value)"
+                    autoSubmit
+                    required
+                    rdxOtpFieldRoot
+                >
+                    <input class="demo-input size-10 shrink-0 text-center text-base" rdxOtpFieldInput />
+                    <input class="demo-input size-10 shrink-0 text-center text-base" rdxOtpFieldInput />
+                    <input class="demo-input size-10 shrink-0 text-center text-base" rdxOtpFieldInput />
+                    <input class="demo-input size-10 shrink-0 text-center text-base" rdxOtpFieldInput />
+                </div>
+            </div>
+            <button
+                class="demo-button demo-button-outline h-9 px-4"
+                [disabled]="proposed() === undefined"
+                (click)="apply()"
+                type="button"
+            >
+                Apply edit
+            </button>
+            @if (submitted() !== null) {
+                <p class="text-sm" role="status">Submitted code {{ submitted() }}</p>
+            }
+        </form>
+    `
+})
+export class OtpFieldControlledExample {
+    protected readonly code = signal('');
+    protected readonly proposed = signal<string | undefined>(undefined);
+    protected readonly submitted = signal<FormDataEntryValue | null>(null);
+
+    protected apply(): void {
+        const next = this.proposed();
+        if (next === undefined) return;
+        this.code.set(next);
+        this.proposed.set(undefined);
+    }
+
+    protected submit(event: Event): void {
+        event.preventDefault();
+        const form = event.currentTarget as HTMLFormElement;
+        this.submitted.set(new FormData(form).get('verificationCode'));
+    }
+}
+```
+
 ### Reactive Forms
 
 The root works with `formControlName` and forwards required validity to the form-associated hidden control. When wrapped in `rdxFieldRoot`, it registers the first slot as the label target and inherits the Field's disabled and required state.
@@ -28188,7 +28256,17 @@ export class OtpFieldSignalFormsExample {
 
 `RdxOtpFieldRoot` owns the value, validation and slot coordination.
 
-**Inputs:** `value`, `defaultValue`, required positive integer `length`, `validationType`, `normalizeValue`, `mask`, `autoComplete`, `autoSubmit`, `inputMode`, `name`, `form`, `dir`, `disabled`, `readOnly`, `required`, and `id`.
+**Inputs:** `value`, `controlledValue`, `defaultValue`, required positive integer `length`, `validationType`, `normalizeValue`, `mask`, `autoComplete`, `autoSubmit`, `inputMode`, `name`, `form`, `dir`, `disabled`, `readOnly`, `required`, and `id`.
+
+Use `[(value)]` for local edits and Angular Forms for form-owned values. For a one-way binding with
+parent acceptance, migrate `[value]` to `[controlledValue]` and apply the proposed value from
+`onValueChange`. An explicit empty string is a value. `defaultValue` is read once when the field has
+no initial editable value. Normalization applies to the slots and the submitted code, and user
+edits propagate a normalized string to the owner.
+
+A native reset restores the initial editable value for a standalone field. Reactive and
+template-driven forms use their Angular reset value. A controlled field follows its parent's value
+on reset. An enclosing Field's `name` takes precedence over the OTP Root's `name`.
 
 `form` is applied to every visible slot and the hidden form control. Horizontal keyboard navigation follows the local `dir` input or the nearest direction provider, and the resolved direction is reflected on the root element.
 
@@ -28200,7 +28278,9 @@ export class OtpFieldSignalFormsExample {
 
 `onValueChange` emits the proposed string with event details. Call `eventDetails.cancel()` from the handler to prevent an update. Its reason is one of `input-change`, `input-clear`, `input-paste`, or `keyboard`.
 
-`onValueComplete` is emitted after a value reaches the configured length, with a reason of `input-change` or `input-paste`. `onValueInvalid` reports attempted text that did not pass validation. With `autoSubmit`, a complete code is applied before the associated form is submitted.
+`onValueComplete` is emitted after an accepted edit completes the code, with a reason of
+`input-change` or `input-paste`. `onValueInvalid` reports attempted text that did not pass validation.
+With `autoSubmit`, the associated form submits the committed code.
 
 ### Data attributes
 

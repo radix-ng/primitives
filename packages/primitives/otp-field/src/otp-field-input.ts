@@ -129,15 +129,15 @@ export class RdxOtpFieldInput {
     }
 
     private commitInput(target: HTMLInputElement, event: Event): void {
-        const insertedLength = this.rootContext.handleSlotInput(this.index(), target.value, event);
-        target.value = this.value();
-        if (insertedLength === null) {
-            this.rootContext.focusInput(this.index());
-            return;
+        const accepted = this.rootContext.handleSlotInput(this.index(), target.value, event);
+        const value = this.value();
+        if (target.value !== value) {
+            target.value = value;
+            if (target.ownerDocument.activeElement === target) target.select();
         }
-
-        const nextIndex = Math.min(this.index() + insertedLength, this.rootContext.length() - 1);
-        this.rootContext.focusInput(nextIndex);
+        if (!accepted) {
+            this.rootContext.focusInput(this.index());
+        }
     }
 
     onMouseDown(event: MouseEvent): void {
@@ -163,13 +163,7 @@ export class RdxOtpFieldInput {
             return;
         }
         event.preventDefault();
-        const insertedLength = this.rootContext.handlePaste(this.index(), value, event);
-        if (insertedLength === null) {
-            this.elementRef.nativeElement.value = this.value();
-            return;
-        }
-        const nextIndex = Math.min(this.index() + insertedLength, this.rootContext.length() - 1);
-        this.rootContext.focusInput(nextIndex);
+        this.rootContext.handlePaste(this.index(), value, event);
     }
 
     onKeydown(event: KeyboardEvent): void {

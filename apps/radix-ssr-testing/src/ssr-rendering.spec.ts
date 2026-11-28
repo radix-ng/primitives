@@ -113,7 +113,7 @@ const cases: readonly SsrCase[] = [
     {
         selector: 'app-otp-field',
         component: OtpFieldPage,
-        expects: ['role="group"', 'id="server-code"', 'Character 4 of 4']
+        expects: ['role="group"', 'id="server-code"', 'value="1"', 'value="2"', 'Character 4 of 4']
     },
     // Select's overlay is portal + presence gated, so on the server (closed) only the trigger renders —
     // assert the placeholder the value shows when nothing is selected.

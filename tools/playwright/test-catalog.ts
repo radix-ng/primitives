@@ -14,6 +14,7 @@ const names = [
     'context-menu',
     'menubar',
     'navigation-menu',
+    'otp-field',
     'combobox',
     'autocomplete',
     'toast',

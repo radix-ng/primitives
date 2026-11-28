@@ -55,6 +55,7 @@ The root's `length` is required and should match the number of slot inputs. Slot
 - [Uppercase normalization](../examples/otp-field--uppercase-normalization.md)
 - [Placeholders](../examples/otp-field--placeholders.md)
 - [Masked entry](../examples/otp-field--masked-entry.md)
+- [Controlled value](../examples/otp-field--controlled-value.md)
 - [Reactive Forms](../examples/otp-field--reactive-forms.md)
 - [Template-driven forms](../examples/otp-field--template-driven-forms.md)
 - [Signal Forms](../examples/otp-field--signal-forms.md)
